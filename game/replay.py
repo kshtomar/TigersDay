@@ -202,6 +202,43 @@ def print_tree(tree, current_depth=1, max_depth=6, min_games=3, indent="", overa
                 prior_strength=prior_strength
             )
 
+import re
+from collections import Counter
+from game.constants import NODES_ABBREV
+
+def count_location_codes(filepath):
+    counts = Counter()
+
+    valid_locations = list(NODES_ABBREV.values())
+    location_pattern = re.compile(r'|'.join(valid_locations))
+
+    with open(filepath, "r") as f:
+        for line in f:
+            matches = location_pattern.findall(line.lower())
+            counts.update(matches)
+
+    return counts
+
+def get_popular_moves(filepath, threshold=300):
+    move_counts = Counter()
+
+    with open(filepath, "r") as f:
+        for line in f:
+            if not line or line.startswith('['):
+                continue
+            tokens = line.split()
+            valid_moves = [token for token in tokens if token not in {"+", "#", "1-0", "0-1"}]
+            move_counts.update(valid_moves)
+
+    print(f"MOVES PLAYED {threshold} TIMES")
+    print("=" * 25)
+    
+    for move, count in move_counts.most_common():
+        if count >= threshold:
+            print(f"{move} {count}")
+        else:
+            break
+
 if __name__ == "__main__":
     filepath = "replay_log.txt"
 
@@ -224,3 +261,13 @@ if __name__ == "__main__":
         max_depth=depth_to_analyze,
         min_games=min_games
     )
+
+    counts = count_location_codes(filepath)
+
+    print("LOCATION CODE FREQUENCIES")
+    print("=========================")
+
+    for code, count in counts.most_common():
+        print(f"{code}: {count}")
+
+    get_popular_moves(filepath)
