@@ -2,3 +2,8 @@ ai/training_results/*
 ai/checkpoints/*
 ai/train.py
 ai/multitrain.py
+ai/arena.py
+ai/heatmap.py
+*.pt
+arena_log.txt
+replay_log.txt

@@ -1,10 +1,12 @@
 import os
 import random
-from networkx import tree_data
-import torch
 import numpy as np
 import argparse
 import uvicorn
+try:
+    import torch
+except ImportError:
+    torch = None
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
