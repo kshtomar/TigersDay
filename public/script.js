@@ -1478,50 +1478,54 @@ function renderBattleMarker(uiState) {
   const defNode = window.NODES[uiState.defender];
   if (!attNode || !defNode) return;
 
-  // Midpoint coordinates between nodes
   const mx = (attNode.x + defNode.x) / 2;
   const my = (attNode.y + defNode.y) / 2;
 
   const netVal = uiState.net_strength !== undefined ? uiState.net_strength : (uiState.card_strength || 0);
   const sign = netVal > 0 ? '+' : '';
-  const strText = `${sign}${netVal}`;
+  const textStr = `${sign}${netVal}`;
 
-  // Attacker advantage = green, Defender holding = red, Tied = gold
-  let valColor = '#f0c868';
-  if (netVal > 0) valColor = '#8fd48f';
-  else if (netVal < 0) valColor = '#e58f8f';
+  const styles = getComputedStyle(document.body);
+  const britishRed = styles.getPropertyValue('--british-red').trim();
+  const mysoreGreen = styles.getPropertyValue('--mysore-green').trim();
+
+  const battleColor = netVal > 0 ? britishRed : mysoreGreen;
 
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('transform', `translate(${mx},${my})`);
-  g.setAttribute('class', 'battle-map-marker');
+  g.setAttribute('class', 'battle-map-marker'); 
 
-  // Background Badge Circle
-  const bg = document.createElementNS(SVG_NS, 'circle');
-  bg.setAttribute('r', '20');
-  bg.setAttribute('fill', '#1c140c');
-  bg.setAttribute('stroke', '#d4a030');
-  bg.setAttribute('stroke-width', '2');
-  bg.setAttribute('filter', 'url(#nshadow)');
-  g.appendChild(bg);
-
-  // Crossed Swords Emoji Icon
   const icon = document.createElementNS(SVG_NS, 'text');
-  icon.setAttribute('y', '-2');
   icon.setAttribute('text-anchor', 'middle');
-  icon.setAttribute('font-size', '15');
+  icon.setAttribute('dominant-baseline', 'central'); // Precise vertical centering
+  icon.setAttribute('font-size', '28'); // Larger icon as the text is centered *on* it
+  // Apply minor drop shadow filter defined in svg defs for overall pop
+  icon.setAttribute('filter', 'url(#nshadow)'); 
   icon.textContent = '⚔️';
   g.appendChild(icon);
 
-  // Strength Difference Text
-  const text = document.createElementNS(SVG_NS, 'text');
-  text.setAttribute('y', '15');
-  text.setAttribute('text-anchor', 'middle');
-  text.setAttribute('font-family', 'Cinzel, serif');
-  text.setAttribute('font-size', '11');
-  text.setAttribute('font-weight', '900');
-  text.setAttribute('fill', valColor);
-  text.textContent = strText;
-  g.appendChild(text);
+  const makeText = (isHalo) => {
+    const t = document.createElementNS(SVG_NS, 'text');
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('dominant-baseline', 'central'); // Align with icon center
+    t.setAttribute('font-family', 'Cinzel, serif'); // Keeping historic font
+    t.setAttribute('font-size', '16');
+    t.setAttribute('font-weight', '900');
+
+    if (isHalo) {
+      t.setAttribute('stroke', '#1a1208'); 
+      t.setAttribute('stroke-width', '3');
+      t.setAttribute('fill', 'none');
+    } else {
+      t.setAttribute('fill', battleColor); 
+    }
+    t.textContent = textStr;
+    return t;
+  };
+
+  // Add halo first (bottom), then filled text (top)
+  g.appendChild(makeText(true)); 
+  g.appendChild(makeText(false)); 
 
   layer.appendChild(g);
 }
