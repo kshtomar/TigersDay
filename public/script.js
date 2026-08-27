@@ -127,7 +127,7 @@ let settings = {
 
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx');
-const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 250, depsilon: 0.0 });
+const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 800, depsilon: 0.0 });
 const multiplayerManager = new TDMultiplayer.MultiplayerManager();
 
 // Preload ONNX model in background
