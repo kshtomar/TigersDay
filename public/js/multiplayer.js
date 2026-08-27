@@ -196,6 +196,12 @@
           }
           break;
 
+        case 'RESIGN':
+          if (this.onResignReceived) {
+            this.onResignReceived(data.resigningSide);
+          }
+          break;
+
         default:
           console.log("Unhandled P2P message:", data);
       }
@@ -229,6 +235,13 @@
     sendReset() {
       this.send({
         type: 'RESET_GAME'
+      });
+    }
+
+    sendResign(resigningSide) {
+      this.send({
+        type: 'RESIGN',
+        resigningSide: resigningSide
       });
     }
 

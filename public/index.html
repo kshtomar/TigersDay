@@ -171,6 +171,15 @@
         </div>
 
         <div class="settings-section">
+            <label class="setting-label" for="mcts-sims-slider">AI THINKING DEPTH (MCTS SIMULATIONS)</label>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+                <input type="range" id="mcts-sims-slider" class="sims-slider" min="0" max="100" value="0" step="1" oninput="handleSimsSliderInput(this.value)">
+                <span id="mcts-sims-label" class="sims-label">250</span>
+            </div>
+            <span class="setting-desc">Higher values = stronger AI but slower thinking. Range: 250 – 1,000,000.</span>
+        </div>
+
+        <div class="settings-section">
             <label class="toggle-control">
                 <span class="toggle-label">Show Move Log / Debug</span>
                 <input type="checkbox" id="debug-toggle-checkbox" onchange="handleDebugToggle(this.checked)">
@@ -214,13 +223,15 @@
             Click a unit to select, then click a glowing destination node on the map.
         </div>
 
-        <div class="turn-header-actions" id="turn-header-actions">
-            <!-- Dynamic Inline Action Buttons (Pass, Rest, Cancel) -->
+            <!-- Dynamic Inline Action Buttons (Pass, Rest, Resign, Cancel) -->
             <button id="header-rest-btn" class="header-action-btn rest-btn hidden" onclick="handleHeaderRestClick()">
                 😴 Rest Unit
             </button>
             <button id="header-pass-btn" class="header-action-btn pass-btn hidden" onclick="handleHeaderPassClick()">
                 ⏭ Pass Phase
+            </button>
+            <button id="header-resign-btn" class="header-action-btn resign-btn" onclick="handleHeaderResignClick()" title="Concede the match">
+                🏳 Resign
             </button>
             <button id="header-cancel-btn" class="header-action-btn cancel-btn hidden" onclick="handleHeaderCancelClick()">
                 ✕ Cancel

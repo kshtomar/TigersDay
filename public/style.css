@@ -373,6 +373,54 @@ body {
     line-height: 1.25;
 }
 
+/* MCTS Simulations Slider */
+.sims-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #3a2a10 0%, #e5a93c 100%);
+    outline: none;
+    cursor: pointer;
+}
+
+.sims-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffe6a0, #c4941e);
+    border: 2px solid #3a2a10;
+    box-shadow: 0 0 6px rgba(229, 169, 60, 0.6);
+    cursor: grab;
+}
+
+.sims-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffe6a0, #c4941e);
+    border: 2px solid #3a2a10;
+    box-shadow: 0 0 6px rgba(229, 169, 60, 0.6);
+    cursor: grab;
+}
+
+.sims-label {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffe6a0;
+    background: rgba(58, 42, 16, 0.7);
+    border: 1px solid rgba(229, 169, 60, 0.4);
+    border-radius: 4px;
+    padding: 2px 8px;
+    min-width: 80px;
+    text-align: center;
+    white-space: nowrap;
+}
+
 .settings-divider {
     border: 0;
     border-top: 1px solid rgba(122, 92, 46, 0.4);
@@ -593,6 +641,18 @@ body {
 .rest-btn:hover {
     background: linear-gradient(180deg, #663822 0%, #3d1f11 100%);
     box-shadow: 0 0 8px rgba(200, 112, 64, 0.6);
+    transform: translateY(-1px);
+}
+
+.resign-btn {
+    background: linear-gradient(180deg, #3d1c1c 0%, #240e0e 100%);
+    border: 1px solid #9e3030;
+    color: #ffb8b8;
+}
+
+.resign-btn:hover {
+    background: linear-gradient(180deg, #582424 0%, #351414 100%);
+    box-shadow: 0 0 8px rgba(168, 50, 50, 0.6);
     transform: translateY(-1px);
 }
 

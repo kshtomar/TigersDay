@@ -962,8 +962,78 @@ function handleHeaderPassClick() {
   }
 }
 
+function handleHeaderResignClick() {
+  if (!currentGameState || getStateWinner(currentGameState) !== 0) return;
+
+  const confirmMsg = 'Are you sure you want to resign? This will concede the match.';
+  if (!confirm(confirmMsg)) return;
+
+  // Determine which side is resigning
+  const uiState = lastUiState;
+  let resigningSide = humanPlayerSide || 'british';
+
+  // In P2P multiplayer, notify opponent
+  if (matchMode === 'p2p_multiplayer') {
+    multiplayerManager.sendResign(resigningSide);
+  }
+
+  // Declare the opponent the winner
+  const winnerVal = resigningSide === 'british' ? -1 : 1;
+  const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
+  showToast(`${resigningSide.toUpperCase()} has resigned. ${winnerName} wins!`, 'success');
+
+  // Update the turn header to show victory state
+  const header = document.getElementById('turn-header');
+  const counter = document.getElementById('turn-counter');
+  const title = document.getElementById('turn-phase-title');
+  const icon = document.getElementById('turn-phase-icon');
+
+  if (header && counter && title && icon) {
+    header.className = winnerVal === 1
+      ? 'turn-header british-phase victory-state'
+      : 'turn-header mysore-phase victory-state';
+    counter.textContent = 'GAME OVER';
+    title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
+    icon.textContent = winnerVal === 1 ? '🦁' : '🐅';
+  }
+
+  // Disable further interaction
+  currentMoves = [];
+  updateActionButtons();
+  clearAllInteractionState();
+}
+
 function handleHeaderCancelClick() {
   clearAllInteractionState();
+}
+
+// Logarithmic MCTS Simulations Slider (250 – 1,000,000)
+const SIMS_MIN = Math.log10(250);   // ~2.398
+const SIMS_MAX = Math.log10(1000000); // 6.0
+
+function simsSliderToValue(sliderPos) {
+  // sliderPos is 0–100, map logarithmically to 250–1,000,000
+  const logVal = SIMS_MIN + (sliderPos / 100) * (SIMS_MAX - SIMS_MIN);
+  const raw = Math.round(Math.pow(10, logVal));
+  // Snap to clean values
+  if (raw <= 500) return Math.round(raw / 50) * 50;
+  if (raw <= 5000) return Math.round(raw / 100) * 100;
+  if (raw <= 50000) return Math.round(raw / 1000) * 1000;
+  if (raw <= 500000) return Math.round(raw / 10000) * 10000;
+  return Math.round(raw / 100000) * 100000;
+}
+
+function formatSimsLabel(val) {
+  if (val >= 1000000) return (val / 1000000).toFixed(0) + 'M';
+  if (val >= 1000) return (val / 1000).toFixed(val % 1000 === 0 ? 0 : 1) + 'K';
+  return val.toString();
+}
+
+function handleSimsSliderInput(sliderPos) {
+  const sims = simsSliderToValue(Number(sliderPos));
+  mctsEngine.simulations = sims;
+  const label = document.getElementById('mcts-sims-label');
+  if (label) label.textContent = formatSimsLabel(sims);
 }
 
 // ==========================================================================
@@ -1356,6 +1426,30 @@ function setupMultiplayerCallbacks() {
   multiplayerManager.onGameResetReceived = () => {
     showToast("Host reset the board.", 'info');
     initGame();
+  };
+
+  multiplayerManager.onResignReceived = (resigningSide) => {
+    const winnerVal = resigningSide === 'british' ? -1 : 1;
+    const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
+    showToast(`Opponent (${resigningSide.toUpperCase()}) resigned! ${winnerName} wins!`, 'success');
+
+    const header = document.getElementById('turn-header');
+    const counter = document.getElementById('turn-counter');
+    const title = document.getElementById('turn-phase-title');
+    const icon = document.getElementById('turn-phase-icon');
+
+    if (header && counter && title && icon) {
+      header.className = winnerVal === 1
+        ? 'turn-header british-phase victory-state'
+        : 'turn-header mysore-phase victory-state';
+      counter.textContent = 'GAME OVER';
+      title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
+      icon.textContent = winnerVal === 1 ? '🦁' : '🐅';
+    }
+
+    currentMoves = [];
+    updateActionButtons();
+    clearAllInteractionState();
   };
 
   multiplayerManager.onError = (err) => {
