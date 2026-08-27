@@ -85,21 +85,21 @@ const EDGES = [
 ];
 
 const BRITISH_CARD_DATA = [
-  { name: 'Wall Breach',      strength: 3, icon: '💥', desc: 'Powerful siege breach & battle power' },
-  { name: 'Highlanders',      strength: 2, icon: '🟥', desc: 'Deploy a Fresh Army on any Coast' },
-  { name: 'Royal Navy',       strength: 2, icon: '⚓', desc: 'Move an Army to any Coastal territory' },
-  { name: 'Divide and Rule',  strength: 1, icon: '🤝', desc: 'Relocate a Fort not in a Key City' },
-  { name: 'Force March',      strength: 1, icon: '🥾', desc: 'Move a Tired Army to adjacent territory' },
-  { name: 'Princely States',  strength: 1, icon: '🏰', desc: 'Deploy a Tired Army in an empty Key City' },
+  { name: 'Wall Breach',      strength: 3, icon: '💥', desc: 'Powerful' },
+  { name: 'Highlanders',      strength: 2, icon: '🎖️', desc: 'Deploy a Fresh Army on Coast' },
+  { name: 'Royal Navy',       strength: 2, icon: '⚓', desc: 'Move an Army to any Coast' },
+  { name: 'Divide and Rule',  strength: 1, icon: '🤝', desc: 'Move a Fort not in a Key' },
+  { name: 'Force March',      strength: 1, icon: '🥾', desc: 'Move a Tired Army' },
+  { name: 'Princely States',  strength: 1, icon: '🏰', desc: 'Deploy a Tired Army in a Key' },
 ];
 
 const MYSORE_CARD_DATA = [
-  { name: 'Iron Rockets',     strength: 3, icon: '🚀', desc: 'Devastating artillery & battle power' },
-  { name: 'Sepoy Mutiny',     strength: 2, icon: '⚔️', desc: 'Remove an Army not in a Key City' },
-  { name: 'French Alliance',  strength: 2, icon: '💠', desc: 'Deploy a Fort adjacent to another Fort' },
+  { name: 'Iron Rockets',     strength: 3, icon: '🚀', desc: 'Powerful' },
+  { name: 'Sepoy Mutiny',     strength: 2, icon: '⚔️', desc: 'Remove an Army not in a Key' },
+  { name: 'French Alliance',  strength: 2, icon: '🇫🇷', desc: 'Deploy a Fort adjacent to another Fort' },
   { name: 'Monsoon',          strength: 1, icon: '🌧️', desc: 'Flip a Fresh Army to Tired' },
-  { name: 'Cavalry Raid',     strength: 1, icon: '🏇', desc: 'Force British to discard a random card' },
-  { name: 'Sea Trade',        strength: 1, icon: '🪙', desc: 'Move a Fort from Coast to any territory' },
+  { name: 'Cavalry Raid',     strength: 1, icon: '🏇', desc: 'British discard' },
+  { name: 'Sea Trade',        strength: 1, icon: '🪙', desc: 'Move a Fort from Coast to any' },
 ];
 
 const CARD_VALUE = [3, 2, 2, 1, 1, 1];
@@ -127,7 +127,7 @@ let settings = {
 
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx');
-const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 250, depsilon: 0.0 });
+const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 800, depsilon: 0.0 });
 const multiplayerManager = new TDMultiplayer.MultiplayerManager();
 
 // Preload ONNX model in background
@@ -845,28 +845,11 @@ function updateTurnHeader(uiState, winner) {
   }
 
   if (battleBar) {
-    if (uiState.attacker !== 'None' && uiState.defender !== 'None') {
-      battleBar.classList.remove('hidden');
-      document.getElementById('battle-attacker-name').textContent = uiState.attacker;
-      document.getElementById('battle-defender-name').textContent = uiState.defender;
-
-      const netVal = uiState.net_strength !== undefined ? uiState.net_strength : (uiState.card_strength || 0);
-      const sign = netVal > 0 ? '+' : '';
-      const strengthEl = document.getElementById('battle-strength-val');
-      if (strengthEl) {
-        strengthEl.textContent = `${sign}${netVal}`;
-        if (netVal > 0) {
-          strengthEl.style.color = '#8fd48f'; // British attacker has the advantage
-        } else if (netVal < 0) {
-          strengthEl.style.color = '#e58f8f'; // Mysore defender is holding
-        } else {
-          strengthEl.style.color = '#f0c868'; // Tied (attacker needs > 0 to win)
-        }
-      }
-    } else {
-      battleBar.classList.add('hidden');
-    }
+  battleBar.classList.add('hidden'); // Hide top banner completely
   }
+
+  // Render marker directly on map midpoint
+  renderBattleMarker(uiState);
 
   updateActionButtons();
   updateTurnHeaderInstruction();
@@ -1550,8 +1533,8 @@ function tooltipShow(e, name, data) {
   const armyLabel = { active: '⚔ Fresh Army', tired: '😴 Tired Army', fort: '🏰 Fort', empty: 'Empty' };
 
   let extra = '';
-  if (data.key) extra += ' · ⬛ Key City';
-  if (data.coast) extra += ' · 🌊 Coastal';
+  if (data.key) extra += ' · ⬛ Key';
+  if (data.coast) extra += ' · 🌊 Coast';
 
   tooltip.innerHTML = `<b>${name}</b><span style="color:#6a4c1e;">${owner} · ${armyLabel[armyType] || ''}${extra}</span>`;
   tooltip.classList.add('show');
@@ -1576,6 +1559,69 @@ function showToast(message, type = 'info') {
   setTimeout(() => {
     if (toast.parentNode) toast.parentNode.removeChild(toast);
   }, 3000);
+}
+
+function renderBattleMarker(uiState) {
+  const layer = document.getElementById('battle-layer');
+  if (!layer) return;
+  layer.innerHTML = '';
+
+  if (!uiState || uiState.attacker === 'None' || uiState.defender === 'None') return;
+
+  const attNode = window.NODES[uiState.attacker];
+  const defNode = window.NODES[uiState.defender];
+  if (!attNode || !defNode) return;
+
+  const mx = (attNode.x + defNode.x) / 2;
+  const my = (attNode.y + defNode.y) / 2;
+
+  const netVal = uiState.net_strength !== undefined ? uiState.net_strength : (uiState.card_strength || 0);
+  const sign = netVal > 0 ? '+' : '';
+  const textStr = `${sign}${netVal}`;
+
+  const styles = getComputedStyle(document.body);
+  const britishRed = styles.getPropertyValue('--british-red').trim();
+  const mysoreGreen = styles.getPropertyValue('--mysore-green').trim();
+
+  const battleColor = netVal > 0 ? britishRed : mysoreGreen;
+
+  const g = document.createElementNS(SVG_NS, 'g');
+  g.setAttribute('transform', `translate(${mx},${my})`);
+  g.setAttribute('class', 'battle-map-marker'); 
+
+  const icon = document.createElementNS(SVG_NS, 'text');
+  icon.setAttribute('text-anchor', 'middle');
+  icon.setAttribute('dominant-baseline', 'central'); // Precise vertical centering
+  icon.setAttribute('font-size', '40'); // Larger icon as the text is centered *on* it
+  // Apply minor drop shadow filter defined in svg defs for overall pop
+  icon.setAttribute('filter', 'url(#nshadow)'); 
+  icon.textContent = '⚔️';
+  g.appendChild(icon);
+
+  const makeText = (isHalo) => {
+    const t = document.createElementNS(SVG_NS, 'text');
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('dominant-baseline', 'central'); // Align with icon center
+    t.setAttribute('font-family', 'Cinzel, serif'); // Keeping historic font
+    t.setAttribute('font-size', '28');
+    t.setAttribute('font-weight', '900');
+
+    if (isHalo) {
+      t.setAttribute('stroke', '#1a1208'); 
+      t.setAttribute('stroke-width', '3');
+      t.setAttribute('fill', 'none');
+    } else {
+      t.setAttribute('fill', battleColor); 
+    }
+    t.textContent = textStr;
+    return t;
+  };
+
+  // Add halo first (bottom), then filled text (top)
+  g.appendChild(makeText(true)); 
+  g.appendChild(makeText(false)); 
+
+  layer.appendChild(g);
 }
 
 // Start game client on load
