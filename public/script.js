@@ -85,21 +85,21 @@ const EDGES = [
 ];
 
 const BRITISH_CARD_DATA = [
-  { name: 'Wall Breach',      strength: 3, icon: '💥', desc: 'Powerful siege breach & battle power' },
-  { name: 'Highlanders',      strength: 2, icon: '🟥', desc: 'Deploy a Fresh Army on any Coast' },
-  { name: 'Royal Navy',       strength: 2, icon: '⚓', desc: 'Move an Army to any Coastal territory' },
-  { name: 'Divide and Rule',  strength: 1, icon: '🤝', desc: 'Relocate a Fort not in a Key City' },
-  { name: 'Force March',      strength: 1, icon: '🥾', desc: 'Move a Tired Army to adjacent territory' },
-  { name: 'Princely States',  strength: 1, icon: '🏰', desc: 'Deploy a Tired Army in an empty Key City' },
+  { name: 'Wall Breach',      strength: 3, icon: '💥', desc: 'Powerful' },
+  { name: 'Highlanders',      strength: 2, icon: '🎖️', desc: 'Deploy a Fresh Army on Coast' },
+  { name: 'Royal Navy',       strength: 2, icon: '⚓', desc: 'Move an Army to any Coast' },
+  { name: 'Divide and Rule',  strength: 1, icon: '🤝', desc: 'Move a Fort not in a Key' },
+  { name: 'Force March',      strength: 1, icon: '🥾', desc: 'Move a Tired Army' },
+  { name: 'Princely States',  strength: 1, icon: '🏰', desc: 'Deploy a Tired Army in a Key' },
 ];
 
 const MYSORE_CARD_DATA = [
-  { name: 'Iron Rockets',     strength: 3, icon: '🚀', desc: 'Devastating artillery & battle power' },
-  { name: 'Sepoy Mutiny',     strength: 2, icon: '⚔️', desc: 'Remove an Army not in a Key City' },
-  { name: 'French Alliance',  strength: 2, icon: '💠', desc: 'Deploy a Fort adjacent to another Fort' },
+  { name: 'Iron Rockets',     strength: 3, icon: '🚀', desc: 'Powerful' },
+  { name: 'Sepoy Mutiny',     strength: 2, icon: '⚔️', desc: 'Remove an Army not in a Key' },
+  { name: 'French Alliance',  strength: 2, icon: '🇫🇷', desc: 'Deploy a Fort adjacent to another Fort' },
   { name: 'Monsoon',          strength: 1, icon: '🌧️', desc: 'Flip a Fresh Army to Tired' },
-  { name: 'Cavalry Raid',     strength: 1, icon: '🏇', desc: 'Force British to discard a random card' },
-  { name: 'Sea Trade',        strength: 1, icon: '🪙', desc: 'Move a Fort from Coast to any territory' },
+  { name: 'Cavalry Raid',     strength: 1, icon: '🏇', desc: 'British discard' },
+  { name: 'Sea Trade',        strength: 1, icon: '🪙', desc: 'Move a Fort from Coast to any' },
 ];
 
 const CARD_VALUE = [3, 2, 2, 1, 1, 1];
@@ -1439,8 +1439,8 @@ function tooltipShow(e, name, data) {
   const armyLabel = { active: '⚔ Fresh Army', tired: '😴 Tired Army', fort: '🏰 Fort', empty: 'Empty' };
 
   let extra = '';
-  if (data.key) extra += ' · ⬛ Key City';
-  if (data.coast) extra += ' · 🌊 Coastal';
+  if (data.key) extra += ' · ⬛ Key';
+  if (data.coast) extra += ' · 🌊 Coast';
 
   tooltip.innerHTML = `<b>${name}</b><span style="color:#6a4c1e;">${owner} · ${armyLabel[armyType] || ''}${extra}</span>`;
   tooltip.classList.add('show');
