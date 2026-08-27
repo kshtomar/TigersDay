@@ -1,115 +1,132 @@
-# Tiger’s Day AI Implementation
+# 🐅 Tiger’s Day – Anglo-Mysore Wars (1767 – 1799)
 
-Welcome to the AI and engine implementation for **Tiger’s Day**, a strategic board game simulating the Anglo-Mysore Wars between Tipu Sultan (Sultanate of Mysore) and Cornwallis (East India Company). 
+Welcome to **Tiger’s Day**, a strategic board game simulating the historical Anglo-Mysore Wars between Tipu Sultan (Sultanate of Mysore) and Lord Cornwallis (British East India Company). 
 
-This repository contains the pure game logic, a Deep Learning/Monte Carlo Tree Search (MCTS) AI built to master the game, and a FastAPI/WebSocket backend to visualize gameplay and evaluate positions.
+This project features a **pure client-side WebAssembly game engine**, an **AlphaZero-inspired Deep Neural Network + Monte Carlo Tree Search (MCTS) AI**, and **real-time Peer-to-Peer (P2P) WebRTC multiplayer**, capable of running 100% in the browser with zero server dependencies.
 
 ---
 
 ## 📖 The Game: Tiger's Day
 
 ### Overview
-* **Asymmetric Gameplay:** Sultanate of Mysore (Forts) vs. East India Company (Armies).
-* **Duration:** 4 turns representing the 4 Anglo-Mysore Wars.
-* **Objective:** The British win by occupying all 5 key territories with an army. Mysore wins by surviving until the end of Turn 4 or eliminating all British armies.
+* **Asymmetric Factions:** Sultanate of Mysore (Defending with Forts & Rocket Artillery) vs. British East India Company (Attacking with Armies & Naval Superiority).
+* **Duration:** 4 turns representing the four Anglo-Mysore Wars.
+* **Victory Conditions:**
+  * **British Victory:** Occupy all 5 Key Cities (*Bombay, Hyderabad, Madras, Seringapatam, Coimbatore*) with British armies.
+  * **Mysore Victory:** Survive through Turn 4 while preventing British occupation of all 5 Key Cities, or eliminate all British armies.
 
 ### Core Rules
-* Neither armies nor forts can share a space, and forts cannot move.
-* Both sides draw 6 cards per turn, and British armies become Fresh.
-* Players alternate playing impulses until all British armies are Tired.
-* Combat is triggered when an army moves into an adjacent fort, with higher strength winning and ties going to Mysore.
-* Cards can be played for text effects, to draw lower-numbered cards, or to add their power to unresolved battles.
+* **Impulse System:** Players alternate impulses until all British armies are exhausted (*Tired*).
+* **Combat & Siege:** Moving into an enemy fort triggers a battle. The combat winner is determined by:
+  $$\text{Net Strength} = \text{Attacking Armies} - \text{Defending Forts} + \text{Net Card Strength}$$
+  If $\text{Net Strength} > 0$, the British capture the fort; otherwise, Mysore holds.
+* **Card Play & Trading:** Cards can be played for unique tactical abilities (*e.g., Cavalry Raid, French Alliance, Royal Navy*), committed for combat strength, or traded to reclaim exhausted cards.
 
 ---
 
-## 🧠 AI Architecture
+## 🧠 AI & WebAssembly Architecture
 
-The AI relies on a combination of Deep Multi-Layer Perceptrons (MLP) and Monte Carlo Tree Search (MCTS), inspired by AlphaZero.
+The AI is built on Deep Multi-Layer Perceptrons (MLP) paired with Monte Carlo Tree Search (MCTS), trained via reinforcement self-play.
 
 ### Game State Representation
-The game state is encoded into a 143D Vector representing the board:
-* 6 indices for British Cards.
-* 6 indices for Mysore Cards.
-* 23 3D vectors holding territory info (fresh army, tired army, fort), where empty is `[0,0,0]`.
-* The turn order indicating Turns 1 through 4.
-* Turn indicator for who is to move (British to move, Mysore Card, British Card), where luck bypasses are encoded as `[0,0,0]`.
-* Mysore existing card Combat Strength (0/1/2/3) to eliminate battle ambiguity.
-* Attacker and defender locations mapped as `[23, 23]`.
+The complete board state is serialized into a compact **148-bit binary vector**:
+* **British & Mysore Cards (12 bits):** Active/exhausted status of each faction's 6 cards.
+* **Board Nodes (75 bits):** 25 territories $\times$ 3 one-hot states (*Fresh Army, Tired Army, Fort, Empty*).
+* **Turn Counter (4 bits):** One-hot encoding of Turns 1–4.
+* **Impulse Indicator (3 bits):** *British Move*, *Mysore Card*, or *British Card*.
+* **Combat State (33 bits):** Attacker location, Defender location, and Mysore committed battle strength (0–3).
 
-This creates a state space of $\sim7.3 \times 10^{21}$ possible game states and a theoretical move space of $\sim10^{60}$.
+### Client-Side ONNX WebAssembly Inference
+* The trained PyTorch model (`AlphaTiger`) is exported to **ONNX** format (`alphatiger.onnx`).
+* The browser runs **`onnxruntime-web` (WebAssembly)** to perform high-speed neural network evaluations on the client CPU without requiring a backend GPU/Python server.
 
-### Neural Net Player + Evaluator
-A deep neural network acts as a black box evaluator. 
-* **Policy ($p$):** Takes the Game State and outputs the probabilities of the network's choice for a move across the maximum theoretical move space, unnormalized.
-* **Value ($v$):** Outputs a scalar evaluation (-1, 0, 1) estimating who is currently winning or tied.
-
-### Tree Search (MCTS)
-* Executes a fixed number of simulations to think before committing to a move.
-* Taps the Neural Net to mask and normalize valid moves from the unnormalized policy output.
-* Balances Exploitation and Exploration to dive deeper into promising lines.
-* Once a move is picked, it saves a snapshot, updates the root to the chosen subtree, and discards the rest.
-* "Luck" elements bypass the Neural Net evaluation and use RNG to expand random outcomes.
-* "Luck" turns are explicitly not saved for backpropagation training.
-
-### AI Updater (Training)
-Runs backpropagation on the Player/Evaluator using MCTS simulation results. 
-
-**Cost Function:**
-$$L = (z - v)^2 - \pi \cdot \log(p) + c||\theta||^2$$
-
-* **Value Loss** $(z - v)^2$: Mean Squared Error between the actual game winner ($z$) and the Evaluator's prediction ($v$).
-* **Policy Loss** $-\pi \cdot \log(p)$: Cross-Entropy between MCTS deep visit counts ($\pi$) and the raw Policy prediction ($p$).
-* **Regularization** $c||\theta||^2$: A penalty on the weights to prevent the AI from overfitting.
+### Browser MCTS Loop
+* Performs real-time tree rollouts combining neural policy priors ($p$) and state value evaluations ($v$).
+* Features PUCT exploration bonuses, Dirichlet root noise, and early stopping.
+* Drives the **Stockfish-style live evaluation bar** and computes the top candidate engine lines in real time.
 
 ---
 
-## ⚙️ Game Engine Components
+## 🌐 Real-Time P2P WebRTC Multiplayer
 
-* **Move Engine:** Takes the Game State Representation and outputs a mask of the theoretical maximum move space. This space contains all theoretically possible moves independent of the current state.
-* **Game Updater:** Takes the chosen move and current state to output the newly updated Game State. It resolves battles and handles random card discarding.
-* **WinChecker:** Runs at the end of every impulse. It evaluates if armies occupy all keys, if Turn 4 ended, or if all British armies are eliminated.
-* **Move Representation:** Utilizes a unique prime factorization trick to log and store games. This enables an interactive sequence log allowing players to go back-and-forth through previous board states.
-
----
-
-## 🖥️ Game UI
-The user interface serves as the visual bridge for the engine.
-* Visualizes the current game state representation.
-* Displays an active "Stockfish-style" evaluation bar querying the AI Evaluator.
-* Shows the top 3 moves the AI is actively considering alongside their respective evaluations.
-* Logs the full sequence of moves for visual playback.
+* Built on **PeerJS (WebRTC)** for zero-server, direct browser-to-browser online play.
+* **Room Codes:** Host a match to generate a short room code (*e.g., `TIGER-ABCD`*), which a friend can enter to connect immediately.
+* **Deterministic State Sync:** Synchronizes move actions, exact stochastic luck trajectories (*e.g., random battle discards, cavalry raids*), and full 148-bit state vectors to guarantee both clients stay in lockstep.
 
 ---
 
 ## 📁 Project Structure
 
 ```text
-TIGERSDAY/
-├── ai/                      # Machine Learning / AI Opponent
-│   ├── checkpoints/         # Saved model weights
-│   ├── models/              # Active Neural Network architectures
-│   ├── mcts.py              # Monte Carlo Tree Search logic
-│   ├── multitrain.py        # Multi-threaded training logic
-│   ├── neural.py            # Neural Network definitions
-│   ├── train.py             # Standard AI training loop
-│   └── visualizer.py        # Terminal evaluation viewer
+TigersDay/
+├── ai/                      # Machine Learning & Training Pipeline (Python)
+│   ├── models/              # Neural network checkpoints (.pt and exported .onnx)
+│   ├── export_to_onnx.py    # Exporter from PyTorch to ONNX
+│   ├── mcts.py              # Python Monte Carlo Tree Search
+│   ├── neural.py            # Hybrid PyTorch & ONNX model definitions
+│   ├── train.py             # Self-play training loop
+│   └── arena.py             # Model evaluation tournament arena
 │
-├── api/                     # Backend API layer
-├── checkpoints/             # Global system checkpoints
+├── game/                    # Core Python Game Logic & Rules
+│   ├── constants.py         # 25-node map geometry, edges, card values, move spaces
+│   ├── engine.py            # Legal move masking & move space dict (953 actions)
+│   ├── state.py             # 148D GameState vector management
+│   ├── updater.py           # Battle resolution & state transition logic
+│   └── replay.py            # Algebraic notation & game replay parser
 │
-├── game/                    # Pure game logic
-│   ├── __init__.py
-│   ├── constants.py         # Game constants and dimensions
-│   ├── engine.py            # Move masking and generation
-│   ├── state.py             # Vector state representation
-│   └── updater.py           # State transition and combat logic
+├── public/                  # 100% Client-Side Web Application
+│   ├── js/
+│   │   ├── state.js         # JavaScript GameState & 148D vector port
+│   │   ├── engine.js        # JavaScript rule engine, combat, & luck resolution
+│   │   ├── mcts.js          # Client-side MCTS & onnxruntime-web inference
+│   │   └── multiplayer.js   # PeerJS WebRTC P2P multiplayer controller
+│   ├── alphatiger.onnx      # Lightweight WebAssembly neural network weights
+│   ├── index.html           # Interactive SVG board UI, drawers, & controls
+│   ├── script.js            # UI event controller & game coordinator
+│   └── style.css            # Historic Deccan parchment design system
 │
-├── public/                  # Frontend UI and static assets
+├── api/                     # Optional Python Serverless API entrypoint
+│   └── index.py             # FastAPI backend for serverless environments
 │
-├── .gitignore
-├── .vercelignore
-├── README.md                # Documentation
-├── requirements-dev.txt
-├── requirements.txt         # Dependencies
-├── server.py                # Server entry point
-└── vercel.json              # Deployment configuration
+├── vercel.json              # Vercel deployment configuration
+├── requirements.txt         # Production dependencies
+└── README.md                # Project documentation
+```
+
+---
+
+## 🚀 Running Locally
+
+Because the web application is 100% client-side, you can host it with any static file server:
+
+### Using Python
+```bash
+python3 -m http.server 8000 --directory public
+```
+
+### Using Node / npx
+```bash
+npx serve public -p 8000
+```
+
+Open your browser at **`http://localhost:8000`**.
+
+---
+
+## 🏋️ Training the AI Locally
+
+If you want to train or evaluate new AI models:
+
+1. Install development dependencies:
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+2. Run the self-play training loop:
+   ```bash
+   python -m ai.train
+   ```
+3. Export new weights to ONNX:
+   ```bash
+   python -m ai.export_to_onnx
+   ```
+   Copy the exported `alphatiger.onnx` into `public/alphatiger.onnx` for browser gameplay.

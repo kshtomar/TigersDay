@@ -849,7 +849,20 @@ function updateTurnHeader(uiState, winner) {
       battleBar.classList.remove('hidden');
       document.getElementById('battle-attacker-name').textContent = uiState.attacker;
       document.getElementById('battle-defender-name').textContent = uiState.defender;
-      document.getElementById('battle-strength-val').textContent = `+${uiState.card_strength}`;
+
+      const netVal = uiState.net_strength !== undefined ? uiState.net_strength : (uiState.card_strength || 0);
+      const sign = netVal > 0 ? '+' : '';
+      const strengthEl = document.getElementById('battle-strength-val');
+      if (strengthEl) {
+        strengthEl.textContent = `${sign}${netVal}`;
+        if (netVal > 0) {
+          strengthEl.style.color = '#8fd48f'; // British attacker has the advantage
+        } else if (netVal < 0) {
+          strengthEl.style.color = '#e58f8f'; // Mysore defender is holding
+        } else {
+          strengthEl.style.color = '#f0c868'; // Tied (attacker needs > 0 to win)
+        }
+      }
     } else {
       battleBar.classList.add('hidden');
     }
@@ -1225,10 +1238,11 @@ window.applyMove = function(moveIdx) {
 
   try {
     currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
-    currentGameState = TDEngine.resolveLuck(currentGameState);
+    const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(currentGameState);
+    currentGameState = finalState;
 
     if (matchMode === 'p2p_multiplayer') {
-      multiplayerManager.sendMove(moveIdx);
+      multiplayerManager.sendMove(moveIdx, trajectory, currentGameState.toString());
     }
 
     const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
@@ -1308,14 +1322,40 @@ function setupMultiplayerCallbacks() {
     }
   };
 
-  multiplayerManager.onMoveReceived = (moveIdx) => {
+  multiplayerManager.onMoveReceived = (moveIdx, luckTrajectory, stateStr) => {
     showToast("Opponent moved!", 'info');
     if (currentGameState) {
-      currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
-      currentGameState = TDEngine.resolveLuck(currentGameState);
+      if (stateStr) {
+        try {
+          currentGameState = new GameState().read_str(stateStr);
+        } catch (e) {
+          currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
+          currentGameState = TDEngine.applyLuckTrajectory(currentGameState, luckTrajectory);
+        }
+      } else {
+        currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
+        currentGameState = TDEngine.applyLuckTrajectory(currentGameState, luckTrajectory);
+      }
       const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
       handleLocalGameUpdate(gameData);
     }
+  };
+
+  multiplayerManager.onStateSyncReceived = (stateStr) => {
+    if (stateStr && currentGameState) {
+      try {
+        currentGameState = new GameState().read_str(stateStr);
+        const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
+        handleLocalGameUpdate(gameData);
+      } catch (e) {
+        console.warn("State sync parse error:", e);
+      }
+    }
+  };
+
+  multiplayerManager.onGameResetReceived = () => {
+    showToast("Host reset the board.", 'info');
+    initGame();
   };
 
   multiplayerManager.onError = (err) => {

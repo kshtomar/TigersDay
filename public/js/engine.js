@@ -315,16 +315,63 @@
   // =========================================================================
   // 3. BATTLE & COMBAT RESOLUTION
   // =========================================================================
+  function calculateBattleStrength(state) {
+    if (!state.is_battle || state.defender === NO_UNIT) {
+      return {
+        attackerArmies: 0,
+        defenderForts: 0,
+        mysoreCardStrength: 0,
+        netStrength: 0,
+        attackerWinning: false
+      };
+    }
+
+    const def = state.defender;
+    let attackerArmies = 0;
+    let defenderForts = 0;
+
+    const fresh = state.fresh_armies;
+    const tired = state.tired_armies;
+    const forts = state.forts;
+
+    for (let i = 0; i < NODES; i++) {
+      if (ADJACENCY_MATRIX[def][i]) {
+        if (fresh[i] || tired[i]) {
+          attackerArmies++;
+        }
+        if (forts[i]) {
+          defenderForts++;
+        }
+      }
+    }
+
+    const mysoreCardStrength = state.card_strength || 0; // Committed by Mysore in Phase 1 (0..3)
+    const netStrength = attackerArmies - defenderForts - mysoreCardStrength;
+    const attackerWinning = netStrength > 0;
+
+    return {
+      attackerArmies,
+      defenderForts,
+      mysoreCardStrength,
+      netStrength,
+      attackerWinning
+    };
+  }
+
   function isBattleWon(state, defender, netCardStrength) {
     let attackerStrength = 0;
     let defenderStrength = 0;
 
+    const fresh = state.fresh_armies;
+    const tired = state.tired_armies;
+    const forts = state.forts;
+
     for (let i = 0; i < NODES; i++) {
-      if (ADJACENCY_MATRIX[defender][i] || ADJACENCY_MATRIX[i][defender]) {
-        if (state.fresh_armies[i] || state.tired_armies[i]) {
+      if (ADJACENCY_MATRIX[defender][i]) {
+        if (fresh[i] || tired[i]) {
           attackerStrength++;
         }
-        if (state.forts[i]) {
+        if (forts[i]) {
           defenderStrength++;
         }
       }
@@ -585,6 +632,34 @@
     return current;
   }
 
+  function resolveLuckWithTrajectory(state, rng = Math.random) {
+    let current = state;
+    const trajectory = [];
+    while (current.is_luck) {
+      const outcomes = getLuckOutcomes(current);
+      const idx = Math.floor(rng() * outcomes.length);
+      trajectory.push(idx);
+      current = outcomes[idx];
+    }
+    return { finalState: current, trajectory };
+  }
+
+  function applyLuckTrajectory(state, trajectory = []) {
+    let current = state;
+    for (const idx of trajectory) {
+      if (!current.is_luck) break;
+      const outcomes = getLuckOutcomes(current);
+      const chosenIdx = Math.min(Math.max(0, idx), outcomes.length - 1);
+      current = outcomes[chosenIdx];
+    }
+    while (current.is_luck) {
+      const outcomes = getLuckOutcomes(current);
+      const idx = Math.floor(Math.random() * outcomes.length);
+      current = outcomes[idx];
+    }
+    return current;
+  }
+
   // =========================================================================
   // 6. GAME WINNER EVALUATION
   // =========================================================================
@@ -697,6 +772,7 @@
 
     const mask = getLegalMoves(state);
     const moves = legalMovesDict(mask);
+    const battleInfo = calculateBattleStrength(state);
 
     return {
       state_str: state.toString(),
@@ -712,6 +788,10 @@
         attacker: state.attacker !== NO_UNIT ? INDEX_MAP[state.attacker] : "None",
         defender: state.defender !== NO_UNIT ? INDEX_MAP[state.defender] : "None",
         card_strength: state.card_strength,
+        battle_info: battleInfo,
+        net_strength: battleInfo.netStrength,
+        attacker_armies: battleInfo.attackerArmies,
+        defender_forts: battleInfo.defenderForts,
         nodes: nodes
       }
     };
@@ -720,11 +800,14 @@
   const TDEngine = {
     getLegalMoves,
     legalMovesDict,
+    calculateBattleStrength,
     isBattleWon,
     resolveBattles,
     getNextState,
     getLuckOutcomes,
     resolveLuck,
+    resolveLuckWithTrajectory,
+    applyLuckTrajectory,
     getStateWinner,
     notate,
     generateGameData
@@ -737,3 +820,4 @@
     Object.assign(global, TDEngine);
   }
 })(typeof window !== 'undefined' ? window : this);
+

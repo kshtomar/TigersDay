@@ -180,7 +180,7 @@
 
         case 'MOVE':
           if (this.onMoveReceived) {
-            this.onMoveReceived(data.moveIdx, data.luckIndices);
+            this.onMoveReceived(data.moveIdx, data.luckIndices || data.luckTrajectory || [], data.stateStr);
           }
           break;
 
@@ -209,11 +209,13 @@
       }
     }
 
-    sendMove(moveIdx, luckIndices = []) {
+    sendMove(moveIdx, luckIndices = [], stateStr = null) {
       this.send({
         type: 'MOVE',
         moveIdx: moveIdx,
-        luckIndices: luckIndices
+        luckIndices: luckIndices,
+        luckTrajectory: luckIndices,
+        stateStr: stateStr
       });
     }
 
