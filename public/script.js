@@ -1498,7 +1498,7 @@ function renderBattleMarker(uiState) {
   const icon = document.createElementNS(SVG_NS, 'text');
   icon.setAttribute('text-anchor', 'middle');
   icon.setAttribute('dominant-baseline', 'central'); // Precise vertical centering
-  icon.setAttribute('font-size', '28'); // Larger icon as the text is centered *on* it
+  icon.setAttribute('font-size', '40'); // Larger icon as the text is centered *on* it
   // Apply minor drop shadow filter defined in svg defs for overall pop
   icon.setAttribute('filter', 'url(#nshadow)'); 
   icon.textContent = '⚔️';
@@ -1509,7 +1509,7 @@ function renderBattleMarker(uiState) {
     t.setAttribute('text-anchor', 'middle');
     t.setAttribute('dominant-baseline', 'central'); // Align with icon center
     t.setAttribute('font-family', 'Cinzel, serif'); // Keeping historic font
-    t.setAttribute('font-size', '16');
+    t.setAttribute('font-size', '28');
     t.setAttribute('font-weight', '900');
 
     if (isHalo) {
