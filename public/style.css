@@ -734,7 +734,7 @@ body {
 
 /* Side Card Decks Columns */
 .faction-column {
-    flex: 0 0 220px;
+    flex: 0 0 300px;
     height: 100%;
     max-height: 100%;
     min-height: 0;
@@ -771,14 +771,14 @@ body {
 }
 
 .faction-emblem {
-    font-size: 1rem;
+    font-size: 1.5rem;
 }
 
 .faction-text h3 {
     font-family: var(--font-heading);
-    font-size: 0.78rem;
+    font-size: 1.5rem;
     letter-spacing: 0.08em;
-    line-height: 1.1;
+    line-height: 1.2;
 }
 
 .mysore-column .faction-text h3 { color: #8fe08f; }
@@ -787,7 +787,7 @@ body {
 .faction-motto {
     font-family: var(--font-historic);
     font-style: italic;
-    font-size: 0.68rem;
+    font-size: 1rem;
     color: #a89470;
 }
 
