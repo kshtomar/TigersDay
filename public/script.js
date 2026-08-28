@@ -112,8 +112,7 @@ let currentBitString = "";
 let lastUiState = null;
 let currentMoves = [];                 // Array of { idx, type, desc }
 let selectedUnit = null;               // Selected territory string on map
-let cardTargetingMode = null;          // { cardName, faction, step: 1|2, sourceNode, targetNodes, validSources, allMoves, isTwoStep }
-let stagedTradeCard = null;            // { faction, cardIndex, cardName }
+let activeSelection = null;            // Selected card name
 
 let matchMode = "human_vs_ai";        // "human_vs_ai" | "human" | "p2p_multiplayer" | "ai_vs_ai"
 let humanPlayerSide = "british";       // "british" | "mysore"
@@ -139,8 +138,7 @@ onnxModel.init().catch(err => console.log("ONNX preload notice:", err));
  */
 function clearAllInteractionState() {
   selectedUnit = null;
-  cardTargetingMode = null;
-  stagedTradeCard = null;
+  activeSelection = null; // Replaces all card modes
   refreshMapHighlights();
   renderAllCards();
   updateActionButtons();
@@ -361,9 +359,9 @@ function refreshMapHighlights() {
     });
   }
 
-  if (cardTargetingMode) {
-    if (!cardTargetingMode.isTwoStep) {
-      cardTargetingMode.targetNodes.forEach(nodeName => {
+  if (activeSelection) {
+    if (!activeSelection.isTwoStep) {
+      Object.keys(activeSelection.mapTargets).forEach(nodeName => {
         const el = getNodeElement(nodeName);
         if (el) {
           el.classList.add('valid-map-target');
@@ -372,8 +370,8 @@ function refreshMapHighlights() {
         }
       });
     } else {
-      if (cardTargetingMode.step === 1) {
-        cardTargetingMode.validSources.forEach(srcName => {
+      if (activeSelection.step === 1) {
+        Object.keys(activeSelection.validSources).forEach(srcName => {
           const el = getNodeElement(srcName);
           if (el) {
             el.classList.add('valid-map-target');
@@ -381,17 +379,17 @@ function refreshMapHighlights() {
             if (glowRing) glowRing.setAttribute('opacity', '1');
           }
         });
-      } else if (cardTargetingMode.step === 2 && cardTargetingMode.sourceNode) {
-        const srcEl = getNodeElement(cardTargetingMode.sourceNode);
+      } else if (activeSelection.step === 2 && activeSelection.sourceNode) {
+        const srcEl = getNodeElement(activeSelection.sourceNode);
         if (srcEl) {
           srcEl.classList.add('selected-unit');
           const ring = srcEl.querySelector('.sel-ring');
           if (ring) ring.setAttribute('opacity', '1');
         }
 
-        const validDests = getValidTwoStepDestinations(cardTargetingMode.cardName, cardTargetingMode.sourceNode);
-        validDests.forEach(destName => {
-          const destEl = getNodeElement(destName);
+        const dests = activeSelection.validSources[activeSelection.sourceNode] || [];
+        dests.forEach(d => {
+          const destEl = getNodeElement(d.dest);
           if (destEl) {
             destEl.classList.add('valid-map-target');
             const glowRing = destEl.querySelector('.target-glow-ring');
@@ -440,15 +438,55 @@ function handleNodeClick(nodeName) {
     return;
   }
 
-  if (cardTargetingMode) {
-    handleCardTargetNodeClick(nodeName);
-    return;
-  }
+  if (activeSelection) {
+    if (!activeSelection.isTwoStep) {
+      if (activeSelection.mapTargets[nodeName] !== undefined) {
+        const moveIdx = activeSelection.mapTargets[nodeName];
+        const cName = activeSelection.cardName;
+        clearAllInteractionState();
+        showToast(`Activated ${cName} on ${nodeName}!`, 'success');
+        window.applyMove(moveIdx);
+      } else {
+        showToast("Invalid target.", "error");
+      }
+      return;
+    } 
+    
+    if (activeSelection.step === 1) {
+      if (activeSelection.validSources[nodeName]) {
+        activeSelection.sourceNode = nodeName;
+        activeSelection.step = 2;
+        refreshMapHighlights();
+        updateTurnHeaderInstruction();
+      } else {
+        showToast(`${nodeName} cannot be selected as a source.`, 'error');
+      }
+      return;
+    } 
+    
+    if (activeSelection.step === 2) {
+      if (nodeName === activeSelection.sourceNode) {
+        activeSelection.sourceNode = null;
+        activeSelection.step = 1;
+        refreshMapHighlights();
+        updateTurnHeaderInstruction();
+        return;
+      }
 
-  if (stagedTradeCard) {
-    stagedTradeCard = null;
-    renderAllCards();
-    updateTurnHeaderInstruction();
+      const dests = activeSelection.validSources[activeSelection.sourceNode] || [];
+      const destMove = dests.find(d => d.dest === nodeName);
+      
+      if (destMove) {
+        const cName = activeSelection.cardName;
+        const targetMoveStr = `${activeSelection.sourceNode} -> ${nodeName}`;
+        clearAllInteractionState();
+        showToast(`Executed ${cName}: ${targetMoveStr}!`, 'success');
+        window.applyMove(destMove.idx);
+      } else {
+        showToast(`${nodeName} is not a valid destination.`, 'error');
+      }
+      return;
+    }
   }
 
   if (selectedUnit === nodeName) {
@@ -472,23 +510,6 @@ function handleNodeClick(nodeName) {
       window.applyMove(move.idx);
       return;
     }
-
-    const hasMoveMoves = currentMoves.some(m => m.type === 'Move' && m.desc.startsWith(nodeName + " -> "));
-    const hasTireMove = currentMoves.some(m => m.type === 'Tire' && m.desc === nodeName);
-
-    if (hasMoveMoves || hasTireMove) {
-      selectedUnit = nodeName;
-      refreshMapHighlights();
-      updateActionButtons();
-      updateTurnHeaderInstruction();
-      return;
-    }
-
-    selectedUnit = null;
-    refreshMapHighlights();
-    updateActionButtons();
-    updateTurnHeaderInstruction();
-    return;
   }
 
   const hasMoveMoves = currentMoves.some(m => m.type === 'Move' && m.desc.startsWith(nodeName + " -> "));
@@ -505,63 +526,6 @@ function handleNodeClick(nodeName) {
       showToast(`${nodeName} has no legal moves right now.`);
     }
   }
-}
-
-function handleCardTargetNodeClick(nodeName) {
-  if (!cardTargetingMode) return;
-
-  if (!cardTargetingMode.isTwoStep) {
-    if (cardTargetingMode.targetNodes.has(nodeName)) {
-      const move = currentMoves.find(m => m.type === cardTargetingMode.cardName && m.desc === nodeName);
-      if (move) {
-        const cardName = cardTargetingMode.cardName;
-        exitCardTargetingMode();
-        showToast(`Activated ${cardName} on ${nodeName}!`, 'success');
-        window.applyMove(move.idx);
-      }
-    } else {
-      showToast(`${nodeName} is not a valid target for ${cardTargetingMode.cardName}.`, 'error');
-    }
-  } else {
-    if (cardTargetingMode.step === 1) {
-      if (cardTargetingMode.validSources.has(nodeName)) {
-        cardTargetingMode.sourceNode = nodeName;
-        cardTargetingMode.step = 2;
-        refreshMapHighlights();
-        updateTurnHeaderInstruction();
-      } else {
-        showToast(`${nodeName} cannot be selected as a source.`, 'error');
-      }
-    } else if (cardTargetingMode.step === 2) {
-      if (nodeName === cardTargetingMode.sourceNode) {
-        cardTargetingMode.sourceNode = null;
-        cardTargetingMode.step = 1;
-        refreshMapHighlights();
-        updateTurnHeaderInstruction();
-        return;
-      }
-
-      const targetMoveStr = `${cardTargetingMode.sourceNode} -> ${nodeName}`;
-      const move = currentMoves.find(m => m.type === cardTargetingMode.cardName && m.desc === targetMoveStr);
-
-      if (move) {
-        const cardName = cardTargetingMode.cardName;
-        exitCardTargetingMode();
-        showToast(`Executed ${cardName}: ${targetMoveStr}!`, 'success');
-        window.applyMove(move.idx);
-      } else {
-        showToast(`${nodeName} is not a valid destination.`, 'error');
-      }
-    }
-  }
-}
-
-function exitCardTargetingMode() {
-  cardTargetingMode = null;
-  refreshMapHighlights();
-  renderAllCards();
-  updateActionButtons();
-  updateTurnHeaderInstruction();
 }
 
 // ==========================================================================
@@ -594,18 +558,14 @@ function renderCardDeck(faction, availArray) {
     let classNames = ['player-card', `${faction}-card`];
     if (!isUsable) classNames.push('card-activated', 'used');
 
-    if (stagedTradeCard && stagedTradeCard.faction === faction && stagedTradeCard.cardIndex === index) {
-      classNames.push('staged-trade');
-    }
-
-    if (stagedTradeCard && stagedTradeCard.faction === faction && !isUsable) {
-      const tradeType = `Draw ${stagedTradeCard.cardName}`;
-      const canReclaim = currentMoves.some(m => m.type === tradeType && m.desc === card.name);
-      if (canReclaim) classNames.push('valid-trade-target');
-    }
-
-    if (cardTargetingMode && cardTargetingMode.faction === faction && cardTargetingMode.cardName === card.name) {
+    if (activeSelection && activeSelection.faction === faction && activeSelection.cardName === card.name) {
       classNames.push('targeting-active');
+    }
+
+    if (activeSelection && activeSelection.faction === faction && !isUsable) {
+      if (activeSelection.tradeTargets && activeSelection.tradeTargets[card.name] !== undefined) {
+        classNames.push('valid-trade-target');
+      }
     }
 
     cardDiv.className = classNames.join(' ');
@@ -674,129 +634,88 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
     return;
   }
 
+  // 1. Resolve a Trade if clicking an exhausted card while a selection is active
   if (!isUsable) {
-    if (stagedTradeCard && stagedTradeCard.faction === faction) {
-      const tradeType = `Draw ${stagedTradeCard.cardName}`;
-      const move = currentMoves.find(m => m.type === tradeType && m.desc === cardName);
-
-      if (move) {
-        const tradedCard = stagedTradeCard.cardName;
-        stagedTradeCard = null;
-        renderAllCards();
-        updateTurnHeaderInstruction();
-        showToast(`Traded ${tradedCard} to reclaim ${cardName}!`, 'success');
-        window.applyMove(move.idx);
-        return;
-      } else {
-        showToast(`Cannot trade ${stagedTradeCard.cardName} for ${cardName}.`, 'error');
-        return;
-      }
-    } else {
-      showToast(`${cardName} is exhausted. Stage an active card to trade for it.`, 'info');
+    if (activeSelection && activeSelection.tradeTargets && activeSelection.tradeTargets[cardName] !== undefined) {
+      const moveIdx = activeSelection.tradeTargets[cardName];
+      const tradedCard = activeSelection.cardName;
+      clearAllInteractionState();
+      showToast(`Traded ${tradedCard} to reclaim ${cardName}!`, 'success');
+      window.applyMove(moveIdx);
       return;
     }
-  }
-
-  const abilityCardNames = [
-    'Cavalry Raid', 'Sepoy Mutiny', 'French Alliance', 'Monsoon',
-    'Highlanders', 'Princely States',
-    'Divide and Rule', 'Force March', 'Royal Navy', 'Sea Trade'
-  ];
-
-  if (abilityCardNames.includes(cardName)) {
-    const hasAbilityMove = currentMoves.some(m => m.type === cardName);
-    if (hasAbilityMove) {
-      handleCardAbilityActivation(faction, index, cardName);
-      return;
-    }
-  }
-
-  handleCardTradeSelection(faction, index, cardName);
-}
-
-function handleCardAbilityActivation(faction, index, cardName) {
-  clearAllInteractionState();
-
-  if (cardName === 'Cavalry Raid') {
-    const move = currentMoves.find(m => m.type === 'Cavalry Raid');
-    if (move) {
-      showToast(`Cavalry Raid launched! British must discard.`, 'success');
-      window.applyMove(move.idx);
-      return;
-    }
-  }
-
-  const singleStepCards = ['Sepoy Mutiny', 'French Alliance', 'Monsoon', 'Highlanders', 'Princely States'];
-  if (singleStepCards.includes(cardName)) {
-    const moves = currentMoves.filter(m => m.type === cardName);
-    if (moves.length === 0) {
-      showToast(`No legal targets on the map for ${cardName}.`, 'error');
-      return;
-    }
-
-    const targetNodes = new Set(moves.map(m => m.desc));
-    cardTargetingMode = {
-      cardName,
-      faction,
-      step: 1,
-      targetNodes,
-      isTwoStep: false
-    };
-
-    renderAllCards();
-    refreshMapHighlights();
-    updateActionButtons();
-    updateTurnHeaderInstruction();
-    showToast(`Targeting ${cardName}: Click a pulsing territory on the map.`, 'info');
+    showToast(`${cardName} is exhausted. Click an active card to stage a trade.`, 'info');
     return;
   }
 
+  // 2. Toggle off if clicking the same card
+  if (activeSelection && activeSelection.cardName === cardName) {
+    clearAllInteractionState();
+    return;
+  }
+
+  // 3. Generate Unified Selection Object
+  clearAllInteractionState(); 
+
+  const newSelection = {
+    cardName: cardName,
+    faction: faction,
+    mapTargets: {},      // Format: { "NodeName": moveIdx }
+    tradeTargets: {},    // Format: { "ExhaustedCardName": moveIdx }
+    validSources: {},    // Format: { "SourceName": [{ dest: "DestName", idx: moveIdx }] } (For 2-step)
+    isTwoStep: false,
+    step: 1,
+    sourceNode: null
+  };
+
+  // A. Scan for map targets (type: cardName)
+  const abilityMoves = currentMoves.filter(m => m.type === cardName);
   const twoStepCards = ['Divide and Rule', 'Force March', 'Royal Navy', 'Sea Trade'];
-  if (twoStepCards.includes(cardName)) {
-    const moves = currentMoves.filter(m => m.type === cardName);
-    if (moves.length === 0) {
-      showToast(`No legal actions on the map for ${cardName}.`, 'error');
+
+  if (abilityMoves.length > 0) {
+    // Immediate Execute (e.g., Cavalry Raid)
+    if (cardName === 'Cavalry Raid') { 
+      showToast(`Cavalry Raid launched! British must discard.`, 'success');
+      window.applyMove(abilityMoves[0].idx);
       return;
     }
 
-    const validSources = new Set(moves.map(m => m.desc.split(' -> ')[0]));
-    cardTargetingMode = {
-      cardName,
-      faction,
-      step: 1,
-      sourceNode: null,
-      validSources,
-      isTwoStep: true
-    };
-
-    renderAllCards();
-    refreshMapHighlights();
-    updateActionButtons();
-    updateTurnHeaderInstruction();
-    showToast(`Targeting ${cardName}: Select origin territory.`, 'info');
-  }
-}
-
-function handleCardTradeSelection(faction, index, cardName) {
-  if (stagedTradeCard && stagedTradeCard.cardName === cardName) {
-    stagedTradeCard = null;
-    renderAllCards();
-    updateTurnHeaderInstruction();
-    showToast(`Cancelled trade staging for ${cardName}.`);
-    return;
+    if (twoStepCards.includes(cardName)) {
+      newSelection.isTwoStep = true;
+      abilityMoves.forEach(m => {
+        const [src, dest] = m.desc.split(' -> ');
+        if (!newSelection.validSources[src]) newSelection.validSources[src] = [];
+        newSelection.validSources[src].push({ dest: dest, idx: m.idx });
+      });
+    } else {
+      abilityMoves.forEach(m => {
+        newSelection.mapTargets[m.desc] = m.idx;
+      });
+    }
   }
 
+  // B. Scan for trade targets (type: "Draw cardName")
   const tradeType = `Draw ${cardName}`;
-  const hasTradeMoves = currentMoves.some(m => m.type === tradeType);
+  const tradeMoves = currentMoves.filter(m => m.type === tradeType);
+  tradeMoves.forEach(m => {
+    newSelection.tradeTargets[m.desc] = m.idx;
+  });
 
-  if (hasTradeMoves) {
-    stagedTradeCard = { faction, cardIndex: index, cardName };
-    renderAllCards();
-    updateTurnHeaderInstruction();
-    showToast(`Staged ${cardName} for trade! Click a greyed-out card to reclaim.`, 'info');
-  } else {
-    showToast(`No exhausted cards can currently be reclaimed with ${cardName}.`, 'info');
+  // Validate state
+  if (Object.keys(newSelection.mapTargets).length === 0 &&
+      Object.keys(newSelection.tradeTargets).length === 0 &&
+      Object.keys(newSelection.validSources).length === 0) {
+      showToast(`No legal actions or trades available for ${cardName}.`, 'info');
+      return;
   }
+
+  // 4. Mount the Unified State & Render
+  activeSelection = newSelection;
+  renderAllCards();
+  refreshMapHighlights();
+  updateActionButtons();
+  updateTurnHeaderInstruction();
+  showToast(`Activated ${cardName}. Select a map target or card to trade.`, 'info');
 }
 
 // ==========================================================================
@@ -859,19 +778,15 @@ function updateTurnHeaderInstruction() {
   const instructionEl = document.getElementById('turn-instruction');
   if (!instructionEl || !lastUiState) return;
 
-  if (cardTargetingMode) {
-    if (!cardTargetingMode.isTwoStep) {
-      instructionEl.innerHTML = `🎯 <strong>Targeting ${cardTargetingMode.cardName}:</strong> Click a pulsing territory on the map.`;
-    } else if (cardTargetingMode.step === 1) {
-      instructionEl.innerHTML = `🎯 <strong>${cardTargetingMode.cardName}:</strong> Select origin territory.`;
-    } else if (cardTargetingMode.step === 2) {
-      instructionEl.innerHTML = `🎯 <strong>${cardTargetingMode.cardName}:</strong> Move ${cardTargetingMode.sourceNode} → Select glowing destination.`;
+  if (activeSelection) {
+    if (!activeSelection.isTwoStep) {
+      // Unified instruction for one-step map targets OR trading
+      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Click a pulsing territory on the map, or an exhausted card to reclaim.`;
+    } else if (activeSelection.step === 1) {
+      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Select origin territory.`;
+    } else if (activeSelection.step === 2) {
+      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Move ${activeSelection.sourceNode} → Select glowing destination.`;
     }
-    return;
-  }
-
-  if (stagedTradeCard) {
-    instructionEl.innerHTML = `🪙 <strong>Trading ${stagedTradeCard.cardName}:</strong> Click an exhausted (greyed-out) card in hand to reclaim.`;
     return;
   }
 
@@ -894,7 +809,7 @@ function updateActionButtons() {
   const cancelBtn = document.getElementById('header-cancel-btn');
 
   if (cancelBtn) {
-    if (selectedUnit || cardTargetingMode || stagedTradeCard) {
+    if (selectedUnit || activeSelection) {
       cancelBtn.classList.remove('hidden');
     } else {
       cancelBtn.classList.add('hidden');
@@ -916,7 +831,7 @@ function updateActionButtons() {
 
   if (passBtn) {
     const hasPass = currentMoves.some(m => m.type === 'Pass Mysore' || m.type === 'Pass British');
-    if (hasPass && !cardTargetingMode && !stagedTradeCard) {
+    if (hasPass && !activeSelection) {
       passBtn.classList.remove('hidden');
     } else {
       passBtn.classList.add('hidden');
