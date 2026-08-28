@@ -1533,5 +1533,40 @@ function renderBattleMarker(uiState) {
   layer.appendChild(g);
 }
 
+function syncUIStateOnLoad() {
+  // 1. Sync MCTS Simulations
+  const simsSlider = document.getElementById('mcts-sims-slider');
+  if (simsSlider && typeof handleSimsSliderInput === 'function') {
+    handleSimsSliderInput(simsSlider.value);
+  }
+
+  // 2. Sync Eval Toggle
+  const evalToggle = document.getElementById('eval-toggle-checkbox');
+  if (evalToggle && typeof handleEvalToggle === 'function') {
+    handleEvalToggle(evalToggle.checked);
+  }
+
+  // 3. Sync Debug Toggle
+  const debugToggle = document.getElementById('debug-toggle-checkbox');
+  if (debugToggle && typeof handleDebugToggle === 'function') {
+    handleDebugToggle(debugToggle.checked);
+  }
+
+  // 4. Sync Player Side
+  const sideSelect = document.getElementById('human-side-select');
+  if (sideSelect && typeof handleHumanSideChange === 'function') {
+    handleHumanSideChange(sideSelect.value);
+  }
+
+  // 5. Sync Game Mode
+  const modeSelect = document.getElementById('game-mode-select');
+  if (modeSelect && typeof handleGameModeChange === 'function') {
+    handleGameModeChange(modeSelect.value);
+  }
+}
+
 // Start game client on load
-initGame();
+document.addEventListener('DOMContentLoaded', () => {
+  syncUIStateOnLoad();
+  initGame(); 
+});
