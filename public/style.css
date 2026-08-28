@@ -845,14 +845,14 @@ body {
     position: absolute;
     top: 5px;
     right: 5px;
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-heading);
-    font-size: 0.74rem;
+    font-size: 1.25rem;
     font-weight: 900;
     color: #fff;
     cursor: pointer;
@@ -889,13 +889,13 @@ body {
 }
 
 .card-icon {
-    font-size: 0.85rem;
+    font-size: 1.5rem;
     line-height: 1;
 }
 
 .card-name {
     font-family: var(--font-heading);
-    font-size: 0.74rem;
+    font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     color: var(--ink);
@@ -904,7 +904,7 @@ body {
 
 .card-desc {
     font-family: var(--font-body);
-    font-size: 0.74rem;
+    font-size: 1rem;
     font-style: italic;
     color: #523a18;
     line-height: 1.2;
@@ -918,28 +918,6 @@ body {
     cursor: pointer;
     transform: none;
     box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
-.used-stamp {
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-12deg);
-    font-family: var(--font-heading);
-    font-size: 0.65rem;
-    font-weight: 900;
-    letter-spacing: 0.12em;
-    color: rgba(180, 40, 40, 0.75);
-    border: 1px solid rgba(180, 40, 40, 0.75);
-    padding: 1px 6px;
-    border-radius: 2px;
-    pointer-events: none;
-    display: none;
-}
-
-.player-card.card-activated .used-stamp,
-.player-card.used .used-stamp {
-    display: block;
 }
 
 /* Staged For Trade (Unactivated Card Selected) */

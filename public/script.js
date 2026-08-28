@@ -596,12 +596,6 @@ function renderCardDeck(faction, availArray) {
     desc.textContent = card.desc;
     cardDiv.appendChild(desc);
 
-    // Exhausted Stamp
-    const stamp = document.createElement('div');
-    stamp.className = 'used-stamp';
-    stamp.textContent = 'EXHAUSTED';
-    cardDiv.appendChild(stamp);
-
     cardDiv.addEventListener('click', (e) => {
       e.stopPropagation();
       handleCardBodyClick(faction, index, card.name, isUsable);
