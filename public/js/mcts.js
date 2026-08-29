@@ -152,9 +152,9 @@
     constructor(model, options = {}) {
       this.model = model;
       this.simulations = options.simulations || 200;
-      this.puct = options.puct || 1.5;
+      this.ipuct = options.ipuct || 800;
       this.dalpha = options.dalpha || 0.5;
-      this.depsilon = options.depsilon || 0.0;
+      this.depsilon = options.depsilon || 0.25;
       this.root = null;
     }
 
@@ -205,7 +205,9 @@
           prior = (1 - this.depsilon) * prior + this.depsilon * noiseDict.get(move);
         }
 
-        const exploration = this.puct * prior * (Math.sqrt(node.visit_count) / (1 + child.visit_count));
+        const puct = 1.0 + Math.log((node.visit_count + this.ipuct) / this.ipuct);
+
+        const exploration = puct * prior * (Math.sqrt(node.visit_count) / (1 + child.visit_count));
         const score = exploitation + exploration;
 
         if (score > bestScore) {

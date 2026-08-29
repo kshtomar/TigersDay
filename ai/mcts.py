@@ -47,10 +47,10 @@ class Node:
                 self.children[i] = Node(outcome, self, i, prior)
 
 class MCTS:
-    def __init__(self, model, simulations = 100, puct = 1.5, dalpha = 0.5, depsilon = 0.25):
+    def __init__(self, model, simulations = 100, ipuct = 800, dalpha = 0.5, depsilon = 0.25):
         self.model = model
         self.simulations = simulations
-        self.puct = puct
+        self.ipuct = ipuct
         self.dalpha = dalpha
         self.depsilon = depsilon
         self.root = None
@@ -134,7 +134,9 @@ class MCTS:
                 prior = (1-self.depsilon) * prior + self.depsilon * noise_dict[move]
             # blend dirichlet noise at select time
 
-            exploration = self.puct * prior * (np.sqrt(node.visit_count) / (1 + child.visit_count))
+            puct = 1 + np.log((node.visit_count + self.ipuct) / self.ipuct)
+            # dynamic puct with base 1 and ipuct specified
+            exploration = puct * prior * (np.sqrt(node.visit_count) / (1 + child.visit_count))
             score = exploitation + exploration
             if score > best_score:
                 best_score = score
