@@ -55,7 +55,7 @@ class MCTS:
         self.depsilon = depsilon
         self.root = None
 
-    def search(self, root_state, stop):
+    def search(self, root_state):
         # only call search on decision nodes
 
         if self.root is None:
@@ -64,18 +64,8 @@ class MCTS:
         # lazy generate dirichlet root noise
         noise_dict = None
 
-        # early stopping
-        warmup = self.simulations // 5 if stop else self.simulations
-        stop_threshold = 0.9
-
-        for current_sim in range(self.simulations):
+        for sim in range(self.simulations):
             node = self.root
-
-            if current_sim > warmup:
-                most_visit = max(child.visit_count for child in self.root.children.values())
-                if most_visit / self.root.visit_count > stop_threshold:
-                    return self.root
-                # stop early if move is obvious
 
             while node.is_expanded:
                 # luck is slippery
@@ -168,7 +158,7 @@ class MCTS:
         self.root.parent = None
 
     def find_move(self, state, temperature = 0.0):
-        root = self.search(state, stop = True)
+        root = self.search(state)
         counts = np.zeros(MOVE_VECTOR_LENGTH, dtype=np.float32)
         for m, child in root.children.items():
             counts[m] = child.visit_count
