@@ -55,7 +55,7 @@ def train(
             with ProcessPoolExecutor(max_workers=batch_size, mp_context=ctx) as executor:
                 futures = []
                 for _ in range(batch_size):
-                    mcts_worker = MCTS(model, simulations=stage.simulations, puct=config.puct)
+                    mcts_worker = MCTS(model)
                     futures.append(
                         executor.submit(
                             self_play_game,
@@ -63,6 +63,7 @@ def train(
                             stage.state_factory,
                             stage.temperature,
                             stage.temperature_cutoff,
+                            stage.simulations,
                         )
                     )
                 
@@ -98,7 +99,7 @@ def train(
                     print(
                         f"{prefix} | loss {total_loss/steps:.4f} "
                         f"(val {val_loss/steps:.4f}  pol {pol_loss/steps:.4f})"
-                        f" | batch samples {len(batch_samples)} | winner {'british' if batch_samples[0][3] == 1 else 'mysore'}"
+                        f" | batch samples {len(batch_samples)} | winner {'british' if batch_samples[0][-1] == 1 else 'mysore'}"
                     )
             else:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")

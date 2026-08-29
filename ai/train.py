@@ -90,7 +90,8 @@ def self_play_game(
     mcts: MCTS,
     state_factory: Callable[[], GameState],
     temperature: float,
-    temperature_cutoff: int):
+    temperature_cutoff: int,
+    simulations: int):
     """
     Play one game via MCTS self-play from `state_factory()`.
 
@@ -103,7 +104,7 @@ def self_play_game(
     state = state_factory()
     state, _ = _resolve_luck(state)
 
-    history: List[Tuple[np.ndarray, np.ndarray, np.ndarray]] = []
+    history = []
     move_num = 0
 
     while True:
@@ -112,11 +113,19 @@ def self_play_game(
             break
 
         temp = temperature if move_num < temperature_cutoff else 0.0
-        move, policy = mcts.find_move(state, temp)
+
+        # Playout cap randomization
+        if random.random() < 0.25:
+            move, policy = mcts.find_move(state, simulations, temp)
+            pweight = 1.0
+        else:
+            move, policy = mcts.find_move(state, simulations // 10, temp)
+            pweight = 0.0
+
         legal_mask = Engine.get_legal_moves(state)
 
         # Record this decision point
-        history.append((state.vector.copy(), policy, legal_mask))
+        history.append((state.vector.copy(), policy, legal_mask, np.float32(pweight)))
 
         # Sample a move and advance the state
         state = Updater.get_next_state(state, move)
@@ -126,7 +135,7 @@ def self_play_game(
         move_num += 1
 
     winner = Updater.get_state_winner(state)
-    return [(sv, pt, lm, np.float32(winner)) for sv, pt, lm in history]
+    return [(sv, pt, lm, pw, np.float32(winner)) for sv, pt, lm, pw in history]
 
 
 def train_step(
@@ -136,17 +145,22 @@ def train_step(
     device: torch.device
 ) -> Tuple[float, float, float]:
     """One gradient update. Returns (total, value, policy) losses."""
-    states, policies, masks, values = zip(*batch)
+    states, policies, masks, pweights, values = zip(*batch)
 
-    state_t  = torch.tensor(np.array(states),   dtype=torch.float32, device=device)
-    policy_t = torch.tensor(np.array(policies), dtype=torch.float32, device=device)
-    value_t  = torch.tensor(np.array(values),   dtype=torch.float32, device=device).unsqueeze(1)
-    mask_t   = torch.tensor(np.array(masks),    dtype=torch.bool,    device=device)
+    state_t   = torch.tensor(np.array(states),   dtype=torch.float32, device=device)
+    policy_t  = torch.tensor(np.array(policies), dtype=torch.float32, device=device)
+    value_t   = torch.tensor(np.array(values),   dtype=torch.float32, device=device).unsqueeze(1)
+    mask_t    = torch.tensor(np.array(masks),    dtype=torch.bool,    device=device)
+    pweight_t = torch.tensor(np.array(pweights), dtype=torch.float32, device=device)
 
     pred_value, pred_logits = model(state_t)
     pred_logits = pred_logits.masked_fill(~mask_t, -1e9)
 
-    policy_loss = F.cross_entropy(pred_logits, policy_t)
+    # Mask out fast searches from policy loss
+    raw_policy_loss = F.cross_entropy(pred_logits, policy_t, reduction = "none")
+    policy_samples = pweight_t.sum().clamp(min=1.0)
+    policy_loss = (raw_policy_loss * pweight_t).sum() / policy_samples
+
     value_loss  = F.mse_loss(pred_value, value_t)
 
     loss = value_loss + policy_loss
@@ -196,7 +210,7 @@ def train(
         print(f"{'='*60}")
 
         for i in range(stage.iterations):
-            mcts = MCTS(model, simulations=stage.simulations, puct=config.puct)
+            mcts = MCTS(model)
             # ── Self-play ────────────────────────────────────────────────────
             model.eval()
             samples = self_play_game(
@@ -204,6 +218,7 @@ def train(
                 stage.state_factory,
                 stage.temperature,
                 stage.temperature_cutoff,
+                stage.simulations
             )
             buffer.add(samples) # type: ignore 
             global_iter += 1
@@ -231,7 +246,7 @@ def train(
                     print(
                         f"{prefix} | loss {total_loss/steps:.4f} "
                         f"(val {val_loss/steps:.4f}  pol {pol_loss/steps:.4f})"
-                        f" | game len {len(samples)} | winner {'british' if samples[0][3] == 1 else 'mysore'}"
+                        f" | game len {len(samples)} | winner {'british' if samples[0][-1] == 1 else 'mysore'}"
                     )
             else:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")
