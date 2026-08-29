@@ -134,8 +134,8 @@ class MCTS:
                 prior = (1-self.depsilon) * prior + self.depsilon * noise_dict[move]
             # blend dirichlet noise at select time
 
-            puct = 1 + np.log((node.visit_count + self.ipuct) / self.ipuct)
-            # dynamic puct with base 1 and ipuct specified
+            puct = 1.25 + np.log((node.visit_count + self.ipuct) / self.ipuct)
+            # dynamic puct with base 1.25 and ipuct specified
             exploration = puct * prior * (np.sqrt(node.visit_count) / (1 + child.visit_count))
             score = exploitation + exploration
             if score > best_score:

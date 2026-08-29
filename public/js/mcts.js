@@ -205,7 +205,7 @@
           prior = (1 - this.depsilon) * prior + this.depsilon * noiseDict.get(move);
         }
 
-        const puct = 1.0 + Math.log((node.visit_count + this.ipuct) / this.ipuct);
+        const puct = 1.25 + Math.log((node.visit_count + this.ipuct) / this.ipuct);
 
         const exploration = puct * prior * (Math.sqrt(node.visit_count) / (1 + child.visit_count));
         const score = exploitation + exploration;
