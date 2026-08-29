@@ -950,7 +950,7 @@ function setEvalBar(score, totalSims) {
 
   if (!bar || !scoreLabel) return;
 
-  const mysorePercentage = Math.max(5, Math.min(95, ((1 - score) / 2) * 100));
+  const mysorePercentage = (1 - score) / 2 * 100;
   bar.style.width = `${mysorePercentage}%`;
 
   const sign = score > 0 ? '+' : '';
@@ -958,8 +958,8 @@ function setEvalBar(score, totalSims) {
   if (simsLabel) simsLabel.textContent = `Engine: ${totalSims} sims (Wasm)`;
 
   if (winrateLabel) {
-    if (score > 0.3) winrateLabel.textContent = `British Advantage (${(100 - mysorePercentage).toFixed(0)}%)`;
-    else if (score < -0.3) winrateLabel.textContent = `Mysore Advantage (${mysorePercentage.toFixed(0)}%)`;
+    if (score > 0.05) winrateLabel.textContent = `British Win (${(100 - mysorePercentage).toFixed(0)}%)`;
+    else if (score < -0.05) winrateLabel.textContent = `Mysore Win (${mysorePercentage.toFixed(0)}%)`;
     else winrateLabel.textContent = `Even Position`;
   }
 }
@@ -1484,9 +1484,8 @@ function renderBattleMarker(uiState) {
   const mx = (attNode.x + defNode.x) / 2;
   const my = (attNode.y + defNode.y) / 2;
 
-  const netVal = uiState.net_strength !== undefined ? uiState.net_strength : (uiState.card_strength || 0);
-  const sign = netVal > 0 ? '+' : '';
-  const textStr = `${sign}${netVal}`;
+  const netVal = Math.abs(uiState.net_strength);
+  const textStr = `${netVal}`;
 
   const styles = getComputedStyle(document.body);
   const britishRed = styles.getPropertyValue('--british-red').trim();
@@ -1501,7 +1500,7 @@ function renderBattleMarker(uiState) {
   const icon = document.createElementNS(SVG_NS, 'text');
   icon.setAttribute('text-anchor', 'middle');
   icon.setAttribute('dominant-baseline', 'central'); // Precise vertical centering
-  icon.setAttribute('font-size', '40'); // Larger icon as the text is centered *on* it
+  icon.setAttribute('font-size', '42'); // Larger icon as the text is centered *on* it
   // Apply minor drop shadow filter defined in svg defs for overall pop
   icon.setAttribute('filter', 'url(#nshadow)'); 
   icon.textContent = '⚔️';
@@ -1513,7 +1512,7 @@ function renderBattleMarker(uiState) {
     t.setAttribute('dominant-baseline', 'central'); // Align with icon center
     t.setAttribute('font-family', 'Cinzel, serif'); // Keeping historic font
     t.setAttribute('font-size', '28');
-    t.setAttribute('font-weight', '900');
+    t.setAttribute('font-weight', '700');
 
     if (isHalo) {
       t.setAttribute('stroke', '#1a1208'); 
