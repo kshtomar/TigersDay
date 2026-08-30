@@ -52,7 +52,6 @@ class TrainerConfig:
     # ── Training ──────────────────────────────────────────────────────────────
     # How many gradient steps to take after each self-play game.
     train_steps_per_iter: int = 1
-    puct: float = 1.5
 
     # ── Checkpointing ─────────────────────────────────────────────────────────
     checkpoint_dir: str = "checkpoints"

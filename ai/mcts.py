@@ -1,3 +1,4 @@
+import weakref
 import numpy as np
 import random
 from game.constants import *
@@ -7,7 +8,7 @@ import game.engine as Engine
 class Node:
     def __init__(self, state, parent = None, move = None, prior = 0.0):
         self.state = state
-        self.parent = parent
+        self._parent = weakref.ref(parent) if parent is not None else None
         # move to get here
         self.move = move
         self.children = {}
@@ -30,6 +31,19 @@ class Node:
     @property
     def is_luck(self):
         return self.state.is_luck
+
+    @property
+    def parent(self):
+        """Cleanly dereferences the weakref. Returns the Node or None."""
+        return self._parent() if self._parent is not None else None
+
+    @parent.setter
+    def parent(self, value):
+        """Allows assigning `node.parent = None` or `node.parent = new_node` directly."""
+        if value is None:
+            self._parent = None
+        else:
+            self._parent = weakref.ref(value)
     
     # mask and normalize before this
     def expand_decision(self, action_priors):
