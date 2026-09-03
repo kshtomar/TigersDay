@@ -370,6 +370,45 @@ body {
     margin-top: 2px;
 }
 
+#tutorial-drawer {
+    width: 440px;
+    max-width: min(440px, calc(100vw - 32px));
+    max-height: calc(100vh - 65px);
+}
+
+.rule-highlight {
+    background: rgba(212, 160, 48, 0.12);
+    border-left: 2px solid var(--mysore-gold);
+    padding: 3px 6px;
+    font-size: 0.76rem !important;
+    color: #e8d8b8 !important;
+    border-radius: 2px;
+    margin: 2px 0;
+}
+
+.card-codex-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.codex-faction-title {
+    font-family: var(--font-heading);
+    font-size: 0.74rem;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-top: 4px;
+}
+
+.codex-faction-title.mysore-color {
+    color: #8fe08f;
+}
+
+.codex-faction-title.british-color {
+    color: #e58f8f;
+}
+
 /* Settings Specific Layout */
 .settings-section {
     margin-bottom: 10px;
