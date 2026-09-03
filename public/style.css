@@ -51,6 +51,12 @@
     background: #6e522e;
 }
 
+html {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden !important;
+}
+
 body {
     background: #0f0d0a;
     background-image: 
@@ -58,14 +64,17 @@ body {
         repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.2) 40px, rgba(0,0,0,0.2) 80px);
     color: var(--parchment);
     height: 100vh;
+    height: 100dvh;
     max-height: 100vh;
-    overflow: hidden;
+    max-height: 100dvh;
+    overflow: hidden !important;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 6px 14px 10px;
+    padding: 3px 6px 4px;
     font-family: var(--font-body);
     user-select: none;
+    box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -73,14 +82,16 @@ body {
    ========================================================================== */
 .app-header {
     width: 100%;
-    max-width: 1400px;
-    flex: 0 0 auto;
+    max-width: min(1800px, 98vw);
+    height: 32px;
+    flex: 0 0 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 10px;
-    margin-bottom: 4px;
+    padding: 2px 8px;
+    margin-bottom: 3px;
     border-bottom: 1px solid rgba(122, 92, 46, 0.3);
+    box-sizing: border-box;
 }
 
 .header-branding {
@@ -501,17 +512,18 @@ body {
    ========================================================================== */
 .turn-header {
     width: 100%;
-    max-width: 1400px;
+    max-width: min(1800px, 98vw);
     flex: 0 0 auto;
     border-radius: 4px;
-    margin-bottom: 6px;
-    padding: 5px 12px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    margin-bottom: 3px;
+    padding: 3px 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
     position: relative;
+    box-sizing: border-box;
     overflow: hidden;
 }
 
@@ -718,40 +730,42 @@ body {
 }
 
 /* ==========================================================================
-   4. MAIN GAMEPLAY CONTAINER (Viewport Scaled)
+   4. MAIN GAMEPLAY CONTAINER (Zero-Scroll & Adaptive Multi-Device)
    ========================================================================== */
 .game-container {
     flex: 1 1 auto;
     min-height: 0;
-    display: flex;
-    gap: 12px;
     width: 100%;
-    max-width: 1400px;
-    align-items: stretch;
-    justify-content: center;
-    overflow: hidden;
+    max-width: min(1800px, 98vw);
+    box-sizing: border-box;
+    overflow: hidden !important;
+    margin: 0 auto;
 }
 
 /* Side Card Decks Columns */
 .faction-column {
-    flex: 0 0 300px;
     height: 100%;
     max-height: 100%;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
+    margin-top: 0;
+    box-sizing: border-box;
 }
 
 .faction-column-header {
     flex: 0 0 auto;
     background: #1a1510;
-    border: 1px solid var(--border);
-    border-radius: 3px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
     padding: 4px 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    box-sizing: border-box;
 }
 
 .mysore-column .faction-column-header {
@@ -771,14 +785,17 @@ body {
 }
 
 .faction-emblem {
-    font-size: 3rem;
+    font-size: 1.6rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
 }
 
 .faction-text h3 {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: 1.05rem;
     letter-spacing: 0.08em;
-    line-height: 1.2;
+    line-height: 1.1;
+    margin: 0;
 }
 
 .mysore-column .faction-text h3 { color: #8fe08f; }
@@ -787,16 +804,20 @@ body {
 .faction-motto {
     font-family: var(--font-historic);
     font-style: italic;
-    font-size: 1rem;
+    font-size: 0.72rem;
     color: #a89470;
+    display: block;
+    line-height: 1;
+    margin-top: 1px;
 }
 
 .card-count-badge {
     font-family: var(--font-heading);
-    font-size: 0.62rem;
+    font-size: 0.65rem;
+    font-weight: 700;
     background: #2a2014;
     border: 1px solid var(--border);
-    padding: 1px 5px;
+    padding: 1px 6px;
     border-radius: 8px;
     color: var(--parchment);
 }
@@ -804,27 +825,22 @@ body {
 .cards-deck {
     flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding-right: 2px;
+    box-sizing: border-box;
 }
 
 /* ==========================================================================
-   5. PLAYER CARDS (Clean Minimalist: Only Name, Strength & Description)
+   5. PLAYER CARDS (Tactile Deccan Parchment with Wax Seals)
    ========================================================================== */
 .player-card {
     background: var(--parchment);
     border: 1.5px solid var(--border);
     border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 0 10px rgba(138, 100, 40, 0.2);
-    padding: 6px 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 0 8px rgba(138, 100, 40, 0.2);
     cursor: pointer;
     position: relative;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease, filter 0.2s ease;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease, filter 0.2s ease;
     overflow: hidden;
-    flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .mysore-card {
@@ -836,29 +852,26 @@ body {
 }
 
 .player-card:hover:not(.card-activated):not(.used) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.8), 0 0 8px rgba(220, 180, 80, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.8), 0 0 6px rgba(220, 180, 80, 0.4);
 }
 
-/* Wax Seal Strength Badge (Single-Click Interaction) */
+/* Wax Seal Strength Badge */
 .card-strength-seal {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 30px;
-    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-heading);
-    font-size: 1.25rem;
     font-weight: 900;
     color: #fff;
     cursor: pointer;
     z-index: 5;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.4);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.4);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    user-select: none;
+    touch-action: manipulation;
 }
 
 .mysore-card .card-strength-seal {
@@ -872,8 +885,8 @@ body {
 }
 
 .card-strength-seal:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 10px var(--gold-glow), 0 2px 6px rgba(0,0,0,0.8);
+    transform: scale(1.15);
+    box-shadow: 0 0 8px var(--gold-glow), 0 2px 5px rgba(0,0,0,0.8);
 }
 
 .card-strength-seal:active {
@@ -883,20 +896,14 @@ body {
 .card-header-row {
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding-right: 24px;
-    margin-bottom: 2px;
 }
 
 .card-icon {
-    font-size: 1.5rem;
     line-height: 1;
 }
 
 .card-name {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
-    font-weight: 700;
     letter-spacing: 0.02em;
     color: var(--ink);
     line-height: 1.1;
@@ -904,36 +911,34 @@ body {
 
 .card-desc {
     font-family: var(--font-body);
-    font-size: 1rem;
     font-style: italic;
     color: #523a18;
-    line-height: 1.2;
 }
 
-/* Activated / Used / Greyed-out Card State */
+/* Activated / Used Card State */
 .player-card.card-activated,
 .player-card.used {
     filter: grayscale(0.95) brightness(0.65);
-    opacity: 0.45;
+    opacity: 0.4;
     cursor: pointer;
     transform: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
-/* Staged For Trade (Unactivated Card Selected) */
+/* Staged For Trade */
 .player-card.staged-trade {
     border: 2px solid var(--mysore-gold) !important;
-    box-shadow: 0 0 14px var(--gold-glow), 0 3px 10px rgba(0,0,0,0.8) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 0 12px var(--gold-glow), 0 2px 8px rgba(0,0,0,0.8) !important;
+    transform: translateY(-1px);
     animation: goldPulse 1.5s infinite;
 }
 
-/* Valid Trade Target (Greyed-out card that can be reclaimed) */
+/* Valid Trade Target */
 .player-card.valid-trade-target {
     filter: grayscale(0.2) brightness(0.9) !important;
     opacity: 0.9 !important;
     border: 2px dashed #44cc44 !important;
-    box-shadow: 0 0 12px rgba(68, 204, 68, 0.7) !important;
+    box-shadow: 0 0 10px rgba(68, 204, 68, 0.7) !important;
     cursor: pointer !important;
     animation: tradeTargetGlow 1.2s infinite alternate;
 }
@@ -941,8 +946,8 @@ body {
 /* Card in Active Targeting Mode */
 .player-card.targeting-active {
     border: 2px solid #55ddff !important;
-    box-shadow: 0 0 16px rgba(85, 221, 255, 0.8), 0 3px 10px rgba(0,0,0,0.9) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 0 14px rgba(85, 221, 255, 0.8), 0 2px 8px rgba(0,0,0,0.9) !important;
+    transform: translateY(-1px);
 }
 
 /* Intel panels under card decks */
@@ -951,27 +956,27 @@ body {
     background: #17130e;
     border: 1px solid var(--border);
     border-radius: 3px;
-    padding: 5px 8px;
-    font-size: 1.25rem;
-    line-height: 1.3;
+    padding: 4px 6px;
+    font-size: 0.74rem;
+    line-height: 1.25;
     color: #a89470;
 }
 
 .intel-header {
     font-family: var(--font-heading);
-    font-size: 1rem;
+    font-size: 0.62rem;
     letter-spacing: 0.08em;
     color: var(--mysore-gold);
     border-bottom: 1px solid rgba(122, 92, 46, 0.4);
     padding-bottom: 2px;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 .legend-micro {
     display: flex;
     gap: 8px;
-    margin-top: 4px;
-    font-size: 1rem;
+    margin-top: 2px;
+    font-size: 0.7rem;
 }
 
 .legend-micro span {
@@ -985,28 +990,30 @@ body {
    ========================================================================== */
 .eval-panel {
     width: 100%;
+    max-width: 580px;
     flex: 0 0 auto;
     background: #17130e;
     border: 1.5px solid var(--border);
     border-radius: 4px;
-    padding: 5px 10px;
-    margin-bottom: 6px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.6);
+    padding: 4px 8px;
+    margin-top: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    animation: fadeIn 0.3s ease;
+    gap: 3px;
+    animation: fadeIn 0.25s ease;
+    box-sizing: border-box;
 }
 
 .eval-bar-container {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
 }
 
 .eval-bar-track {
     width: 100%;
-    height: 18px;
+    height: 14px;
     background: var(--british-red);
     position: relative;
     border-radius: 2px;
@@ -1017,7 +1024,7 @@ body {
 .eval-bar-mysore {
     height: 100%;
     background: var(--mysore-green);
-    transition: width 0.4s ease-out;
+    transition: width 0.35s ease-out;
 }
 
 .eval-bar-score {
@@ -1026,7 +1033,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: var(--font-heading);
-    font-size: 0.76rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: #ffffff;
     text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 2px #000;
@@ -1037,7 +1044,7 @@ body {
     display: flex;
     justify-content: space-between;
     font-family: var(--font-heading);
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     letter-spacing: 0.05em;
     color: #a89470;
 }
@@ -1047,7 +1054,7 @@ body {
     flex-direction: column;
     gap: 2px;
     border-top: 1px solid rgba(122, 92, 46, 0.4);
-    padding-top: 4px;
+    padding-top: 3px;
 }
 
 .engine-line {
@@ -1057,20 +1064,16 @@ body {
     padding: 1px 3px;
     border-radius: 2px;
     cursor: default;
-    font-size: 0.72rem;
-}
-
-.engine-line:hover {
-    background: rgba(232, 217, 176, 0.08);
+    font-size: 0.68rem;
 }
 
 .engine-eval-square {
     font-family: var(--font-heading);
-    font-size: 0.64rem;
+    font-size: 0.62rem;
     font-weight: 700;
-    padding: 1px 5px;
+    padding: 1px 4px;
     border-radius: 2px;
-    min-width: 34px;
+    min-width: 30px;
     text-align: center;
 }
 
@@ -1098,42 +1101,40 @@ body {
 }
 
 /* ==========================================================================
-   7. BOARD CARD & SVG MAP (RESPONSIVE VIEWPORT SCALING)
+   7. BOARD CARD & SVG MAP (STRICT ASPECT-RATIO LOCK & ZERO LETTERBOX)
    ========================================================================== */
 .board-section {
-    flex: 1 1 0;
-    min-height: 0;
-    min-width: 0;
-    height: 100%;
-    max-height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    min-height: 0;
+    min-width: 0;
+    position: relative;
+    box-sizing: border-box;
 }
 
 .board-card {
-    flex: 1 1 0;
-    min-height: 0;
-    max-height: 100%;
+    flex: 0 0 auto;
     aspect-ratio: 760 / 880;
     max-width: 100%;
+    max-height: 100%;
     border: 2px solid var(--border);
     border-radius: 4px;
-    box-shadow: 0 0 0 3px #261b0e, 0 8px 30px rgba(0,0,0,0.85);
+    box-shadow: 0 0 0 2px #261b0e, 0 8px 24px rgba(0,0,0,0.85);
     overflow: hidden;
-    background: #5a9ab8;
+    background: #14100c; /* Antique dark wood frame background, NEVER ocean blue! */
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 svg#board {
     display: block;
     width: 100%;
     height: 100%;
-    max-height: 100%;
-    object-fit: contain;
 }
 
 /* Node Groups & Interactive Styling */
@@ -1167,36 +1168,38 @@ svg#board {
    ========================================================================== */
 .debug-move-console {
     width: 100%;
+    max-width: 580px;
     background: #14100c;
     border: 1px solid var(--border);
     border-radius: 3px;
-    margin-top: 6px;
-    padding: 6px 10px;
+    margin-top: 4px;
+    padding: 4px 8px;
+    box-sizing: border-box;
 }
 
 .debug-console-header {
     display: flex;
     justify-content: space-between;
     font-family: var(--font-heading);
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     color: var(--mysore-gold);
     border-bottom: 1px solid rgba(122, 92, 46, 0.4);
-    padding-bottom: 3px;
-    margin-bottom: 4px;
+    padding-bottom: 2px;
+    margin-bottom: 3px;
 }
 
 .debug-move-list {
-    max-height: 100px;
+    max-height: 80px;
     overflow-y: auto;
     font-family: monospace;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: #d4c090;
-    line-height: 1.4;
+    line-height: 1.35;
 }
 
 .move-entry {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     padding: 2px 4px;
     cursor: pointer;
     border-radius: 2px;
@@ -1214,9 +1217,9 @@ svg#board {
     background: #efe0bc;
     border: 1px solid #7a5c2e;
     border-radius: 3px;
-    padding: 5px 8px;
+    padding: 4px 7px;
     font-family: var(--font-body);
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     color: var(--ink);
     pointer-events: none;
     opacity: 0;
@@ -1232,19 +1235,19 @@ svg#board {
 
 .tooltip b {
     font-family: var(--font-heading);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     display: block;
     margin-bottom: 2px;
 }
 
 .toast-container {
     position: fixed;
-    bottom: 18px;
+    bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     z-index: 3000;
     pointer-events: none;
 }
@@ -1254,9 +1257,9 @@ svg#board {
     border: 1.5px solid var(--mysore-gold);
     color: var(--parchment);
     font-family: var(--font-heading);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     letter-spacing: 0.05em;
-    padding: 6px 14px;
+    padding: 5px 12px;
     border-radius: 4px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.85);
     animation: toastIn 0.25s ease-out, toastOut 0.25s ease-in 2.75s forwards;
@@ -1278,21 +1281,9 @@ svg#board {
    10. KEYFRAME ANIMATIONS & HELPERS
    ========================================================================== */
 @keyframes targetPulse {
-    0% {
-        r: 16px;
-        opacity: 0.9;
-        stroke-width: 2.5px;
-    }
-    50% {
-        r: 28px;
-        opacity: 0.35;
-        stroke-width: 4px;
-    }
-    100% {
-        r: 16px;
-        opacity: 0.9;
-        stroke-width: 2.5px;
-    }
+    0% { r: 16px; opacity: 0.9; stroke-width: 2.5px; }
+    50% { r: 28px; opacity: 0.35; stroke-width: 4px; }
+    100% { r: 16px; opacity: 0.9; stroke-width: 2.5px; }
 }
 
 @keyframes goldPulse {
@@ -1326,24 +1317,21 @@ svg#board {
     to { opacity: 0; transform: translateY(-10px); }
 }
 
-
 .hidden {
     display: none !important;
 }
 
-/* ==========================================================================
-   GAME MODE & P2P MULTIPLAYER STYLES
-   ========================================================================== */
+/* GAME MODE & P2P MULTIPLAYER STYLES */
 .mode-select {
     width: 100%;
-    padding: 8px 10px;
+    padding: 6px 8px;
     background: #181410;
     border: 1px solid var(--border);
     color: var(--parchment);
     font-family: var(--font-body);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     border-radius: 4px;
-    margin-top: 6px;
+    margin-top: 4px;
     cursor: pointer;
 }
 
@@ -1356,8 +1344,8 @@ svg#board {
     background: rgba(0, 0, 0, 0.25);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 12px;
-    margin-top: 10px;
+    padding: 10px;
+    margin-top: 8px;
 }
 
 .room-code-display {
@@ -1366,14 +1354,14 @@ svg#board {
     justify-content: space-between;
     background: #120e0b;
     border: 1px dashed #d4a030;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 4px;
-    margin: 8px 0;
+    margin: 6px 0;
 }
 
 .room-code-text {
     font-family: monospace;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     color: #f0c868;
@@ -1382,11 +1370,11 @@ svg#board {
 .p2p-status-pill {
     display: inline-block;
     font-family: var(--font-heading);
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     letter-spacing: 0.08em;
-    padding: 3px 8px;
+    padding: 2px 7px;
     border-radius: 10px;
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 .p2p-status-pill.hosting {
@@ -1407,39 +1395,1028 @@ svg#board {
     border: 1px solid #666;
 }
 
+/* ==========================================================================
+   11. HISTORICAL REVIEW BANNER & CHESS.COM NOTATION PANEL
+   ========================================================================== */
+
+/* Historical Review Banner (Pinned above board during read-only inspection) */
+.historical-review-banner {
+    width: 100%;
+    max-width: 760px;
+    background: linear-gradient(135deg, #3d1c08 0%, #1c0e04 100%);
+    border: 1.5px solid var(--mysore-gold);
+    border-radius: 4px;
+    padding: 3px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.8), 0 0 10px var(--gold-glow);
+    margin-bottom: 2px;
+    box-sizing: border-box;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.review-banner-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-heading);
+    font-size: 0.76rem;
+    color: #ffe090;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.review-icon {
+    font-size: 0.95rem;
+}
+
+.review-badge {
+    background: #c0281a;
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+.btn-return-live {
+    background: linear-gradient(135deg, #c0281a 0%, #8b180e 100%);
+    border: 1px solid #ff7766;
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.btn-return-live:hover {
+    transform: scale(1.04);
+    filter: brightness(1.15);
+}
+
+/* Right-Column Segmented Tab Switcher (Laptops & Tablets) */
+.right-col-tabs-bar {
+    display: none;
+    width: 100%;
+    gap: 4px;
+    margin-bottom: 4px;
+    flex: 0 0 auto;
+}
+
+.right-col-tab-btn {
+    flex: 1;
+    padding: 3px 6px;
+    min-height: 26px;
+    background: #19140e;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: var(--font-heading);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #a89470;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.right-col-tab-btn.active {
+    background: linear-gradient(180deg, #2c2014 0%, #1a140d 100%);
+    border-color: var(--mysore-gold);
+    color: #ffe090;
+    box-shadow: 0 0 6px var(--gold-glow);
+}
+
+.british-hand-container {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* CHESS.COM STYLE NOTATION PANEL */
+.notation-panel {
+    background: #16120d;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+}
+
+.notation-tabs-header {
+    display: flex;
+    gap: 4px;
+    padding: 4px 6px;
+    background: #100d09;
+    border-bottom: 1px solid rgba(122, 92, 46, 0.4);
+    flex: 0 0 auto;
+}
+
+.notation-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 3px 8px;
+    min-height: 26px;
+    background: #19140e;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: var(--font-heading);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #a89470;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.notation-tab-btn.active {
+    background: linear-gradient(180deg, #2c2014 0%, #1a140d 100%);
+    border-color: var(--mysore-gold);
+    color: #ffe090;
+    box-shadow: 0 0 6px var(--gold-glow);
+}
+
+.notation-badge {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 1px 5px;
+    border-radius: 8px;
+    font-size: 0.6rem;
+}
+
+.notation-tab-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 5px 6px;
+    gap: 4px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.notation-phase-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 6px;
+    background: #110e0a;
+    border-radius: 3px;
+    border-bottom: 1px solid rgba(122, 92, 46, 0.25);
+    flex: 0 0 auto;
+}
+
+.notation-phase-name {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #d4c090;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notation-eval-tag {
+    font-family: monospace;
+    font-size: 0.65rem;
+    color: #a89470;
+    background: #241d14;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+/* Last Processed Action Box */
+.last-action-box {
+    background: #19140e;
+    border: 1px solid #7a5c2e;
+    border-radius: 3px;
+    padding: 4px 6px;
+    flex: 0 0 auto;
+}
+
+.last-action-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.last-action-label {
+    font-family: var(--font-heading);
+    font-size: 0.6rem;
+    color: var(--mysore-gold);
+    letter-spacing: 0.08em;
+    font-weight: 700;
+}
+
+.luck-pill {
+    background: rgba(220, 50, 40, 0.3);
+    border: 1px solid #e03828;
+    color: #ff9999;
+    font-family: var(--font-heading);
+    font-size: 0.58rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.last-action-desc {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: #f0e0c0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.last-action-luck-detail {
+    font-size: 0.68rem;
+    color: #ffaa66;
+    font-weight: 600;
+    margin-top: 2px;
+    line-height: 1.15;
+}
+
+/* Notation Table & Rows */
+.notation-table-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: #130f0b;
+    border: 1px solid rgba(122, 92, 46, 0.3);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.notation-table-header {
+    display: grid;
+    grid-template-columns: 28px 1fr 1fr;
+    gap: 4px;
+    padding: 3px 6px;
+    background: #1c1610;
+    border-bottom: 1px solid rgba(122, 92, 46, 0.4);
+    font-family: var(--font-heading);
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: #a89470;
+    flex: 0 0 auto;
+}
+
+.col-num {
+    color: #7a6344;
+    font-size: 0.62rem;
+}
+
+.col-faction {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.moves-history-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.notation-empty-msg {
+    padding: 14px 8px;
+    text-align: center;
+    font-style: italic;
+    font-size: 0.72rem;
+    color: #7a6344;
+}
+
+.notation-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 1fr;
+    gap: 4px;
+    padding: 2px 6px;
+    align-items: center;
+}
+
+.notation-row.even-row {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.notation-cell {
+    padding: 2px 5px;
+    border-radius: 2px;
+    font-family: monospace;
+    font-size: 0.74rem;
+    color: #e5d8b8;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notation-cell:hover {
+    background: rgba(212, 160, 48, 0.2);
+    color: #fff;
+}
+
+.notation-cell.active-step {
+    background: #d4a030 !important;
+    color: #110e0a !important;
+    font-weight: 800;
+    box-shadow: 0 0 8px var(--gold-glow);
+}
+
+.notation-cell.empty-cell {
+    color: #554433;
+    cursor: default;
+}
+
+.luck-badge {
+    font-size: 0.72rem;
+    margin-left: 2px;
+}
+
+/* History Stepping Controls (|< < > >|) */
+.history-stepping-bar {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    padding: 3px 0;
+    background: #110e0a;
+    border-top: 1px solid rgba(122, 92, 46, 0.3);
+    flex: 0 0 auto;
+}
+
+.step-btn {
+    flex: 1;
+    min-height: 26px;
+    background: #1b150e;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: #d4c090;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.step-btn:hover:not(:disabled) {
+    background: #322517;
+    border-color: var(--mysore-gold);
+    color: #fff;
+}
+
+.step-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.step-btn.live-active {
+    background: linear-gradient(135deg, #c0281a 0%, #8b180e 100%);
+    border-color: #ff7766;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(192, 40, 26, 0.6);
+}
+
+/* Bottom Game Action Bar */
+.notation-actions-bar {
+    display: flex;
+    gap: 6px;
+    padding-top: 2px;
+    flex: 0 0 auto;
+}
+
+.notation-action-btn {
+    flex: 1;
+    min-height: 26px;
+    border-radius: 3px;
+    font-family: var(--font-heading);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+    border: 1px solid var(--border);
+}
+
+.draw-btn {
+    background: #211b14;
+    color: #dcd0b0;
+    border-color: #7a5c2e;
+}
+
+.draw-btn:hover {
+    background: #36291a;
+    border-color: var(--mysore-gold);
+    color: #fff;
+}
+
+.resign-btn {
+    background: #281210;
+    color: #ff9999;
+    border-color: #8b342a;
+}
+
+.resign-btn:hover {
+    background: #461914;
+    border-color: #ff5544;
+    color: #fff;
+}
+
+.info-content-card {
+    background: #14100c;
+    border: 1px solid rgba(122, 92, 46, 0.3);
+    border-radius: 3px;
+    padding: 8px;
+    font-size: 0.76rem;
+    color: #d4c090;
+    line-height: 1.35;
+}
+
+.info-content-card h4 {
+    font-family: var(--font-heading);
+    color: var(--mysore-gold);
+    margin: 0 0 6px;
+    font-size: 0.85rem;
+}
+
+.info-content-card ul {
+    margin: 4px 0 8px 16px;
+    padding: 0;
+}
 
 /* ==========================================================================
-   11. RESPONSIVE FALLBACKS (Small screens / Mobile)
+   12. DEDICATED 4-TIER MULTI-DEVICE RESPONSIVE SYSTEM
+   Strict Zero-Scroll Architecture Across All Form Factors
    ========================================================================== */
-@media (max-width: 1000px), (max-height: 520px) {
-    body {
-        height: auto;
-        min-height: 100vh;
-        max-height: none;
-        overflow-y: auto;
+
+/* Mobile Tab Switcher Defaults */
+.mobile-faction-tabs {
+    display: none;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   TIER 1: LARGE MONITORS (>= 1400px Wide)
+   Dedicated 4-Column Layout: Mysore | Board | British | Notation Panel!
+   ────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 1400px) {
+    .app-header,
+    .turn-header,
+    .game-container {
+        max-width: min(1920px, 96vw);
     }
     .game-container {
-        flex-wrap: wrap;
-        height: auto;
-        max-height: none;
-        overflow: visible;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 12px;
+        height: calc(100dvh - 84px);
+        max-height: calc(100dvh - 84px);
+    }
+    .faction-column.mysore-column {
+        flex: 0 0 270px;
+        height: 100%;
+        max-height: 100%;
+        display: flex !important;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .faction-column.british-column {
+        flex: 0 0 270px;
+        height: 100%;
+        max-height: 100%;
+        display: flex !important;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .british-hand-container {
+        display: flex !important;
+    }
+    .right-col-tabs-bar {
+        display: none !important;
+    }
+    .notation-panel {
+        flex: 0 0 290px;
+        height: 100%;
+        max-height: 100%;
+        display: flex !important;
+        flex-direction: column;
     }
     .board-section {
-        order: -1;
-        flex: 1 1 100%;
-        height: auto;
-        max-height: none;
+        flex: 1 1 auto;
+        height: 100%;
+        max-height: 100%;
+        justify-content: flex-start;
     }
-    .board-card {
-        height: auto;
-        max-height: 75vh;
+    .faction-column-header {
+        height: 44px;
+        padding: 5px 10px;
     }
-    .faction-column {
-        flex: 1 1 260px;
-        height: auto;
-        max-height: none;
+    .faction-emblem {
+        font-size: 2rem;
+    }
+    .faction-text h3 {
+        font-size: 1.25rem;
     }
     .cards-deck {
-        max-height: 380px;
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow: hidden;
+    }
+    .player-card {
+        padding: 6px 8px;
+    }
+    .card-name {
+        font-size: 1rem;
+    }
+    .card-desc {
+        font-size: 0.82rem;
+        line-height: 1.2;
+    }
+    .card-strength-seal {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+        top: 5px;
+        right: 6px;
+    }
+    .mobile-faction-tabs {
+        display: none !important;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   TIER 2: COMPUTERS & LAPTOPS (1024px to 1399px Wide)
+   3-Column Layout with Right Column Smart Switcher (British Hand | Notation)
+   ────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 1024px) and (max-width: 1399px) {
+    .game-container {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 10px;
+        height: calc(100dvh - 82px);
+        max-height: calc(100dvh - 82px);
+    }
+    .mysore-column {
+        flex: 0 0 clamp(230px, 19vw, 260px);
+        height: 100%;
+        max-height: 100%;
+        display: flex !important;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .british-column {
+        flex: 0 0 clamp(250px, 21vw, 290px);
+        height: 100%;
+        max-height: 100%;
+        display: flex !important;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .right-col-tabs-bar {
+        display: flex !important;
+    }
+    .notation-panel {
+        display: none;
+    }
+    .notation-panel.active-in-right-col {
+        display: flex !important;
+        flex: 0 0 clamp(250px, 21vw, 290px);
+        height: 100%;
+        max-height: 100%;
+    }
+    .faction-column-header {
+        height: 38px;
+        padding: 3px 6px;
+    }
+    .faction-emblem {
+        font-size: 1.5rem;
+    }
+    .faction-text h3 {
+        font-size: 1.05rem;
+    }
+    .cards-deck {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow: hidden;
+    }
+    .player-card {
+        padding: 4px 6px;
+    }
+    .card-header-row {
+        gap: 4px;
+        padding-right: 24px;
+        margin-bottom: 1px;
+    }
+    .card-icon {
+        font-size: 1.05rem;
+    }
+    .card-name {
+        font-size: 0.88rem;
+    }
+    .card-desc {
+        font-size: 0.72rem;
+        line-height: 1.15;
+    }
+    .card-strength-seal {
+        width: 24px;
+        height: 24px;
+        font-size: 0.88rem;
+        top: 3px;
+        right: 4px;
+    }
+    .faction-intel-panel {
+        padding: 3px 6px;
+        font-size: 0.72rem;
+    }
+    .board-section {
+        flex: 1 1 auto;
+        height: 100%;
+        max-height: 100%;
+        justify-content: flex-start;
+    }
+    .mobile-faction-tabs {
+        display: none !important;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   TIER 3: IPAD & TABLET SCREENS (768px to 1023px Wide, Portrait & Square Screens)
+   Top Map + Bottom Dual Faction Consoles Side-by-Side: Zero Scroll!
+   ────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .game-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr auto;
+        grid-template-areas:
+            "board board"
+            "mysore british";
+        gap: 6px;
+        height: calc(100dvh - 80px);
+        max-height: calc(100dvh - 80px);
+        align-content: stretch;
+    }
+    .board-section {
+        grid-area: board;
+        height: 100%;
+        max-height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .mysore-column {
+        grid-area: mysore;
+        height: 185px;
+        max-height: 185px;
+        display: flex !important;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+    }
+    .british-column {
+        grid-area: british;
+        height: 185px;
+        max-height: 185px;
+        display: flex !important;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+    }
+    .right-col-tabs-bar {
+        display: flex !important;
+    }
+    .notation-panel {
+        display: none;
+    }
+    .notation-panel.active-in-right-col {
+        display: flex !important;
+        grid-area: british;
+        height: 185px;
+        max-height: 185px;
+    }
+    .faction-column-header {
+        height: 30px;
+        padding: 2px 6px;
+    }
+    .faction-emblem {
+        font-size: 1.25rem;
+    }
+    .faction-text h3 {
+        font-size: 0.92rem;
+    }
+    .faction-motto {
+        display: none;
+    }
+    .cards-deck {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 4px;
+        overflow: hidden;
+    }
+    .player-card {
+        padding: 3px 5px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+    .card-strength-seal {
+        width: 22px;
+        height: 22px;
+        font-size: 0.82rem;
+        top: 2px;
+        right: 3px;
+    }
+    .card-header-row {
+        gap: 3px;
+        padding-right: 22px;
+        margin-bottom: 1px;
+    }
+    .card-icon {
+        font-size: 0.95rem;
+    }
+    .card-name {
+        font-size: 0.74rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .card-desc {
+        font-size: 0.65rem;
+        line-height: 1.15;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .faction-intel-panel {
+        display: none;
+    }
+    .mobile-faction-tabs {
+        display: none !important;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   TIER 4: MOBILE PHONES (< 768px Wide)
+   Top Map + 3-Way Tabs + 144px Console Deck / Notation: Strict Zero Scroll!
+   ────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+    body {
+        padding: 2px 4px;
+    }
+    .app-header {
+        height: 28px;
+        flex: 0 0 28px;
+        padding: 2px 4px;
+        margin-bottom: 2px;
+    }
+    .header-branding h1 {
+        font-size: 0.95rem;
+    }
+    .header-subtitle {
+        display: none;
+    }
+    .pill {
+        font-size: 0.58rem;
+        padding: 1px 5px;
+    }
+    .icon-btn {
+        width: 24px;
+        height: 24px;
+    }
+    .turn-header {
+        padding: 2px 6px;
+        margin-bottom: 2px;
+    }
+    .turn-header-main {
+        gap: 4px;
+    }
+    .faction-icon {
+        font-size: 1.1rem;
+    }
+    .turn-counter {
+        font-size: 0.55rem;
+    }
+    .turn-phase-title {
+        font-size: 0.78rem;
+    }
+    .turn-instruction {
+        display: none; /* Protect vertical space */
+    }
+    .turn-header-actions {
+        gap: 4px;
+    }
+    .header-action-btn {
+        min-height: 26px;
+        padding: 2px 7px;
+        font-size: 0.66rem;
+    }
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        height: calc(100dvh - 66px);
+        max-height: calc(100dvh - 66px);
+    }
+    .board-section {
+        order: 1;
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .mobile-faction-tabs {
+        order: 2;
+        display: flex !important;
+        flex: 0 0 28px;
+        width: 100%;
+        max-width: 440px;
+        gap: 4px;
+        margin: 1px 0;
+        box-sizing: border-box;
+    }
+    .mobile-tab-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 2px 4px;
+        min-height: 28px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: var(--font-heading);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        background: #19140e;
+        border: 1.5px solid var(--border);
+        color: #b5a070;
+        touch-action: manipulation;
+    }
+    .mobile-tab-btn.active-tab {
+        border-color: var(--mysore-gold);
+        background: linear-gradient(180deg, #2c2014 0%, #1a140d 100%);
+        color: #ffe8a8;
+        box-shadow: 0 0 8px var(--gold-glow);
+    }
+    #mobile-tab-mysore.active-tab {
+        border-color: #3e9e3e;
+        color: #8fe08f;
+        box-shadow: 0 0 8px rgba(62, 158, 62, 0.4);
+    }
+    #mobile-tab-british.active-tab {
+        border-color: #d03828;
+        color: #ff9e9e;
+        box-shadow: 0 0 8px rgba(208, 56, 40, 0.4);
+    }
+    #mobile-tab-moves.active-tab {
+        border-color: #d4a030;
+        color: #ffe090;
+        box-shadow: 0 0 8px var(--gold-glow);
+    }
+    .mobile-tab-icon {
+        font-size: 0.95rem;
+    }
+    .mobile-tab-badge {
+        font-size: 0.58rem;
+        background: rgba(0,0,0,0.55);
+        padding: 1px 4px;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    .faction-column {
+        order: 3;
+        flex: 0 0 144px;
+        width: 100%;
+        max-width: 440px;
+        height: 144px;
+        max-height: 144px;
+    }
+    .faction-column.mobile-hidden {
+        display: none !important;
+    }
+    .faction-column-header {
+        display: none;
+    }
+    .right-col-tabs-bar {
+        display: none !important;
+    }
+    .notation-panel {
+        display: none;
+    }
+    .notation-panel.mobile-active {
+        order: 3;
+        flex: 0 0 144px;
+        width: 100%;
+        max-width: 440px;
+        height: 144px;
+        max-height: 144px;
+        display: flex !important;
+    }
+    .cards-deck {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 3px;
+        height: 100%;
+        overflow: hidden;
+    }
+    .player-card {
+        padding: 2px 4px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+    .card-strength-seal {
+        width: 20px;
+        height: 20px;
+        font-size: 0.78rem;
+        top: 2px;
+        right: 2px;
+    }
+    .card-header-row {
+        gap: 2px;
+        padding-right: 20px;
+        margin-bottom: 1px;
+    }
+    .card-icon {
+        font-size: 0.88rem;
+    }
+    .card-name {
+        font-size: 0.7rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .card-desc {
+        font-size: 0.6rem;
+        line-height: 1.1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .faction-intel-panel {
+        display: none;
+    }
+    .drawer-panel {
+        width: calc(100vw - 16px);
+        right: 8px;
+        top: 36px;
+        max-height: 85vh;
     }
 }

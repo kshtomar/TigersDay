@@ -531,6 +531,31 @@ function handleNodeClick(nodeName) {
 // ==========================================================================
 // 6. CARD INTERACTIONS
 // ==========================================================================
+let mobileActiveFaction = 'british';
+
+function switchMobileFactionTab(faction) {
+  mobileActiveFaction = faction;
+  const mysoreTab = document.getElementById('mobile-tab-mysore');
+  const britishTab = document.getElementById('mobile-tab-british');
+  const mysoreCol = document.getElementById('mysore-column');
+  const britishCol = document.getElementById('british-column');
+
+  if (mysoreTab && britishTab) {
+    if (faction === 'mysore') {
+      mysoreTab.classList.add('active-tab');
+      britishTab.classList.remove('active-tab');
+      if (mysoreCol) mysoreCol.classList.remove('mobile-hidden');
+      if (britishCol) britishCol.classList.add('mobile-hidden');
+    } else {
+      britishTab.classList.add('active-tab');
+      mysoreTab.classList.remove('active-tab');
+      if (britishCol) britishCol.classList.remove('mobile-hidden');
+      if (mysoreCol) mysoreCol.classList.add('mobile-hidden');
+    }
+  }
+}
+window.switchMobileFactionTab = switchMobileFactionTab;
+
 function renderAllCards() {
   if (!lastUiState) return;
   renderCardDeck('mysore', lastUiState.mysore_cards);
@@ -542,6 +567,11 @@ function renderAllCards() {
   const bBadge = document.getElementById('british-hand-count');
   if (mBadge) mBadge.textContent = `${mAvail}/6`;
   if (bBadge) bBadge.textContent = `${bAvail}/6`;
+
+  const mMobileBadge = document.getElementById('mobile-mysore-count');
+  const bMobileBadge = document.getElementById('mobile-british-count');
+  if (mMobileBadge) mMobileBadge.textContent = `${mAvail}/6`;
+  if (bMobileBadge) bMobileBadge.textContent = `${bAvail}/6`;
 }
 
 function renderCardDeck(faction, availArray) {
@@ -747,14 +777,23 @@ function updateTurnHeader(uiState, winner) {
     header.className = 'turn-header british-phase';
     title.textContent = 'BRITISH PHASE: MOVE AN ARMY';
     icon.textContent = '🦁';
+    if (window.innerWidth <= 860 && mobileActiveFaction !== 'british') {
+      switchMobileFactionTab('british');
+    }
   } else if (whoToMove === 'Mysore Card') {
     header.className = 'turn-header mysore-phase';
     title.textContent = 'MYSORE PHASE: PLAY A CARD';
     icon.textContent = '🐅';
+    if (window.innerWidth <= 860 && mobileActiveFaction !== 'mysore') {
+      switchMobileFactionTab('mysore');
+    }
   } else if (whoToMove === 'British Card') {
     header.className = 'turn-header british-phase';
     title.textContent = 'BRITISH PHASE: PLAY A CARD';
     icon.textContent = '🦁';
+    if (window.innerWidth <= 860 && mobileActiveFaction !== 'british') {
+      switchMobileFactionTab('british');
+    }
   }
 
   if (battleBar) {
@@ -940,6 +979,9 @@ function handleEvalToggle(enabled) {
   } else {
     panel.classList.add('hidden');
   }
+  if (typeof adjustBoardDimensions === 'function') {
+    setTimeout(adjustBoardDimensions, 10);
+  }
 }
 
 function setEvalBar(score, totalSims) {
@@ -1010,6 +1052,9 @@ function handleDebugToggle(enabled) {
     renderDebugMoveList();
   } else {
     consoleEl.classList.add('hidden');
+  }
+  if (typeof adjustBoardDimensions === 'function') {
+    setTimeout(adjustBoardDimensions, 10);
   }
 }
 
@@ -1117,7 +1162,23 @@ function isCurrentSideAi(uiState) {
   return false;
 }
 
+// ==========================================================================
+// 8. CHESS.COM STYLE NOTATION, REPLAY HISTORY & GAME REVIEW ENGINE
+// ==========================================================================
+let gameHistory = [];
+let isViewingHistory = false;
+let browsingHistoryIndex = -1;
+let liveGameState = null;
+
+const BRITISH_CARD_NAMES = [
+  "Iron Rockets", "Wall Breach", "Sepoy Mutiny", "French Help", "Maratha Alliance", "Chitaldoorg Defection"
+];
+const MYSORE_CARD_NAMES = [
+  "Royal Navy", "Highlanders", "Force March", "Sea Trade", "Diplomatic Mission", "Cavalry Raid"
+];
+
 function isTurnBlockedForLocalPlayer() {
+  if (isViewingHistory) return true;
   if (!lastUiState) return true;
   const whoToMove = (lastUiState.who_to_move || '').toLowerCase();
   if (matchMode === 'p2p_multiplayer') {
@@ -1130,6 +1191,522 @@ function isTurnBlockedForLocalPlayer() {
     return true;
   }
   return false;
+}
+
+function recordMoveInHistory(stateBefore, moveIdx, nextState, finalState) {
+  if (!stateBefore) return;
+
+  const actor = stateBefore.to_move === 0 ? 'british' : 'mysore';
+  const turn = stateBefore.turn;
+  let notation = TDEngine.notate(stateBefore, moveIdx);
+
+  // Clean move description from currentMoves if found
+  let moveDesc = "";
+  const matched = currentMoves.find(m => m.idx === moveIdx);
+  if (matched) {
+    moveDesc = `${matched.type}${matched.desc ? ': ' + matched.desc : ''}`;
+  } else {
+    moveDesc = notation;
+  }
+
+  // Detect if random battle card discard occurred (stochastic luck edge case)
+  let luckEvent = null;
+  if (nextState && finalState) {
+    // Check if British had a card randomly discarded
+    for (let i = 0; i < 6; i++) {
+      if (nextState.british_cards[i] && !finalState.british_cards[i]) {
+        luckEvent = {
+          faction: 'british',
+          cardName: BRITISH_CARD_NAMES[i] || `Card #${i+1}`
+        };
+        break;
+      }
+    }
+    // Check if Mysore had a card randomly discarded
+    if (!luckEvent) {
+      for (let i = 0; i < 6; i++) {
+        if (nextState.mysore_cards[i] && !finalState.mysore_cards[i]) {
+          luckEvent = {
+            faction: 'mysore',
+            cardName: MYSORE_CARD_NAMES[i] || `Card #${i+1}`
+          };
+          break;
+        }
+      }
+    }
+  }
+
+  const historyEntry = {
+    step: gameHistory.length + 1,
+    turn: turn,
+    actor: actor,
+    moveIdx: moveIdx,
+    notation: notation,
+    desc: `${actor === 'british' ? 'British' : 'Mysore'}: ${moveDesc}`,
+    stateBeforeStr: stateBefore.toString(),
+    stateAfterStr: finalState ? finalState.toString() : stateBefore.toString(),
+    hasLuck: !!luckEvent,
+    luckDetail: luckEvent 
+      ? `🎲 ${luckEvent.faction === 'british' ? 'British' : 'Mysore'} discarded '${luckEvent.cardName}' (battle loss)` 
+      : null
+  };
+
+  gameHistory.push(historyEntry);
+}
+
+function renderNotationPanel() {
+  const moveCount = gameHistory.length;
+
+  // 1. Update badges
+  const notBadge = document.getElementById('notation-move-badge');
+  const rightColBadge = document.getElementById('right-col-moves-badge');
+  const mobileBadge = document.getElementById('mobile-moves-count');
+  if (notBadge) notBadge.textContent = moveCount;
+  if (rightColBadge) rightColBadge.textContent = moveCount;
+  if (mobileBadge) mobileBadge.textContent = moveCount;
+
+  // 2. Update phase indicator
+  const phaseLabel = document.getElementById('notation-phase-name');
+  if (phaseLabel && lastUiState) {
+    const who = (lastUiState.who_to_move || 'British').toUpperCase();
+    phaseLabel.textContent = `Turn ${lastUiState.turn || 1} · ${who} PHASE`;
+  }
+
+  // 3. Update Last Processed Action Box
+  const lastDesc = document.getElementById('last-action-desc');
+  const lastLuckPill = document.getElementById('last-action-luck-pill');
+  const lastLuckDetail = document.getElementById('last-action-luck-detail');
+
+  if (moveCount === 0) {
+    if (lastDesc) lastDesc.textContent = "Game started. Ready for Turn 1 move.";
+    if (lastLuckPill) lastLuckPill.classList.add('hidden');
+    if (lastLuckDetail) lastLuckDetail.classList.add('hidden');
+  } else {
+    const latest = isViewingHistory && browsingHistoryIndex >= 0
+      ? gameHistory[browsingHistoryIndex]
+      : gameHistory[moveCount - 1];
+
+    if (lastDesc) {
+      lastDesc.innerHTML = `<strong>#${latest.step} [${latest.actor === 'british' ? '🦁' : '🐅'}]</strong> ${latest.desc}`;
+    }
+
+    if (latest.hasLuck) {
+      if (lastLuckPill) lastLuckPill.classList.remove('hidden');
+      if (lastLuckDetail) {
+        lastLuckDetail.textContent = latest.luckDetail;
+        lastLuckDetail.classList.remove('hidden');
+      }
+    } else {
+      if (lastLuckPill) lastLuckPill.classList.add('hidden');
+      if (lastLuckDetail) lastLuckDetail.classList.add('hidden');
+    }
+  }
+
+  // 4. Populate 2-Column Move Notation Table (Chess.com Style)
+  const list = document.getElementById('moves-history-list');
+  if (list) {
+    if (moveCount === 0) {
+      list.innerHTML = `<div class="notation-empty-msg">No moves played yet</div>`;
+    } else {
+      let html = '';
+      // Group impulses by round pairs (1. British Move | Mysore Move)
+      let roundNum = 1;
+      for (let i = 0; i < moveCount; i += 2) {
+        const bEntry = gameHistory[i];
+        const mEntry = i + 1 < moveCount ? gameHistory[i + 1] : null;
+
+        const bActive = isViewingHistory && browsingHistoryIndex === i;
+        const mActive = isViewingHistory && browsingHistoryIndex === (i + 1);
+
+        const bLuck = bEntry && bEntry.hasLuck ? ' <span class="luck-badge" title="Battle Random Discard">🎲</span>' : '';
+        const mLuck = mEntry && mEntry.hasLuck ? ' <span class="luck-badge" title="Battle Random Discard">🎲</span>' : '';
+
+        html += `
+          <div class="notation-row ${roundNum % 2 === 0 ? 'even-row' : 'odd-row'}">
+            <span class="col-num">${roundNum}.</span>
+            <span class="col-faction notation-cell ${bActive ? 'active-step' : ''}" onclick="viewHistoricalStep(${i})" title="${bEntry ? bEntry.desc : ''}">
+              ${bEntry ? bEntry.notation + bLuck : '—'}
+            </span>
+            <span class="col-faction notation-cell ${mActive ? 'active-step' : ''} ${!mEntry ? 'empty-cell' : ''}" ${mEntry ? `onclick="viewHistoricalStep(${i + 1})" title="${mEntry.desc}"` : ''}>
+              ${mEntry ? mEntry.notation + mLuck : '...'}
+            </span>
+          </div>
+        `;
+        roundNum++;
+      }
+      list.innerHTML = html;
+
+      // Auto-scroll to active or bottom row
+      const activeCell = list.querySelector('.active-step');
+      if (activeCell) {
+        activeCell.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        list.scrollTop = list.scrollHeight;
+      }
+    }
+  }
+
+  // 5. Update Stepping Buttons State
+  const btnStart = document.getElementById('btn-step-start');
+  const btnPrev = document.getElementById('btn-step-prev');
+  const btnNext = document.getElementById('btn-step-next');
+  const btnLive = document.getElementById('btn-step-live');
+
+  if (moveCount === 0) {
+    if (btnStart) btnStart.disabled = true;
+    if (btnPrev) btnPrev.disabled = true;
+    if (btnNext) btnNext.disabled = true;
+    if (btnLive) {
+      btnLive.disabled = true;
+      btnLive.classList.remove('live-active');
+    }
+  } else if (!isViewingHistory) {
+    if (btnStart) btnStart.disabled = false;
+    if (btnPrev) btnPrev.disabled = false;
+    if (btnNext) btnNext.disabled = true;
+    if (btnLive) {
+      btnLive.disabled = false;
+      btnLive.classList.remove('live-active');
+    }
+  } else {
+    if (btnStart) btnStart.disabled = browsingHistoryIndex <= 0;
+    if (btnPrev) btnPrev.disabled = browsingHistoryIndex <= 0;
+    if (btnNext) btnNext.disabled = false;
+    if (btnLive) {
+      btnLive.disabled = false;
+      btnLive.classList.add('live-active');
+    }
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// HISTORICAL STATE INSPECTION (READ-ONLY)
+// ──────────────────────────────────────────────────────────────────────────
+function viewHistoricalStep(stepIndex) {
+  if (stepIndex < 0 || stepIndex >= gameHistory.length) return;
+
+  if (!isViewingHistory) {
+    liveGameState = currentGameState.copy();
+  }
+
+  isViewingHistory = true;
+  browsingHistoryIndex = stepIndex;
+
+  const entry = gameHistory[stepIndex];
+  try {
+    const histState = new GameState().read_str(entry.stateAfterStr);
+    currentGameState = histState;
+
+    const gameData = TDEngine.generateGameData(histState, matchMode, humanPlayerSide);
+    gameData.moves = []; // Strictly lock interactions while reviewing
+
+    handleHistoricalRender(gameData, entry);
+
+    const banner = document.getElementById('historical-review-banner');
+    const title = document.getElementById('review-banner-title');
+    if (banner && title) {
+      title.textContent = `Viewing Move #${entry.step} (${entry.notation}) · ${entry.actor === 'british' ? 'British' : 'Mysore'} Turn ${entry.turn}`;
+      banner.classList.remove('hidden');
+    }
+
+    renderNotationPanel();
+    adjustBoardDimensions();
+  } catch (err) {
+    console.error("Failed to render historical state:", err);
+    showToast("Error inspecting historical state.", "error");
+  }
+}
+
+function handleHistoricalRender(data, entry) {
+  clearAllInteractionState();
+  currentMoves = []; // Disallow moves in historical review mode
+
+  if (data.ui_state && data.ui_state.nodes) {
+    data.ui_state.nodes.forEach(nodeData => {
+      const node = window.NODES[nodeData.name];
+      if (!node) return;
+
+      if (nodeData.armyType === 'fresh') {
+        node.armyType = 'active';
+        node.owner = 'british';
+      } else if (nodeData.armyType === 'tired') {
+        node.armyType = 'tired';
+        node.owner = 'british';
+      } else if (nodeData.armyType === 'fort') {
+        node.armyType = 'fort';
+        node.owner = 'mysore';
+      } else {
+        node.armyType = 'empty';
+        node.owner = 'empty';
+      }
+    });
+  }
+
+  window.renderNodes();
+  renderAllCards();
+
+  // Update header in review mode
+  const header = document.getElementById('turn-header');
+  const counter = document.getElementById('turn-counter');
+  const title = document.getElementById('turn-phase-title');
+  const icon = document.getElementById('turn-phase-icon');
+  const instruction = document.getElementById('turn-instruction');
+
+  if (header && counter && title && icon) {
+    header.className = entry.actor === 'british'
+      ? 'turn-header british-phase historical-mode'
+      : 'turn-header mysore-phase historical-mode';
+    counter.textContent = `HISTORY · MOVE #${entry.step}`;
+    title.textContent = `${entry.actor.toUpperCase()}: ${entry.notation}`;
+    icon.textContent = entry.actor === 'british' ? '🦁' : '🐅';
+  }
+  if (instruction) {
+    instruction.textContent = entry.desc + (entry.luckDetail ? ' — ' + entry.luckDetail : '');
+  }
+
+  renderDebugMoveList();
+}
+
+function returnToLiveGame() {
+  if (!isViewingHistory) return;
+
+  isViewingHistory = false;
+  browsingHistoryIndex = -1;
+
+  if (liveGameState) {
+    currentGameState = liveGameState;
+    liveGameState = null;
+  }
+
+  const banner = document.getElementById('historical-review-banner');
+  if (banner) banner.classList.add('hidden');
+
+  const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
+  handleLocalGameUpdate(gameData);
+  renderNotationPanel();
+  adjustBoardDimensions();
+  showToast("Returned to live game.", "info");
+}
+
+function stepHistoryPrev() {
+  if (gameHistory.length === 0) return;
+  if (!isViewingHistory) {
+    viewHistoricalStep(gameHistory.length - 1);
+  } else if (browsingHistoryIndex > 0) {
+    viewHistoricalStep(browsingHistoryIndex - 1);
+  }
+}
+
+function stepHistoryNext() {
+  if (!isViewingHistory) return;
+  if (browsingHistoryIndex < gameHistory.length - 1) {
+    viewHistoricalStep(browsingHistoryIndex + 1);
+  } else {
+    returnToLiveGame();
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// OFFER DRAW & RESIGN ACTIONS
+// ──────────────────────────────────────────────────────────────────────────
+function handleOfferDraw() {
+  if (isViewingHistory) {
+    showToast("Return to live game before offering a draw.", "info");
+    return;
+  }
+  if (!currentGameState || getStateWinner(currentGameState) !== 0) {
+    showToast("Game is already finished.", "info");
+    return;
+  }
+
+  if (matchMode === 'human_vs_ai') {
+    // Evaluate if position is reasonably balanced for AI to accept
+    let freshArmies = 0, forts = 0;
+    for (let i = 0; i < currentGameState.fresh_armies.length; i++) {
+      if (currentGameState.fresh_armies[i] || currentGameState.tired_armies[i]) freshArmies++;
+      if (currentGameState.forts[i]) forts++;
+    }
+
+    if (forts >= 3 && freshArmies >= 3) {
+      declareDraw("AI accepted your draw offer! Peaceful armistice concluded.");
+    } else {
+      showToast("AI declined the draw offer. The campaign continues!", "info");
+    }
+  } else if (matchMode === 'p2p_multiplayer') {
+    multiplayerManager.sendOfferDraw(humanPlayerSide);
+    showToast("Draw offer sent to opponent...", "info");
+  } else {
+    const confirmDraw = confirm("Offer a Draw? If both players agree, the match will conclude in a draw.");
+    if (confirmDraw) {
+      declareDraw("Game drawn by mutual agreement.");
+    }
+  }
+}
+
+function declareDraw(reason) {
+  showToast(reason, "info");
+  const header = document.getElementById('turn-header');
+  const counter = document.getElementById('turn-counter');
+  const title = document.getElementById('turn-phase-title');
+  const icon = document.getElementById('turn-phase-icon');
+  const instruction = document.getElementById('turn-instruction');
+
+  if (header && counter && title && icon) {
+    header.className = 'turn-header game-over-phase victory-state';
+    counter.textContent = 'MATCH DRAW';
+    title.textContent = 'TREATY OF SERINGAPATAM — DRAW AGREED';
+    icon.textContent = '🕊️';
+  }
+  if (instruction) {
+    instruction.textContent = reason;
+  }
+
+  gameHistory.push({
+    step: gameHistory.length + 1,
+    turn: currentGameState ? currentGameState.turn : 1,
+    actor: 'system',
+    moveIdx: -1,
+    notation: '½–½',
+    desc: reason,
+    stateBeforeStr: currentGameState ? currentGameState.toString() : '',
+    stateAfterStr: currentGameState ? currentGameState.toString() : '',
+    hasLuck: false,
+    luckDetail: null
+  });
+
+  currentMoves = [];
+  updateActionButtons();
+  clearAllInteractionState();
+  renderNotationPanel();
+}
+
+function handleResignClick() {
+  if (isViewingHistory) {
+    showToast("Return to live game before resigning.", "info");
+    return;
+  }
+  if (!currentGameState || getStateWinner(currentGameState) !== 0) {
+    showToast("Game is already finished.", "info");
+    return;
+  }
+
+  const resigningSide = (matchMode === 'human_vs_ai' || matchMode === 'p2p_multiplayer') 
+    ? humanPlayerSide 
+    : (currentGameState.to_move === 0 ? 'british' : 'mysore');
+
+  const confirmResign = confirm(`Are you sure you want to resign as ${resigningSide.toUpperCase()}?`);
+  if (!confirmResign) return;
+
+  if (matchMode === 'p2p_multiplayer') {
+    multiplayerManager.sendResign(resigningSide);
+  }
+
+  const winnerVal = resigningSide === 'british' ? -1 : 1;
+  const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
+  showToast(`${resigningSide.toUpperCase()} resigned. ${winnerName} wins!`, 'info');
+
+  const header = document.getElementById('turn-header');
+  const counter = document.getElementById('turn-counter');
+  const title = document.getElementById('turn-phase-title');
+  const icon = document.getElementById('turn-phase-icon');
+
+  if (header && counter && title && icon) {
+    header.className = winnerVal === 1
+      ? 'turn-header british-phase victory-state'
+      : 'turn-header mysore-phase victory-state';
+    counter.textContent = 'GAME OVER';
+    title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
+    icon.textContent = winnerVal === 1 ? '🦁' : '🐅';
+  }
+
+  gameHistory.push({
+    step: gameHistory.length + 1,
+    turn: currentGameState ? currentGameState.turn : 1,
+    actor: resigningSide,
+    moveIdx: -1,
+    notation: resigningSide === 'british' ? '0–1' : '1–0',
+    desc: `${resigningSide.toUpperCase()} resigned. ${winnerName} Victory.`,
+    stateBeforeStr: currentGameState ? currentGameState.toString() : '',
+    stateAfterStr: currentGameState ? currentGameState.toString() : '',
+    hasLuck: false,
+    luckDetail: null
+  });
+
+  currentMoves = [];
+  updateActionButtons();
+  clearAllInteractionState();
+  renderNotationPanel();
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// TAB SWITCHING HELPERS
+// ──────────────────────────────────────────────────────────────────────────
+function switchNotationTab(tab) {
+  const movesTabBtn = document.getElementById('tab-btn-moves');
+  const infoTabBtn = document.getElementById('tab-btn-info');
+  const movesContent = document.getElementById('notation-tab-moves-content');
+  const infoContent = document.getElementById('notation-tab-info-content');
+
+  if (tab === 'moves') {
+    if (movesTabBtn) movesTabBtn.classList.add('active');
+    if (infoTabBtn) infoTabBtn.classList.remove('active');
+    if (movesContent) movesContent.classList.remove('hidden');
+    if (infoContent) infoContent.classList.add('hidden');
+  } else {
+    if (infoTabBtn) infoTabBtn.classList.add('active');
+    if (movesTabBtn) movesTabBtn.classList.remove('active');
+    if (infoContent) infoContent.classList.remove('hidden');
+    if (movesContent) movesContent.classList.add('hidden');
+  }
+}
+
+function switchRightColumnView(view) {
+  const handTabBtn = document.getElementById('right-col-tab-hand');
+  const movesTabBtn = document.getElementById('right-col-tab-moves');
+  const handContainer = document.getElementById('british-hand-container');
+  const notationPanel = document.getElementById('notation-panel');
+
+  if (view === 'hand') {
+    if (handTabBtn) handTabBtn.classList.add('active');
+    if (movesTabBtn) movesTabBtn.classList.remove('active');
+    if (handContainer) handContainer.classList.remove('hidden');
+    if (notationPanel) notationPanel.classList.remove('active-in-right-col');
+  } else {
+    if (movesTabBtn) movesTabBtn.classList.add('active');
+    if (handTabBtn) handTabBtn.classList.remove('active');
+    if (handContainer) handContainer.classList.add('hidden');
+    if (notationPanel) notationPanel.classList.add('active-in-right-col');
+  }
+}
+
+function switchMobileFactionTab(tab) {
+  const bTab = document.getElementById('mobile-tab-british');
+  const mTab = document.getElementById('mobile-tab-mysore');
+  const movesTab = document.getElementById('mobile-tab-moves');
+  const bCol = document.getElementById('british-column');
+  const mCol = document.getElementById('mysore-column');
+  const notPanel = document.getElementById('notation-panel');
+
+  if (bTab) bTab.classList.remove('active-tab');
+  if (mTab) mTab.classList.remove('active-tab');
+  if (movesTab) movesTab.classList.remove('active-tab');
+
+  if (tab === 'british') {
+    if (bTab) bTab.classList.add('active-tab');
+    if (bCol) bCol.classList.remove('mobile-hidden');
+    if (mCol) mCol.classList.add('mobile-hidden');
+    if (notPanel) notPanel.classList.remove('mobile-active');
+  } else if (tab === 'mysore') {
+    if (mTab) mTab.classList.add('active-tab');
+    if (mCol) mCol.classList.remove('mobile-hidden');
+    if (bCol) bCol.classList.add('mobile-hidden');
+    if (notPanel) notPanel.classList.remove('mobile-active');
+  } else if (tab === 'moves') {
+    if (movesTab) movesTab.classList.add('active-tab');
+    if (bCol) bCol.classList.add('mobile-hidden');
+    if (mCol) mCol.classList.add('mobile-hidden');
+    if (notPanel) notPanel.classList.add('mobile-active');
+  }
 }
 
 function handleLocalGameUpdate(data) {
@@ -1182,13 +1759,17 @@ async function triggerAiMove() {
 
   try {
     const { bestMove } = await mctsEngine.findMove(currentGameState, 0.0);
-    
-    currentGameState = TDEngine.getNextState(currentGameState, bestMove);
-    currentGameState = TDEngine.resolveLuck(currentGameState);
+    const stateBefore = currentGameState.copy();
+    const nextState = TDEngine.getNextState(currentGameState, bestMove);
+    const { finalState } = TDEngine.resolveLuckWithTrajectory(nextState);
+    currentGameState = finalState;
+
+    recordMoveInHistory(stateBefore, bestMove, nextState, finalState);
 
     const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
     updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
     handleLocalGameUpdate(gameData);
+    renderNotationPanel();
   } catch (err) {
     console.error("AI execution error:", err);
     updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
@@ -1197,11 +1778,18 @@ async function triggerAiMove() {
 
 window.applyMove = function(moveIdx) {
   if (!currentGameState) return;
+  if (isViewingHistory) {
+    showToast("Viewing historical position. Click 'Return to Live' to make a move.", 'info');
+    return;
+  }
 
   try {
-    currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
-    const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(currentGameState);
+    const stateBefore = currentGameState.copy();
+    const nextState = TDEngine.getNextState(currentGameState, moveIdx);
+    const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(nextState);
     currentGameState = finalState;
+
+    recordMoveInHistory(stateBefore, moveIdx, nextState, finalState);
 
     if (matchMode === 'p2p_multiplayer') {
       multiplayerManager.sendMove(moveIdx, trajectory, currentGameState.toString());
@@ -1209,6 +1797,7 @@ window.applyMove = function(moveIdx) {
 
     const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
     handleLocalGameUpdate(gameData);
+    renderNotationPanel();
   } catch (err) {
     console.error("Error applying move:", err);
     showToast("Failed to apply move.", 'error');
@@ -1219,6 +1808,14 @@ function initGame() {
   renderEdges();
   window.renderNodes();
 
+  gameHistory = [];
+  isViewingHistory = false;
+  browsingHistoryIndex = -1;
+  liveGameState = null;
+
+  const banner = document.getElementById('historical-review-banner');
+  if (banner) banner.classList.add('hidden');
+
   currentGameState = new GameState();
   currentGameState.default_setup();
   currentGameState = TDEngine.resolveLuck(currentGameState);
@@ -1227,6 +1824,7 @@ function initGame() {
 
   const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
   handleLocalGameUpdate(gameData);
+  renderNotationPanel();
   updateConnectionPill('connected', '⬤ CLIENT READY (100% OFFLINE)');
 }
 
@@ -1237,6 +1835,8 @@ function handleGameModeChange(newMode) {
   matchMode = newMode;
   const p2pPanel = document.getElementById('multiplayer-panel');
   const humanSideRow = document.getElementById('human-side-row');
+  const infoMode = document.getElementById('info-mode-label');
+  if (infoMode) infoMode.textContent = `Mode: ${newMode.replace(/_/g, ' ').toUpperCase()}`;
 
   if (newMode === 'p2p_multiplayer') {
     if (p2pPanel) p2pPanel.classList.remove('hidden');
@@ -1287,19 +1887,23 @@ function setupMultiplayerCallbacks() {
   multiplayerManager.onMoveReceived = (moveIdx, luckTrajectory, stateStr) => {
     showToast("Opponent moved!", 'info');
     if (currentGameState) {
+      const stateBefore = currentGameState.copy();
+      let nextState = null;
       if (stateStr) {
         try {
           currentGameState = new GameState().read_str(stateStr);
         } catch (e) {
-          currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
-          currentGameState = TDEngine.applyLuckTrajectory(currentGameState, luckTrajectory);
+          nextState = TDEngine.getNextState(currentGameState, moveIdx);
+          currentGameState = TDEngine.applyLuckTrajectory(nextState, luckTrajectory);
         }
       } else {
-        currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
-        currentGameState = TDEngine.applyLuckTrajectory(currentGameState, luckTrajectory);
+        nextState = TDEngine.getNextState(currentGameState, moveIdx);
+        currentGameState = TDEngine.applyLuckTrajectory(nextState, luckTrajectory);
       }
+      recordMoveInHistory(stateBefore, moveIdx, nextState, currentGameState);
       const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
       handleLocalGameUpdate(gameData);
+      renderNotationPanel();
     }
   };
 
@@ -1309,6 +1913,7 @@ function setupMultiplayerCallbacks() {
         currentGameState = new GameState().read_str(stateStr);
         const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
         handleLocalGameUpdate(gameData);
+        renderNotationPanel();
       } catch (e) {
         console.warn("State sync parse error:", e);
       }
@@ -1342,6 +1947,26 @@ function setupMultiplayerCallbacks() {
     currentMoves = [];
     updateActionButtons();
     clearAllInteractionState();
+    renderNotationPanel();
+  };
+
+  multiplayerManager.onDrawOfferReceived = (offeringSide) => {
+    const accept = confirm(`Opponent (${offeringSide.toUpperCase()}) offered a draw. Accept peace treaty?`);
+    if (accept) {
+      multiplayerManager.sendAcceptDraw();
+      declareDraw("Draw agreed mutually with opponent!");
+    } else {
+      multiplayerManager.sendDeclineDraw();
+      showToast("You declined the draw offer.", "info");
+    }
+  };
+
+  multiplayerManager.onDrawAcceptedReceived = () => {
+    declareDraw("Opponent accepted your draw offer! Match drawn.");
+  };
+
+  multiplayerManager.onDrawDeclinedReceived = () => {
+    showToast("Opponent declined your draw offer.", "info");
   };
 
   multiplayerManager.onError = (err) => {
@@ -1564,8 +2189,64 @@ function syncUIStateOnLoad() {
   }
 }
 
+// ==========================================================================
+// 10. DYNAMIC ZERO-LETTERBOX BOARD AUTO-SIZER
+// Strictly locks the map to 760:880 aspect ratio within available section space.
+// Completely eliminates letterboxing and empty blue boxes on all screen sizes.
+// ==========================================================================
+function adjustBoardDimensions() {
+  const boardSection = document.getElementById('board-section');
+  const boardCard = document.getElementById('board-card');
+  if (!boardSection || !boardCard) return;
+
+  const evalPanel = document.getElementById('eval-panel');
+  const debugConsole = document.getElementById('debug-move-console');
+
+  let reservedHeight = 0;
+  if (evalPanel && !evalPanel.classList.contains('hidden')) {
+    reservedHeight += evalPanel.offsetHeight + 6;
+  }
+  if (debugConsole && !debugConsole.classList.contains('hidden')) {
+    reservedHeight += debugConsole.offsetHeight + 6;
+  }
+
+  const availWidth = boardSection.clientWidth;
+  const availHeight = Math.max(100, boardSection.clientHeight - reservedHeight);
+  if (availWidth <= 0 || availHeight <= 0) return;
+
+  const aspect = 760 / 880;
+
+  let targetWidth, targetHeight;
+  if (availWidth / availHeight > aspect) {
+    // Section is wider than map -> height is the limiting constraint
+    targetHeight = availHeight;
+    targetWidth = targetHeight * aspect;
+  } else {
+    // Section is taller than map -> width is the limiting constraint
+    targetWidth = availWidth;
+    targetHeight = targetWidth / aspect;
+  }
+
+  boardCard.style.width = `${Math.floor(targetWidth)}px`;
+  boardCard.style.height = `${Math.floor(targetHeight)}px`;
+}
+
+function initBoardResponsiveAutoSizer() {
+  adjustBoardDimensions();
+  const boardSection = document.getElementById('board-section');
+  if (boardSection && window.ResizeObserver) {
+    const observer = new ResizeObserver(() => {
+      adjustBoardDimensions();
+    });
+    observer.observe(boardSection);
+  }
+  window.addEventListener('resize', adjustBoardDimensions);
+  window.addEventListener('orientationchange', adjustBoardDimensions);
+}
+
 // Start game client on load
 document.addEventListener('DOMContentLoaded', () => {
   syncUIStateOnLoad();
   initGame(); 
+  initBoardResponsiveAutoSizer();
 });

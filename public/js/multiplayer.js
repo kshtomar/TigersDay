@@ -202,6 +202,24 @@
           }
           break;
 
+        case 'OFFER_DRAW':
+          if (this.onDrawOfferReceived) {
+            this.onDrawOfferReceived(data.offeringSide);
+          }
+          break;
+
+        case 'ACCEPT_DRAW':
+          if (this.onDrawAcceptedReceived) {
+            this.onDrawAcceptedReceived();
+          }
+          break;
+
+        case 'DECLINE_DRAW':
+          if (this.onDrawDeclinedReceived) {
+            this.onDrawDeclinedReceived();
+          }
+          break;
+
         default:
           console.log("Unhandled P2P message:", data);
       }
@@ -235,6 +253,25 @@
     sendReset() {
       this.send({
         type: 'RESET_GAME'
+      });
+    }
+
+    sendOfferDraw(offeringSide) {
+      this.send({
+        type: 'OFFER_DRAW',
+        offeringSide: offeringSide
+      });
+    }
+
+    sendAcceptDraw() {
+      this.send({
+        type: 'ACCEPT_DRAW'
+      });
+    }
+
+    sendDeclineDraw() {
+      this.send({
+        type: 'DECLINE_DRAW'
       });
     }
 
