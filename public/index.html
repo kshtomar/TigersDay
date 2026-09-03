@@ -15,16 +15,31 @@
 
 <body>
 
-<!-- TOP UTILITY BAR: TITLE, TUTORIAL & SETTINGS -->
-<header class="app-header">
+<!-- TOP UNIFIED APP BAR: BRANDING, TURN STATUS, CONTEXTUAL ACTIONS, SETTINGS -->
+<header id="turn-header" class="app-header british-phase">
     <div class="header-branding">
         <h1>THE TIGER'S DAY</h1>
-        <span class="header-subtitle">Anglo-Mysore Wars · 1767 – 1799</span>
+        <div class="header-turn-meta">
+            <span id="turn-counter" class="turn-counter">TURN 1 OF 4</span>
+            <span class="turn-divider">·</span>
+            <h2 id="turn-phase-title" class="turn-phase-title">BRITISH: MOVE ARMY</h2>
+        </div>
+    </div>
+
+    <!-- Dynamic In-Turn Action Buttons (Clean text, no emojis) -->
+    <div class="header-turn-actions">
+        <button id="header-rest-btn" class="header-action-btn rest-btn hidden" onclick="handleHeaderRestClick()">
+            Rest Unit
+        </button>
+        <button id="header-pass-btn" class="header-action-btn pass-btn hidden" onclick="handleHeaderPassClick()">
+            Pass Phase
+        </button>
+        <button id="header-cancel-btn" class="header-action-btn cancel-btn hidden" onclick="handleHeaderCancelClick()">
+            Cancel
+        </button>
     </div>
     
     <div class="header-actions">
-        <div id="connection-pill" class="pill disconnected">⬤ CONNECTING</div>
-        
         <!-- Tutorial (i) Button -->
         <button id="tutorial-toggle-btn" class="icon-btn" title="How to Play & Controls" aria-label="How to Play" onclick="toggleTutorialMenu()">
             <span class="info-glyph">ⓘ</span>
@@ -40,11 +55,24 @@
     </div>
 </header>
 
+<!-- PROGRESSIVE NEURAL NETWORK EVALUATION BAR (Active in top slot when toggled ON) -->
+<div id="eval-panel" class="eval-panel hidden">
+    <div class="eval-bar-container">
+        <div id="eval-bar-track" class="eval-bar-track">
+            <div id="eval-bar-mysore" class="eval-bar-mysore" style="width: 50%;"></div>
+            <div id="eval-bar-score" class="eval-bar-score">0.00</div>
+        </div>
+        <div class="eval-meta">
+            <span id="eval-sims-label" class="eval-sims-label">Engine: 0 sims</span>
+            <span id="eval-winrate-label" class="eval-winrate-label">Even Match</span>
+        </div>
+    </div>
+</div>
+
 <!-- TUTORIAL MENU DRAWER (Zero Popups) -->
 <div id="tutorial-drawer" class="drawer-panel hidden">
     <div class="drawer-header">
         <div class="drawer-title-wrap">
-            <span class="drawer-icon">📜</span>
             <h3>HOW TO PLAY & CONTROLS</h3>
         </div>
         <button class="close-drawer-btn" onclick="toggleTutorialMenu()">✕</button>
@@ -57,7 +85,7 @@
                 <strong>Direct Army Movement</strong>
             </div>
             <p><strong>Click an Army/Fort unit</strong> to select it. Valid destination territories will pulse on the map. <strong>Click any glowing territory</strong> to move immediately.</p>
-            <span class="tutorial-tip">💡 <strong>Toggle Deselection:</strong> Click the same selected unit again to instantly cancel selection.</span>
+            <span class="tutorial-tip"><strong>Toggle Deselection:</strong> Click the same selected unit again to cancel selection.</span>
         </div>
 
         <div class="tutorial-item">
@@ -107,7 +135,6 @@
 <div id="settings-drawer" class="drawer-panel hidden">
     <div class="drawer-header">
         <div class="drawer-title-wrap">
-            <span class="drawer-icon">⚙</span>
             <h3>GAME SETTINGS</h3>
         </div>
         <button class="close-drawer-btn" onclick="toggleSettingsMenu()">✕</button>
@@ -179,22 +206,13 @@
             <span class="setting-desc">Higher values = stronger AI but slower thinking. Range: 250 – 1,000,000.</span>
         </div>
 
-        <div class="settings-section">
-            <label class="toggle-control">
-                <span class="toggle-label">Show Move Log / Debug</span>
-                <input type="checkbox" id="debug-toggle-checkbox" onchange="handleDebugToggle(this.checked)">
-                <span class="toggle-slider"></span>
-            </label>
-            <span class="setting-desc">Display raw legal move vector (Vt) console.</span>
-        </div>
-
         <hr class="settings-divider">
 
         <div class="settings-section">
             <h4>STATE & CONTROLS</h4>
             <div class="settings-btn-group">
-                <button class="secondary-btn" onclick="saveBinaryState()">📋 Copy Game State (Binary)</button>
-                <button class="secondary-btn" onclick="resetGamePrompt()">🔄 Reset Board to Start</button>
+                <button class="secondary-btn" onclick="saveBinaryState()">Copy State (Binary)</button>
+                <button class="secondary-btn" onclick="resetGamePrompt()">Reset Board</button>
             </div>
         </div>
 
@@ -208,67 +226,19 @@
     </div>
 </div>
 
-<!-- 1. PERSISTENT, LOW-PROFILE TURN HEADER -->
-<div id="turn-header" class="turn-header british-phase">
-    <div class="turn-header-main">
-        <div class="turn-header-badge">
-            <span id="turn-faction-icon" class="faction-icon">🦁</span>
-            <div class="turn-phase-meta">
-                <span id="turn-counter" class="turn-counter">TURN 1 OF 4</span>
-                <h2 id="turn-phase-title" class="turn-phase-title">BRITISH TURN: MOVE AN ARMY</h2>
-            </div>
-        </div>
-
-        <div id="turn-instruction" class="turn-instruction">
-            Click a unit to select, then click a glowing destination node on the map.
-        </div>
-
-        <div class="turn-header-actions">
-            <!-- Dynamic Inline Action Buttons (Pass, Rest, Resign, Cancel) -->
-            <button id="header-rest-btn" class="header-action-btn rest-btn hidden" onclick="handleHeaderRestClick()">
-                😴 Rest Unit
-            </button>
-            <button id="header-pass-btn" class="header-action-btn pass-btn hidden" onclick="handleHeaderPassClick()">
-                ⏭ Pass Phase
-            </button>
-            <button id="header-resign-btn" class="header-action-btn resign-btn" onclick="handleHeaderResignClick()" title="Concede the match">
-                🏳 Resign
-            </button>
-            <button id="header-cancel-btn" class="header-action-btn cancel-btn hidden" onclick="handleHeaderCancelClick()">
-                ✕ Cancel
-            </button>
-        </div>
-    </div>
-
-    <!-- INLINE BATTLE STATUS BAR (Active only during battles) -->
-    <div id="battle-status-bar" class="battle-status-bar hidden">
-        <div class="battle-pill">⚔️ BATTLE ACTIVE</div>
-        <div class="battle-details">
-            <span class="battle-role">Attacker: <strong id="battle-attacker-name">—</strong></span>
-            <span class="battle-vs">vs</span>
-            <span class="battle-role">Defender: <strong id="battle-defender-name">—</strong></span>
-            <span class="battle-strength-pill">Net Strength: <strong id="battle-strength-val">+0</strong></span>
-        </div>
-        <div class="battle-tip">Single-click card strength seal to commit Combat Strength</div>
-    </div>
-</div>
-
 <!-- MAIN GAMEPLAY BOARD & DECKS LAYOUT -->
 <main class="game-container">
     
     <div class="mobile-faction-tabs" id="mobile-faction-tabs">
         <button type="button" class="mobile-tab-btn active-tab" id="mobile-tab-british" onclick="switchMobileFactionTab('british')">
-            <span class="mobile-tab-icon">🦁</span>
             <span class="mobile-tab-title">BRITISH</span>
             <span class="mobile-tab-badge" id="mobile-british-count">6/6</span>
         </button>
         <button type="button" class="mobile-tab-btn" id="mobile-tab-mysore" onclick="switchMobileFactionTab('mysore')">
-            <span class="mobile-tab-icon">🐅</span>
             <span class="mobile-tab-title">MYSORE</span>
             <span class="mobile-tab-badge" id="mobile-mysore-count">6/6</span>
         </button>
         <button type="button" class="mobile-tab-btn" id="mobile-tab-moves" onclick="switchMobileFactionTab('moves')">
-            <span class="mobile-tab-icon">📜</span>
             <span class="mobile-tab-title">MOVES</span>
             <span class="mobile-tab-badge" id="mobile-moves-count">0</span>
         </button>
@@ -290,17 +260,6 @@
         <div id="mysore-cards-list" class="cards-deck">
             <!-- Dynamically populated cards with wax seal strength badges -->
         </div>
-
-        <div class="faction-intel-panel">
-            <div class="intel-header">BOARD OBJECTIVES</div>
-            <div class="intel-content">
-                <p><strong>Win at the end of turn 4</strong></p>
-                <p class="legend-micro">
-                    <span><svg width="12" height="12"><polygon points="6,1 11,6 6,11 1,6" fill="#2e7a2e"/></svg> Fort</span>
-                    <span><svg width="12" height="12"><rect x="1" y="1" width="10" height="10" fill="#1c1814" stroke="#999" stroke-width="1"/></svg> Key</span>
-                </p>
-            </div>
-        </div>
     </aside>
 
     <!-- CENTER COLUMN: MAP BOARD & STOCKFISH EVALUATION -->
@@ -309,12 +268,11 @@
         <!-- HISTORICAL REVIEW BANNER (Active only when reviewing past states) -->
         <div id="historical-review-banner" class="historical-review-banner hidden">
             <div class="review-banner-text">
-                <span class="review-icon">⏪</span>
                 <span id="review-banner-title">Viewing Move #1 (Historical Snapshot)</span>
                 <span class="review-badge">READ ONLY</span>
             </div>
             <button type="button" id="btn-return-live" class="btn-return-live" onclick="returnToLiveGame()">
-                🔴 Return to Live Game
+                Return to Live Game
             </button>
         </div>
 
@@ -398,32 +356,6 @@
                 <g id="node-layer"></g>
             </svg>
         </div>
-
-        <!-- PROGRESSIVE NEURAL NETWORK EVALUATION BAR (Controlled via Settings) -->
-        <div id="eval-panel" class="eval-panel hidden">
-            <div class="eval-bar-container">
-                <div id="eval-bar-track" class="eval-bar-track">
-                    <div id="eval-bar-mysore" class="eval-bar-mysore" style="width: 50%;"></div>
-                    <div id="eval-bar-score" class="eval-bar-score">0.00</div>
-                </div>
-                <div class="eval-meta">
-                    <span id="eval-sims-label" class="eval-sims-label">Engine: 0 sims</span>
-                    <span id="eval-winrate-label" class="eval-winrate-label">Even Match</span>
-                </div>
-            </div>
-
-            <!-- Top 3 Engine Candidate Lines -->
-            <div id="engine-lines-container" class="engine-lines-container"></div>
-        </div>
-
-        <!-- OPTIONAL DEBUG MOVE VECTOR CONSOLE (Controlled via Settings) -->
-        <div id="debug-move-console" class="debug-move-console hidden">
-            <div class="debug-console-header">
-                <span>LEGAL MOVE VECTOR (V<sub>t</sub>)</span>
-                <span id="move-count-badge" class="badge">0</span>
-            </div>
-            <div id="move-list" class="debug-move-list"></div>
-        </div>
     </section>
 
     <!-- RIGHT COLUMN: BRITISH EAST INDIA COMPANY CARDS & INTEL -->
@@ -431,10 +363,10 @@
         <!-- Optional Laptop/Tablet Segmented Switcher -->
         <div class="right-col-tabs-bar" id="right-col-tabs-bar">
             <button type="button" id="right-col-tab-hand" class="right-col-tab-btn active" onclick="switchRightColumnView('hand')">
-                <span>🦁 British Hand</span>
+                <span>British Hand</span>
             </button>
             <button type="button" id="right-col-tab-moves" class="right-col-tab-btn" onclick="switchRightColumnView('moves')">
-                <span>📜 Notation (<span id="right-col-moves-badge">0</span>)</span>
+                <span>Notation (<span id="right-col-moves-badge">0</span>)</span>
             </button>
         </div>
 
@@ -453,17 +385,6 @@
             <div id="british-cards-list" class="cards-deck">
                 <!-- Dynamically populated cards with wax seal strength badges -->
             </div>
-
-            <div class="faction-intel-panel">
-                <div class="intel-header">VICTORY CONDITIONS</div>
-                <div class="intel-content">
-                    <p><strong>Win if Army in all 5 Keys</strong></p>
-                    <p class="legend-micro">
-                        <span><svg width="12" height="12"><rect x="1" y="1" width="10" height="10" fill="#c0281a"/></svg> Fresh Army</span>
-                        <span><svg width="12" height="12"><rect x="1" y="1" width="10" height="10" fill="#c0281a" opacity=".5"/><line x1="1" y1="1" x2="11" y2="11" stroke="white" stroke-width="2"/></svg> Tired Army</span>
-                    </p>
-                </div>
-            </div>
         </div>
     </aside>
 
@@ -472,10 +393,10 @@
         <!-- Top Navigation Tabs (Moves / Info) -->
         <div class="notation-tabs-header">
             <button type="button" id="tab-btn-moves" class="notation-tab-btn active" onclick="switchNotationTab('moves')">
-                <span class="tab-icon">📜</span> Moves <span id="notation-move-badge" class="notation-badge">0</span>
+                Moves <span id="notation-move-badge" class="notation-badge">0</span>
             </button>
             <button type="button" id="tab-btn-info" class="notation-tab-btn" onclick="switchNotationTab('info')">
-                <span class="tab-icon">ℹ️</span> Info
+                Info
             </button>
         </div>
 
@@ -487,22 +408,12 @@
                 <span id="notation-eval-tag" class="notation-eval-tag">0.00</span>
             </div>
 
-            <!-- Last Processed Action Box (Includes Luck / Battle Discard Indicator) -->
-            <div id="last-action-box" class="last-action-box">
-                <div class="last-action-header">
-                    <span class="last-action-label">LAST ACTION</span>
-                    <span id="last-action-luck-pill" class="luck-pill hidden">🎲 LUCK</span>
-                </div>
-                <div id="last-action-desc" class="last-action-desc">Game started. Ready for Turn 1 move.</div>
-                <div id="last-action-luck-detail" class="last-action-luck-detail hidden"></div>
-            </div>
-
             <!-- Scrollable Move Notation Table -->
             <div class="notation-table-wrap">
                 <div class="notation-table-header">
                     <span class="col-num">#</span>
-                    <span class="col-faction">🦁 British</span>
-                    <span class="col-faction">🐅 Mysore</span>
+                    <span class="col-faction">British</span>
+                    <span class="col-faction">Mysore</span>
                 </div>
                 <div id="moves-history-list" class="moves-history-list">
                     <div class="notation-empty-msg">No moves played yet</div>
@@ -528,10 +439,10 @@
             <!-- Bottom Game Action Bar: Offer Draw & Resign -->
             <div class="notation-actions-bar">
                 <button type="button" id="btn-offer-draw" class="notation-action-btn draw-btn" onclick="handleOfferDraw()">
-                    <span class="btn-icon">½</span> Offer Draw
+                    Offer Draw
                 </button>
                 <button type="button" id="btn-resign-panel" class="notation-action-btn resign-btn" onclick="handleResignClick()">
-                    <span class="btn-icon">🏳</span> Resign
+                    Resign
                 </button>
             </div>
         </div>

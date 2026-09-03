@@ -78,64 +78,122 @@ body {
 }
 
 /* ==========================================================================
-   1. APP HEADER & UTILITY BAR
+   1. UNIFIED APP HEADER (Branding, Turn Indicator & Quick Actions)
    ========================================================================== */
 .app-header {
     width: 100%;
     max-width: min(1800px, 98vw);
-    height: 32px;
-    flex: 0 0 32px;
+    height: 36px;
+    flex: 0 0 36px;
     display: flex;
+    flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
-    padding: 2px 8px;
-    margin-bottom: 3px;
-    border-bottom: 1px solid rgba(122, 92, 46, 0.3);
+    gap: 8px;
+    padding: 2px 10px;
+    margin-bottom: 4px;
+    background: #14100c;
+    border-bottom: 1.5px solid rgba(191, 165, 119, 0.25);
+    border-radius: 4px;
     box-sizing: border-box;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.app-header.british-phase {
+    border-bottom: 2px solid var(--british-red);
+    background: linear-gradient(90deg, #18110e 0%, #2b1210 50%, #18110e 100%);
+    box-shadow: 0 2px 10px rgba(192, 40, 26, 0.3);
+}
+
+.app-header.mysore-phase {
+    border-bottom: 2px solid var(--mysore-green);
+    background: linear-gradient(90deg, #0e1610 0%, #112814 50%, #0e1610 100%);
+    box-shadow: 0 2px 10px rgba(46, 122, 46, 0.3);
+}
+
+.app-header.game-over-phase,
+.app-header.victory-state {
+    border-bottom: 2px solid var(--mysore-gold);
+    background: linear-gradient(90deg, #1c160e 0%, #322412 50%, #1c160e 100%);
+    box-shadow: 0 2px 12px rgba(212, 160, 48, 0.35);
+}
+
+.app-header.historical-mode {
+    border-bottom: 2px dashed #bfa577;
+    background: #1c160e;
 }
 
 .header-branding {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    flex: 1 1 auto;
 }
 
 .header-branding h1 {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     color: var(--parchment);
-    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.8);
     line-height: 1;
+    margin: 0;
+    white-space: nowrap;
 }
 
-.header-subtitle {
-    font-family: var(--font-historic);
-    font-size: 0.8rem;
-    font-style: italic;
-    color: #b5a070;
-}
-
-.header-actions {
+.header-turn-meta {
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
 }
 
-.pill {
+.turn-counter {
     font-family: var(--font-heading);
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--mysore-gold);
+    font-weight: 700;
+    white-space: nowrap;
 }
 
-.pill.connected {
-    background: rgba(46, 122, 46, 0.25);
-    color: #8fd48f;
-    border: 1px solid #3e8e3e;
+.turn-divider {
+    color: rgba(191, 165, 119, 0.4);
+    font-size: 0.8rem;
+}
+
+.turn-phase-title {
+    font-family: var(--font-heading);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    line-height: 1;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.header-turn-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin: 0 10px;
+}
+
+/* Tutorial (i) and Settings (Gear) Buttons: STRICTLY HORIZONTALLY ORIENTED SIDE-BY-SIDE */
+.header-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0;
 }
 
 .pill.disconnected {
@@ -508,113 +566,8 @@ body {
 }
 
 /* ==========================================================================
-   3. PERSISTENT LOW-PROFILE TURN HEADER
+   3. IN-TURN QUICK ACTION BUTTONS
    ========================================================================== */
-.turn-header {
-    width: 100%;
-    max-width: min(1800px, 98vw);
-    flex: 0 0 auto;
-    border-radius: 4px;
-    margin-bottom: 3px;
-    padding: 3px 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    position: relative;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-/* British Phase Header Styling */
-.turn-header.british-phase {
-    background: linear-gradient(135deg, var(--british-red-deep) 0%, #4a1510 50%, #2b0c0a 100%);
-    border: 1.5px solid var(--british-red);
-    box-shadow: 0 0 12px rgba(192, 40, 26, 0.35), 0 3px 12px rgba(0,0,0,0.7);
-}
-
-/* Mysore Phase Header Styling */
-.turn-header.mysore-phase {
-    background: linear-gradient(135deg, var(--mysore-green-deep) 0%, #153815 50%, #0a1f0a 100%);
-    border: 1.5px solid var(--mysore-green);
-    box-shadow: 0 0 12px rgba(46, 122, 46, 0.35), 0 3px 12px rgba(0,0,0,0.7);
-}
-
-/* Game Over Header Styling */
-.turn-header.game-over-phase {
-    background: linear-gradient(135deg, #2a2010 0%, #141008 100%);
-    border: 1.5px solid var(--mysore-gold);
-    box-shadow: 0 0 16px rgba(212, 160, 48, 0.4);
-}
-
-.turn-header-main {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: nowrap;
-}
-
-.turn-header-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.faction-icon {
-    font-size: 1.3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
-}
-
-.turn-phase-meta {
-    display: flex;
-    flex-direction: column;
-}
-
-.turn-counter {
-    font-family: var(--font-heading);
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    color: #e0c896;
-    font-weight: 600;
-}
-
-.turn-phase-title {
-    font-family: var(--font-heading);
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-    line-height: 1.1;
-    white-space: nowrap;
-}
-
-.turn-instruction {
-    font-family: var(--font-body);
-    font-size: 0.88rem;
-    font-style: italic;
-    color: #f0e2c0;
-    flex: 1 1 auto;
-    text-align: center;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.7);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 0 8px;
-}
-
-.turn-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-}
 
 .header-action-btn {
     font-family: var(--font-heading);
@@ -950,75 +903,51 @@ body {
     transform: translateY(-1px);
 }
 
-/* Intel panels under card decks */
-.faction-intel-panel {
-    flex: 0 0 auto;
-    background: #17130e;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 4px 6px;
-    font-size: 0.74rem;
-    line-height: 1.25;
-    color: #a89470;
-}
-
-.intel-header {
-    font-family: var(--font-heading);
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
-    color: var(--mysore-gold);
-    border-bottom: 1px solid rgba(122, 92, 46, 0.4);
-    padding-bottom: 2px;
-    margin-bottom: 2px;
-}
-
-.legend-micro {
-    display: flex;
-    gap: 8px;
-    margin-top: 2px;
-    font-size: 0.7rem;
-}
-
-.legend-micro span {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-}
-
 /* ==========================================================================
-   6. STOCKFISH STYLE EVALUATION PANEL
+   6. STOCKFISH STYLE EVALUATION STRIP (Top Slot beneath Header)
    ========================================================================== */
 .eval-panel {
     width: 100%;
-    max-width: 580px;
-    flex: 0 0 auto;
-    background: #17130e;
-    border: 1.5px solid var(--border);
+    max-width: min(1800px, 98vw);
+    height: 30px;
+    flex: 0 0 30px;
+    background: rgba(18, 14, 10, 0.96);
+    border: 1px solid rgba(122, 92, 46, 0.4);
     border-radius: 4px;
-    padding: 4px 8px;
-    margin-top: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    animation: fadeIn 0.25s ease;
+    padding: 3px 12px;
+    margin-bottom: 4px;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    animation: fadeIn 0.25s ease;
+}
+
+.eval-panel.hidden {
+    display: none !important;
+    height: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
 }
 
 .eval-bar-container {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
 }
 
 .eval-bar-track {
-    width: 100%;
-    height: 14px;
+    flex: 1 1 auto;
+    height: 12px;
     background: var(--british-red);
     position: relative;
-    border-radius: 2px;
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), 0 1px 2px rgba(255,255,255,0.1);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+    border: 1px solid rgba(0,0,0,0.4);
 }
 
 .eval-bar-mysore {
@@ -1033,71 +962,23 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: var(--font-heading);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: #ffffff;
     text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 2px #000;
     pointer-events: none;
+    line-height: 1;
 }
 
 .eval-meta {
     display: flex;
-    justify-content: space-between;
-    font-family: var(--font-heading);
-    font-size: 0.6rem;
-    letter-spacing: 0.05em;
-    color: #a89470;
-}
-
-.engine-lines-container {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    border-top: 1px solid rgba(122, 92, 46, 0.4);
-    padding-top: 3px;
-}
-
-.engine-line {
-    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 1px 3px;
-    border-radius: 2px;
-    cursor: default;
-    font-size: 0.68rem;
-}
-
-.engine-eval-square {
+    gap: 12px;
     font-family: var(--font-heading);
-    font-size: 0.62rem;
-    font-weight: 700;
-    padding: 1px 4px;
-    border-radius: 2px;
-    min-width: 30px;
-    text-align: center;
-}
-
-.engine-eval-square.british-favored {
-    background: var(--british-red);
-    color: #fff;
-}
-
-.engine-eval-square.mysore-favored {
-    background: var(--mysore-green);
-    color: #fff;
-}
-
-.engine-eval-square.neutral {
-    background: #3a2e1e;
-    color: var(--parchment);
-}
-
-.engine-move {
-    font-family: monospace;
-    color: var(--parchment);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    color: #bfa577;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 /* ==========================================================================
@@ -1163,51 +1044,7 @@ svg#board {
     animation: targetPulse 1.2s infinite ease-in-out;
 }
 
-/* ==========================================================================
-   8. DEBUG MOVE VECTOR CONSOLE (Settings Toggle)
-   ========================================================================== */
-.debug-move-console {
-    width: 100%;
-    max-width: 580px;
-    background: #14100c;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    margin-top: 4px;
-    padding: 4px 8px;
-    box-sizing: border-box;
-}
 
-.debug-console-header {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--font-heading);
-    font-size: 0.66rem;
-    color: var(--mysore-gold);
-    border-bottom: 1px solid rgba(122, 92, 46, 0.4);
-    padding-bottom: 2px;
-    margin-bottom: 3px;
-}
-
-.debug-move-list {
-    max-height: 80px;
-    overflow-y: auto;
-    font-family: monospace;
-    font-size: 0.7rem;
-    color: #d4c090;
-    line-height: 1.35;
-}
-
-.move-entry {
-    display: flex;
-    gap: 10px;
-    padding: 2px 4px;
-    cursor: pointer;
-    border-radius: 2px;
-}
-
-.move-entry:hover {
-    background: rgba(232, 217, 176, 0.15);
-}
 
 /* ==========================================================================
    9. FLOATING TOOLTIPS & TOAST NOTIFICATIONS
@@ -1601,61 +1438,7 @@ svg#board {
     border-radius: 3px;
 }
 
-/* Last Processed Action Box */
-.last-action-box {
-    background: #19140e;
-    border: 1px solid #7a5c2e;
-    border-radius: 3px;
-    padding: 4px 6px;
-    flex: 0 0 auto;
-}
 
-.last-action-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2px;
-}
-
-.last-action-label {
-    font-family: var(--font-heading);
-    font-size: 0.6rem;
-    color: var(--mysore-gold);
-    letter-spacing: 0.08em;
-    font-weight: 700;
-}
-
-.luck-pill {
-    background: rgba(220, 50, 40, 0.3);
-    border: 1px solid #e03828;
-    color: #ff9999;
-    font-family: var(--font-heading);
-    font-size: 0.58rem;
-    font-weight: 800;
-    padding: 1px 5px;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-}
-
-.last-action-desc {
-    font-size: 0.72rem;
-    font-style: italic;
-    color: #f0e0c0;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.last-action-luck-detail {
-    font-size: 0.68rem;
-    color: #ffaa66;
-    font-weight: 600;
-    margin-top: 2px;
-    line-height: 1.15;
-}
 
 /* Notation Table & Rows */
 .notation-table-wrap {
@@ -1891,7 +1674,7 @@ svg#board {
    ────────────────────────────────────────────────────────────────────────── */
 @media (min-width: 1400px) {
     .app-header,
-    .turn-header,
+    .eval-panel,
     .game-container {
         max-width: min(1920px, 96vw);
     }
@@ -1901,8 +1684,8 @@ svg#board {
         align-items: flex-start;
         justify-content: center;
         gap: 12px;
-        height: calc(100dvh - 84px);
-        max-height: calc(100dvh - 84px);
+        height: calc(100dvh - 52px);
+        max-height: calc(100dvh - 52px);
     }
     .faction-column.mysore-column {
         flex: 0 0 270px;
@@ -2064,10 +1847,6 @@ svg#board {
         top: 3px;
         right: 4px;
     }
-    .faction-intel-panel {
-        padding: 3px 6px;
-        font-size: 0.72rem;
-    }
     .board-section {
         flex: 1 1 auto;
         height: 100%;
@@ -2195,9 +1974,6 @@ svg#board {
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    .faction-intel-panel {
-        display: none;
-    }
     .mobile-faction-tabs {
         display: none !important;
     }
@@ -2212,59 +1988,39 @@ svg#board {
         padding: 2px 4px;
     }
     .app-header {
-        height: 28px;
-        flex: 0 0 28px;
-        padding: 2px 4px;
+        height: 32px;
+        flex: 0 0 32px;
+        padding: 2px 6px;
         margin-bottom: 2px;
     }
     .header-branding h1 {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
     .header-subtitle {
         display: none;
     }
-    .pill {
-        font-size: 0.58rem;
-        padding: 1px 5px;
-    }
     .icon-btn {
-        width: 24px;
-        height: 24px;
-    }
-    .turn-header {
-        padding: 2px 6px;
-        margin-bottom: 2px;
-    }
-    .turn-header-main {
-        gap: 4px;
-    }
-    .faction-icon {
-        font-size: 1.1rem;
+        width: 22px;
+        height: 22px;
     }
     .turn-counter {
-        font-size: 0.55rem;
+        font-size: 0.58rem;
     }
     .turn-phase-title {
-        font-size: 0.78rem;
-    }
-    .turn-instruction {
-        display: none; /* Protect vertical space */
-    }
-    .turn-header-actions {
-        gap: 4px;
+        font-size: 0.72rem;
     }
     .header-action-btn {
-        min-height: 26px;
-        padding: 2px 7px;
-        font-size: 0.66rem;
+        min-height: 24px;
+        padding: 2px 6px;
+        font-size: 0.62rem;
     }
     .game-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 2px;
-        height: calc(100dvh - 66px);
-        max-height: calc(100dvh - 66px);
+        height: calc(100dvh - 38px);
+        max-height: calc(100dvh - 38px);
     }
     .board-section {
         order: 1;
@@ -2409,9 +2165,6 @@ svg#board {
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-    }
-    .faction-intel-panel {
-        display: none;
     }
     .drawer-panel {
         width: calc(100vw - 16px);

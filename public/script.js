@@ -429,10 +429,8 @@ function getValidTwoStepDestinations(cardName, sourceName) {
   return dests;
 }
 
-// ==========================================================================
-// 5. DIRECT POINT-AND-CLICK MAP INTERACTIONS
-// ==========================================================================
 function handleNodeClick(nodeName) {
+  if (isViewingHistory) return;
   if (isTurnBlockedForLocalPlayer()) {
     showToast("It is not your turn.", 'error');
     return;
@@ -636,6 +634,7 @@ function renderCardDeck(faction, availArray) {
 }
 
 function handleCardStrengthClick(faction, index, cardName) {
+  if (isViewingHistory) return;
   if (isTurnBlockedForLocalPlayer()) {
     showToast("It is not your turn.", 'error');
     return;
@@ -653,6 +652,7 @@ function handleCardStrengthClick(faction, index, cardName) {
 }
 
 function handleCardBodyClick(faction, index, cardName, isUsable) {
+  if (isViewingHistory) return;
   if (isTurnBlockedForLocalPlayer()) {
     showToast("It is not your turn.", 'error');
     return;
@@ -742,6 +742,14 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
   showToast(`Activated ${cardName}. Select a map target or card to trade.`, 'info');
 }
 
+function updateTurnHeaderInstruction() {
+  // Turn instruction banner is retired in streamlined UI
+}
+
+function renderDebugMoveList() {
+  // Debug move console is retired in streamlined UI
+}
+
 // ==========================================================================
 // 7. HEADER INSTRUCTIONS & ACTION BUTTONS
 // ==========================================================================
@@ -749,91 +757,48 @@ function updateTurnHeader(uiState, winner) {
   const header = document.getElementById('turn-header');
   const counter = document.getElementById('turn-counter');
   const title = document.getElementById('turn-phase-title');
-  const icon = document.getElementById('turn-faction-icon');
-  const battleBar = document.getElementById('battle-status-bar');
 
   if (!header || !uiState) return;
 
   if (winner === 1) {
-    header.className = 'turn-header british-phase victory-state';
-    counter.textContent = 'GAME OVER';
-    title.textContent = 'BRITISH VICTORY! ALL KEY CITIES OCCUPIED';
-    icon.textContent = '👑';
+    header.className = 'app-header british-phase victory-state';
+    if (counter) counter.textContent = 'GAME OVER';
+    if (title) title.textContent = 'BRITISH VICTORY';
     showToast('The British East India Company has achieved total dominion!', 'success');
     return;
   } else if (winner === -1) {
-    header.className = 'turn-header mysore-phase victory-state';
-    counter.textContent = 'GAME OVER';
-    title.textContent = 'MYSORE VICTORY! SULTANATE HAS WITHSTOOD SIEGE';
-    icon.textContent = '🐅';
+    header.className = 'app-header mysore-phase victory-state';
+    if (counter) counter.textContent = 'GAME OVER';
+    if (title) title.textContent = 'MYSORE VICTORY';
     showToast('The Sultanate of Mysore has repelled the British invasion!', 'success');
     return;
   }
 
   const whoToMove = uiState.who_to_move || 'British Move';
-  counter.textContent = `TURN ${uiState.turn} OF 4`;
+  if (counter) counter.textContent = `TURN ${uiState.turn} OF 4`;
 
   if (whoToMove === 'British Move') {
-    header.className = 'turn-header british-phase';
-    title.textContent = 'BRITISH PHASE: MOVE AN ARMY';
-    icon.textContent = '🦁';
+    header.className = 'app-header british-phase';
+    if (title) title.textContent = 'BRITISH: MOVE ARMY';
     if (window.innerWidth <= 860 && mobileActiveFaction !== 'british') {
       switchMobileFactionTab('british');
     }
   } else if (whoToMove === 'Mysore Card') {
-    header.className = 'turn-header mysore-phase';
-    title.textContent = 'MYSORE PHASE: PLAY A CARD';
-    icon.textContent = '🐅';
+    header.className = 'app-header mysore-phase';
+    if (title) title.textContent = 'MYSORE: PLAY CARD';
     if (window.innerWidth <= 860 && mobileActiveFaction !== 'mysore') {
       switchMobileFactionTab('mysore');
     }
   } else if (whoToMove === 'British Card') {
-    header.className = 'turn-header british-phase';
-    title.textContent = 'BRITISH PHASE: PLAY A CARD';
-    icon.textContent = '🦁';
+    header.className = 'app-header british-phase';
+    if (title) title.textContent = 'BRITISH: PLAY CARD';
     if (window.innerWidth <= 860 && mobileActiveFaction !== 'british') {
       switchMobileFactionTab('british');
     }
   }
 
-  if (battleBar) {
-  battleBar.classList.add('hidden'); // Hide top banner completely
-  }
-
-  // Render marker directly on map midpoint
   renderBattleMarker(uiState);
-
   updateActionButtons();
-  updateTurnHeaderInstruction();
-}
-
-function updateTurnHeaderInstruction() {
-  const instructionEl = document.getElementById('turn-instruction');
-  if (!instructionEl || !lastUiState) return;
-
-  if (activeSelection) {
-    if (!activeSelection.isTwoStep) {
-      // Unified instruction for one-step map targets OR trading
-      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Click a pulsing territory on the map, or an exhausted card to reclaim.`;
-    } else if (activeSelection.step === 1) {
-      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Select origin territory.`;
-    } else if (activeSelection.step === 2) {
-      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Move ${activeSelection.sourceNode} → Select glowing destination.`;
-    }
-    return;
-  }
-
-  if (selectedUnit) {
-    instructionEl.innerHTML = `📍 <strong>${selectedUnit} selected:</strong> Click a glowing destination node to march, or click Rest.`;
-    return;
-  }
-
-  const whoToMove = lastUiState.who_to_move || '';
-  if (whoToMove === 'British Move') {
-    instructionEl.textContent = 'Click an Army on the map to select, then click a pulsing destination.';
-  } else if (whoToMove.includes('Card')) {
-    instructionEl.textContent = 'Click a card in your hand to activate ability or commit battle strength.';
-  }
 }
 
 function updateActionButtons() {
@@ -891,47 +856,6 @@ function handleHeaderPassClick() {
     clearAllInteractionState();
     window.applyMove(passMove.idx);
   }
-}
-
-function handleHeaderResignClick() {
-  if (!currentGameState || getStateWinner(currentGameState) !== 0) return;
-
-  const confirmMsg = 'Are you sure you want to resign? This will concede the match.';
-  if (!confirm(confirmMsg)) return;
-
-  // Determine which side is resigning
-  const uiState = lastUiState;
-  let resigningSide = humanPlayerSide || 'british';
-
-  // In P2P multiplayer, notify opponent
-  if (matchMode === 'p2p_multiplayer') {
-    multiplayerManager.sendResign(resigningSide);
-  }
-
-  // Declare the opponent the winner
-  const winnerVal = resigningSide === 'british' ? -1 : 1;
-  const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
-  showToast(`${resigningSide.toUpperCase()} has resigned. ${winnerName} wins!`, 'success');
-
-  // Update the turn header to show victory state
-  const header = document.getElementById('turn-header');
-  const counter = document.getElementById('turn-counter');
-  const title = document.getElementById('turn-phase-title');
-  const icon = document.getElementById('turn-phase-icon');
-
-  if (header && counter && title && icon) {
-    header.className = winnerVal === 1
-      ? 'turn-header british-phase victory-state'
-      : 'turn-header mysore-phase victory-state';
-    counter.textContent = 'GAME OVER';
-    title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
-    icon.textContent = winnerVal === 1 ? '🦁' : '🐅';
-  }
-
-  // Disable further interaction
-  currentMoves = [];
-  updateActionButtons();
-  clearAllInteractionState();
 }
 
 function handleHeaderCancelClick() {
@@ -1042,38 +966,8 @@ async function startProgressiveEval(stateStr) {
 }
 
 // ==========================================================================
-// 9. DEBUG MOVE CONSOLE & DRAWER MENUS
+// 9. DRAWER MENUS
 // ==========================================================================
-function handleDebugToggle(enabled) {
-  settings.showDebugMoves = enabled;
-  const consoleEl = document.getElementById('debug-move-console');
-  if (enabled) {
-    consoleEl.classList.remove('hidden');
-    renderDebugMoveList();
-  } else {
-    consoleEl.classList.add('hidden');
-  }
-  if (typeof adjustBoardDimensions === 'function') {
-    setTimeout(adjustBoardDimensions, 10);
-  }
-}
-
-function renderDebugMoveList() {
-  if (!settings.showDebugMoves) return;
-  const list = document.getElementById('move-list');
-  const badge = document.getElementById('move-count-badge');
-  if (!list) return;
-
-  badge.textContent = currentMoves.length;
-  list.innerHTML = currentMoves.map(m => `
-    <div class="move-entry" onclick="window.applyMove(${m.idx})">
-      <span style="color:#bfa577; min-width:30px;">[${m.idx}]</span>
-      <strong style="color:var(--parchment); min-width:130px;">${m.type}</strong>
-      <span>${m.desc}</span>
-    </div>
-  `).join('');
-}
-
 function toggleTutorialMenu() {
   const tutorialDrawer = document.getElementById('tutorial-drawer');
   const settingsDrawer = document.getElementById('settings-drawer');
@@ -1272,37 +1166,7 @@ function renderNotationPanel() {
     phaseLabel.textContent = `Turn ${lastUiState.turn || 1} · ${who} PHASE`;
   }
 
-  // 3. Update Last Processed Action Box
-  const lastDesc = document.getElementById('last-action-desc');
-  const lastLuckPill = document.getElementById('last-action-luck-pill');
-  const lastLuckDetail = document.getElementById('last-action-luck-detail');
-
-  if (moveCount === 0) {
-    if (lastDesc) lastDesc.textContent = "Game started. Ready for Turn 1 move.";
-    if (lastLuckPill) lastLuckPill.classList.add('hidden');
-    if (lastLuckDetail) lastLuckDetail.classList.add('hidden');
-  } else {
-    const latest = isViewingHistory && browsingHistoryIndex >= 0
-      ? gameHistory[browsingHistoryIndex]
-      : gameHistory[moveCount - 1];
-
-    if (lastDesc) {
-      lastDesc.innerHTML = `<strong>#${latest.step} [${latest.actor === 'british' ? '🦁' : '🐅'}]</strong> ${latest.desc}`;
-    }
-
-    if (latest.hasLuck) {
-      if (lastLuckPill) lastLuckPill.classList.remove('hidden');
-      if (lastLuckDetail) {
-        lastLuckDetail.textContent = latest.luckDetail;
-        lastLuckDetail.classList.remove('hidden');
-      }
-    } else {
-      if (lastLuckPill) lastLuckPill.classList.add('hidden');
-      if (lastLuckDetail) lastLuckDetail.classList.add('hidden');
-    }
-  }
-
-  // 4. Populate 2-Column Move Notation Table (Chess.com Style)
+  // 3. Populate 2-Column Move Notation Table (Chess.com Style)
   const list = document.getElementById('moves-history-list');
   if (list) {
     if (moveCount === 0) {
@@ -1452,19 +1316,13 @@ function handleHistoricalRender(data, entry) {
   const icon = document.getElementById('turn-phase-icon');
   const instruction = document.getElementById('turn-instruction');
 
-  if (header && counter && title && icon) {
+  if (header) {
     header.className = entry.actor === 'british'
-      ? 'turn-header british-phase historical-mode'
-      : 'turn-header mysore-phase historical-mode';
-    counter.textContent = `HISTORY · MOVE #${entry.step}`;
-    title.textContent = `${entry.actor.toUpperCase()}: ${entry.notation}`;
-    icon.textContent = entry.actor === 'british' ? '🦁' : '🐅';
+      ? 'app-header british-phase historical-mode'
+      : 'app-header mysore-phase historical-mode';
   }
-  if (instruction) {
-    instruction.textContent = entry.desc + (entry.luckDetail ? ' — ' + entry.luckDetail : '');
-  }
-
-  renderDebugMoveList();
+  if (counter) counter.textContent = `HISTORY · MOVE #${entry.step}`;
+  if (title) title.textContent = `${entry.actor.toUpperCase()}: ${entry.notation}`;
 }
 
 function returnToLiveGame() {
@@ -1548,18 +1406,10 @@ function declareDraw(reason) {
   const header = document.getElementById('turn-header');
   const counter = document.getElementById('turn-counter');
   const title = document.getElementById('turn-phase-title');
-  const icon = document.getElementById('turn-phase-icon');
-  const instruction = document.getElementById('turn-instruction');
 
-  if (header && counter && title && icon) {
-    header.className = 'turn-header game-over-phase victory-state';
-    counter.textContent = 'MATCH DRAW';
-    title.textContent = 'TREATY OF SERINGAPATAM — DRAW AGREED';
-    icon.textContent = '🕊️';
-  }
-  if (instruction) {
-    instruction.textContent = reason;
-  }
+  if (header) header.className = 'app-header game-over-phase victory-state';
+  if (counter) counter.textContent = 'MATCH DRAW';
+  if (title) title.textContent = 'DRAW AGREED';
 
   gameHistory.push({
     step: gameHistory.length + 1,
@@ -1581,10 +1431,7 @@ function declareDraw(reason) {
 }
 
 function handleResignClick() {
-  if (isViewingHistory) {
-    showToast("Return to live game before resigning.", "info");
-    return;
-  }
+  if (isViewingHistory) return;
   if (!currentGameState || getStateWinner(currentGameState) !== 0) {
     showToast("Game is already finished.", "info");
     return;
@@ -1608,16 +1455,14 @@ function handleResignClick() {
   const header = document.getElementById('turn-header');
   const counter = document.getElementById('turn-counter');
   const title = document.getElementById('turn-phase-title');
-  const icon = document.getElementById('turn-phase-icon');
 
-  if (header && counter && title && icon) {
+  if (header) {
     header.className = winnerVal === 1
-      ? 'turn-header british-phase victory-state'
-      : 'turn-header mysore-phase victory-state';
-    counter.textContent = 'GAME OVER';
-    title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
-    icon.textContent = winnerVal === 1 ? '🦁' : '🐅';
+      ? 'app-header british-phase victory-state'
+      : 'app-header mysore-phase victory-state';
   }
+  if (counter) counter.textContent = 'GAME OVER';
+  if (title) title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
 
   gameHistory.push({
     step: gameHistory.length + 1,
@@ -1778,10 +1623,7 @@ async function triggerAiMove() {
 
 window.applyMove = function(moveIdx) {
   if (!currentGameState) return;
-  if (isViewingHistory) {
-    showToast("Viewing historical position. Click 'Return to Live' to make a move.", 'info');
-    return;
-  }
+  if (isViewingHistory) return;
 
   try {
     const stateBefore = currentGameState.copy();
@@ -1825,7 +1667,6 @@ function initGame() {
   const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
   handleLocalGameUpdate(gameData);
   renderNotationPanel();
-  updateConnectionPill('connected', '⬤ CLIENT READY (100% OFFLINE)');
 }
 
 // ==========================================================================
@@ -1933,16 +1774,14 @@ function setupMultiplayerCallbacks() {
     const header = document.getElementById('turn-header');
     const counter = document.getElementById('turn-counter');
     const title = document.getElementById('turn-phase-title');
-    const icon = document.getElementById('turn-phase-icon');
 
-    if (header && counter && title && icon) {
+    if (header) {
       header.className = winnerVal === 1
-        ? 'turn-header british-phase victory-state'
-        : 'turn-header mysore-phase victory-state';
-      counter.textContent = 'GAME OVER';
-      title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
-      icon.textContent = winnerVal === 1 ? '🦁' : '🐅';
+        ? 'app-header british-phase victory-state'
+        : 'app-header mysore-phase victory-state';
     }
+    if (counter) counter.textContent = 'GAME OVER';
+    if (title) title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
 
     currentMoves = [];
     updateActionButtons();
