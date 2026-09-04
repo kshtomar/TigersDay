@@ -337,6 +337,16 @@ body {
     gap: 12px;
 }
 
+.tutorial-content kbd {
+    font-family: var(--font-heading);
+    font-size: 0.72em;
+    padding: 1px 5px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: #221a12;
+    color: #ffe8a8;
+}
+
 .tutorial-item {
     display: flex;
     flex-direction: column;
@@ -698,57 +708,6 @@ body {
     background: #4d1f1f;
 }
 
-/* Battle Status Sub-Bar */
-.battle-status-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: rgba(0, 0, 0, 0.45);
-    border-top: 1px dashed rgba(229, 169, 60, 0.5);
-    padding-top: 3px;
-    margin-top: 2px;
-    font-size: 0.78rem;
-}
-
-.battle-pill {
-    background: #c0281a;
-    color: #fff;
-    font-family: var(--font-heading);
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    padding: 1px 6px;
-    border-radius: 2px;
-}
-
-.battle-details {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #f7eed8;
-}
-
-.battle-vs {
-    color: var(--mysore-gold);
-    font-style: italic;
-}
-
-.battle-strength-pill {
-    background: #2a1f0e;
-    border: 1px solid var(--mysore-gold);
-    padding: 0 6px;
-    border-radius: 8px;
-    color: #ffe599;
-    font-family: var(--font-heading);
-    font-size: 0.66rem;
-}
-
-.battle-tip {
-    font-size: 0.72rem;
-    font-style: italic;
-    color: #e0c896;
-}
-
 /* ==========================================================================
    4. MAIN GAMEPLAY CONTAINER (Zero-Scroll & Adaptive Multi-Device)
    ========================================================================== */
@@ -1069,7 +1028,7 @@ body {
     max-height: 100%;
     border: 2px solid var(--border);
     border-radius: 4px;
-    box-shadow: 0 0 0 2px #261b0e, 0 8px 24px rgba(0,0,0,0.85);
+    box-shadow: 0 0 0 1px #261b0e, 0 6px 18px rgba(0,0,0,0.75);
     overflow: hidden;
     background: #14100c; /* Antique dark wood frame background, NEVER ocean blue! */
     display: flex;
@@ -1225,6 +1184,27 @@ svg#board {
     display: none !important;
 }
 
+/* Keyboard focus ring — visible only for keyboard navigation */
+:focus {
+    outline: none;
+}
+:focus-visible {
+    outline: 2px solid var(--mysore-gold);
+    outline-offset: 2px;
+}
+.icon-btn:focus-visible,
+.header-text-btn:focus-visible,
+.header-action-btn:focus-visible,
+.mobile-tab-btn:focus-visible,
+.close-drawer-btn:focus-visible,
+.primary-btn:focus-visible,
+.secondary-btn:focus-visible {
+    outline: 2px solid var(--mysore-gold);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(212, 160, 48, 0.25);
+}
+
+
 /* GAME MODE & P2P MULTIPLAYER STYLES */
 .mode-select {
     width: 100%;
@@ -1346,10 +1326,6 @@ svg#board {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.review-icon {
-    font-size: 0.95rem;
 }
 
 .review-badge {
@@ -1572,6 +1548,14 @@ svg#board {
     text-align: center;
     font-style: italic;
     font-size: 0.72rem;
+    color: #7a6344;
+}
+
+.cards-empty-msg {
+    padding: 16px 10px;
+    text-align: center;
+    font-style: italic;
+    font-size: 0.78rem;
     color: #7a6344;
 }
 
@@ -2161,9 +2145,6 @@ svg#board {
         border-color: #d4a030;
         color: #ffe090;
         box-shadow: 0 0 8px var(--gold-glow);
-    }
-    .mobile-tab-icon {
-        font-size: 0.95rem;
     }
     .mobile-tab-badge {
         font-size: 0.58rem;
