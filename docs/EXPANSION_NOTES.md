@@ -29,6 +29,9 @@
 - **Chrome Cleanup:**
   - Removed orphaned `.pill.disconnected` and `.pill.waiting` styles leftover from deleted connection-pill chrome.
   - Removed unused `.drawer-icon` and `.header-subtitle` styles.
+  - Removed leftover battle sub-bar chrome (`.battle-status-bar`, `.battle-pill`, `.battle-details`, `.battle-vs`, `.battle-strength-pill`, `.battle-tip`) and unused `.review-icon` / `.mobile-tab-icon`.
+  - Added `:focus-visible` rings for keyboard navigation and styled `.cards-empty-msg` empty-hand state.
+  - Light board-card shadow declutter.
 
 ---
 

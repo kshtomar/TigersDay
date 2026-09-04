@@ -555,7 +555,7 @@ function renderCardDeck(faction, availArray) {
 
   const cardDataList = faction === 'mysore' ? MYSORE_CARD_DATA : BRITISH_CARD_DATA;
   if (!cardDataList || cardDataList.length === 0) {
-    container.innerHTML = '<div class="cards-empty-msg">No cards available</div>';
+    container.innerHTML = '<div class="cards-empty-msg">No cards in hand</div>';
     return;
   }
 

@@ -28,13 +28,13 @@
 
     <!-- Dynamic In-Turn Action Buttons (Clean text, no emojis) -->
     <div class="header-turn-actions">
-        <button id="header-rest-btn" class="header-action-btn rest-btn hidden" onclick="handleHeaderRestClick()">
+        <button id="header-rest-btn" class="header-action-btn rest-btn hidden" type="button" title="Rest selected unit (R)" aria-keyshortcuts="R" onclick="handleHeaderRestClick()">
             Rest Unit
         </button>
-        <button id="header-pass-btn" class="header-action-btn pass-btn hidden" onclick="handleHeaderPassClick()">
+        <button id="header-pass-btn" class="header-action-btn pass-btn hidden" type="button" title="Pass this phase (P)" aria-keyshortcuts="P" onclick="handleHeaderPassClick()">
             Pass Phase
         </button>
-        <button id="header-cancel-btn" class="header-action-btn cancel-btn hidden" onclick="handleHeaderCancelClick()">
+        <button id="header-cancel-btn" class="header-action-btn cancel-btn hidden" type="button" title="Cancel selection (Esc)" aria-keyshortcuts="Escape" onclick="handleHeaderCancelClick()">
             Cancel
         </button>
     </div>
@@ -192,7 +192,7 @@
                 <li><strong>Commit Strength:</strong> Click the round <strong>Wax Seal</strong> (+1, +2, +3) on the top-right of a card during battle.</li>
                 <li><strong>Activate Ability:</strong> Click the body of an active card, then click the glowing target on the map.</li>
                 <li><strong>Trade Card:</strong> Click an active card that has no board ability (glows gold), then click an exhausted card to reclaim.</li>
-                <li><strong>Rest or Pass:</strong> Use the inline "Rest Unit" or "Pass Phase" buttons in the top header.</li>
+                <li><strong>Rest or Pass:</strong> Use <em>Rest Unit</em> / <em>Pass Phase</em> in the header (or press <kbd>R</kbd> / <kbd>P</kbd>). <kbd>Esc</kbd> cancels a selection or closes drawers.</li>
             </ul>
         </div>
 
