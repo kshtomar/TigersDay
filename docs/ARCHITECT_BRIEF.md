@@ -132,3 +132,11 @@ Themes (prototype 2–3 first, not all ten at once):
 10. Twin Courts (split faction skins + phase token swap)
 
 Living doc: add Debugger checks per theme (contrast, mobile, no layout break, logic unchanged).
+
+## Iter D — START (prototype three)
+
+Debugger cleared C + P1s. Implement first:
+1. `campaign-parchment` (default)
+2. `lacquer-scarlet`
+3. `ink-wash`
+Settings picker; CSS variables on cards/seals/light board chrome; no logic changes; update living Debugger guidelines.
