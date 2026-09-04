@@ -667,6 +667,54 @@ html[data-theme="twin-courts"] {
 
 
 
+
+/* Iter E: Twin Courts — explicit phase/faction chrome */
+html[data-theme="twin-courts"] .app-header.british-phase {
+    border-bottom-width: 3px;
+    border-bottom-color: var(--british-red);
+    box-shadow: 0 2px 14px var(--crimson-glow);
+}
+html[data-theme="twin-courts"] .app-header.mysore-phase {
+    border-bottom-width: 3px;
+    border-bottom-color: var(--mysore-green);
+    box-shadow: 0 2px 14px var(--emerald-glow);
+}
+html[data-theme="twin-courts"] .british-column .faction-column-header {
+    border-color: var(--british-red);
+    color: var(--british-gold);
+}
+html[data-theme="twin-courts"] .mysore-column .faction-column-header {
+    border-color: var(--mysore-green);
+    color: var(--mysore-gold);
+}
+html[data-theme="twin-courts"] .turn-phase-title {
+    letter-spacing: 0.08em;
+    font-weight: 800;
+}
+html[data-theme="twin-courts"] .british-phase .turn-phase-title {
+    color: #ffb0a8;
+}
+html[data-theme="twin-courts"] .mysore-phase .turn-phase-title {
+    color: #90e0a8;
+}
+
+/* Iter E: Monsoon Glass — force solid surfaces (no blur / translucency) */
+html[data-theme="monsoon-glass"] .drawer-panel,
+html[data-theme="monsoon-glass"] .app-header,
+html[data-theme="monsoon-glass"] .player-card,
+html[data-theme="monsoon-glass"] .board-card,
+html[data-theme="monsoon-glass"] .faction-column {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+html[data-theme="monsoon-glass"] .drawer-panel {
+    background: var(--bg-drawer);
+    opacity: 1;
+}
+html[data-theme="monsoon-glass"] .app-header {
+    background: var(--bg-header);
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -3050,11 +3098,23 @@ svg#board {
         flex: 0 0 auto;
         flex-wrap: nowrap;
         padding: 2px 4px;
+        width: 100%;
+        max-width: 100vw;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+    .header-branding {
+        min-width: 0;
+        flex: 1 1 auto;
+        overflow: hidden;
     }
     .header-branding h1 {
         font-size: 0.72rem;
         letter-spacing: 0.04em;
-        max-width: 42vw;
+        max-width: min(38vw, 9.5rem);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .turn-phase-title {
         display: none;

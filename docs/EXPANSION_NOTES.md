@@ -5,6 +5,15 @@
 
 ---
 
+## What changed (Iter E)
+
+- **Twin Courts:** stronger phase/faction header + column chrome.
+- **Monsoon Glass:** solid surfaces forced (`backdrop-filter: none`); no blur dependency.
+- **Theme picker:** progressive disclosure + optgroups; shorter labels.
+- **P2 polish:** notation export empty-toast race guard; tighter ≤420px header overflow.
+
+---
+
 ## What changed (Iter D3)
 
 - Completed the 10-theme set: `monsoon-glass` (solid cool glass, no blur), `coastal-signal-flags`, `twin-courts` (stronger faction/phase split).

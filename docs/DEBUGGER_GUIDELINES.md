@@ -126,6 +126,14 @@ python -m http.server 8080 --directory public
 - [ ] No PeerJS/rules/engine/logic drift
 - [ ] Picker lists exactly these 10 (D1+D2+D3) — no extras
 
+
+### I. Iter E polish
+- [ ] Twin Courts: British/Mysore header phase chrome clearly distinct; faction column headers tinted
+- [ ] Monsoon Glass: drawers/header/cards remain opaque solid (no required blur)
+- [ ] Theme picker under Appearance disclosure with grouped options; all 10 themes still selectable
+- [ ] Copy notation: with ≥1 history entry does not false-empty toast; empty history still explains
+- [ ] ≤420px header: Online/Tutorial/Settings stay in view; no horizontal overflow hunt
+
 ## Report format (to Architect + Code Writer)
 
 ```

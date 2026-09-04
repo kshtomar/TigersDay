@@ -2283,7 +2283,9 @@ function resetGamePrompt() {
 }
 
 function exportFullNotation() {
-  if (!gameHistory.length) {
+  // Use live length at click time to avoid empty-toast races mid-render
+  const histLen = Array.isArray(gameHistory) ? gameHistory.length : 0;
+  if (histLen < 1) {
     showToast("No moves to export yet.", 'info');
     return;
   }

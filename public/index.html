@@ -279,22 +279,31 @@
             <span class="setting-desc">Higher values = stronger AI moves with longer thinking time. Range: 250 – 1,000,000.</span>
         </div>
 
-        <div class="settings-section">
-            <label class="setting-label" for="theme-select">Visual theme</label>
-            <select id="theme-select" class="mode-select" aria-label="Visual theme">
-                <option value="campaign-parchment">Campaign Parchment</option>
-                <option value="lacquer-scarlet">Mysore Lacquer &amp; Company Scarlet</option>
-                <option value="ink-wash">Ink-Wash Campaign Map</option>
-                <option value="miniature-brass">Miniature Brass Instruments</option>
-                <option value="sepoy-chalkboard">Sepoy Barracks Chalkboard</option>
-                <option value="rocket-night">Rocket Festival Night</option>
-                <option value="treaty-ledger">Treaty Ledger</option>
-                <option value="monsoon-glass">Monsoon Glass</option>
-                <option value="coastal-signal-flags">Coastal Signal Flags</option>
-                <option value="twin-courts">Twin Courts</option>
-            </select>
-            <span class="setting-desc">Changes chrome colors only — gameplay unchanged.</span>
-        </div>
+        <details class="settings-disclosure" id="theme-disclosure">
+            <summary class="settings-disclosure-summary">Appearance</summary>
+            <div class="settings-section" style="margin-top: 8px;">
+                <label class="setting-label" for="theme-select">Theme</label>
+                <select id="theme-select" class="mode-select" aria-label="Visual theme">
+                    <optgroup label="Classic">
+                        <option value="campaign-parchment">Campaign Parchment</option>
+                        <option value="lacquer-scarlet">Lacquer &amp; Scarlet</option>
+                        <option value="ink-wash">Ink-Wash Map</option>
+                    </optgroup>
+                    <optgroup label="Camp &amp; Night">
+                        <option value="miniature-brass">Miniature Brass</option>
+                        <option value="sepoy-chalkboard">Sepoy Chalkboard</option>
+                        <option value="rocket-night">Rocket Night</option>
+                        <option value="treaty-ledger">Treaty Ledger</option>
+                    </optgroup>
+                    <optgroup label="Weather &amp; Courts">
+                        <option value="monsoon-glass">Monsoon Glass</option>
+                        <option value="coastal-signal-flags">Signal Flags</option>
+                        <option value="twin-courts">Twin Courts</option>
+                    </optgroup>
+                </select>
+                <span class="setting-desc">Chrome only — rules unchanged. Monsoon Glass stays solid (no blur).</span>
+            </div>
+        </details>
 
         <hr class="settings-divider">
 
