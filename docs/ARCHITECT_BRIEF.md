@@ -98,3 +98,7 @@ Kshitij: keep going without asking. Still never merge to main.
 5. Clutter pass: remove leftover unused CSS from deleted chrome; tighten main board chrome only if it reduces noise
 
 Success: commits on architect/expansion; EXPANSION_NOTES updated; node --check public/script.js; no merge; no .pt mass-delete; no training rewrite.
+
+## Debugger
+
+Strict QA guidelines: `docs/DEBUGGER_GUIDELINES.md`. Debugger keeps a local copy on `architect/expansion`, verifies logic parity + layout + anti-clutter, and pings Architect + Code Writer on breaks.
