@@ -31,6 +31,7 @@ _Add entries below as `YYYY-MM-DD | severity | title — repro / expect`._
 
 <!-- REGRESSION_LOCKS_START -->
 - 2026-09-04 | P1 | P2P join fake/bad room code hangs on Connecting… — repro: Online → Join `TIGER-FAKE`; expect clear fail status/toast within a few seconds, not indefinite Connecting…
+- 2026-09-04 | P1 | Mobile ≤390 header overflow — Online/Settings/Tutorial sit past viewport (header scrollW≫clientW); expect controls reachable without horizontal hunt / not clipped off-screen
 <!-- REGRESSION_LOCKS_END -->
 
 
@@ -107,6 +108,15 @@ python -m http.server 8080 --directory public
 - [ ] `R` Rest / `P` Pass work when those header buttons are visible (not while typing in inputs)
 - [ ] Mobile ≤767: drawers use constrained height; British/Mysore/Moves tabs usable
 - [ ] No resurrected connection-pill / battle-status-bar / header-subtitle chrome
+
+
+### G. Iter C growth features (save / notation / model card)
+- [ ] **Save to this device** stores current binary state in `localStorage` (max 5); list appears under progressive **Saved games on this device** disclosure
+- [ ] **Load** from a slot restores the position; **Replace** asks before overwrite; delete removes the slot
+- [ ] Clipboard **Copy game state** + paste **Load from paste** still work
+- [ ] Moves panel **Copy notation** copies full match log when history is non-empty (sensible empty-state toast otherwise)
+- [ ] New save/export controls stay progressive — no permanent MP/save chrome on the board; room code still MP-panel-only
+- [ ] `docs/MODEL_CARD.md` present and names `alphatigerv13.pt` → `public/alphatiger.onnx` (no `.pt` mass-delete)
 
 ## Report format (to Architect + Code Writer)
 
