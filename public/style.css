@@ -203,6 +203,270 @@ html[data-theme="ink-wash"] {
     --scrollbar-thumb: #393c44;
 }
 
+html[data-theme="miniature-brass"] {
+    /* Miniature Brass Instruments */
+    --parchment: #e6dcc0;
+    --parchment-light: #f5efdc;
+    --parchment-dark: #c4b48a;
+    --ink: #2a2214;
+    --ink-light: #5c4a28;
+    --border: #8a7040;
+    --border-dark: #4a3a1c;
+
+    --british-red: #b03a28;
+    --british-red-dark: #6e2218;
+    --british-red-deep: #32100c;
+    --british-gold: #e8c050;
+
+    --mysore-green: #3a6a40;
+    --mysore-green-dark: #224028;
+    --mysore-green-deep: #101c12;
+    --mysore-gold: #d4b050;
+    --tiger-gold: #f0c040;
+
+    --gold-glow: rgba(232, 192, 80, 0.75);
+    --crimson-glow: rgba(176, 58, 40, 0.55);
+    --emerald-glow: rgba(58, 106, 64, 0.55);
+
+    --bg-deep: #12100a;
+    --bg-surface: #1a1610;
+    --bg-elevated: #2a2418;
+    --bg-header: #1a1610;
+    --bg-drawer: #1e1a12;
+    --bg-drawer-header: #2a2216;
+
+    --header-border: rgba(212, 176, 80, 0.35);
+    --text-muted: #9a8860;
+    --text-soft: #d4c090;
+    --accent-gold: #e8c050;
+
+    --chrome-shadow: rgba(0, 0, 0, 0.65);
+    --card-inset-glow: rgba(180, 140, 50, 0.25);
+
+    --header-british-mid: #2e1810;
+    --header-mysore-mid: #182418;
+    --header-victory-mid: #2e2410;
+
+    --board-frame-bg: #16120c;
+    --board-frame-outer: #3a2e18;
+
+    --seal-mysore-hi: #5a9050;
+    --seal-mysore-mid: #2e5a30;
+    --seal-mysore-lo: #142818;
+    --seal-mysore-border: #80b070;
+
+    --seal-british-hi: #d05040;
+    --seal-british-mid: #903020;
+    --seal-british-lo: #481810;
+    --seal-british-border: #e88070;
+
+    --mysore-card-border: #4a7048;
+    --british-card-border: #904030;
+
+    --card-desc-color: #4a3a1c;
+
+    --scrollbar-track: #16120c;
+    --scrollbar-thumb: #5a4828;
+}
+
+html[data-theme="sepoy-chalkboard"] {
+    /* Sepoy Barracks Chalkboard */
+    --parchment: #c8d0c0;
+    --parchment-light: #dce4d4;
+    --parchment-dark: #9aa890;
+    --ink: #e8f0e0;
+    --ink-light: #b8c8b0;
+    --border: #6a7a60;
+    --border-dark: #3a4a38;
+
+    --british-red: #c05048;
+    --british-red-dark: #7a3028;
+    --british-red-deep: #3a1814;
+    --british-gold: #c8b870;
+
+    --mysore-green: #70a060;
+    --mysore-green-dark: #406038;
+    --mysore-green-deep: #1c3018;
+    --mysore-gold: #b8c070;
+    --tiger-gold: #d0d080;
+
+    --gold-glow: rgba(200, 208, 112, 0.45);
+    --crimson-glow: rgba(192, 80, 72, 0.45);
+    --emerald-glow: rgba(112, 160, 96, 0.5);
+
+    --bg-deep: #1a2218;
+    --bg-surface: #222a20;
+    --bg-elevated: #2e382c;
+    --bg-header: #1e261c;
+    --bg-drawer: #242c22;
+    --bg-drawer-header: #30382e;
+
+    --header-border: rgba(180, 200, 160, 0.25);
+    --text-muted: #8a9a80;
+    --text-soft: #c0d0b0;
+    --accent-gold: #c8b870;
+
+    --chrome-shadow: rgba(0, 0, 0, 0.55);
+    --card-inset-glow: rgba(100, 120, 80, 0.2);
+
+    --header-british-mid: #2a1c1a;
+    --header-mysore-mid: #1a2a18;
+    --header-victory-mid: #2a2a1a;
+
+    --board-frame-bg: #1c241a;
+    --board-frame-outer: #2e3a2c;
+
+    --seal-mysore-hi: #80b070;
+    --seal-mysore-mid: #487040;
+    --seal-mysore-lo: #203820;
+    --seal-mysore-border: #a0d090;
+
+    --seal-british-hi: #d07068;
+    --seal-british-mid: #904038;
+    --seal-british-lo: #482018;
+    --seal-british-border: #e09890;
+
+    --mysore-card-border: #608058;
+    --british-card-border: #905850;
+
+    --card-desc-color: #2a3828;
+
+    --scrollbar-track: #1c241a;
+    --scrollbar-thumb: #4a5a44;
+}
+
+html[data-theme="rocket-night"] {
+    /* Rocket Festival Night */
+    --parchment: #e8d0a8;
+    --parchment-light: #f8e8c8;
+    --parchment-dark: #c4a070;
+    --ink: #1a1020;
+    --ink-light: #5a3060;
+    --border: #8a4068;
+    --border-dark: #4a1838;
+
+    --british-red: #e02840;
+    --british-red-dark: #901020;
+    --british-red-deep: #400810;
+    --british-gold: #f0c040;
+
+    --mysore-green: #28a060;
+    --mysore-green-dark: #106038;
+    --mysore-green-deep: #083018;
+    --mysore-gold: #e0a028;
+    --tiger-gold: #ff9020;
+
+    --gold-glow: rgba(255, 144, 32, 0.7);
+    --crimson-glow: rgba(224, 40, 64, 0.65);
+    --emerald-glow: rgba(40, 160, 96, 0.55);
+
+    --bg-deep: #0a0614;
+    --bg-surface: #120a1c;
+    --bg-elevated: #1e1230;
+    --bg-header: #100818;
+    --bg-drawer: #160e22;
+    --bg-drawer-header: #221430;
+
+    --header-border: rgba(224, 80, 140, 0.35);
+    --text-muted: #9870a8;
+    --text-soft: #e0a0c0;
+    --accent-gold: #f0c040;
+
+    --chrome-shadow: rgba(0, 0, 0, 0.75);
+    --card-inset-glow: rgba(160, 40, 100, 0.25);
+
+    --header-british-mid: #3a1020;
+    --header-mysore-mid: #0e2a20;
+    --header-victory-mid: #2e1a28;
+
+    --board-frame-bg: #0e0818;
+    --board-frame-outer: #2a1840;
+
+    --seal-mysore-hi: #40c880;
+    --seal-mysore-mid: #187848;
+    --seal-mysore-lo: #083820;
+    --seal-mysore-border: #60e0a0;
+
+    --seal-british-hi: #f04058;
+    --seal-british-mid: #a01830;
+    --seal-british-lo: #500818;
+    --seal-british-border: #ff6880;
+
+    --mysore-card-border: #289868;
+    --british-card-border: #c02848;
+
+    --card-desc-color: #3a2048;
+
+    --scrollbar-track: #0e0818;
+    --scrollbar-thumb: #4a2860;
+}
+
+html[data-theme="treaty-ledger"] {
+    /* Treaty Ledger */
+    --parchment: #f0e8d4;
+    --parchment-light: #faf6ec;
+    --parchment-dark: #d4c8a8;
+    --ink: #1e2430;
+    --ink-light: #3a4860;
+    --border: #5a6a80;
+    --border-dark: #2e3848;
+
+    --british-red: #8a3038;
+    --british-red-dark: #581820;
+    --british-red-deep: #2c0c10;
+    --british-gold: #c0a860;
+
+    --mysore-green: #2e5a48;
+    --mysore-green-dark: #1a382c;
+    --mysore-green-deep: #0c1c16;
+    --mysore-gold: #a89860;
+    --tiger-gold: #c0b070;
+
+    --gold-glow: rgba(192, 168, 96, 0.55);
+    --crimson-glow: rgba(138, 48, 56, 0.5);
+    --emerald-glow: rgba(46, 90, 72, 0.5);
+
+    --bg-deep: #0e1218;
+    --bg-surface: #141a22;
+    --bg-elevated: #1e2834;
+    --bg-header: #121820;
+    --bg-drawer: #161e28;
+    --bg-drawer-header: #1e2834;
+
+    --header-border: rgba(140, 160, 190, 0.28);
+    --text-muted: #7a8aa0;
+    --text-soft: #b0c0d0;
+    --accent-gold: #c0a860;
+
+    --chrome-shadow: rgba(0, 0, 0, 0.65);
+    --card-inset-glow: rgba(80, 100, 130, 0.2);
+
+    --header-british-mid: #2a181c;
+    --header-mysore-mid: #14241e;
+    --header-victory-mid: #242018;
+
+    --board-frame-bg: #10161e;
+    --board-frame-outer: #243040;
+
+    --seal-mysore-hi: #488868;
+    --seal-mysore-mid: #285848;
+    --seal-mysore-lo: #102820;
+    --seal-mysore-border: #68a888;
+
+    --seal-british-hi: #b04850;
+    --seal-british-mid: #702830;
+    --seal-british-lo: #381418;
+    --seal-british-border: #d07078;
+
+    --mysore-card-border: #3a6858;
+    --british-card-border: #784048;
+
+    --card-desc-color: #2a3448;
+
+    --scrollbar-track: #10161e;
+    --scrollbar-thumb: #3a4858;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;

@@ -5,6 +5,13 @@
 
 ---
 
+## What changed (Iter D2)
+
+- Added four CSS-variable themes to the Settings picker: `miniature-brass`, `sepoy-chalkboard`, `rocket-night`, `treaty-ledger` (kept D1 three).
+- Still chrome-only — no rules/logic changes.
+
+---
+
 ## What changed (Iter D)
 
 **Shipped on `architect/expansion`.**

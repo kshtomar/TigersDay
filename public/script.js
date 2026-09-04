@@ -2495,7 +2495,7 @@ function initBoardResponsiveAutoSizer() {
 }
 
 const THEME_KEY = 'tigersday_theme';
-const VALID_THEMES = ['campaign-parchment', 'lacquer-scarlet', 'ink-wash'];
+const VALID_THEMES = ['campaign-parchment', 'lacquer-scarlet', 'ink-wash', 'miniature-brass', 'sepoy-chalkboard', 'rocket-night', 'treaty-ledger'];
 
 function applyTheme(themeId) {
   const validTheme = VALID_THEMES.includes(themeId) ? themeId : 'campaign-parchment';
