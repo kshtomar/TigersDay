@@ -63,6 +63,9 @@
 
 ---
 
+
+4. **Iter D — Card & board visual themes** (parked; after C) — CSS-variable skins: Campaign Parchment, Lacquer/Scarlet, Ink-Wash Map, Brass Instruments, Monsoon Glass, Chalkboard, Rocket Night, Treaty Ledger, Signal Flags, Twin Courts. Settings picker; lightweight; no logic changes.
+
 ## Non-goals (still)
 
 - Never merge to `main`.

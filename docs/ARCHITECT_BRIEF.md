@@ -114,3 +114,21 @@ Debugger guidelines are a **living doc**: Code Writer adds checks when features 
 5. Model card stub only if cheap: note canonical ONNX source checkpoint in docs (no .pt deletes)
 
 Success: architect/expansion only; logic parity; Debugger checklist updated; node --check OK.
+
+## Iter D — Card & board visual themes (parked)
+
+Kshitij approved parking after Iter C. CSS-variable skins on existing `.player-card` / seals / light board chrome. No new frameworks, no heavy assets, Settings theme picker, default = Campaign Parchment.
+
+Themes (prototype 2–3 first, not all ten at once):
+1. Campaign Parchment
+2. Mysore Lacquer & Company Scarlet
+3. Ink-Wash Campaign Map
+4. Miniature Brass Instruments
+5. Monsoon Glass (with solid fallback)
+6. Sepoy Barracks Chalkboard
+7. Rocket Festival Night
+8. Treaty Ledger
+9. Coastal Signal Flags
+10. Twin Courts (split faction skins + phase token swap)
+
+Living doc: add Debugger checks per theme (contrast, mobile, no layout break, logic unchanged).
