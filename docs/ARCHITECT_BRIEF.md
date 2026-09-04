@@ -68,3 +68,12 @@ A new visitor can play, but the product still feels like a research demo: weak f
 ## Handoff
 
 Code Writer implements Iter A via `agy` (`--model gemini-3.8-flash --effort high`) in `/workspace/TigersDay`. Debugger owns red CI / conflicts only if they appear.
+
+## Audit addendum (evidence pass)
+
+Fold into Iter A if not already done:
+- Deduplicate `switchMobileFactionTab` in `public/script.js` (Moves tab broken)
+- Strip dead DOM refs from cleanup (`engine-lines-container`, `connection-pill`, debug console, etc.)
+- Fix stale “Diplomatic Mission” string vs real card names
+- P2P: `copyRoomCode` exists — improve discoverability/status, don’t reinvent
+- Browser UI does not `fetch()` the FastAPI server; treat server as research/Vercel path only
