@@ -118,6 +118,14 @@ python -m http.server 8080 --directory public
 - [ ] New save/export controls stay progressive — no permanent MP/save chrome on the board; room code still MP-panel-only
 - [ ] `docs/MODEL_CARD.md` present and names `alphatigerv13.pt` → `public/alphatiger.onnx` (no `.pt` mass-delete)
 
+### H. Iter D visual themes checklist
+- [ ] Theme picker sets data-theme on html and persists tigersday_theme
+- [ ] Reload restores last theme
+- [ ] All 3 themes render without broken contrast/layout
+- [ ] Cards/seals/header/drawers/board chrome visibly themed
+- [ ] No PeerJS/rules/engine/logic drift
+- [ ] Only 3 themes present (not the other 7)
+
 ## Report format (to Architect + Code Writer)
 
 ```

@@ -1,7 +1,21 @@
-# Expansion Notes — Iter C
+# Expansion Notes — Iter D
 
 **Branch:** `architect/expansion`  
 **North star:** intuitive · professional · void of clutter
+
+---
+
+## What changed (Iter D)
+
+**Shipped on `architect/expansion`.**
+
+- **Visual themes prototype (3 skins):** Implemented lightweight CSS-variable theming across chrome surfaces, header, cards, wax seals, drawers, and board frame without touching rules, engine, peer networking, or map SVG artwork:
+  - **Campaign Parchment (`campaign-parchment`):** Default aesthetic mapped onto CSS custom properties.
+  - **Mysore Lacquer & Company Scarlet (`lacquer-scarlet`):** Deep lacquer greens with vibrant scarlet accents and warm gold.
+  - **Ink-Wash Campaign Map (`ink-wash`):** Grayscale ink/wash map aesthetic with cool grays, soft ink blacks, and desaturated faction accents.
+- **Settings theme picker:** Progressive dropdown in Settings drawer (after AI strength, before Game state) that changes `data-theme` on `<html>` and persists to `localStorage` key `tigersday_theme`.
+- **Parked themes:** The remaining 7 themes from `docs/ARCHITECT_BRIEF.md` remain parked (only the 3 prototypes are implemented).
+- **Debugger coverage:** Added §H visual themes checklist to `docs/DEBUGGER_GUIDELINES.md`.
 
 ---
 
@@ -55,16 +69,12 @@
 
 ---
 
-## Remaining avenues (post–Iter C)
+## Remaining avenues (post–Iter D)
 
 1. **Dedicated weight hygiene PR** — after model card is accepted, consider archiving/removing historical `alphatigerv{7,8,10,11,12}*.pt` (keep v13 + betas); never blind mass-delete.
 2. **Spectate / share polish** — optional shareable notation link or download file (beyond clipboard).
 3. **Deeper a11y / i18n** — only if player feedback demands it.
-
----
-
-
-4. **Iter D — Card & board visual themes** (parked; after C) — CSS-variable skins: Campaign Parchment, Lacquer/Scarlet, Ink-Wash Map, Brass Instruments, Monsoon Glass, Chalkboard, Rocket Night, Treaty Ledger, Signal Flags, Twin Courts. Settings picker; lightweight; no logic changes.
+4. **Remaining visual themes** (parked) — Brass Instruments, Monsoon Glass, Chalkboard, Rocket Night, Treaty Ledger, Signal Flags, Twin Courts (7 remaining of 10 from `docs/ARCHITECT_BRIEF.md`). Prototypes 1–3 shipped in Iter D.
 
 ## Non-goals (still)
 
