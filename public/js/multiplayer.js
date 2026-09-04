@@ -223,7 +223,11 @@
 
       this.conn.on('error', (err) => {
         console.warn("Connection error:", err);
-        if (this.onError) this.onError(err.message || String(err));
+        const msg = err.message || String(err);
+        if (this.status === 'connecting') {
+          this._updateStatus('offline');
+        }
+        if (this.onError) this.onError(msg);
       });
     }
 

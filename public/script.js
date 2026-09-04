@@ -2006,6 +2006,14 @@ async function handleJoinGameClick() {
 
   try {
     await multiplayerManager.joinGame(code);
+    // Belt-and-suspenders: joinGame must leave us connected; never keep Connecting…
+    if (multiplayerManager.status !== 'connected') {
+      if (statusPill) {
+        statusPill.className = 'p2p-status-pill offline';
+        statusPill.textContent = 'Join failed — check code';
+      }
+      showToast("Couldn't join — check the room code.", 'error');
+    }
   } catch (err) {
     const msg = (err && err.message) ? err.message : "Couldn't join — check the room code.";
     if (statusPill) {
