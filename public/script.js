@@ -1736,9 +1736,6 @@ function setupMultiplayerCallbacks() {
       buildPlayerMap('p2p_multiplayer', mySide);
       showToast(`P2P Connected! You are playing as ${formattedSide}`, 'success');
       toggleSettingsMenu();
-    } else if (status === 'hosting') {
-    } else if (status === 'connecting') {
-    } else {
     }
   };
 
