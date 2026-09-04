@@ -30,7 +30,7 @@ This file is **not static**. Update it on `architect/expansion` in the same iter
 _Add entries below as `YYYY-MM-DD | severity | title — repro / expect`._
 
 <!-- REGRESSION_LOCKS_START -->
-- _(none yet — Debugger appends here on first P0/P1)_
+- 2026-09-04 | P1 | P2P join fake/bad room code hangs on Connecting… — repro: Online → Join `TIGER-FAKE`; expect clear fail status/toast within a few seconds, not indefinite Connecting…
 <!-- REGRESSION_LOCKS_END -->
 
 
