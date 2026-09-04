@@ -50,4 +50,3 @@ venv
 # Session / scratch artifacts
 *.ses
 :memory:.ses
-
