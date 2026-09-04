@@ -1,4 +1,7 @@
+html,
+html[data-theme="campaign-parchment"],
 :root {
+    /* Campaign Parchment — default */
     --parchment: #e8d9b0;
     --parchment-light: #faf4e4;
     --parchment-dark: #cbb882;
@@ -22,9 +25,182 @@
     --crimson-glow: rgba(192, 40, 26, 0.6);
     --emerald-glow: rgba(46, 122, 46, 0.6);
 
+    /* Chrome surface & background variables */
+    --bg-deep: #0f0d0a;
+    --bg-surface: #14100c;
+    --bg-elevated: #221c15;
+    --bg-header: #14100c;
+    --bg-drawer: #19140e;
+    --bg-drawer-header: #221a12;
+
+    --header-border: rgba(191, 165, 119, 0.25);
+    --text-muted: #8c7654;
+    --text-soft: #bfa577;
+    --accent-gold: #d4a030;
+
+    --chrome-shadow: rgba(0, 0, 0, 0.6);
+    --card-inset-glow: rgba(138, 100, 40, 0.2);
+
+    --header-british-mid: #2b1210;
+    --header-mysore-mid: #112814;
+    --header-victory-mid: #322412;
+
+    --board-frame-bg: #14100c;
+    --board-frame-outer: #261b0e;
+
+    --seal-mysore-hi: #449944;
+    --seal-mysore-mid: #1f5e1f;
+    --seal-mysore-lo: #0d380d;
+    --seal-mysore-border: #66bb66;
+
+    --seal-british-hi: #e03828;
+    --seal-british-mid: #9e1f14;
+    --seal-british-lo: #540e07;
+    --seal-british-border: #ff6655;
+
+    --mysore-card-border: #3b6b3b;
+    --british-card-border: #8b342a;
+
+    --card-desc-color: #523a18;
+
+    --scrollbar-track: #14100c;
+    --scrollbar-thumb: #4a3820;
+
     --font-heading: 'Cinzel', serif;
     --font-body: 'Cormorant Garamond', serif;
     --font-historic: 'IM Fell English', serif;
+}
+
+html[data-theme="lacquer-scarlet"] {
+    /* Mysore Lacquer & Company Scarlet */
+    --parchment: #eee5d3;
+    --parchment-light: #faf5e8;
+    --parchment-dark: #d5c39f;
+    --ink: #1a0f0a;
+    --ink-light: #4e2918;
+    --border: #733826;
+    --border-dark: #3f1910;
+
+    --british-red: #d62218;
+    --british-red-dark: #8c120c;
+    --british-red-deep: #440806;
+    --british-gold: #f0b032;
+
+    --mysore-green: #1a6d36;
+    --mysore-green-dark: #0f4320;
+    --mysore-green-deep: #072210;
+    --mysore-gold: #dfa028;
+    --tiger-gold: #f59600;
+
+    --gold-glow: rgba(240, 176, 50, 0.75);
+    --crimson-glow: rgba(214, 34, 24, 0.7);
+    --emerald-glow: rgba(26, 109, 54, 0.65);
+
+    --bg-deep: #0a130e;
+    --bg-surface: #0f1d15;
+    --bg-elevated: #162a1f;
+    --bg-header: #0f1d15;
+    --bg-drawer: #122219;
+    --bg-drawer-header: #193023;
+
+    --header-border: rgba(214, 34, 24, 0.35);
+    --text-muted: #86a18d;
+    --text-soft: #cbb483;
+    --accent-gold: #dfa028;
+
+    --chrome-shadow: rgba(0, 0, 0, 0.7);
+    --card-inset-glow: rgba(26, 109, 54, 0.2);
+
+    --header-british-mid: #381210;
+    --header-mysore-mid: #0e3d1c;
+    --header-victory-mid: #2c2510;
+
+    --board-frame-bg: #0c1811;
+    --board-frame-outer: #182e21;
+
+    --seal-mysore-hi: #2da453;
+    --seal-mysore-mid: #166833;
+    --seal-mysore-lo: #073418;
+    --seal-mysore-border: #44c472;
+
+    --seal-british-hi: #e8362a;
+    --seal-british-mid: #9c1b12;
+    --seal-british-lo: #520c06;
+    --seal-british-border: #ff6a5c;
+
+    --mysore-card-border: #24753c;
+    --british-card-border: #9e2820;
+
+    --card-desc-color: #4a2c18;
+
+    --scrollbar-track: #0c1811;
+    --scrollbar-thumb: #234731;
+}
+
+html[data-theme="ink-wash"] {
+    /* Ink-Wash Campaign Map */
+    --parchment: #dedad0;
+    --parchment-light: #edeae2;
+    --parchment-dark: #bfbaa9;
+    --ink: #1c1c1c;
+    --ink-light: #3e3f42;
+    --border: #606266;
+    --border-dark: #37393d;
+
+    --british-red: #9c4c4c;
+    --british-red-dark: #632e2e;
+    --british-red-deep: #321616;
+    --british-gold: #b0a790;
+
+    --mysore-green: #3f6858;
+    --mysore-green-dark: #264438;
+    --mysore-green-deep: #12221b;
+    --mysore-gold: #a49a80;
+    --tiger-gold: #baa87e;
+
+    --gold-glow: rgba(186, 168, 126, 0.55);
+    --crimson-glow: rgba(156, 76, 76, 0.5);
+    --emerald-glow: rgba(63, 104, 88, 0.5);
+
+    --bg-deep: #0f1012;
+    --bg-surface: #16171a;
+    --bg-elevated: #222428;
+    --bg-header: #151619;
+    --bg-drawer: #191b1e;
+    --bg-drawer-header: #23252a;
+
+    --header-border: rgba(180, 182, 190, 0.22);
+    --text-muted: #85888e;
+    --text-soft: #b6b8be;
+    --accent-gold: #a49a80;
+
+    --chrome-shadow: rgba(0, 0, 0, 0.7);
+    --card-inset-glow: rgba(70, 72, 75, 0.2);
+
+    --header-british-mid: #2c1e21;
+    --header-mysore-mid: #1c2723;
+    --header-victory-mid: #262420;
+
+    --board-frame-bg: #141518;
+    --board-frame-outer: #26282e;
+
+    --seal-mysore-hi: #53806e;
+    --seal-mysore-mid: #335447;
+    --seal-mysore-lo: #172a23;
+    --seal-mysore-border: #72a490;
+
+    --seal-british-hi: #b05757;
+    --seal-british-mid: #743434;
+    --seal-british-lo: #3e1a1a;
+    --seal-british-border: #c87575;
+
+    --mysore-card-border: #446d5c;
+    --british-card-border: #804747;
+
+    --card-desc-color: #3e4042;
+
+    --scrollbar-track: #141518;
+    --scrollbar-thumb: #393c44;
 }
 
 * {
@@ -39,11 +215,11 @@
     height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: #14100c;
+    background: var(--scrollbar-track);
     border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #4a3820;
+    background: var(--scrollbar-thumb);
     border: 1px solid var(--border);
     border-radius: 3px;
 }
@@ -58,9 +234,9 @@ html {
 }
 
 body {
-    background: #0f0d0a;
+    background: var(--bg-deep);
     background-image: 
-        radial-gradient(circle at 50% 10%, #1c1712 0%, #0d0b09 80%),
+        radial-gradient(circle at 50% 10%, var(--bg-elevated) 0%, var(--bg-deep) 80%),
         repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.2) 40px, rgba(0,0,0,0.2) 80px);
     color: var(--parchment);
     height: 100vh;
@@ -92,36 +268,36 @@ body {
     gap: 8px;
     padding: 2px 10px;
     margin-bottom: 4px;
-    background: #14100c;
-    border-bottom: 1.5px solid rgba(191, 165, 119, 0.25);
+    background: var(--bg-header);
+    border-bottom: 1.5px solid var(--header-border);
     border-radius: 4px;
     box-sizing: border-box;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    box-shadow: 0 2px 8px var(--chrome-shadow);
 }
 
 .app-header.british-phase {
     border-bottom: 2px solid var(--british-red);
-    background: linear-gradient(90deg, #18110e 0%, #2b1210 50%, #18110e 100%);
+    background: linear-gradient(90deg, var(--bg-header) 0%, var(--header-british-mid) 50%, var(--bg-header) 100%);
     box-shadow: 0 2px 10px rgba(192, 40, 26, 0.3);
 }
 
 .app-header.mysore-phase {
     border-bottom: 2px solid var(--mysore-green);
-    background: linear-gradient(90deg, #0e1610 0%, #112814 50%, #0e1610 100%);
+    background: linear-gradient(90deg, var(--bg-header) 0%, var(--header-mysore-mid) 50%, var(--bg-header) 100%);
     box-shadow: 0 2px 10px rgba(46, 122, 46, 0.3);
 }
 
 .app-header.game-over-phase,
 .app-header.victory-state {
     border-bottom: 2px solid var(--mysore-gold);
-    background: linear-gradient(90deg, #1c160e 0%, #322412 50%, #1c160e 100%);
+    background: linear-gradient(90deg, var(--bg-header) 0%, var(--header-victory-mid) 50%, var(--bg-header) 100%);
     box-shadow: 0 2px 12px rgba(212, 160, 48, 0.35);
 }
 
 .app-header.historical-mode {
-    border-bottom: 2px dashed #bfa577;
-    background: #1c160e;
+    border-bottom: 2px dashed var(--text-soft);
+    background: var(--bg-elevated);
 }
 
 .header-branding {
@@ -197,7 +373,7 @@ body {
 }
 
 .icon-btn {
-    background: #221c15;
+    background: var(--bg-elevated);
     border: 1px solid var(--border);
     color: var(--parchment);
     width: 28px;
@@ -218,9 +394,9 @@ body {
 
 
 .header-text-btn {
-    background: #221c15;
+    background: var(--bg-elevated);
     border: 1px solid var(--border);
-    color: var(--mysore-gold);
+    color: var(--accent-gold);
     font-family: var(--font-heading);
     font-size: 0.68rem;
     letter-spacing: 0.08em;
@@ -278,10 +454,10 @@ body {
     width: 350px;
     max-width: calc(100vw - 40px);
     max-height: calc(100vh - 70px);
-    background: #19140e;
+    background: var(--bg-drawer);
     border: 2px solid var(--border);
     border-radius: 4px;
-    box-shadow: 0 12px 36px rgba(0,0,0,0.9), 0 0 0 1px #3a2a16;
+    box-shadow: 0 12px 36px var(--chrome-shadow), 0 0 0 1px var(--border-dark);
     z-index: 1000;
     animation: slideDown 0.2s ease-out;
     display: flex;
@@ -295,7 +471,7 @@ body {
     align-items: center;
     border-bottom: 1px solid var(--border);
     padding: 8px 12px;
-    background: #221a12;
+    background: var(--bg-drawer-header);
 }
 
 .drawer-title-wrap {
@@ -314,7 +490,7 @@ body {
 .close-drawer-btn {
     background: none;
     border: none;
-    color: #998060;
+    color: var(--text-muted);
     font-size: 1.1rem;
     cursor: pointer;
     padding: 0 4px;
@@ -455,7 +631,7 @@ body {
 .settings-section h4 {
     font-family: var(--font-heading);
     font-size: 0.65rem;
-    color: #bfa577;
+    color: var(--text-soft);
     margin-bottom: 5px;
     letter-spacing: 0.06em;
 }
@@ -513,7 +689,7 @@ body {
 .setting-desc {
     display: block;
     font-size: 0.7rem;
-    color: #8c7654;
+    color: var(--text-muted);
     font-style: italic;
     margin-top: 2px;
     line-height: 1.25;
@@ -945,7 +1121,7 @@ body {
     background: var(--parchment);
     border: 1.5px solid var(--border);
     border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 0 8px rgba(138, 100, 40, 0.2);
+    box-shadow: 0 2px 5px var(--chrome-shadow), inset 0 0 8px var(--card-inset-glow);
     cursor: pointer;
     position: relative;
     transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease, filter 0.2s ease;
@@ -954,11 +1130,11 @@ body {
 }
 
 .mysore-card {
-    border-color: #3b6b3b;
+    border-color: var(--mysore-card-border);
 }
 
 .british-card {
-    border-color: #8b342a;
+    border-color: var(--british-card-border);
 }
 
 .player-card:hover:not(.card-activated):not(.used) {
@@ -985,13 +1161,13 @@ body {
 }
 
 .mysore-card .card-strength-seal {
-    background: radial-gradient(circle at 35% 35%, #449944 0%, #1f5e1f 80%, #0d380d 100%);
-    border: 1px solid #66bb66;
+    background: radial-gradient(circle at 35% 35%, var(--seal-mysore-hi) 0%, var(--seal-mysore-mid) 80%, var(--seal-mysore-lo) 100%);
+    border: 1px solid var(--seal-mysore-border);
 }
 
 .british-card .card-strength-seal {
-    background: radial-gradient(circle at 35% 35%, #e03828 0%, #9e1f14 80%, #540e07 100%);
-    border: 1px solid #ff6655;
+    background: radial-gradient(circle at 35% 35%, var(--seal-british-hi) 0%, var(--seal-british-mid) 80%, var(--seal-british-lo) 100%);
+    border: 1px solid var(--seal-british-border);
 }
 
 .card-strength-seal:hover {
@@ -1022,7 +1198,7 @@ body {
 .card-desc {
     font-family: var(--font-body);
     font-style: italic;
-    color: #523a18;
+    color: var(--card-desc-color);
 }
 
 /* Activated / Used Card State */
@@ -1159,9 +1335,9 @@ body {
     max-height: 100%;
     border: 2px solid var(--border);
     border-radius: 4px;
-    box-shadow: 0 0 0 1px #261b0e, 0 6px 18px rgba(0,0,0,0.75);
+    box-shadow: 0 0 0 1px var(--board-frame-outer), 0 6px 18px var(--chrome-shadow);
     overflow: hidden;
-    background: #14100c; /* Antique dark wood frame background, NEVER ocean blue! */
+    background: var(--board-frame-bg); /* Antique dark wood frame background, NEVER ocean blue! */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2392,7 +2568,7 @@ svg#board {
         right: 8px;
         top: 36px;
         max-height: min(76vh, calc(100dvh - 46px - env(safe-area-inset-bottom, 0px)));
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95), 0 0 0 1px #3a2a16;
+        box-shadow: 0 8px 30px var(--chrome-shadow), 0 0 0 1px var(--border-dark);
     }
     .drawer-content {
         padding: 10px 12px;
