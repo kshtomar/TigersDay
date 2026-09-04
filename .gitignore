@@ -46,3 +46,8 @@ venv
 
 /arena_log.txt
 /replay_log.txt
+
+# Session / scratch artifacts
+*.ses
+:memory:.ses
+
