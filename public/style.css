@@ -228,6 +228,50 @@ body {
     box-shadow: 0 0 8px var(--gold-glow);
 }
 
+
+.header-text-btn {
+    background: #221c15;
+    border: 1px solid var(--border);
+    color: var(--mysore-gold);
+    font-family: var(--font-heading);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.header-text-btn:hover {
+    background: #382c1f;
+    border-color: var(--mysore-gold);
+    box-shadow: 0 0 8px var(--gold-glow);
+}
+
+.tutorial-dismiss-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.tutorial-got-it-btn {
+    flex: 0 0 auto;
+    min-width: 96px;
+}
+
+.tutorial-dismiss-hint {
+    font-size: 0.78rem;
+    color: #a89878;
+    font-style: italic;
+}
+
+
 .info-glyph {
     font-family: var(--font-historic);
     font-size: 1.05rem;

@@ -40,6 +40,10 @@
     </div>
     
     <div class="header-actions">
+        <button id="online-play-btn" class="header-text-btn" type="button" title="Host or join online multiplayer" aria-label="Play Online" onclick="openOnlinePlay()">
+            Online
+        </button>
+
         <!-- Tutorial (i) Button -->
         <button id="tutorial-toggle-btn" class="icon-btn" title="How to Play & Controls" aria-label="How to Play" onclick="toggleTutorialMenu()">
             <span class="info-glyph">ⓘ</span>
@@ -191,6 +195,11 @@
                 <li><strong>Rest or Pass:</strong> Use the inline "Rest Unit" or "Pass Phase" buttons in the top header.</li>
             </ul>
         </div>
+
+        <div class="tutorial-dismiss-row">
+            <button type="button" class="primary-btn tutorial-got-it-btn" onclick="closeTutorialDrawer(true)">Got it</button>
+            <span class="tutorial-dismiss-hint">Reopen anytime with ⓘ</span>
+        </div>
     </div>
 </div>
 
@@ -229,6 +238,7 @@
                     <span class="setting-label" style="margin: 0; white-space: nowrap;">P2P MULTIPLAYER</span>
                     <span id="p2p-status-pill" class="p2p-status-pill offline">Offline — host or join a room</span>
                 </div>
+                <p class="setting-desc" style="margin-top: 6px;">Host a room, copy the code, and share it — or paste a friend’s code below to join.</p>
 
                 <div style="margin-top: 8px; display: flex; gap: 6px;">
                     <button class="primary-btn" style="flex: 1;" onclick="handleHostGameClick()">Host Room</button>
@@ -257,7 +267,7 @@
                 <input type="checkbox" id="eval-toggle-checkbox" onchange="handleEvalToggle(this.checked)">
                 <span class="toggle-slider"></span>
             </label>
-            <span class="setting-desc">Render Stockfish-style evaluation bar and top candidate engine lines.</span>
+            <span class="setting-desc">Render a Stockfish-style evaluation bar while the client AI thinks.</span>
         </div>
 
         <div class="settings-section">
