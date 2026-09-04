@@ -107,7 +107,7 @@
       }
     }
 
-    async joinGame(roomCode) {
+    async joinGame(roomCode, { timeoutMs = 10000 } = {}) {
       this.isHost = false;
       const cleanCode = (roomCode || '').trim().toUpperCase();
       this.roomCode = cleanCode;
@@ -119,18 +119,55 @@
         reliable: true
       });
 
-      this._setupConnection(connection, false);
+      try {
+        await new Promise((resolve, reject) => {
+          let settled = false;
+          const timer = setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            reject(new Error('Join timed out — check the room code and try again.'));
+          }, timeoutMs);
+
+          connection.once('open', () => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            resolve();
+          });
+
+          connection.once('error', (err) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            reject(new Error(err?.message || 'Failed to join room.'));
+          });
+        });
+      } catch (err) {
+        try { connection.close(); } catch (_) {}
+        this.conn = null;
+        if (this.peer && !this.peer.destroyed) {
+          try { this.peer.destroy(); } catch (_) {}
+          this.peer = null;
+        }
+        this._updateStatus('offline');
+        throw err;
+      }
+
+      this._setupConnection(connection, false, { alreadyOpen: true });
       return cleanCode;
     }
 
-    _setupConnection(connection, isIncoming) {
-      if (this.conn) {
+    _setupConnection(connection, isIncoming, { alreadyOpen = false } = {}) {
+      if (this.conn && this.conn !== connection) {
         this.conn.close();
       }
 
       this.conn = connection;
 
-      this.conn.on('open', () => {
+      let opened = false;
+      const onOpen = () => {
+        if (opened) return;
+        opened = true;
         console.log(`🤝 P2P Connection established! (Host: ${this.isHost})`);
         this._updateStatus('connected');
 
@@ -142,7 +179,12 @@
             guestSide: this.opponentSide
           });
         }
-      });
+      };
+
+      this.conn.on('open', onOpen);
+      if (alreadyOpen || this.conn.open) {
+        onOpen();
+      }
 
       this.conn.on('data', (data) => {
         this._handleIncomingData(data);
