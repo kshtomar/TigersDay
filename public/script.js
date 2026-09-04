@@ -928,6 +928,7 @@ async function startProgressiveEval(stateStr) {
 // 9. DRAWER MENUS
 // ==========================================================================
 const TUTORIAL_DISMISSED_KEY = 'tigersday_tutorial_dismissed';
+let lastDrawerOpener = null;
 
 function isTutorialDismissed() {
   try {
@@ -945,39 +946,108 @@ function setTutorialDismissed() {
   }
 }
 
-function openTutorialDrawer() {
+function openTutorialDrawer(openerEl = null) {
+  closeSettingsDrawer(false);
   const tutorialDrawer = document.getElementById('tutorial-drawer');
-  const settingsDrawer = document.getElementById('settings-drawer');
-  if (settingsDrawer) settingsDrawer.classList.add('hidden');
-  if (tutorialDrawer) tutorialDrawer.classList.remove('hidden');
+  const tutorialBtn = document.getElementById('tutorial-toggle-btn');
+
+  if (openerEl) {
+    lastDrawerOpener = openerEl;
+  } else if (!lastDrawerOpener && document.activeElement && document.activeElement !== document.body) {
+    lastDrawerOpener = document.activeElement;
+  }
+
+  if (tutorialDrawer) {
+    tutorialDrawer.classList.remove('hidden');
+    tutorialDrawer.setAttribute('aria-hidden', 'false');
+  }
+  if (tutorialBtn) tutorialBtn.setAttribute('aria-expanded', 'true');
+
+  const closeBtn = tutorialDrawer ? tutorialDrawer.querySelector('.close-drawer-btn') : null;
+  if (closeBtn) {
+    closeBtn.focus();
+  }
 }
 
-function closeTutorialDrawer(markDismissed = true) {
+function closeTutorialDrawer(markDismissed = true, restoreFocus = true) {
   const tutorialDrawer = document.getElementById('tutorial-drawer');
+  const tutorialBtn = document.getElementById('tutorial-toggle-btn');
+
   if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
     tutorialDrawer.classList.add('hidden');
+    tutorialDrawer.setAttribute('aria-hidden', 'true');
   }
+  if (tutorialBtn) tutorialBtn.setAttribute('aria-expanded', 'false');
+
   if (markDismissed) {
     setTutorialDismissed();
+  }
+
+  if (restoreFocus && lastDrawerOpener && typeof lastDrawerOpener.focus === 'function') {
+    lastDrawerOpener.focus();
+    lastDrawerOpener = null;
   }
 }
 
 function toggleTutorialMenu() {
   const tutorialDrawer = document.getElementById('tutorial-drawer');
+  const tutorialBtn = document.getElementById('tutorial-toggle-btn');
   if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-    closeTutorialDrawer(true);
+    closeTutorialDrawer(true, true);
   } else {
-    openTutorialDrawer();
+    openTutorialDrawer(tutorialBtn);
+  }
+}
+
+function openSettingsDrawer(openerEl = null) {
+  closeTutorialDrawer(true, false);
+  const settingsDrawer = document.getElementById('settings-drawer');
+  const settingsBtn = document.getElementById('settings-toggle-btn');
+
+  if (openerEl) {
+    lastDrawerOpener = openerEl;
+  } else if (!lastDrawerOpener && document.activeElement && document.activeElement !== document.body) {
+    lastDrawerOpener = document.activeElement;
+  }
+
+  if (settingsDrawer) {
+    settingsDrawer.classList.remove('hidden');
+    settingsDrawer.setAttribute('aria-hidden', 'false');
+  }
+  if (settingsBtn) settingsBtn.setAttribute('aria-expanded', 'true');
+
+  const firstControl = settingsDrawer ? settingsDrawer.querySelector('.close-drawer-btn, select, button, input') : null;
+  if (firstControl) {
+    firstControl.focus();
+  }
+}
+
+function closeSettingsDrawer(restoreFocus = true) {
+  const settingsDrawer = document.getElementById('settings-drawer');
+  const settingsBtn = document.getElementById('settings-toggle-btn');
+  const onlineBtn = document.getElementById('online-play-btn');
+
+  if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
+    settingsDrawer.classList.add('hidden');
+    settingsDrawer.setAttribute('aria-hidden', 'true');
+  }
+  if (settingsBtn) settingsBtn.setAttribute('aria-expanded', 'false');
+  if (onlineBtn) onlineBtn.setAttribute('aria-expanded', 'false');
+
+  if (restoreFocus && lastDrawerOpener && typeof lastDrawerOpener.focus === 'function') {
+    lastDrawerOpener.focus();
+    lastDrawerOpener = null;
   }
 }
 
 function toggleSettingsMenu() {
-  const tutorialDrawer = document.getElementById('tutorial-drawer');
   const settingsDrawer = document.getElementById('settings-drawer');
-  if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-    closeTutorialDrawer(true);
+  const settingsBtn = document.getElementById('settings-toggle-btn');
+  if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
+    closeSettingsDrawer(true);
+  } else {
+    openSettingsDrawer(settingsBtn);
   }
-  if (settingsDrawer) settingsDrawer.classList.toggle('hidden');
 }
 
 document.addEventListener('click', (e) => {
@@ -985,16 +1055,17 @@ document.addEventListener('click', (e) => {
   const tutorialBtn = document.getElementById('tutorial-toggle-btn');
   const settingsDrawer = document.getElementById('settings-drawer');
   const settingsBtn = document.getElementById('settings-toggle-btn');
+  const onlineBtn = document.getElementById('online-play-btn');
 
   if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-    if (!tutorialDrawer.contains(e.target) && !tutorialBtn.contains(e.target)) {
-      closeTutorialDrawer(true);
+    if (!tutorialDrawer.contains(e.target) && !(tutorialBtn && tutorialBtn.contains(e.target))) {
+      closeTutorialDrawer(true, false);
     }
   }
 
   if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
-    if (!settingsDrawer.contains(e.target) && !settingsBtn.contains(e.target)) {
-      settingsDrawer.classList.add('hidden');
+    if (!settingsDrawer.contains(e.target) && !(settingsBtn && settingsBtn.contains(e.target)) && !(onlineBtn && onlineBtn.contains(e.target))) {
+      closeSettingsDrawer(false);
     }
   }
 });
@@ -1004,14 +1075,34 @@ document.addEventListener('keydown', (e) => {
     const tutorialDrawer = document.getElementById('tutorial-drawer');
     const settingsDrawer = document.getElementById('settings-drawer');
     if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-      closeTutorialDrawer(true);
+      closeTutorialDrawer(true, true);
       return;
     }
     if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
-      settingsDrawer.classList.add('hidden');
+      closeSettingsDrawer(true);
       return;
     }
     handleHeaderCancelClick();
+    return;
+  }
+
+  // Primary action keyboard shortcuts (Rest / Pass)
+  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+  const isTyping = activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select' || (document.activeElement && document.activeElement.isContentEditable);
+  if (!isTyping && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (e.key === 'r' || e.key === 'R') {
+      const restBtn = document.getElementById('header-rest-btn');
+      if (restBtn && !restBtn.classList.contains('hidden') && !restBtn.disabled) {
+        e.preventDefault();
+        handleHeaderRestClick();
+      }
+    } else if (e.key === 'p' || e.key === 'P') {
+      const passBtn = document.getElementById('header-pass-btn');
+      if (passBtn && !passBtn.classList.contains('hidden') && !passBtn.disabled) {
+        e.preventDefault();
+        handleHeaderPassClick();
+      }
+    }
   }
 });
 
@@ -1520,22 +1611,40 @@ function switchMobileFactionTab(tab) {
   const mCol = document.getElementById('mysore-column');
   const notPanel = document.getElementById('notation-panel');
 
-  if (bTab) bTab.classList.remove('active-tab');
-  if (mTab) mTab.classList.remove('active-tab');
-  if (movesTab) movesTab.classList.remove('active-tab');
+  if (bTab) {
+    bTab.classList.remove('active-tab');
+    bTab.setAttribute('aria-selected', 'false');
+  }
+  if (mTab) {
+    mTab.classList.remove('active-tab');
+    mTab.setAttribute('aria-selected', 'false');
+  }
+  if (movesTab) {
+    movesTab.classList.remove('active-tab');
+    movesTab.setAttribute('aria-selected', 'false');
+  }
 
   if (tab === 'british') {
-    if (bTab) bTab.classList.add('active-tab');
+    if (bTab) {
+      bTab.classList.add('active-tab');
+      bTab.setAttribute('aria-selected', 'true');
+    }
     if (bCol) bCol.classList.remove('mobile-hidden');
     if (mCol) mCol.classList.add('mobile-hidden');
     if (notPanel) notPanel.classList.remove('mobile-active');
   } else if (tab === 'mysore') {
-    if (mTab) mTab.classList.add('active-tab');
+    if (mTab) {
+      mTab.classList.add('active-tab');
+      mTab.setAttribute('aria-selected', 'true');
+    }
     if (mCol) mCol.classList.remove('mobile-hidden');
     if (bCol) bCol.classList.add('mobile-hidden');
     if (notPanel) notPanel.classList.remove('mobile-active');
   } else if (tab === 'moves') {
-    if (movesTab) movesTab.classList.add('active-tab');
+    if (movesTab) {
+      movesTab.classList.add('active-tab');
+      movesTab.setAttribute('aria-selected', 'true');
+    }
     if (bCol) bCol.classList.add('mobile-hidden');
     if (mCol) mCol.classList.add('mobile-hidden');
     if (notPanel) notPanel.classList.add('mobile-active');
@@ -1660,11 +1769,8 @@ function initGame() {
 // ==========================================================================
 function openOnlinePlay() {
   const modeSelect = document.getElementById('game-mode-select');
-  const settingsDrawer = document.getElementById('settings-drawer');
-  const tutorialDrawer = document.getElementById('tutorial-drawer');
-  if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-    closeTutorialDrawer(true);
-  }
+  const onlineBtn = document.getElementById('online-play-btn');
+  closeTutorialDrawer(true, false);
   if (modeSelect) {
     if (modeSelect.value !== 'p2p_multiplayer') {
       modeSelect.value = 'p2p_multiplayer';
@@ -1675,11 +1781,14 @@ function openOnlinePlay() {
       setupMultiplayerCallbacks();
     }
   }
-  if (settingsDrawer) settingsDrawer.classList.remove('hidden');
+  openSettingsDrawer(onlineBtn);
+  if (onlineBtn) onlineBtn.setAttribute('aria-expanded', 'true');
   const panel = document.getElementById('multiplayer-panel');
   if (panel && typeof panel.scrollIntoView === 'function') {
     panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
+  const hostBtn = panel ? panel.querySelector('button') : null;
+  if (hostBtn) hostBtn.focus();
 }
 
 const MODE_DISPLAY_NAMES = {

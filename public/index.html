@@ -40,17 +40,17 @@
     </div>
     
     <div class="header-actions">
-        <button id="online-play-btn" class="header-text-btn" type="button" title="Host or join online multiplayer" aria-label="Play Online" onclick="openOnlinePlay()">
+        <button id="online-play-btn" class="header-text-btn" type="button" title="Host or join online multiplayer" aria-label="Play Online" aria-expanded="false" aria-controls="settings-drawer" onclick="openOnlinePlay()">
             Online
         </button>
 
         <!-- Tutorial (i) Button -->
-        <button id="tutorial-toggle-btn" class="icon-btn" title="How to Play & Controls" aria-label="How to Play" onclick="toggleTutorialMenu()">
+        <button id="tutorial-toggle-btn" class="icon-btn" title="How to Play & Controls" aria-label="How to Play" aria-expanded="false" aria-controls="tutorial-drawer" onclick="toggleTutorialMenu()">
             <span class="info-glyph">ⓘ</span>
         </button>
 
         <!-- Settings (Gear) Button -->
-        <button id="settings-toggle-btn" class="icon-btn" title="Settings & Options" aria-label="Settings" onclick="toggleSettingsMenu()">
+        <button id="settings-toggle-btn" class="icon-btn" title="Settings & Options" aria-label="Settings" aria-expanded="false" aria-controls="settings-drawer" onclick="toggleSettingsMenu()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -74,12 +74,12 @@
 </div>
 
 <!-- TUTORIAL / RULES MENU DRAWER (Comprehensive Rules & Controls) -->
-<div id="tutorial-drawer" class="drawer-panel hidden">
+<div id="tutorial-drawer" class="drawer-panel hidden" aria-hidden="true" role="region" aria-label="Game Rules and Controls">
     <div class="drawer-header">
         <div class="drawer-title-wrap">
             <h3>GAME RULES & CONTROLS</h3>
         </div>
-        <button class="close-drawer-btn" onclick="toggleTutorialMenu()">✕</button>
+        <button class="close-drawer-btn" aria-label="Close rules drawer" onclick="toggleTutorialMenu()">✕</button>
     </div>
 
     <div class="drawer-content tutorial-content">
@@ -204,12 +204,12 @@
 </div>
 
 <!-- SETTINGS DRAWER (Zero Popups) -->
-<div id="settings-drawer" class="drawer-panel hidden">
+<div id="settings-drawer" class="drawer-panel hidden" aria-hidden="true" role="region" aria-label="Game Settings">
     <div class="drawer-header">
         <div class="drawer-title-wrap">
             <h3>GAME SETTINGS</h3>
         </div>
-        <button class="close-drawer-btn" onclick="toggleSettingsMenu()">✕</button>
+        <button class="close-drawer-btn" aria-label="Close settings" onclick="toggleSettingsMenu()">✕</button>
     </div>
     
     <div class="drawer-content">
@@ -302,16 +302,16 @@
 <!-- MAIN GAMEPLAY BOARD & DECKS LAYOUT -->
 <main class="game-container">
     
-    <div class="mobile-faction-tabs" id="mobile-faction-tabs">
-        <button type="button" class="mobile-tab-btn active-tab" id="mobile-tab-british" onclick="switchMobileFactionTab('british')">
+    <div class="mobile-faction-tabs" id="mobile-faction-tabs" role="tablist" aria-label="Faction and notation views">
+        <button type="button" role="tab" aria-selected="true" aria-controls="british-column" class="mobile-tab-btn active-tab" id="mobile-tab-british" onclick="switchMobileFactionTab('british')">
             <span class="mobile-tab-title">BRITISH</span>
             <span class="mobile-tab-badge" id="mobile-british-count">6/6</span>
         </button>
-        <button type="button" class="mobile-tab-btn" id="mobile-tab-mysore" onclick="switchMobileFactionTab('mysore')">
+        <button type="button" role="tab" aria-selected="false" aria-controls="mysore-column" class="mobile-tab-btn" id="mobile-tab-mysore" onclick="switchMobileFactionTab('mysore')">
             <span class="mobile-tab-title">MYSORE</span>
             <span class="mobile-tab-badge" id="mobile-mysore-count">6/6</span>
         </button>
-        <button type="button" class="mobile-tab-btn" id="mobile-tab-moves" onclick="switchMobileFactionTab('moves')">
+        <button type="button" role="tab" aria-selected="false" aria-controls="notation-panel" class="mobile-tab-btn" id="mobile-tab-moves" onclick="switchMobileFactionTab('moves')">
             <span class="mobile-tab-title">MOVES</span>
             <span class="mobile-tab-badge" id="mobile-moves-count">0</span>
         </button>
