@@ -1951,6 +1951,14 @@ function setupMultiplayerCallbacks() {
 
   multiplayerManager.onError = (err) => {
     showToast(`P2P Error: ${err}`, 'error');
+    // PeerJS can error while join promise is still pending — never leave Connecting…
+    if (multiplayerManager.status === 'connecting' || multiplayerManager.status === 'offline') {
+      const pill = document.getElementById('p2p-status-pill');
+      if (pill) {
+        pill.className = 'p2p-status-pill offline';
+        pill.textContent = 'Join failed — check code';
+      }
+    }
   };
 }
 

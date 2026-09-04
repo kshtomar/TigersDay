@@ -71,7 +71,12 @@
 
         this.peer.on('error', (err) => {
           console.warn("PeerJS error:", err);
-          if (this.onError) this.onError(err.message || String(err));
+          const msg = err.message || String(err);
+          if (this.onError) this.onError(msg);
+          // If we were mid-join/host connect, don't leave UI stuck on Connecting…
+          if (this.status === 'connecting') {
+            this._updateStatus('offline');
+          }
           reject(err);
         });
 
@@ -107,7 +112,7 @@
       }
     }
 
-    async joinGame(roomCode, { timeoutMs = 10000 } = {}) {
+    async joinGame(roomCode, { timeoutMs = 8000 } = {}) {
       this.isHost = false;
       const cleanCode = (roomCode || '').trim().toUpperCase();
       this.roomCode = cleanCode;
@@ -122,12 +127,16 @@
       try {
         await new Promise((resolve, reject) => {
           let settled = false;
+          let onPeerError = null;
           const finish = (fn, arg) => {
             if (settled) return;
             settled = true;
             clearTimeout(timer);
             if (this.peer && onPeerError) {
-              try { this.peer.off('error', onPeerError); } catch (_) {}
+              try {
+                if (typeof this.peer.off === 'function') this.peer.off('error', onPeerError);
+                else if (typeof this.peer.removeListener === 'function') this.peer.removeListener('error', onPeerError);
+              } catch (_) {}
             }
             fn(arg);
           };
@@ -136,9 +145,14 @@
             finish(reject, new Error('Join timed out — check the room code and try again.'));
           }, timeoutMs);
 
-          const onPeerError = (err) => {
+          onPeerError = (err) => {
             const raw = (err && err.message) ? err.message : String(err || 'Failed to join room.');
-            finish(reject, new Error(raw));
+            // Prefer a clear join message for missing peers
+            const lower = raw.toLowerCase();
+            const msg = (lower.includes('could not connect') || lower.includes('unavailable') || lower.includes('lost'))
+              ? 'Could not join — check the room code.'
+              : raw;
+            finish(reject, new Error(msg));
           };
 
           if (this.peer) {

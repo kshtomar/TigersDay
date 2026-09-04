@@ -30,7 +30,7 @@ This file is **not static**. Update it on `architect/expansion` in the same iter
 _Add entries below as `YYYY-MM-DD | severity | title — repro / expect`._
 
 <!-- REGRESSION_LOCKS_START -->
-- 2026-09-04 | P1 | P2P join fake/bad room code hangs on Connecting… — repro: Online → Join `TIGER-FAKE`; expect clear fail status/toast within a few seconds, not indefinite Connecting…
+- 2026-09-04 | P1 | P2P join fake/bad room code — repro: Online → Join `TIGER-FAKE` / `TIGER-NOPE2`; expect toast AND status pill → “Join failed — check code” / offline within ~8s (pill must not stay Connecting… after peer error toast)
 - 2026-09-04 | P1 | Mobile ≤390 header overflow — Online/Settings/Tutorial sit past viewport (header scrollW≫clientW); expect controls reachable without horizontal hunt / not clipped off-screen
 <!-- REGRESSION_LOCKS_END -->
 

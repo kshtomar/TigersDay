@@ -2189,9 +2189,34 @@ svg#board {
         flex: 0 0 32px;
         padding: 2px 6px;
         margin-bottom: 2px;
+        gap: 4px;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    .header-branding {
+        min-width: 0;
+        flex: 1 1 auto;
+        overflow: hidden;
+        gap: 6px;
     }
     .header-branding h1 {
         font-size: 0.9rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .header-turn-meta {
+        min-width: 0;
+        overflow: hidden;
+    }
+    .header-actions {
+        flex-shrink: 0 !important;
+        gap: 4px !important;
+    }
+    .header-turn-actions {
+        margin: 0 2px;
+        gap: 2px;
     }
     .icon-btn {
         width: 22px;
@@ -2373,5 +2398,42 @@ svg#board {
         padding: 10px 12px;
         max-height: calc(min(76vh, calc(100dvh - 46px - env(safe-area-inset-bottom, 0px))) - 44px);
         overscroll-behavior: contain;
+    }
+}
+
+
+/* Narrow phones: keep Online / Tutorial / Settings visible; truncate turn chrome */
+@media (max-width: 420px) {
+    .app-header {
+        height: auto;
+        min-height: 32px;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+        padding: 2px 4px;
+    }
+    .header-branding h1 {
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        max-width: 42vw;
+    }
+    .turn-phase-title {
+        display: none;
+    }
+    .turn-counter {
+        font-size: 0.52rem;
+        letter-spacing: 0.06em;
+    }
+    .header-text-btn {
+        padding: 2px 6px;
+        font-size: 0.62rem;
+        letter-spacing: 0.04em;
+    }
+    .icon-btn {
+        width: 24px;
+        height: 24px;
+    }
+    .header-turn-actions .header-action-btn {
+        padding: 2px 4px;
+        font-size: 0.55rem;
     }
 }
