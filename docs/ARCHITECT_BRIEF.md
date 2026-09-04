@@ -104,3 +104,13 @@ Success: commits on architect/expansion; EXPANSION_NOTES updated; node --check p
 Strict QA guidelines: `docs/DEBUGGER_GUIDELINES.md`. Debugger keeps a local copy on `architect/expansion`, verifies logic parity + layout + anti-clutter, and pings Architect + Code Writer on breaks.
 
 Debugger guidelines are a **living doc**: Code Writer adds checks when features ship; Debugger adds regression locks when breaks are found; Architect prunes obsolete items.
+
+## Iter C — Persistence & share (autonomous)
+
+1. Local save/load: persist binary game state to `localStorage` (named slot or timestamp list); load restores playable position; clear/overwrite safe
+2. One-click export of full match algebraic notation from notation panel
+3. Light clutter check after new controls — progressive disclosure, not new permanent chrome
+4. Update EXPANSION_NOTES + DEBUGGER_GUIDELINES (living doc) with new checks
+5. Model card stub only if cheap: note canonical ONNX source checkpoint in docs (no .pt deletes)
+
+Success: architect/expansion only; logic parity; Debugger checklist updated; node --check OK.

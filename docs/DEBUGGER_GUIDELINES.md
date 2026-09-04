@@ -62,12 +62,18 @@ _Add entries below as `YYYY-MM-DD | severity | title — repro / expect`._
 - [ ] Join with code connects (or fails with clear status — not a silent hang)
 - [ ] Moves sync both ways; desync symptoms reported immediately
 - [ ] Room code lives in MP panel (no resurrecting header connection-pill clutter)
+- [ ] Header **Online** opens Settings → Online multiplayer panel (progressive disclosure; no permanent MP chrome on board)
+- [ ] Host status + room code + one-click Copy are obvious inside the MP panel; “share with opponent” affordance is clear
 
 ### C. UI layout / sizing (not too small, not too large)
 - [ ] Desktop (≥1024): board readable; side columns usable; no overlapping drawers/board
 - [ ] Tablet (768–1023) and mobile (≤767): faction / Moves tabs work; board not postage-stamp or overflowing viewport
 - [ ] Buttons/toggles: hit targets usable; text not clipped; icons not cartoon-huge
 - [ ] Tutorial + Settings drawers: open/close (Esc, ✕, outside); don’t permanently bury the board
+- [ ] Esc closes Tutorial and Settings drawers; focus returns sensibly to the control that opened them
+- [ ] Drawers expose `aria-expanded` / `aria-hidden` appropriately
+- [ ] When Rest/Pass are visible, **R** and **P** shortcuts work (ignored while typing in inputs)
+- [ ] Mobile ≤767: faction/Moves tabs usable (~30px hit targets); drawers don’t bury the board permanently
 - [ ] Eval bar (when on): visible but not dominating the board
 
 ### D. Clutter / redundancy
@@ -75,6 +81,8 @@ _Add entries below as `YYYY-MM-DD | severity | title — repro / expect`._
 - [ ] No dead UI (buttons that no-op, labels for removed features)
 - [ ] No leftover empty panels/CSS chrome from deleted features
 - [ ] First-run tutorial shows once; dismiss sticks (`localStorage`)
+- [ ] No resurrected `.pill` / header-subtitle / connection-pill chrome
+- [ ] `docs/PLAYER_QUICKSTART.md` present and matches current Host/Join + tutorial path
 
 ### E. Smoke commands
 ```bash
@@ -87,8 +95,18 @@ node --check public/js/mcts.js
 node --check public/js/multiplayer.js
 python -m http.server 8080 --directory public
 ```
+- [ ] Optional: `docs/PLAYER_QUICKSTART.md` path exists and matches the live Host/Join + tutorial flow
 
 ---
+
+
+### F. Iter B professional shell (added with Iter B)
+- [ ] `docs/PLAYER_QUICKSTART.md` present and matches current Settings/Online/tutorial UX
+- [ ] Settings mode labels are human-readable (not raw SNAKE_CASE)
+- [ ] Esc closes tutorial/settings drawers; focus returns to opener
+- [ ] `R` Rest / `P` Pass work when those header buttons are visible (not while typing in inputs)
+- [ ] Mobile ≤767: drawers use constrained height; British/Mysore/Moves tabs usable
+- [ ] No resurrected connection-pill / battle-status-bar / header-subtitle chrome
 
 ## Report format (to Architect + Code Writer)
 
