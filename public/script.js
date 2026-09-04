@@ -120,8 +120,7 @@ let players = { british: 'human', mysore: 'ai' };
 let currentEvalLoopState = null;
 
 let settings = {
-  showEval: false,
-  showDebugMoves: false
+  showEval: false
 };
 
 // Client-Side AI & MCTS Singletons
@@ -531,29 +530,6 @@ function handleNodeClick(nodeName) {
 // ==========================================================================
 let mobileActiveFaction = 'british';
 
-function switchMobileFactionTab(faction) {
-  mobileActiveFaction = faction;
-  const mysoreTab = document.getElementById('mobile-tab-mysore');
-  const britishTab = document.getElementById('mobile-tab-british');
-  const mysoreCol = document.getElementById('mysore-column');
-  const britishCol = document.getElementById('british-column');
-
-  if (mysoreTab && britishTab) {
-    if (faction === 'mysore') {
-      mysoreTab.classList.add('active-tab');
-      britishTab.classList.remove('active-tab');
-      if (mysoreCol) mysoreCol.classList.remove('mobile-hidden');
-      if (britishCol) britishCol.classList.add('mobile-hidden');
-    } else {
-      britishTab.classList.add('active-tab');
-      mysoreTab.classList.remove('active-tab');
-      if (britishCol) britishCol.classList.remove('mobile-hidden');
-      if (mysoreCol) mysoreCol.classList.add('mobile-hidden');
-    }
-  }
-}
-window.switchMobileFactionTab = switchMobileFactionTab;
-
 function renderAllCards() {
   if (!lastUiState) return;
   renderCardDeck('mysore', lastUiState.mysore_cards);
@@ -934,32 +910,11 @@ async function startProgressiveEval(stateStr) {
   if (!settings.showEval || !currentGameState) return;
   currentEvalLoopState = stateStr;
 
-  const linesContainer = document.getElementById('engine-lines-container');
-
   try {
     const rootNode = await mctsEngine.search(currentGameState, false);
     if (stateStr !== currentBitString || !settings.showEval) return;
-
     setEvalBar(rootNode.eval, mctsEngine.simulations);
-
-    const topLines = mctsEngine.getTopCandidateLines(3);
-    if (linesContainer && topLines.length > 0) {
-      linesContainer.innerHTML = '';
-      topLines.forEach(item => {
-        const evalVal = item.eval;
-        let evalStr = evalVal.toFixed(2);
-        if (evalVal > 0) evalStr = '+' + evalStr;
-        const squareClass = evalVal > 0.05 ? 'british-favored' : (evalVal < -0.05 ? 'mysore-favored' : 'neutral');
-
-        const lineDiv = document.createElement('div');
-        lineDiv.className = 'engine-line';
-        lineDiv.innerHTML = `
-          <span class="engine-eval-square ${squareClass}">${evalStr}</span>
-          <span class="engine-move">${item.moveName} (${item.visits}v)</span>
-        `;
-        linesContainer.appendChild(lineDiv);
-      });
-    }
+    // Engine candidate-lines chrome removed to keep the board view uncluttered.
   } catch (err) {
     console.warn("Client eval error:", err);
   }
@@ -1059,17 +1014,6 @@ document.addEventListener('keydown', (e) => {
 // ==========================================================================
 // 10. CLIENT-SIDE GAME ENGINE CONTROLLER
 // ==========================================================================
-function updateConnectionPill(status, customText = null) {
-  const pill = document.getElementById('connection-pill');
-  if (!pill) return;
-  pill.className = `pill ${status}`;
-  if (customText) {
-    pill.textContent = customText;
-  } else {
-    pill.textContent = status === 'connected' ? '⬤ CLIENT READY (OFFLINE)' : (status === 'waiting' ? '⬤ THINKING…' : '⬤ OFFLINE');
-  }
-}
-
 function buildPlayerMap(mode, humanSide) {
   if (mode === 'human') {
     players = { british: 'human', mysore: 'human' };
@@ -1104,10 +1048,10 @@ let browsingHistoryIndex = -1;
 let liveGameState = null;
 
 const BRITISH_CARD_NAMES = [
-  "Iron Rockets", "Wall Breach", "Sepoy Mutiny", "French Help", "Maratha Alliance", "Chitaldoorg Defection"
+  "Wall Breach", "Highlanders", "Royal Navy", "Divide and Rule", "Force March", "Princely States"
 ];
 const MYSORE_CARD_NAMES = [
-  "Royal Navy", "Highlanders", "Force March", "Sea Trade", "Diplomatic Mission", "Cavalry Raid"
+  "Iron Rockets", "Sepoy Mutiny", "French Alliance", "Monsoon", "Cavalry Raid", "Sea Trade"
 ];
 
 function isTurnBlockedForLocalPlayer() {
@@ -1564,6 +1508,7 @@ function switchRightColumnView(view) {
 }
 
 function switchMobileFactionTab(tab) {
+  mobileActiveFaction = tab;
   const bTab = document.getElementById('mobile-tab-british');
   const mTab = document.getElementById('mobile-tab-mysore');
   const movesTab = document.getElementById('mobile-tab-moves');
@@ -1592,6 +1537,7 @@ function switchMobileFactionTab(tab) {
     if (notPanel) notPanel.classList.add('mobile-active');
   }
 }
+window.switchMobileFactionTab = switchMobileFactionTab;
 
 function handleLocalGameUpdate(data) {
   clearAllInteractionState();
@@ -1639,7 +1585,6 @@ function handleLocalGameUpdate(data) {
 
 async function triggerAiMove() {
   if (!currentGameState || getStateWinner(currentGameState) !== 0) return;
-  updateConnectionPill('waiting', '⬤ AI THINKING (WASM)…');
 
   try {
     const { bestMove } = await mctsEngine.findMove(currentGameState, 0.0);
@@ -1651,12 +1596,10 @@ async function triggerAiMove() {
     recordMoveInHistory(stateBefore, bestMove, nextState, finalState);
 
     const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
-    updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
     handleLocalGameUpdate(gameData);
     renderNotationPanel();
   } catch (err) {
     console.error("AI execution error:", err);
-    updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
   }
 }
 
@@ -1711,6 +1654,30 @@ function initGame() {
 // ==========================================================================
 // 11. GAME MODE & P2P MULTIPLAYER INTEGRATION
 // ==========================================================================
+function openOnlinePlay() {
+  const modeSelect = document.getElementById('game-mode-select');
+  const settingsDrawer = document.getElementById('settings-drawer');
+  const tutorialDrawer = document.getElementById('tutorial-drawer');
+  if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
+    closeTutorialDrawer(true);
+  }
+  if (modeSelect) {
+    if (modeSelect.value !== 'p2p_multiplayer') {
+      modeSelect.value = 'p2p_multiplayer';
+      handleGameModeChange('p2p_multiplayer');
+    } else {
+      const p2pPanel = document.getElementById('multiplayer-panel');
+      if (p2pPanel) p2pPanel.classList.remove('hidden');
+      setupMultiplayerCallbacks();
+    }
+  }
+  if (settingsDrawer) settingsDrawer.classList.remove('hidden');
+  const panel = document.getElementById('multiplayer-panel');
+  if (panel && typeof panel.scrollIntoView === 'function') {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
 function handleGameModeChange(newMode) {
   matchMode = newMode;
   const p2pPanel = document.getElementById('multiplayer-panel');
@@ -1722,7 +1689,6 @@ function handleGameModeChange(newMode) {
     if (p2pPanel) p2pPanel.classList.remove('hidden');
     if (humanSideRow) humanSideRow.classList.remove('hidden');
     setupMultiplayerCallbacks();
-    updateConnectionPill('disconnected', '⬤ Offline — host or join a room');
   } else {
     if (p2pPanel) p2pPanel.classList.add('hidden');
     if (humanSideRow) {
@@ -1730,7 +1696,6 @@ function handleGameModeChange(newMode) {
       else humanSideRow.classList.add('hidden');
     }
     multiplayerManager.disconnect();
-    updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
   }
 
   buildPlayerMap(matchMode, humanPlayerSide);
@@ -1768,16 +1733,12 @@ function setupMultiplayerCallbacks() {
     }
 
     if (status === 'connected') {
-      updateConnectionPill('connected', `⬤ Connected — you are ${formattedSide}`);
       buildPlayerMap('p2p_multiplayer', mySide);
       showToast(`P2P Connected! You are playing as ${formattedSide}`, 'success');
       toggleSettingsMenu();
     } else if (status === 'hosting') {
-      updateConnectionPill('waiting', `⬤ Hosting (${roomCode}) — waiting for opponent`);
     } else if (status === 'connecting') {
-      updateConnectionPill('waiting', '⬤ Connecting…');
     } else {
-      updateConnectionPill('disconnected', '⬤ Offline — host or join a room');
     }
   };
 
@@ -1876,7 +1837,6 @@ async function handleHostGameClick() {
     statusPill.className = 'p2p-status-pill connecting';
     statusPill.textContent = 'Connecting…';
   }
-  updateConnectionPill('waiting', '⬤ Connecting…');
 
   try {
     const code = await multiplayerManager.hostGame(humanPlayerSide);
@@ -1892,7 +1852,6 @@ async function handleHostGameClick() {
       statusPill.className = 'p2p-status-pill offline';
       statusPill.textContent = 'Offline — host or join a room';
     }
-    updateConnectionPill('disconnected', '⬤ Offline — host or join a room');
     showToast("Failed to host P2P room.", 'error');
   }
 }
@@ -1911,7 +1870,6 @@ async function handleJoinGameClick() {
     statusPill.className = 'p2p-status-pill connecting';
     statusPill.textContent = 'Connecting…';
   }
-  updateConnectionPill('waiting', `⬤ Connecting to ${code}…`);
   showToast(`Connecting to ${code}...`, 'info');
 
   try {
@@ -1921,7 +1879,6 @@ async function handleJoinGameClick() {
       statusPill.className = 'p2p-status-pill offline';
       statusPill.textContent = 'Offline — host or join a room';
     }
-    updateConnectionPill('disconnected', '⬤ Offline — host or join a room');
     showToast("Failed to join room.", 'error');
   }
 }
@@ -2145,19 +2102,13 @@ function syncUIStateOnLoad() {
     handleEvalToggle(evalToggle.checked);
   }
 
-  // 3. Sync Debug Toggle
-  const debugToggle = document.getElementById('debug-toggle-checkbox');
-  if (debugToggle && typeof handleDebugToggle === 'function') {
-    handleDebugToggle(debugToggle.checked);
-  }
-
-  // 4. Sync Player Side
+  // 3. Sync Player Side
   const sideSelect = document.getElementById('human-side-select');
   if (sideSelect && typeof handleHumanSideChange === 'function') {
     handleHumanSideChange(sideSelect.value);
   }
 
-  // 5. Sync Game Mode
+  // 4. Sync Game Mode
   const modeSelect = document.getElementById('game-mode-select');
   if (modeSelect && typeof handleGameModeChange === 'function') {
     handleGameModeChange(modeSelect.value);
@@ -2175,14 +2126,10 @@ function adjustBoardDimensions() {
   if (!boardSection || !boardCard) return;
 
   const evalPanel = document.getElementById('eval-panel');
-  const debugConsole = document.getElementById('debug-move-console');
 
   let reservedHeight = 0;
   if (evalPanel && !evalPanel.classList.contains('hidden')) {
     reservedHeight += evalPanel.offsetHeight + 6;
-  }
-  if (debugConsole && !debugConsole.classList.contains('hidden')) {
-    reservedHeight += debugConsole.offsetHeight + 6;
   }
 
   const availWidth = boardSection.clientWidth;
