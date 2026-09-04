@@ -7,6 +7,8 @@
 
 ## What changed (Iter C)
 
+**Shipped on `architect/expansion`.**
+
 - **Local save / load persistence:** Settings → Game state now supports **Save to this device** (`localStorage` key `tigersday_save_slots`, max 5 timestamped slots). Progressive disclosure via a collapsed **Saved games on this device** panel with Load / Replace (confirm overwrite) / Delete. Clipboard **Copy game state** and paste-load remain available.
 - **Notation export:** Moves panel adds a quiet **Copy notation** control that copies the full match algebraic log (mode + numbered British/Mysore lines) to the clipboard — no permanent share chrome on the board.
 - **Model card (cheap):** Documented canonical ONNX source in `docs/MODEL_CARD.md` — `public/alphatiger.onnx` exported from `ai/models/alphatigerv13.pt` via `ai/onnx.py`. **No `.pt` mass-delete.**
