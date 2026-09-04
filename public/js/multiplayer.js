@@ -122,24 +122,35 @@
       try {
         await new Promise((resolve, reject) => {
           let settled = false;
-          const timer = setTimeout(() => {
-            if (settled) return;
-            settled = true;
-            reject(new Error('Join timed out — check the room code and try again.'));
-          }, timeoutMs);
-
-          connection.once('open', () => {
+          const finish = (fn, arg) => {
             if (settled) return;
             settled = true;
             clearTimeout(timer);
-            resolve();
+            if (this.peer && onPeerError) {
+              try { this.peer.off('error', onPeerError); } catch (_) {}
+            }
+            fn(arg);
+          };
+
+          const timer = setTimeout(() => {
+            finish(reject, new Error('Join timed out — check the room code and try again.'));
+          }, timeoutMs);
+
+          const onPeerError = (err) => {
+            const raw = (err && err.message) ? err.message : String(err || 'Failed to join room.');
+            finish(reject, new Error(raw));
+          };
+
+          if (this.peer) {
+            this.peer.on('error', onPeerError);
+          }
+
+          connection.once('open', () => {
+            finish(resolve);
           });
 
           connection.once('error', (err) => {
-            if (settled) return;
-            settled = true;
-            clearTimeout(timer);
-            reject(new Error(err?.message || 'Failed to join room.'));
+            finish(reject, new Error((err && err.message) || 'Failed to join room.'));
           });
         });
       } catch (err) {
