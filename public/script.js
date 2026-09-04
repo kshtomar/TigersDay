@@ -554,6 +554,10 @@ function renderCardDeck(faction, availArray) {
   container.innerHTML = '';
 
   const cardDataList = faction === 'mysore' ? MYSORE_CARD_DATA : BRITISH_CARD_DATA;
+  if (!cardDataList || cardDataList.length === 0) {
+    container.innerHTML = '<div class="cards-empty-msg">No cards available</div>';
+    return;
+  }
 
   cardDataList.forEach((card, index) => {
     const isUsable = Boolean(availArray[index]);
@@ -1153,7 +1157,7 @@ function renderNotationPanel() {
   const list = document.getElementById('moves-history-list');
   if (list) {
     if (moveCount === 0) {
-      list.innerHTML = `<div class="notation-empty-msg">No moves played yet</div>`;
+      list.innerHTML = `<div class="notation-empty-msg">No moves yet — play to fill the log</div>`;
     } else {
       let html = '';
       // Group impulses by round pairs (1. British Move | Mysore Move)
@@ -1678,12 +1682,24 @@ function openOnlinePlay() {
   }
 }
 
+const MODE_DISPLAY_NAMES = {
+  'human_vs_ai': 'Human vs AI',
+  'human': 'Pass & Play (Local)',
+  'p2p_multiplayer': 'Online Multiplayer',
+  'ai_vs_ai': 'AI vs AI (Spectate)'
+};
+
+function getModeDisplayName(mode) {
+  return MODE_DISPLAY_NAMES[mode] || (mode ? mode.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Unknown');
+}
+
 function handleGameModeChange(newMode) {
   matchMode = newMode;
   const p2pPanel = document.getElementById('multiplayer-panel');
   const humanSideRow = document.getElementById('human-side-row');
   const infoMode = document.getElementById('info-mode-label');
-  if (infoMode) infoMode.textContent = `Mode: ${newMode.replace(/_/g, ' ').toUpperCase()}`;
+  const readableMode = getModeDisplayName(newMode);
+  if (infoMode) infoMode.textContent = `Mode: ${readableMode}`;
 
   if (newMode === 'p2p_multiplayer') {
     if (p2pPanel) p2pPanel.classList.remove('hidden');
@@ -1700,7 +1716,7 @@ function handleGameModeChange(newMode) {
 
   buildPlayerMap(matchMode, humanPlayerSide);
   initGame();
-  showToast(`Switched mode: ${newMode.replace(/_/g, ' ').toUpperCase()}`, 'info');
+  showToast(`Switched mode: ${readableMode}`, 'info');
 }
 
 function handleHumanSideChange(side) {
@@ -1952,7 +1968,7 @@ function saveBinaryState() {
     return;
   }
   navigator.clipboard.writeText(currentBitString).then(() => {
-    showToast("Binary state copied to clipboard!", 'success');
+    showToast("Game state copied to clipboard!", 'success');
   });
   toggleSettingsMenu();
 }
@@ -1961,7 +1977,7 @@ function loadBinaryState() {
   const input = document.getElementById('binary-load-input');
   const rawInput = input ? input.value.trim() : '';
   if (!rawInput) {
-    showToast("Please enter a valid binary state string.", 'error');
+    showToast("Please enter a valid saved state string.", 'error');
     return;
   }
   try {

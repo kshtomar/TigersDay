@@ -215,17 +215,17 @@
     <div class="drawer-content">
         <!-- MATCH MODE CONTROLLER -->
         <div class="settings-section">
-            <h4>MATCH OPPONENT & MODE</h4>
+            <h4>PLAY MODE</h4>
             <select id="game-mode-select" class="mode-select" onchange="handleGameModeChange(this.value)">
-                <option value="human_vs_ai">Human vs WebAssembly AI</option>
-                <option value="human">Pass & Play (Local 2-Player)</option>
-                <option value="p2p_multiplayer">P2P Online Multiplayer (WebRTC)</option>
-                <option value="ai_vs_ai">AI vs AI (Spectator Mode)</option>
+                <option value="human_vs_ai">Human vs AI</option>
+                <option value="human">Pass & Play (Local)</option>
+                <option value="p2p_multiplayer">Online Multiplayer</option>
+                <option value="ai_vs_ai">AI vs AI (Spectate)</option>
             </select>
 
             <!-- Human Side Selector -->
             <div id="human-side-row" style="margin-top: 8px;">
-                <label class="setting-label">PLAY AS:</label>
+                <label class="setting-label">Your side:</label>
                 <select id="human-side-select" class="mode-select" onchange="handleHumanSideChange(this.value)">
                     <option value="british">British East India Company</option>
                     <option value="mysore">Sultanate of Mysore</option>
@@ -235,7 +235,7 @@
             <!-- P2P Multiplayer Panel -->
             <div id="multiplayer-panel" class="multiplayer-panel hidden">
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <span class="setting-label" style="margin: 0; white-space: nowrap;">P2P MULTIPLAYER</span>
+                    <span class="setting-label" style="margin: 0; white-space: nowrap;">Online multiplayer</span>
                     <span id="p2p-status-pill" class="p2p-status-pill offline">Offline — host or join a room</span>
                 </div>
                 <p class="setting-desc" style="margin-top: 6px;">Host a room, copy the code, and share it — or paste a friend’s code below to join.</p>
@@ -250,7 +250,7 @@
                 </div>
 
                 <div style="margin-top: 10px;">
-                    <label for="join-room-input" class="setting-label">OR JOIN FRIEND'S ROOM:</label>
+                    <label for="join-room-input" class="setting-label">Join a room</label>
                     <div class="input-action-row">
                         <input type="text" id="join-room-input" placeholder="e.g. TIGER-ABCD" spellcheck="false" style="text-transform: uppercase;">
                         <button class="primary-btn" onclick="handleJoinGameClick()">Join</button>
@@ -263,36 +263,36 @@
 
         <div class="settings-section">
             <label class="toggle-control">
-                <span class="toggle-label">Show AI Engine Evaluation</span>
+                <span class="toggle-label">Show AI evaluation bar</span>
                 <input type="checkbox" id="eval-toggle-checkbox" onchange="handleEvalToggle(this.checked)">
                 <span class="toggle-slider"></span>
             </label>
-            <span class="setting-desc">Render a Stockfish-style evaluation bar while the client AI thinks.</span>
+            <span class="setting-desc">Displays a live evaluation bar showing estimated win probability.</span>
         </div>
 
         <div class="settings-section">
-            <label class="setting-label" for="mcts-sims-slider">AI THINKING DEPTH (MCTS SIMULATIONS)</label>
+            <label class="setting-label" for="mcts-sims-slider">AI strength (thinking time)</label>
             <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
                 <input type="range" id="mcts-sims-slider" class="sims-slider" min="0" max="100" value="0" step="1" oninput="handleSimsSliderInput(this.value)">
                 <span id="mcts-sims-label" class="sims-label">250</span>
             </div>
-            <span class="setting-desc">Higher values = stronger AI but slower thinking. Range: 250 – 1,000,000.</span>
+            <span class="setting-desc">Higher values = stronger AI moves with longer thinking time. Range: 250 – 1,000,000.</span>
         </div>
 
         <hr class="settings-divider">
 
         <div class="settings-section">
-            <h4>STATE & CONTROLS</h4>
+            <h4>Game state</h4>
             <div class="settings-btn-group">
-                <button class="secondary-btn" onclick="saveBinaryState()">Copy State (Binary)</button>
+                <button class="secondary-btn" onclick="saveBinaryState()">Copy game state</button>
                 <button class="secondary-btn" onclick="resetGamePrompt()">Reset Board</button>
             </div>
         </div>
 
         <div class="settings-section">
-            <label for="binary-load-input" class="setting-label">RESTORE FROM BINARY STRING:</label>
+            <label for="binary-load-input" class="setting-label">Load game state</label>
             <div class="input-action-row">
-                <input type="text" id="binary-load-input" placeholder="Paste bit-string here..." spellcheck="false">
+                <input type="text" id="binary-load-input" placeholder="Paste saved state…" spellcheck="false">
                 <button class="primary-btn" onclick="loadBinaryState()">Load</button>
             </div>
         </div>
@@ -489,7 +489,7 @@
                     <span class="col-faction">Mysore</span>
                 </div>
                 <div id="moves-history-list" class="moves-history-list">
-                    <div class="notation-empty-msg">No moves played yet</div>
+                    <div class="notation-empty-msg">No moves yet — play to fill the log</div>
                 </div>
             </div>
 
@@ -524,7 +524,7 @@
         <div id="notation-tab-info-content" class="notation-tab-content hidden">
             <div class="info-content-card">
                 <h4>Match Details</h4>
-                <p id="info-mode-label">Mode: Local Pass & Play</p>
+                <p id="info-mode-label">Mode: Human vs AI</p>
                 <p><strong>Victory Conditions:</strong></p>
                 <ul>
                     <li><strong>British:</strong> Occupy all 5 Key cities simultaneously (Bombay, Hyderabad, Madras, Seringapatam, Coimbatore).</li>
