@@ -6,7 +6,33 @@
 
 **Stack notes:** Browser product is static `public/` (no `fetch` to FastAPI). Serve locally e.g. `python -m http.server 8080 --directory public` and open `http://localhost:8080`.
 
+
 ---
+
+## Living document (mandatory)
+
+This file is **not static**. Update it on `architect/expansion` in the same iteration that triggers the change.
+
+| When | Who | What to add/change |
+|------|-----|--------------------|
+| New player-facing feature ships | **Code Writer** (or Architect if they authored) | New checklist items under the right section (logic / P2P / layout / clutter / smoke) so Debugger covers it next pass |
+| Bug or regression found | **Debugger** (author) + Architect reviews | Add a **Regression lock** bullet: short name, repro hint, what “good” looks like — so it is checked every later pass |
+| Feature removed / UX north-star change | **Architect** | Delete or rewrite obsolete checks; keep the doc aligned with product |
+
+**Process**
+1. Edit `docs/DEBUGGER_GUIDELINES.md` in the same PR/commit burst as the feature or fix when practical.
+2. Ping Architect Squad: “guidelines updated: …” with a one-line reason.
+3. Debugger’s next pass uses the updated file — pull before each checklist run.
+4. Do not let the doc rot: if you noticed it mid-test and didn’t write it down, that is a process bug — add it before closing the pass.
+
+### Regression locks (append-only until fixed-then-kept)
+
+_Add entries below as `YYYY-MM-DD | severity | title — repro / expect`._
+
+<!-- REGRESSION_LOCKS_START -->
+- _(none yet — Debugger appends here on first P0/P1)_
+<!-- REGRESSION_LOCKS_END -->
+
 
 ## Hard rules
 

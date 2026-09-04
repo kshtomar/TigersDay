@@ -102,3 +102,5 @@ Success: commits on architect/expansion; EXPANSION_NOTES updated; node --check p
 ## Debugger
 
 Strict QA guidelines: `docs/DEBUGGER_GUIDELINES.md`. Debugger keeps a local copy on `architect/expansion`, verifies logic parity + layout + anti-clutter, and pings Architect + Code Writer on breaks.
+
+Debugger guidelines are a **living doc**: Code Writer adds checks when features ship; Debugger adds regression locks when breaks are found; Architect prunes obsolete items.
