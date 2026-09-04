@@ -86,3 +86,15 @@ Iterate the player UI toward:
 - **Void of clutter** — progressive disclosure over permanent chrome; delete dead UI, don’t add noise
 
 Applies to Iter A+ ongoing `public/` work.
+
+## Iter B — Professional shell (autonomous)
+
+Kshitij: keep going without asking. Still never merge to main.
+
+1. `docs/PLAYER_QUICKSTART.md` — short play path (modes, tutorial, Online/P2P, AI eval)
+2. Settings/empty-state copy pass — clearer labels, less jargon where players see it
+3. Keyboard/a11y: sensible tab order + Esc closes drawers; primary actions reachable
+4. Mobile ≤767px regression: faction/Moves tabs + drawers don’t fight the board
+5. Clutter pass: remove leftover unused CSS from deleted chrome; tighten main board chrome only if it reduces noise
+
+Success: commits on architect/expansion; EXPANSION_NOTES updated; node --check public/script.js; no merge; no .pt mass-delete; no training rewrite.
