@@ -466,6 +466,206 @@ html[data-theme="treaty-ledger"] {
     --scrollbar-track: #10161e;
     --scrollbar-thumb: #3a4858;
 }
+html[data-theme="monsoon-glass"] {
+    /* Monsoon Glass — solid cool glass fallback (no blur required) */
+    --parchment: #d8e8ec;
+    --parchment-light: #eef6f8;
+    --parchment-dark: #a8c4cc;
+    --ink: #0e2430;
+    --ink-light: #2a5060;
+    --border: #4a8090;
+    --border-dark: #244850;
+
+    --british-red: #c04050;
+    --british-red-dark: #782830;
+    --british-red-deep: #3a1018;
+    --british-gold: #b8d0d8;
+
+    --mysore-green: #2a8878;
+    --mysore-green-dark: #185850;
+    --mysore-green-deep: #0c2c28;
+    --mysore-gold: #70c0b0;
+    --tiger-gold: #90e0d0;
+
+    --gold-glow: rgba(144, 224, 208, 0.55);
+    --crimson-glow: rgba(192, 64, 80, 0.5);
+    --emerald-glow: rgba(42, 136, 120, 0.55);
+
+    --bg-deep: #061018;
+    --bg-surface: #0c1c28;
+    --bg-elevated: #143040;
+    --bg-header: #0a1824;
+    --bg-drawer: #0e2030;
+    --bg-drawer-header: #163448;
+
+    --header-border: rgba(100, 200, 220, 0.3);
+    --text-muted: #6898a8;
+    --text-soft: #a8d8e8;
+    --accent-gold: #90e0d0;
+
+    --chrome-shadow: rgba(0, 20, 40, 0.7);
+    --card-inset-glow: rgba(60, 160, 180, 0.2);
+
+    --header-british-mid: #2a1820;
+    --header-mysore-mid: #0e2830;
+    --header-victory-mid: #183038;
+
+    --board-frame-bg: #081420;
+    --board-frame-outer: #1a3848;
+
+    --seal-mysore-hi: #40b0a0;
+    --seal-mysore-mid: #207068;
+    --seal-mysore-lo: #0c3834;
+    --seal-mysore-border: #60d8c8;
+
+    --seal-british-hi: #d06070;
+    --seal-british-mid: #903040;
+    --seal-british-lo: #481820;
+    --seal-british-border: #e08898;
+
+    --mysore-card-border: #2a9080;
+    --british-card-border: #a04858;
+
+    --card-desc-color: #183848;
+
+    --scrollbar-track: #081420;
+    --scrollbar-thumb: #2a5870;
+}
+
+html[data-theme="coastal-signal-flags"] {
+    /* Coastal Signal Flags — bright maritime signal colors */
+    --parchment: #f0e8c8;
+    --parchment-light: #faf4e0;
+    --parchment-dark: #d0c090;
+    --ink: #102038;
+    --ink-light: #284878;
+    --border: #2868a8;
+    --border-dark: #143858;
+
+    --british-red: #e01828;
+    --british-red-dark: #900818;
+    --british-red-deep: #480810;
+    --british-gold: #f0c820;
+
+    --mysore-green: #108848;
+    --mysore-green-dark: #085828;
+    --mysore-green-deep: #042814;
+    --mysore-gold: #e8b020;
+    --tiger-gold: #ff9810;
+
+    --gold-glow: rgba(240, 200, 32, 0.7);
+    --crimson-glow: rgba(224, 24, 40, 0.65);
+    --emerald-glow: rgba(16, 136, 72, 0.6);
+
+    --bg-deep: #061428;
+    --bg-surface: #0c2040;
+    --bg-elevated: #143060;
+    --bg-header: #0a1c38;
+    --bg-drawer: #0e2448;
+    --bg-drawer-header: #163868;
+
+    --header-border: rgba(40, 140, 220, 0.4);
+    --text-muted: #6898c8;
+    --text-soft: #a8d0f0;
+    --accent-gold: #f0c820;
+
+    --chrome-shadow: rgba(0, 16, 48, 0.75);
+    --card-inset-glow: rgba(40, 120, 200, 0.25);
+
+    --header-british-mid: #401018;
+    --header-mysore-mid: #0c3020;
+    --header-victory-mid: #283018;
+
+    --board-frame-bg: #081830;
+    --board-frame-outer: #184878;
+
+    --seal-mysore-hi: #20b060;
+    --seal-mysore-mid: #107038;
+    --seal-mysore-lo: #083818;
+    --seal-mysore-border: #40e088;
+
+    --seal-british-hi: #f02838;
+    --seal-british-mid: #a01020;
+    --seal-british-lo: #500810;
+    --seal-british-border: #ff6070;
+
+    --mysore-card-border: #189050;
+    --british-card-border: #c01828;
+
+    --card-desc-color: #183060;
+
+    --scrollbar-track: #081830;
+    --scrollbar-thumb: #2860a0;
+}
+
+html[data-theme="twin-courts"] {
+    /* Twin Courts — stronger faction split + phase token contrast */
+    --parchment: #ebe0c4;
+    --parchment-light: #f7f0dc;
+    --parchment-dark: #cbb892;
+    --ink: #1a1420;
+    --ink-light: #4a3858;
+    --border: #6a5070;
+    --border-dark: #3a2840;
+
+    --british-red: #d02020;
+    --british-red-dark: #801010;
+    --british-red-deep: #400808;
+    --british-gold: #e8b030;
+
+    --mysore-green: #188040;
+    --mysore-green-dark: #0c5028;
+    --mysore-green-deep: #042814;
+    --mysore-gold: #d0a028;
+    --tiger-gold: #f08818;
+
+    --gold-glow: rgba(232, 176, 48, 0.7);
+    --crimson-glow: rgba(208, 32, 32, 0.7);
+    --emerald-glow: rgba(24, 128, 64, 0.65);
+
+    --bg-deep: #0c0a10;
+    --bg-surface: #141018;
+    --bg-elevated: #221828;
+    --bg-header: #120e16;
+    --bg-drawer: #18121e;
+    --bg-drawer-header: #241a2c;
+
+    --header-border: rgba(180, 100, 160, 0.3);
+    --text-muted: #907890;
+    --text-soft: #d0b0c8;
+    --accent-gold: #e8b030;
+
+    --chrome-shadow: rgba(0, 0, 0, 0.7);
+    --card-inset-glow: rgba(120, 60, 140, 0.2);
+
+    /* Phase tokens: stark court split */
+    --header-british-mid: #4a1010;
+    --header-mysore-mid: #0c3818;
+    --header-victory-mid: #3a2810;
+
+    --board-frame-bg: #100c14;
+    --board-frame-outer: #2a1830;
+
+    --seal-mysore-hi: #30b050;
+    --seal-mysore-mid: #147030;
+    --seal-mysore-lo: #083818;
+    --seal-mysore-border: #50e070;
+
+    --seal-british-hi: #e82828;
+    --seal-british-mid: #a01010;
+    --seal-british-lo: #500808;
+    --seal-british-border: #ff5858;
+
+    --mysore-card-border: #209040;
+    --british-card-border: #c02020;
+
+    --card-desc-color: #3a2848;
+
+    --scrollbar-track: #100c14;
+    --scrollbar-thumb: #483058;
+}
+
+
 
 * {
     box-sizing: border-box;

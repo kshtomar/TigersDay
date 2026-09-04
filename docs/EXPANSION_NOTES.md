@@ -5,6 +5,13 @@
 
 ---
 
+## What changed (Iter D3)
+
+- Completed the 10-theme set: `monsoon-glass` (solid cool glass, no blur), `coastal-signal-flags`, `twin-courts` (stronger faction/phase split).
+- CSS variables only — no rules/logic changes.
+
+---
+
 ## What changed (Iter D2)
 
 - Added four CSS-variable themes to the Settings picker: `miniature-brass`, `sepoy-chalkboard`, `rocket-night`, `treaty-ledger` (kept D1 three).
