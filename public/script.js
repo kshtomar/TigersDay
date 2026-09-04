@@ -968,17 +968,56 @@ async function startProgressiveEval(stateStr) {
 // ==========================================================================
 // 9. DRAWER MENUS
 // ==========================================================================
-function toggleTutorialMenu() {
+const TUTORIAL_DISMISSED_KEY = 'tigersday_tutorial_dismissed';
+
+function isTutorialDismissed() {
+  try {
+    return localStorage.getItem(TUTORIAL_DISMISSED_KEY) === '1';
+  } catch (err) {
+    return false;
+  }
+}
+
+function setTutorialDismissed() {
+  try {
+    localStorage.setItem(TUTORIAL_DISMISSED_KEY, '1');
+  } catch (err) {
+    // Gracefully handle storage quota or private browsing restrictions
+  }
+}
+
+function openTutorialDrawer() {
   const tutorialDrawer = document.getElementById('tutorial-drawer');
   const settingsDrawer = document.getElementById('settings-drawer');
   if (settingsDrawer) settingsDrawer.classList.add('hidden');
-  if (tutorialDrawer) tutorialDrawer.classList.toggle('hidden');
+  if (tutorialDrawer) tutorialDrawer.classList.remove('hidden');
+}
+
+function closeTutorialDrawer(markDismissed = true) {
+  const tutorialDrawer = document.getElementById('tutorial-drawer');
+  if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
+    tutorialDrawer.classList.add('hidden');
+  }
+  if (markDismissed) {
+    setTutorialDismissed();
+  }
+}
+
+function toggleTutorialMenu() {
+  const tutorialDrawer = document.getElementById('tutorial-drawer');
+  if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
+    closeTutorialDrawer(true);
+  } else {
+    openTutorialDrawer();
+  }
 }
 
 function toggleSettingsMenu() {
   const tutorialDrawer = document.getElementById('tutorial-drawer');
   const settingsDrawer = document.getElementById('settings-drawer');
-  if (tutorialDrawer) tutorialDrawer.classList.add('hidden');
+  if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
+    closeTutorialDrawer(true);
+  }
   if (settingsDrawer) settingsDrawer.classList.toggle('hidden');
 }
 
@@ -990,7 +1029,7 @@ document.addEventListener('click', (e) => {
 
   if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
     if (!tutorialDrawer.contains(e.target) && !tutorialBtn.contains(e.target)) {
-      tutorialDrawer.classList.add('hidden');
+      closeTutorialDrawer(true);
     }
   }
 
@@ -1006,7 +1045,7 @@ document.addEventListener('keydown', (e) => {
     const tutorialDrawer = document.getElementById('tutorial-drawer');
     const settingsDrawer = document.getElementById('settings-drawer');
     if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-      tutorialDrawer.classList.add('hidden');
+      closeTutorialDrawer(true);
       return;
     }
     if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
@@ -2088,4 +2127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   syncUIStateOnLoad();
   initGame(); 
   initBoardResponsiveAutoSizer();
+  if (!isTutorialDismissed()) {
+    openTutorialDrawer();
+  }
 });
