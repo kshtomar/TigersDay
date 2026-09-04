@@ -196,18 +196,6 @@ body {
     flex-shrink: 0;
 }
 
-.pill.disconnected {
-    background: rgba(192, 40, 26, 0.25);
-    color: #e58f8f;
-    border: 1px solid #9e2a20;
-}
-
-.pill.waiting {
-    background: rgba(212, 160, 48, 0.25);
-    color: #f0c868;
-    border: 1px solid #a87d20;
-}
-
 .icon-btn {
     background: #221c15;
     border: 1px solid var(--border);
@@ -314,10 +302,6 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-.drawer-icon {
-    font-size: 1rem;
 }
 
 .drawer-header h3 {
@@ -2093,9 +2077,6 @@ svg#board {
     }
     .header-branding h1 {
         font-size: 0.9rem;
-    }
-    .header-subtitle {
-        display: none;
     }
     .icon-btn {
         width: 22px;
