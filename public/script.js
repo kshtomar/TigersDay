@@ -1016,6 +1016,8 @@ function openSettingsDrawer(openerEl = null) {
   }
   if (settingsBtn) settingsBtn.setAttribute('aria-expanded', 'true');
 
+  if (typeof renderSaveSlots === 'function') renderSaveSlots();
+
   const firstControl = settingsDrawer ? settingsDrawer.querySelector('.close-drawer-btn, select, button, input') : null;
   if (firstControl) {
     firstControl.focus();
@@ -1997,11 +1999,12 @@ async function handleJoinGameClick() {
   try {
     await multiplayerManager.joinGame(code);
   } catch (err) {
+    const msg = (err && err.message) ? err.message : "Couldn't join — check the room code.";
     if (statusPill) {
       statusPill.className = 'p2p-status-pill offline';
-      statusPill.textContent = 'Offline — host or join a room';
+      statusPill.textContent = 'Join failed — check code';
     }
-    showToast("Failed to join room.", 'error');
+    showToast(msg, 'error');
   }
 }
 
@@ -2071,6 +2074,57 @@ async function copyRoomCode() {
 // ==========================================================================
 // 12. ZERO-POPUP STATE SAVE / LOAD & UTILITIES
 // ==========================================================================
+const SAVE_SLOTS_KEY = 'tigersday_save_slots';
+const MAX_SAVE_SLOTS = 5;
+
+function getSaveSlots() {
+  try {
+    const raw = localStorage.getItem(SAVE_SLOTS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function persistSaveSlots(slots) {
+  localStorage.setItem(SAVE_SLOTS_KEY, JSON.stringify(slots));
+}
+
+function formatSaveSlotLabel(ts) {
+  try {
+    return new Date(ts).toLocaleString(undefined, {
+      month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+    });
+  } catch (_) {
+    return 'Saved game';
+  }
+}
+
+function modeLabelForSave(mode) {
+  const map = {
+    human_vs_ai: 'Human vs AI',
+    human: 'Pass & Play',
+    p2p_multiplayer: 'Online',
+    ai_vs_ai: 'AI vs AI'
+  };
+  return map[mode] || mode || 'Game';
+}
+
+function applyLoadedBitString(rawInput, successMsg) {
+  currentGameState = new GameState().read_str(rawInput);
+  gameHistory = [];
+  isViewingHistory = false;
+  browsingHistoryIndex = -1;
+  liveGameState = null;
+  const banner = document.getElementById('historical-review-banner');
+  if (banner) banner.classList.add('hidden');
+  const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
+  handleLocalGameUpdate(gameData);
+  renderNotationPanel();
+  showToast(successMsg || 'Game state loaded successfully!', 'success');
+}
+
 function saveBinaryState() {
   if (!currentBitString) {
     showToast("No active game state to save.", 'error');
@@ -2078,8 +2132,113 @@ function saveBinaryState() {
   }
   navigator.clipboard.writeText(currentBitString).then(() => {
     showToast("Game state copied to clipboard!", 'success');
+  }).catch(() => {
+    showToast("Could not copy to clipboard.", 'error');
   });
-  toggleSettingsMenu();
+}
+
+function saveGameToBrowser() {
+  if (!currentBitString) {
+    showToast("No active game state to save.", 'error');
+    return;
+  }
+  let slots = getSaveSlots();
+  if (slots.length >= MAX_SAVE_SLOTS) {
+    const ok = confirm(`You already have ${MAX_SAVE_SLOTS} saved games. Overwrite the oldest one?`);
+    if (!ok) return;
+    slots = slots.slice().sort((a, b) => (a.savedAt || 0) - (b.savedAt || 0));
+    slots.shift();
+  }
+  const now = Date.now();
+  slots.unshift({
+    id: `slot_${now}`,
+    label: formatSaveSlotLabel(now),
+    bitString: currentBitString,
+    savedAt: now,
+    mode: matchMode,
+    moveCount: gameHistory.length
+  });
+  persistSaveSlots(slots);
+  renderSaveSlots();
+  const disclosure = document.getElementById('saved-games-disclosure');
+  if (disclosure) disclosure.open = true;
+  showToast("Game saved on this device.", 'success');
+}
+
+function overwriteSaveSlot(slotId) {
+  if (!currentBitString) {
+    showToast("No active game state to save.", 'error');
+    return;
+  }
+  const ok = confirm("Overwrite this saved game with the current position?");
+  if (!ok) return;
+  const slots = getSaveSlots();
+  const idx = slots.findIndex(s => s.id === slotId);
+  if (idx < 0) {
+    showToast("Saved game not found.", 'error');
+    return;
+  }
+  const now = Date.now();
+  slots[idx] = {
+    id: slotId,
+    label: formatSaveSlotLabel(now),
+    bitString: currentBitString,
+    savedAt: now,
+    mode: matchMode,
+    moveCount: gameHistory.length
+  };
+  persistSaveSlots(slots);
+  renderSaveSlots();
+  showToast("Saved game updated.", 'success');
+}
+
+function loadGameFromSlot(slotId) {
+  const slot = getSaveSlots().find(s => s.id === slotId);
+  if (!slot || !slot.bitString) {
+    showToast("Saved game not found.", 'error');
+    return;
+  }
+  try {
+    applyLoadedBitString(slot.bitString, "Saved game loaded.");
+    closeSettingsDrawer(true);
+  } catch (err) {
+    showToast(`Error: ${err.message}`, 'error');
+  }
+}
+
+function deleteSaveSlot(slotId) {
+  const ok = confirm("Delete this saved game?");
+  if (!ok) return;
+  const slots = getSaveSlots().filter(s => s.id !== slotId);
+  persistSaveSlots(slots);
+  renderSaveSlots();
+  showToast("Saved game deleted.", 'info');
+}
+
+function renderSaveSlots() {
+  const list = document.getElementById('saved-games-list');
+  if (!list) return;
+  const slots = getSaveSlots().slice().sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+  if (!slots.length) {
+    list.innerHTML = '<div class="saved-games-empty">No saved games yet</div>';
+    return;
+  }
+  list.innerHTML = slots.map(slot => {
+    const moves = typeof slot.moveCount === 'number' ? slot.moveCount : 0;
+    const meta = `${modeLabelForSave(slot.mode)} · ${moves} move${moves === 1 ? '' : 's'}`;
+    const idAttr = String(slot.id).replace(/"/g, '&quot;');
+    return `<div class="saved-game-row" data-slot-id="${idAttr}">
+      <div class="saved-game-meta">
+        <span class="saved-game-label">${slot.label || formatSaveSlotLabel(slot.savedAt)}</span>
+        <span class="saved-game-sub">${meta}</span>
+      </div>
+      <div class="saved-game-actions">
+        <button type="button" class="saved-game-btn" onclick="loadGameFromSlot('${idAttr}')">Load</button>
+        <button type="button" class="saved-game-btn" onclick="overwriteSaveSlot('${idAttr}')" title="Overwrite with current position">Replace</button>
+        <button type="button" class="saved-game-btn danger" onclick="deleteSaveSlot('${idAttr}')" title="Delete saved game" aria-label="Delete saved game">✕</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function loadBinaryState() {
@@ -2090,11 +2249,9 @@ function loadBinaryState() {
     return;
   }
   try {
-    currentGameState = new GameState().read_str(rawInput);
-    const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
-    handleLocalGameUpdate(gameData);
-    showToast("Game state loaded successfully!", 'success');
-    toggleSettingsMenu();
+    applyLoadedBitString(rawInput, "Game state loaded successfully!");
+    if (input) input.value = '';
+    closeSettingsDrawer(true);
   } catch (err) {
     showToast(`Error: ${err.message}`, 'error');
   }
@@ -2106,7 +2263,40 @@ function resetGamePrompt() {
     multiplayerManager.sendReset();
   }
   showToast("Game reset to starting position.", 'info');
-  toggleSettingsMenu();
+  closeSettingsDrawer(true);
+}
+
+function exportFullNotation() {
+  if (!gameHistory.length) {
+    showToast("No moves to export yet.", 'info');
+    return;
+  }
+  const modeEl = document.getElementById('info-mode-label');
+  const modeLine = modeEl && modeEl.textContent ? modeEl.textContent.trim() : `Mode: ${modeLabelForSave(matchMode)}`;
+  const lines = [
+    "Tiger's Day — Match Notation",
+    modeLine,
+    `Moves: ${gameHistory.length}`,
+    ''
+  ];
+  gameHistory.forEach((entry, i) => {
+    const actor = entry.actor === 'british' ? 'British'
+      : entry.actor === 'mysore' ? 'Mysore'
+      : (entry.actor || 'System');
+    const note = entry.notation || entry.desc || '—';
+    const luck = entry.hasLuck && entry.luckDetail ? `  (${entry.luckDetail})` : '';
+    lines.push(`${i + 1}. ${actor}: ${note}${luck}`);
+  });
+  const textOut = lines.join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textOut).then(() => {
+      showToast("Full notation copied to clipboard.", 'success');
+    }).catch(() => {
+      showToast("Could not copy notation.", 'error');
+    });
+  } else {
+    showToast("Clipboard unavailable.", 'error');
+  }
 }
 
 // ==========================================================================
@@ -2293,6 +2483,7 @@ document.addEventListener('DOMContentLoaded', () => {
   syncUIStateOnLoad();
   initGame(); 
   initBoardResponsiveAutoSizer();
+  renderSaveSlots();
   if (!isTutorialDismissed()) {
     openTutorialDrawer();
   }

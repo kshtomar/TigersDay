@@ -1,7 +1,16 @@
-# Expansion Notes — Iter B
+# Expansion Notes — Iter C
 
 **Branch:** `architect/expansion`  
 **North star:** intuitive · professional · void of clutter
+
+---
+
+## What changed (Iter C)
+
+- **Local save / load persistence:** Settings → Game state now supports **Save to this device** (`localStorage` key `tigersday_save_slots`, max 5 timestamped slots). Progressive disclosure via a collapsed **Saved games on this device** panel with Load / Replace (confirm overwrite) / Delete. Clipboard **Copy game state** and paste-load remain available.
+- **Notation export:** Moves panel adds a quiet **Copy notation** control that copies the full match algebraic log (mode + numbered British/Mysore lines) to the clipboard — no permanent share chrome on the board.
+- **Model card (cheap):** Documented canonical ONNX source in `docs/MODEL_CARD.md` — `public/alphatiger.onnx` exported from `ai/models/alphatigerv13.pt` via `ai/onnx.py`. **No `.pt` mass-delete.**
+- **Debugger coverage:** `docs/DEBUGGER_GUIDELINES.md` gains Iter C checklist items for save slots, notation export, and model-card presence.
 
 ---
 
@@ -44,11 +53,11 @@
 
 ---
 
-## Remaining avenues (Iter C)
+## Remaining avenues (post–Iter C)
 
-1. **Local save/load persistence** — persist saved binary states to `localStorage` with slot or timestamp management in addition to clipboard copy.
-2. **Move notation export & sharing** — one-click copy of full match algebraic notation / PGN for post-game analysis or sharing.
-3. **Model card & canonical weights** — record which `alphatigerv*.pt` checkpoint exported `public/alphatiger.onnx` before performing any weight cleanup.
+1. **Dedicated weight hygiene PR** — after model card is accepted, consider archiving/removing historical `alphatigerv{7,8,10,11,12}*.pt` (keep v13 + betas); never blind mass-delete.
+2. **Spectate / share polish** — optional shareable notation link or download file (beyond clipboard).
+3. **Deeper a11y / i18n** — only if player feedback demands it.
 
 ---
 

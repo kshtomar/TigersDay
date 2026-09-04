@@ -41,3 +41,10 @@ A short path into **Tiger’s Day**, a strategic board wargame set during the An
 - **Esc** — close drawers or cancel selection.
 - **R** / **P** — Rest Unit / Pass Phase when those header buttons are visible.
 - **Moves** tab — notation log and history stepper (`⏮ ◀ ▶ ⏭`).
+
+## Save, load & notation
+
+- **Settings → Game state → Save to this device** — keeps up to 5 positions in this browser (`Load` / `Replace` / delete under **Saved games on this device**).
+- **Copy game state** / paste **Load from paste** — share a position via clipboard.
+- **Moves → Copy notation** — one-click copy of the full match move log.
+

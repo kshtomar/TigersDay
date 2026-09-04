@@ -642,6 +642,137 @@ body {
     border-color: var(--mysore-gold);
 }
 
+/* Progressive disclosure: saved games (Iter C) */
+.settings-disclosure {
+    margin: 6px 0 10px;
+    border: 1px solid rgba(122, 92, 46, 0.35);
+    border-radius: 4px;
+    background: rgba(17, 14, 10, 0.45);
+    padding: 0 8px 6px;
+}
+
+.settings-disclosure-summary {
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-heading);
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
+    color: #bfa577;
+    padding: 8px 0 4px;
+    user-select: none;
+}
+
+.settings-disclosure-summary::-webkit-details-marker { display: none; }
+.settings-disclosure-summary::before {
+    content: '▸ ';
+    color: var(--mysore-gold);
+}
+.settings-disclosure[open] > .settings-disclosure-summary::before {
+    content: '▾ ';
+}
+
+.saved-games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-bottom: 4px;
+}
+
+.saved-games-empty {
+    font-size: 0.68rem;
+    color: #8a7a60;
+    padding: 4px 0 6px;
+}
+
+.saved-game-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 5px 6px;
+    border-radius: 3px;
+    background: #1a1510;
+    border: 1px solid #3d2f20;
+}
+
+.saved-game-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+}
+
+.saved-game-label {
+    font-size: 0.7rem;
+    color: var(--parchment);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.saved-game-sub {
+    font-size: 0.58rem;
+    color: #8a7a60;
+}
+
+.saved-game-actions {
+    display: flex;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.saved-game-btn {
+    font-family: var(--font-heading);
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+    padding: 3px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    background: #2a2016;
+    border: 1px solid var(--border);
+    color: var(--parchment);
+}
+
+.saved-game-btn:hover {
+    border-color: var(--mysore-gold);
+    background: #3d2f20;
+}
+
+.saved-game-btn.danger {
+    padding: 3px 5px;
+    color: #c9a090;
+}
+
+.saved-game-btn.danger:hover {
+    border-color: #a05040;
+    color: #ffccbb;
+}
+
+.notation-export-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: 2px 0 4px;
+    flex: 0 0 auto;
+}
+
+.notation-export-btn {
+    font-family: var(--font-heading);
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid rgba(122, 92, 46, 0.45);
+    color: #bfa577;
+}
+
+.notation-export-btn:hover {
+    border-color: var(--mysore-gold);
+    color: var(--parchment);
+    background: rgba(42, 32, 22, 0.6);
+}
+
 /* ==========================================================================
    3. IN-TURN QUICK ACTION BUTTONS
    ========================================================================== */

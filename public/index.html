@@ -285,12 +285,21 @@
             <h4>Game state</h4>
             <div class="settings-btn-group">
                 <button class="secondary-btn" onclick="saveBinaryState()">Copy game state</button>
+                <button class="secondary-btn" onclick="saveGameToBrowser()">Save to this device</button>
                 <button class="secondary-btn" onclick="resetGamePrompt()">Reset Board</button>
             </div>
+            <span class="setting-desc">Clipboard shares a position; device saves stay in this browser only.</span>
         </div>
 
+        <details class="settings-disclosure" id="saved-games-disclosure">
+            <summary class="settings-disclosure-summary">Saved games on this device</summary>
+            <div id="saved-games-list" class="saved-games-list" aria-live="polite">
+                <div class="saved-games-empty">No saved games yet</div>
+            </div>
+        </details>
+
         <div class="settings-section">
-            <label for="binary-load-input" class="setting-label">Load game state</label>
+            <label for="binary-load-input" class="setting-label">Load from paste</label>
             <div class="input-action-row">
                 <input type="text" id="binary-load-input" placeholder="Paste saved state…" spellcheck="false">
                 <button class="primary-btn" onclick="loadBinaryState()">Load</button>
@@ -509,7 +518,12 @@
                 </button>
             </div>
 
-            <!-- Bottom Game Action Bar: Offer Draw & Resign -->
+            <!-- Export + Bottom Game Action Bar -->
+            <div class="notation-export-row">
+                <button type="button" id="btn-export-notation" class="notation-export-btn" onclick="exportFullNotation()" title="Copy full match notation">
+                    Copy notation
+                </button>
+            </div>
             <div class="notation-actions-bar">
                 <button type="button" id="btn-offer-draw" class="notation-action-btn draw-btn" onclick="handleOfferDraw()">
                     Offer Draw
