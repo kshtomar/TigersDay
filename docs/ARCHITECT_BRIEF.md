@@ -144,3 +144,7 @@ Settings picker; CSS variables on cards/seals/light board chrome; no logic chang
 ## Iter D2 — Next four themes
 
 Add to picker: miniature-brass, sepoy-chalkboard, rocket-night, treaty-ledger. Keep parchment/lacquer/ink-wash. CSS variables only; no logic changes.
+
+## Iter D3 — Final three themes
+
+After D2 §H PASS. Add: monsoon-glass (solid fallback, no required blur), coastal-signal-flags, twin-courts (faction split + phase token). Complete the set of 10.
