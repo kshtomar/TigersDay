@@ -40,6 +40,7 @@
     </div>
     
     <div class="header-actions">
+        <span id="spectator-chip" class="spectator-chip hidden" role="status" aria-live="polite">Spectating</span>
         <button id="online-play-btn" class="header-text-btn" type="button" title="Host or join online multiplayer" aria-label="Play Online" aria-expanded="false" aria-controls="settings-drawer" onclick="openOnlinePlay()">
             Online
         </button>
@@ -67,8 +68,8 @@
             <div id="eval-bar-score" class="eval-bar-score">0.00</div>
         </div>
         <div class="eval-meta">
-            <span id="eval-sims-label" class="eval-sims-label">Engine: 0 sims</span>
-            <span id="eval-winrate-label" class="eval-winrate-label">Even Match</span>
+            <span id="eval-sims-label" class="eval-sims-label">Eval off-line</span>
+            <span id="eval-winrate-label" class="eval-winrate-label">Waiting for a position…</span>
         </div>
     </div>
 </div>
@@ -222,6 +223,7 @@
                 <option value="p2p_multiplayer">Online Multiplayer</option>
                 <option value="ai_vs_ai">AI vs AI (Spectate)</option>
             </select>
+            <p id="ai-spectate-hint" class="setting-desc hidden" style="margin-top: 6px;">Both sides play themselves — you watch. Board input is locked while spectating.</p>
 
             <!-- Human Side Selector -->
             <div id="human-side-row" style="margin-top: 8px;">
@@ -267,7 +269,7 @@
                 <input type="checkbox" id="eval-toggle-checkbox" onchange="handleEvalToggle(this.checked)">
                 <span class="toggle-slider"></span>
             </label>
-            <span class="setting-desc">Displays a live evaluation bar showing estimated win probability.</span>
+            <span class="setting-desc">Shows a live bar of estimated win chances. Empty until the engine has a position.</span>
         </div>
 
         <div class="settings-section">

@@ -879,13 +879,50 @@ function handleEvalToggle(enabled) {
   const panel = document.getElementById('eval-panel');
   if (enabled) {
     panel.classList.remove('hidden');
-    if (currentBitString) startProgressiveEval(currentBitString);
+    if (currentBitString) {
+      setEvalBarWaiting('Evaluating position…');
+      startProgressiveEval(currentBitString);
+    } else {
+      setEvalBarEmpty('Start or load a game to evaluate.');
+    }
   } else {
     panel.classList.add('hidden');
+    setEvalPanelState(null);
   }
   if (typeof adjustBoardDimensions === 'function') {
     setTimeout(adjustBoardDimensions, 10);
   }
+}
+
+function setEvalPanelState(state) {
+  const panel = document.getElementById('eval-panel');
+  if (!panel) return;
+  panel.classList.remove('is-waiting', 'is-empty', 'is-error');
+  if (state) panel.classList.add(state);
+}
+
+function setEvalBarWaiting(message) {
+  const bar = document.getElementById('eval-bar-mysore');
+  const scoreLabel = document.getElementById('eval-bar-score');
+  const simsLabel = document.getElementById('eval-sims-label');
+  const winrateLabel = document.getElementById('eval-winrate-label');
+  setEvalPanelState('is-waiting');
+  if (bar) bar.style.width = '50%';
+  if (scoreLabel) scoreLabel.textContent = '…';
+  if (simsLabel) simsLabel.textContent = 'Thinking…';
+  if (winrateLabel) winrateLabel.textContent = message || 'Waiting for evaluation…';
+}
+
+function setEvalBarEmpty(message) {
+  const bar = document.getElementById('eval-bar-mysore');
+  const scoreLabel = document.getElementById('eval-bar-score');
+  const simsLabel = document.getElementById('eval-sims-label');
+  const winrateLabel = document.getElementById('eval-winrate-label');
+  setEvalPanelState('is-empty');
+  if (bar) bar.style.width = '50%';
+  if (scoreLabel) scoreLabel.textContent = '—';
+  if (simsLabel) simsLabel.textContent = 'No position';
+  if (winrateLabel) winrateLabel.textContent = message || 'Waiting for a position…';
 }
 
 function setEvalBar(score, totalSims) {
@@ -895,24 +932,30 @@ function setEvalBar(score, totalSims) {
   const winrateLabel = document.getElementById('eval-winrate-label');
 
   if (!bar || !scoreLabel) return;
+  setEvalPanelState(null);
 
   const mysorePercentage = (1 - score) / 2 * 100;
   bar.style.width = `${mysorePercentage}%`;
 
   const sign = score > 0 ? '+' : '';
   scoreLabel.textContent = `${sign}${score.toFixed(2)}`;
-  if (simsLabel) simsLabel.textContent = `Engine: ${totalSims} sims (Wasm)`;
+  if (simsLabel) simsLabel.textContent = `${totalSims.toLocaleString()} sims`;
 
   if (winrateLabel) {
-    if (score > 0.05) winrateLabel.textContent = `British Win (${(100 - mysorePercentage).toFixed(0)}%)`;
-    else if (score < -0.05) winrateLabel.textContent = `Mysore Win (${mysorePercentage.toFixed(0)}%)`;
-    else winrateLabel.textContent = `Even Position`;
+    if (score > 0.05) winrateLabel.textContent = `British lean (${(100 - mysorePercentage).toFixed(0)}%)`;
+    else if (score < -0.05) winrateLabel.textContent = `Mysore lean (${mysorePercentage.toFixed(0)}%)`;
+    else winrateLabel.textContent = `Even position`;
   }
 }
 
 async function startProgressiveEval(stateStr) {
-  if (!settings.showEval || !currentGameState) return;
+  if (!settings.showEval) return;
+  if (!currentGameState) {
+    setEvalBarEmpty('Start or load a game to evaluate.');
+    return;
+  }
   currentEvalLoopState = stateStr;
+  setEvalBarWaiting('Evaluating position…');
 
   try {
     const rootNode = await mctsEngine.search(currentGameState, false);
@@ -921,6 +964,11 @@ async function startProgressiveEval(stateStr) {
     // Engine candidate-lines chrome removed to keep the board view uncluttered.
   } catch (err) {
     console.warn("Client eval error:", err);
+    setEvalPanelState('is-error');
+    const winrateLabel = document.getElementById('eval-winrate-label');
+    const simsLabel = document.getElementById('eval-sims-label');
+    if (simsLabel) simsLabel.textContent = 'Eval unavailable';
+    if (winrateLabel) winrateLabel.textContent = 'Could not evaluate this position.';
   }
 }
 
@@ -1804,13 +1852,27 @@ function getModeDisplayName(mode) {
   return MODE_DISPLAY_NAMES[mode] || (mode ? mode.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Unknown');
 }
 
+function updateSpectatorChrome(mode) {
+  const chip = document.getElementById('spectator-chip');
+  const hint = document.getElementById('ai-spectate-hint');
+  const spectating = mode === 'ai_vs_ai';
+  if (chip) chip.classList.toggle('hidden', !spectating);
+  if (hint) hint.classList.toggle('hidden', !spectating);
+  document.body.classList.toggle('is-spectating', spectating);
+}
+
 function handleGameModeChange(newMode) {
   matchMode = newMode;
   const p2pPanel = document.getElementById('multiplayer-panel');
   const humanSideRow = document.getElementById('human-side-row');
   const infoMode = document.getElementById('info-mode-label');
   const readableMode = getModeDisplayName(newMode);
-  if (infoMode) infoMode.textContent = `Mode: ${readableMode}`;
+  if (infoMode) {
+    infoMode.textContent = newMode === 'ai_vs_ai'
+      ? 'Mode: AI vs AI — spectating (input locked)'
+      : `Mode: ${readableMode}`;
+  }
+  updateSpectatorChrome(newMode);
 
   if (newMode === 'p2p_multiplayer') {
     if (p2pPanel) p2pPanel.classList.remove('hidden');
@@ -1827,7 +1889,11 @@ function handleGameModeChange(newMode) {
 
   buildPlayerMap(matchMode, humanPlayerSide);
   initGame();
-  showToast(`Switched mode: ${readableMode}`, 'info');
+  if (newMode === 'ai_vs_ai') {
+    showToast('Spectating AI vs AI — board input is locked.', 'info');
+  } else {
+    showToast(`Switched mode: ${readableMode}`, 'info');
+  }
 }
 
 function handleHumanSideChange(side) {
@@ -2181,6 +2247,25 @@ function saveGameToBrowser() {
   showToast("Game saved on this device.", 'success');
 }
 
+
+function renameSaveSlot(slotId) {
+  const slots = getSaveSlots();
+  const idx = slots.findIndex(s => s.id === slotId);
+  if (idx < 0) return;
+  const current = slots[idx].label || formatSaveSlotLabel(slots[idx].savedAt);
+  const next = window.prompt('Rename saved game', current);
+  if (next === null) return;
+  const cleaned = String(next).trim().slice(0, 48);
+  if (!cleaned) {
+    showToast('Name can’t be empty.', 'error');
+    return;
+  }
+  slots[idx] = { ...slots[idx], label: cleaned };
+  persistSaveSlots(slots);
+  renderSaveSlots();
+  showToast('Save renamed.', 'success');
+}
+
 function overwriteSaveSlot(slotId) {
   if (!currentBitString) {
     showToast("No active game state to save.", 'error');
@@ -2251,6 +2336,7 @@ function renderSaveSlots() {
       <div class="saved-game-actions">
         <button type="button" class="saved-game-btn" onclick="loadGameFromSlot('${idAttr}')">Load</button>
         <button type="button" class="saved-game-btn" onclick="overwriteSaveSlot('${idAttr}')" title="Overwrite with current position">Replace</button>
+        <button type="button" class="saved-game-btn" onclick="renameSaveSlot('${idAttr}')" title="Rename saved game">Rename</button>
         <button type="button" class="saved-game-btn danger" onclick="deleteSaveSlot('${idAttr}')" title="Delete saved game" aria-label="Delete saved game">✕</button>
       </div>
     </div>`;
@@ -2522,6 +2608,7 @@ function initTheme() {
 // Start game client on load
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  updateSpectatorChrome(matchMode);
   const themeSelect = document.getElementById('theme-select');
   if (themeSelect) {
     themeSelect.addEventListener('change', (e) => {

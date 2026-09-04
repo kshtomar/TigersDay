@@ -3137,3 +3137,42 @@ svg#board {
         font-size: 0.55rem;
     }
 }
+
+
+/* Iter F — spectator + eval empty states */
+.spectator-chip {
+    flex-shrink: 0;
+    font-family: var(--font-heading);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    border-radius: 999px;
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+.spectator-chip.hidden { display: none !important; }
+
+.eval-panel.is-waiting .eval-bar-track {
+    opacity: 0.55;
+}
+.eval-panel.is-waiting .eval-bar-score {
+    opacity: 0.7;
+}
+.eval-panel.is-empty .eval-winrate-label,
+.eval-panel.is-waiting .eval-winrate-label {
+    color: var(--text-muted);
+}
+.eval-panel.is-error .eval-winrate-label {
+    color: var(--british-red);
+}
+
+@media (max-width: 420px) {
+    .spectator-chip {
+        font-size: 0.55rem;
+        padding: 2px 6px;
+    }
+}

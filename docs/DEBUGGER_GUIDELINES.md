@@ -134,6 +134,13 @@ python -m http.server 8080 --directory public
 - [ ] Copy notation: with ≥1 history entry does not false-empty toast; empty history still explains
 - [ ] ≤420px header: Online/Tutorial/Settings stay in view; no horizontal overflow hunt
 
+
+### J. Iter F spectator / eval / saves
+- [ ] AI vs AI shows Spectating chip + settings hint; board input stays locked; toast explains spectate
+- [ ] Eval bar: waiting copy while thinking; empty copy with no position; error copy on failure; no “Wasm” jargon
+- [ ] Save slots support Rename; name persists across reload
+- [ ] No rules/P2P/logic regressions (A smoke)
+
 ## Report format (to Architect + Code Writer)
 
 ```

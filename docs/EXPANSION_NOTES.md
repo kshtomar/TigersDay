@@ -5,6 +5,15 @@
 
 ---
 
+## What changed (Iter F)
+
+- **AI vs AI spectate clarity:** header Spectating chip, settings hint, locked-input toast, mode label.
+- **Eval bar empty/waiting/error states:** clearer copy (no Wasm jargon); waiting UI while engine thinks.
+- **Save rename:** Rename control on local save slots (max 48 chars).
+- No rules/engine logic changes.
+
+---
+
 ## What changed (Iter E)
 
 - **Twin Courts:** stronger phase/faction header + column chrome.
