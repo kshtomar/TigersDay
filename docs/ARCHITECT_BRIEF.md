@@ -77,3 +77,12 @@ Fold into Iter A if not already done:
 - Fix stale “Diplomatic Mission” string vs real card names
 - P2P: `copyRoomCode` exists — improve discoverability/status, don’t reinvent
 - Browser UI does not `fetch()` the FastAPI server; treat server as research/Vercel path only
+
+## Frontend north star (Kshitij)
+
+Iterate the player UI toward:
+- **Intuitive** — clear next action / turn phase; Host–Join and help easy to find
+- **Professional** — consistent spacing, typography, control styling
+- **Void of clutter** — progressive disclosure over permanent chrome; delete dead UI, don’t add noise
+
+Applies to Iter A+ ongoing `public/` work.
