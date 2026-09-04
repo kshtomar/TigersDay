@@ -225,18 +225,18 @@
 
             <!-- P2P Multiplayer Panel -->
             <div id="multiplayer-panel" class="multiplayer-panel hidden">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="setting-label" style="margin: 0;">P2P MULTIPLAYER</span>
-                    <span id="p2p-status-pill" class="p2p-status-pill offline">OFFLINE</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span class="setting-label" style="margin: 0; white-space: nowrap;">P2P MULTIPLAYER</span>
+                    <span id="p2p-status-pill" class="p2p-status-pill offline">Offline — host or join a room</span>
                 </div>
 
                 <div style="margin-top: 8px; display: flex; gap: 6px;">
                     <button class="primary-btn" style="flex: 1;" onclick="handleHostGameClick()">Host Room</button>
                 </div>
 
-                <div id="room-code-box" class="room-code-display hidden">
+                <div id="room-code-box" class="room-code-display hidden" title="Click to copy room code" onclick="copyRoomCode()">
                     <span id="room-code-val" class="room-code-text">TIGER-XXXX</span>
-                    <button class="secondary-btn" style="padding: 3px 8px; font-size: 0.75rem;" onclick="copyRoomCode()">Copy Code</button>
+                    <button id="copy-room-code-btn" class="secondary-btn" style="padding: 3px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); copyRoomCode()">Copy room code</button>
                 </div>
 
                 <div style="margin-top: 10px;">

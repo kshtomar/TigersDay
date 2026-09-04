@@ -1722,6 +1722,7 @@ function handleGameModeChange(newMode) {
     if (p2pPanel) p2pPanel.classList.remove('hidden');
     if (humanSideRow) humanSideRow.classList.remove('hidden');
     setupMultiplayerCallbacks();
+    updateConnectionPill('disconnected', '⬤ Offline — host or join a room');
   } else {
     if (p2pPanel) p2pPanel.classList.add('hidden');
     if (humanSideRow) {
@@ -1729,6 +1730,7 @@ function handleGameModeChange(newMode) {
       else humanSideRow.classList.add('hidden');
     }
     multiplayerManager.disconnect();
+    updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
   }
 
   buildPlayerMap(matchMode, humanPlayerSide);
@@ -1747,20 +1749,35 @@ function setupMultiplayerCallbacks() {
   const statusPill = document.getElementById('p2p-status-pill');
 
   multiplayerManager.onStatusChange = ({ status, isHost, mySide, roomCode }) => {
+    const formattedSide = mySide ? (mySide === 'mysore' ? 'Mysore' : 'British') : '';
+    let pillText = '';
+
+    if (status === 'connected') {
+      pillText = `Connected — you are ${formattedSide}`;
+    } else if (status === 'hosting') {
+      pillText = 'Hosting — waiting for opponent';
+    } else if (status === 'connecting') {
+      pillText = 'Connecting…';
+    } else {
+      pillText = 'Offline — host or join a room';
+    }
+
     if (statusPill) {
       statusPill.className = `p2p-status-pill ${status}`;
-      statusPill.textContent = status.toUpperCase();
+      statusPill.textContent = pillText;
     }
 
     if (status === 'connected') {
-      updateConnectionPill('connected', `⬤ P2P CONNECTED (${mySide.toUpperCase()})`);
+      updateConnectionPill('connected', `⬤ Connected — you are ${formattedSide}`);
       buildPlayerMap('p2p_multiplayer', mySide);
-      showToast(`P2P Connected! You are playing as ${mySide.toUpperCase()}`, 'success');
+      showToast(`P2P Connected! You are playing as ${formattedSide}`, 'success');
       toggleSettingsMenu();
     } else if (status === 'hosting') {
-      updateConnectionPill('waiting', `⬤ HOSTING (${roomCode})`);
+      updateConnectionPill('waiting', `⬤ Hosting (${roomCode}) — waiting for opponent`);
+    } else if (status === 'connecting') {
+      updateConnectionPill('waiting', '⬤ Connecting…');
     } else {
-      updateConnectionPill('disconnected', '⬤ P2P OFFLINE');
+      updateConnectionPill('disconnected', '⬤ Offline — host or join a room');
     }
   };
 
@@ -1854,6 +1871,13 @@ function setupMultiplayerCallbacks() {
 
 async function handleHostGameClick() {
   setupMultiplayerCallbacks();
+  const statusPill = document.getElementById('p2p-status-pill');
+  if (statusPill) {
+    statusPill.className = 'p2p-status-pill connecting';
+    statusPill.textContent = 'Connecting…';
+  }
+  updateConnectionPill('waiting', '⬤ Connecting…');
+
   try {
     const code = await multiplayerManager.hostGame(humanPlayerSide);
     const box = document.getElementById('room-code-box');
@@ -1864,6 +1888,11 @@ async function handleHostGameClick() {
     }
     showToast(`Room created! Share code: ${code}`, 'success');
   } catch (err) {
+    if (statusPill) {
+      statusPill.className = 'p2p-status-pill offline';
+      statusPill.textContent = 'Offline — host or join a room';
+    }
+    updateConnectionPill('disconnected', '⬤ Offline — host or join a room');
     showToast("Failed to host P2P room.", 'error');
   }
 }
@@ -1876,20 +1905,88 @@ async function handleJoinGameClick() {
     showToast("Enter a room code.", 'error');
     return;
   }
+
+  const statusPill = document.getElementById('p2p-status-pill');
+  if (statusPill) {
+    statusPill.className = 'p2p-status-pill connecting';
+    statusPill.textContent = 'Connecting…';
+  }
+  updateConnectionPill('waiting', `⬤ Connecting to ${code}…`);
+  showToast(`Connecting to ${code}...`, 'info');
+
   try {
     await multiplayerManager.joinGame(code);
-    showToast(`Connecting to ${code}...`, 'info');
   } catch (err) {
+    if (statusPill) {
+      statusPill.className = 'p2p-status-pill offline';
+      statusPill.textContent = 'Offline — host or join a room';
+    }
+    updateConnectionPill('disconnected', '⬤ Offline — host or join a room');
     showToast("Failed to join room.", 'error');
   }
 }
 
-function copyRoomCode() {
+async function copyRoomCode() {
   const val = document.getElementById('room-code-val');
   if (!val) return;
-  navigator.clipboard.writeText(val.textContent).then(() => {
-    showToast("Room code copied to clipboard!", 'success');
-  });
+  const text = (val.textContent || '').trim();
+  if (!text) return;
+
+  // Highlight / select code text for visual clarity
+  try {
+    const range = document.createRange();
+    range.selectNodeContents(val);
+    const sel = window.getSelection();
+    if (sel) {
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  } catch (e) {
+    // Ignore selection error in unsupported contexts
+  }
+
+  let success = false;
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      success = true;
+    } catch (err) {
+      console.warn("Clipboard API write failed, trying fallback:", err);
+    }
+  }
+
+  if (!success) {
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '-9999px';
+      textarea.setAttribute('readonly', '');
+      document.body.appendChild(textarea);
+      textarea.select();
+      success = document.execCommand('copy');
+      document.body.removeChild(textarea);
+    } catch (fallbackErr) {
+      console.error("execCommand copy fallback failed:", fallbackErr);
+    }
+  }
+
+  if (success) {
+    showToast(`Room code ${text} copied to clipboard!`, 'success');
+    const copyBtn = document.getElementById('copy-room-code-btn');
+    if (copyBtn) {
+      const origText = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => {
+        if (copyBtn.textContent === 'Copied!') {
+          copyBtn.textContent = origText;
+        }
+      }, 2000);
+    }
+  } else {
+    showToast(`Failed to copy room code: ${text}`, 'error');
+  }
 }
 
 // ==========================================================================
