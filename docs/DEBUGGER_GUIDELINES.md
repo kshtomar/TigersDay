@@ -121,10 +121,10 @@ python -m http.server 8080 --directory public
 ### H. Iter D visual themes checklist
 - [ ] Theme picker sets data-theme on html and persists tigersday_theme
 - [ ] Reload restores last theme
-- [ ] All 3 themes render without broken contrast/layout
-- [ ] Cards/seals/header/drawers/board chrome visibly themed
+- [ ] All **7** themes render without broken contrast/layout: campaign-parchment, lacquer-scarlet, ink-wash, miniature-brass, sepoy-chalkboard, rocket-night, treaty-ledger
+- [ ] Cards/seals/header/drawers/board chrome visibly themed (each ID distinct)
 - [ ] No PeerJS/rules/engine/logic drift
-- [ ] Only 3 themes present (not the other 7)
+- [ ] Picker lists exactly these 7 (D1 three + D2 four) — no extras
 
 ## Report format (to Architect + Code Writer)
 
