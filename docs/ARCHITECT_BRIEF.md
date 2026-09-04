@@ -140,3 +140,7 @@ Debugger cleared C + P1s. Implement first:
 2. `lacquer-scarlet`
 3. `ink-wash`
 Settings picker; CSS variables on cards/seals/light board chrome; no logic changes; update living Debugger guidelines.
+
+## Iter D2 — Next four themes
+
+Add to picker: miniature-brass, sepoy-chalkboard, rocket-night, treaty-ledger. Keep parchment/lacquer/ink-wash. CSS variables only; no logic changes.
