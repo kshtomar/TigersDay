@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="campaign-parchment">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -277,6 +277,16 @@
                 <span id="mcts-sims-label" class="sims-label">250</span>
             </div>
             <span class="setting-desc">Higher values = stronger AI moves with longer thinking time. Range: 250 – 1,000,000.</span>
+        </div>
+
+        <div class="settings-section">
+            <label class="setting-label" for="theme-select">Visual theme</label>
+            <select id="theme-select" class="mode-select" aria-label="Visual theme">
+                <option value="campaign-parchment">Campaign Parchment</option>
+                <option value="lacquer-scarlet">Mysore Lacquer &amp; Company Scarlet</option>
+                <option value="ink-wash">Ink-Wash Campaign Map</option>
+            </select>
+            <span class="setting-desc">Changes chrome colors only — gameplay unchanged.</span>
         </div>
 
         <hr class="settings-divider">

@@ -2494,8 +2494,38 @@ function initBoardResponsiveAutoSizer() {
   window.addEventListener('orientationchange', adjustBoardDimensions);
 }
 
+const THEME_KEY = 'tigersday_theme';
+const VALID_THEMES = ['campaign-parchment', 'lacquer-scarlet', 'ink-wash'];
+
+function applyTheme(themeId) {
+  const validTheme = VALID_THEMES.includes(themeId) ? themeId : 'campaign-parchment';
+  document.documentElement.setAttribute('data-theme', validTheme);
+  try {
+    localStorage.setItem(THEME_KEY, validTheme);
+  } catch (e) {}
+  const select = document.getElementById('theme-select');
+  if (select && select.value !== validTheme) {
+    select.value = validTheme;
+  }
+}
+
+function initTheme() {
+  let theme = 'campaign-parchment';
+  try {
+    theme = localStorage.getItem(THEME_KEY) || 'campaign-parchment';
+  } catch (e) {}
+  applyTheme(theme);
+}
+
 // Start game client on load
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  const themeSelect = document.getElementById('theme-select');
+  if (themeSelect) {
+    themeSelect.addEventListener('change', (e) => {
+      applyTheme(e.target.value);
+    });
+  }
   syncUIStateOnLoad();
   initGame(); 
   initBoardResponsiveAutoSizer();
