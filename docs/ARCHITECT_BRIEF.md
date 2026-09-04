@@ -148,3 +148,7 @@ Add to picker: miniature-brass, sepoy-chalkboard, rocket-night, treaty-ledger. K
 ## Iter D3 — Final three themes
 
 After D2 §H PASS. Add: monsoon-glass (solid fallback, no required blur), coastal-signal-flags, twin-courts (faction split + phase token). Complete the set of 10.
+
+## Iter F — Spectator & eval clarity
+
+After E PASS. AI-vs-AI/spectator status clarity; eval bar empty/loading states; no logic changes.
