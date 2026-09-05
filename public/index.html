@@ -194,96 +194,304 @@
     </div>
 </div>
 
-<!-- SETTINGS DRAWER (Zero Popups) -->
-<div id="settings-drawer" class="drawer-panel hidden">
-    <div class="drawer-header">
-        <div class="drawer-title-wrap">
-            <h3>GAME SETTINGS</h3>
-        </div>
-        <button class="close-drawer-btn" onclick="toggleSettingsMenu()">✕</button>
-    </div>
-    
-    <div class="drawer-content">
-        <!-- MATCH MODE CONTROLLER -->
-        <div class="settings-section">
-            <h4>MATCH OPPONENT & MODE</h4>
-            <select id="game-mode-select" class="mode-select" onchange="handleGameModeChange(this.value)">
-                <option value="human_vs_ai">Human vs WebAssembly AI</option>
-                <option value="human">Pass & Play (Local 2-Player)</option>
-                <option value="p2p_multiplayer">P2P Online Multiplayer (WebRTC)</option>
-                <option value="ai_vs_ai">AI vs AI (Spectator Mode)</option>
-            </select>
-
-            <!-- Human Side Selector -->
-            <div id="human-side-row" style="margin-top: 8px;">
-                <label class="setting-label">PLAY AS:</label>
-                <select id="human-side-select" class="mode-select" onchange="handleHumanSideChange(this.value)">
-                    <option value="british">British East India Company</option>
-                    <option value="mysore">Sultanate of Mysore</option>
-                </select>
+<!-- DEDICATED SETTINGS PAGE MODAL (Spacious, Fully Configured) -->
+<div id="settings-drawer" class="settings-modal-backdrop hidden" onclick="handleSettingsBackdropClick(event)">
+    <div class="settings-page-modal" onclick="event.stopPropagation()">
+        <div class="settings-page-header">
+            <div class="settings-page-title-wrap">
+                <span class="settings-page-icon">⚙️</span>
+                <div>
+                    <h3>GAME SETTINGS & OPTIONS</h3>
+                    <span class="settings-page-subtitle">Configure Themes, Board Unit Styles, AI Intelligence & Gameplay Controls</span>
+                </div>
             </div>
+            <button type="button" class="close-drawer-btn" onclick="toggleSettingsMenu()" aria-label="Close Settings">✕</button>
+        </div>
+        
+        <div class="settings-page-content settings-dashboard-layout">
+            <!-- LEFT COLUMN: VISUAL AESTHETICS & BOARD DESIGN -->
+            <div class="settings-col settings-col-left">
+                <!-- 1. VISUAL THEMES SELECTOR (10 Bespoke Themes) -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h4>BOARD & MAP THEME</h4>
+                        <span class="setting-desc-inline">10 Environments</span>
+                    </div>
+                    <div id="theme-selector-grid" class="theme-selector-grid">
+                        <button type="button" class="theme-option-btn active" data-theme="deccan-imperial" onclick="handleThemeSelect('deccan-imperial')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #8ec4dc;"></span>
+                                <span class="theme-dot" style="background: #e2d09a;"></span>
+                                <span class="theme-dot" style="background: #e5a93c;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Deccan Imperial</span>
+                                <span class="theme-sub">Gold & Brass</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
 
-            <!-- P2P Multiplayer Panel -->
-            <div id="multiplayer-panel" class="multiplayer-panel hidden">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="setting-label" style="margin: 0;">P2P MULTIPLAYER</span>
-                    <span id="p2p-status-pill" class="p2p-status-pill offline">OFFLINE</span>
+                        <button type="button" class="theme-option-btn" data-theme="midnight-tiger" onclick="handleThemeSelect('midnight-tiger')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #070d18;"></span>
+                                <span class="theme-dot" style="background: #1e2638;"></span>
+                                <span class="theme-dot" style="background: #f59e0b;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Midnight Tiger</span>
+                                <span class="theme-sub">Neon Amber</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+
+                        <button type="button" class="theme-option-btn" data-theme="royal-velvet" onclick="handleThemeSelect('royal-velvet')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #0c1938;"></span>
+                                <span class="theme-dot" style="background: #243356;"></span>
+                                <span class="theme-dot" style="background: #eab308;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Royal Velvet</span>
+                                <span class="theme-sub">Sapphire</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+
+                        <button type="button" class="theme-option-btn" data-theme="emerald-sultan" onclick="handleThemeSelect('emerald-sultan')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #022c22;"></span>
+                                <span class="theme-dot" style="background: #064e3b;"></span>
+                                <span class="theme-dot" style="background: #10b981;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Emerald Sultan</span>
+                                <span class="theme-sub">Jade & Bronze</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+
+                        <button type="button" class="theme-option-btn" data-theme="monsoon-mist" onclick="handleThemeSelect('monsoon-mist')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #182d38;"></span>
+                                <span class="theme-dot" style="background: #334652;"></span>
+                                <span class="theme-dot" style="background: #38bdf8;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Monsoon Mist</span>
+                                <span class="theme-sub">Slate & Teal</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+
+                        <button type="button" class="theme-option-btn" data-theme="desert-rajput" onclick="handleThemeSelect('desert-rajput')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #0284c7;"></span>
+                                <span class="theme-dot" style="background: #e4b878;"></span>
+                                <span class="theme-dot" style="background: #9a3412;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Desert Rajput</span>
+                                <span class="theme-sub">Terracotta</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+
+                        <button type="button" class="theme-option-btn" data-theme="cyber-warroom" onclick="handleThemeSelect('cyber-warroom')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #020617;"></span>
+                                <span class="theme-dot" style="background: #0f172a;"></span>
+                                <span class="theme-dot" style="background: #06b6d4;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Cyber War-Room</span>
+                                <span class="theme-sub">Tactical HUD</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+
+                        <button type="button" class="theme-option-btn" data-theme="sepia-archive" onclick="handleThemeSelect('sepia-archive')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #e8dfcb;"></span>
+                                <span class="theme-dot" style="background: #f5eee0;"></span>
+                                <span class="theme-dot" style="background: #4a3820;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Sepia Archive</span>
+                                <span class="theme-sub">Engraving</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+
+                        <button type="button" class="theme-option-btn" data-theme="crimson-crown" onclick="handleThemeSelect('crimson-crown')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #101428;"></span>
+                                <span class="theme-dot" style="background: #381a24;"></span>
+                                <span class="theme-dot" style="background: #f43f5e;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Crimson Crown</span>
+                                <span class="theme-sub">Ruby & Silver</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+
+                        <button type="button" class="theme-option-btn" data-theme="ivory-onyx" onclick="handleThemeSelect('ivory-onyx')">
+                            <span class="theme-swatches">
+                                <span class="theme-dot" style="background: #e2e8f0;"></span>
+                                <span class="theme-dot" style="background: #ffffff;"></span>
+                                <span class="theme-dot" style="background: #09090b;"></span>
+                            </span>
+                            <span class="theme-info">
+                                <span class="theme-name">Ivory & Onyx</span>
+                                <span class="theme-sub">Pearl Luxury</span>
+                            </span>
+                            <span class="theme-check">✓</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div style="margin-top: 8px; display: flex; gap: 6px;">
-                    <button class="primary-btn" style="flex: 1;" onclick="handleHostGameClick()">Host Room</button>
-                </div>
+                <hr class="settings-divider-compact">
 
-                <div id="room-code-box" class="room-code-display hidden">
-                    <span id="room-code-val" class="room-code-text">TIGER-XXXX</span>
-                    <button class="secondary-btn" style="padding: 3px 8px; font-size: 0.75rem;" onclick="copyRoomCode()">Copy Code</button>
-                </div>
-
-                <div style="margin-top: 10px;">
-                    <label for="join-room-input" class="setting-label">OR JOIN FRIEND'S ROOM:</label>
-                    <div class="input-action-row">
-                        <input type="text" id="join-room-input" placeholder="e.g. TIGER-ABCD" spellcheck="false" style="text-transform: uppercase;">
-                        <button class="primary-btn" onclick="handleJoinGameClick()">Join</button>
+                <!-- 2. BOARD UNIT STYLE CONTROLLER (5 Distinct Styles) -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h4>BOARD UNIT STYLES</h4>
+                        <span id="unit-style-status-pill" class="setting-badge">TACTICAL TOKENS</span>
+                    </div>
+                    <div class="unit-style-toggle-grid">
+                        <button type="button" class="unit-style-btn active" id="btn-token-tactical" onclick="setTokenStyle('tactical')">
+                            <span class="unit-style-icon">🎖️</span>
+                            <div class="unit-style-text">
+                                <div class="unit-style-title">Tactical</div>
+                                <div class="unit-style-sub">Citadels & Forts</div>
+                            </div>
+                        </button>
+                        <button type="button" class="unit-style-btn" id="btn-token-classic" onclick="setTokenStyle('classic')">
+                            <span class="unit-style-icon">🟩</span>
+                            <div class="unit-style-text">
+                                <div class="unit-style-title">Classic</div>
+                                <div class="unit-style-sub">Original Squares</div>
+                            </div>
+                        </button>
+                        <button type="button" class="unit-style-btn" id="btn-token-regimental" onclick="setTokenStyle('regimental')">
+                            <span class="unit-style-icon">🛡️</span>
+                            <div class="unit-style-text">
+                                <div class="unit-style-title">Regimental</div>
+                                <div class="unit-style-sub">Shields & Towers</div>
+                            </div>
+                        </button>
+                        <button type="button" class="unit-style-btn" id="btn-token-minimalist" onclick="setTokenStyle('minimalist')">
+                            <span class="unit-style-icon">⭕</span>
+                            <div class="unit-style-text">
+                                <div class="unit-style-title">Minimalist</div>
+                                <div class="unit-style-sub">Circular Discs</div>
+                            </div>
+                        </button>
+                        <button type="button" class="unit-style-btn" id="btn-token-vintage" onclick="setTokenStyle('vintage')">
+                            <span class="unit-style-icon">♟️</span>
+                            <div class="unit-style-text">
+                                <div class="unit-style-title">Antique</div>
+                                <div class="unit-style-sub">Bronze Relief</div>
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <hr class="settings-divider">
+            <!-- RIGHT COLUMN: GAMEPLAY, AI ENGINE & DATA CONTROLS -->
+            <div class="settings-col settings-col-right">
+                <!-- 3. MATCH MODE CONTROLLER -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h4>MATCH OPPONENT & MODE</h4>
+                    </div>
+                    <div class="settings-two-col">
+                        <div>
+                            <label class="setting-label">GAMEPLAY MODE:</label>
+                            <select id="game-mode-select" class="mode-select" onchange="handleGameModeChange(this.value)">
+                                <option value="human_vs_ai">Human vs WebAssembly AI</option>
+                                <option value="human">Pass & Play (Local 2-Player)</option>
+                                <option value="p2p_multiplayer">P2P Online Multiplayer (WebRTC)</option>
+                                <option value="ai_vs_ai">AI vs AI (Spectator Mode)</option>
+                            </select>
+                        </div>
+                        <div id="human-side-row">
+                            <label class="setting-label">PLAY AS:</label>
+                            <select id="human-side-select" class="mode-select" onchange="handleHumanSideChange(this.value)">
+                                <option value="british">British East India Company</option>
+                                <option value="mysore">Sultanate of Mysore</option>
+                            </select>
+                        </div>
+                    </div>
 
-        <div class="settings-section">
-            <label class="toggle-control">
-                <span class="toggle-label">Show AI Engine Evaluation</span>
-                <input type="checkbox" id="eval-toggle-checkbox" onchange="handleEvalToggle(this.checked)">
-                <span class="toggle-slider"></span>
-            </label>
-            <span class="setting-desc">Render Stockfish-style evaluation bar and top candidate engine lines.</span>
-        </div>
+                    <!-- P2P Multiplayer Panel (Collapsible) -->
+                    <div id="multiplayer-panel" class="multiplayer-panel hidden">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="setting-label" style="margin: 0;">P2P MULTIPLAYER</span>
+                            <span id="p2p-status-pill" class="p2p-status-pill offline">OFFLINE</span>
+                        </div>
+                        <div style="margin-top: 6px; display: flex; gap: 6px;">
+                            <button class="primary-btn" style="flex: 1;" onclick="handleHostGameClick()">Host Room</button>
+                        </div>
+                        <div id="room-code-box" class="room-code-display hidden">
+                            <span id="room-code-val" class="room-code-text">TIGER-XXXX</span>
+                            <button class="secondary-btn" style="padding: 2px 6px; font-size: 0.72rem;" onclick="copyRoomCode()">Copy</button>
+                        </div>
+                        <div style="margin-top: 6px;">
+                            <div class="input-action-row">
+                                <input type="text" id="join-room-input" placeholder="TIGER-ABCD" spellcheck="false" style="text-transform: uppercase;">
+                                <button class="primary-btn" onclick="handleJoinGameClick()">Join</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="settings-section">
-            <label class="setting-label" for="mcts-sims-slider">AI THINKING DEPTH (MCTS SIMULATIONS)</label>
-            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
-                <input type="range" id="mcts-sims-slider" class="sims-slider" min="0" max="100" value="0" step="1" oninput="handleSimsSliderInput(this.value)">
-                <span id="mcts-sims-label" class="sims-label">250</span>
-            </div>
-            <span class="setting-desc">Higher values = stronger AI but slower thinking. Range: 250 – 1,000,000.</span>
-        </div>
+                <hr class="settings-divider-compact">
 
-        <hr class="settings-divider">
+                <!-- 4. ARTIFICIAL INTELLIGENCE & EVALUATION -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h4>ARTIFICIAL INTELLIGENCE & EVALUATION</h4>
+                    </div>
+                    <div class="settings-two-col">
+                        <div>
+                            <label class="toggle-control">
+                                <span class="toggle-label">AI Evaluation Bar</span>
+                                <input type="checkbox" id="eval-toggle-checkbox" onchange="handleEvalToggle(this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="setting-desc">Real-time Stockfish-style winrate eval.</span>
+                        </div>
+                        <div>
+                            <label class="setting-label" for="mcts-sims-slider">AI THINKING DEPTH</label>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                                <input type="range" id="mcts-sims-slider" class="sims-slider" min="0" max="100" value="0" step="1" oninput="handleSimsSliderInput(this.value)">
+                                <span id="mcts-sims-label" class="sims-label">250</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="settings-section">
-            <h4>STATE & CONTROLS</h4>
-            <div class="settings-btn-group">
-                <button class="secondary-btn" onclick="saveBinaryState()">Copy State (Binary)</button>
-                <button class="secondary-btn" onclick="resetGamePrompt()">Reset Board</button>
-            </div>
-        </div>
+                <hr class="settings-divider-compact">
 
-        <div class="settings-section">
-            <label for="binary-load-input" class="setting-label">RESTORE FROM BINARY STRING:</label>
-            <div class="input-action-row">
-                <input type="text" id="binary-load-input" placeholder="Paste bit-string here..." spellcheck="false">
-                <button class="primary-btn" onclick="loadBinaryState()">Load</button>
+                <!-- 5. GAME STATE CONTROLS -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h4>STATE MANAGEMENT</h4>
+                    </div>
+                    <div class="settings-two-col">
+                        <div class="settings-btn-group">
+                            <button class="secondary-btn" onclick="saveBinaryState()">Copy State</button>
+                            <button class="secondary-btn" onclick="resetGamePrompt()">Reset Board</button>
+                        </div>
+                        <div>
+                            <div class="input-action-row">
+                                <input type="text" id="binary-load-input" placeholder="Paste bit-string..." spellcheck="false">
+                                <button class="primary-btn" onclick="loadBinaryState()">Load</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -295,11 +503,9 @@
     <div class="mobile-faction-tabs" id="mobile-faction-tabs">
         <button type="button" class="mobile-tab-btn active-tab" id="mobile-tab-british" onclick="switchMobileFactionTab('british')">
             <span class="mobile-tab-title">BRITISH</span>
-            <span class="mobile-tab-badge" id="mobile-british-count">6/6</span>
         </button>
         <button type="button" class="mobile-tab-btn" id="mobile-tab-mysore" onclick="switchMobileFactionTab('mysore')">
             <span class="mobile-tab-title">MYSORE</span>
-            <span class="mobile-tab-badge" id="mobile-mysore-count">6/6</span>
         </button>
         <button type="button" class="mobile-tab-btn" id="mobile-tab-moves" onclick="switchMobileFactionTab('moves')">
             <span class="mobile-tab-title">MOVES</span>
@@ -310,14 +516,14 @@
     <!-- LEFT COLUMN: SULTANATE OF MYSORE CARDS & INTEL -->
     <aside class="faction-column mysore-column" id="mysore-column">
         <div class="faction-column-header">
-            <div class="faction-title-wrap">
-                <span class="faction-emblem">🐅</span>
-                <div class="faction-text">
+            <div class="faction-flag-banner">
+                <div class="faction-emblem-box mysore-emblem-box">
+                    <span class="faction-emblem">🐅</span>
+                </div>
+                <div class="faction-title-wrap">
                     <h3>MYSORE</h3>
-                    <span class="faction-motto">Sultanate Hand</span>
                 </div>
             </div>
-            <span id="mysore-hand-count" class="card-count-badge">6/6</span>
         </div>
 
         <div id="mysore-cards-list" class="cards-deck">
@@ -369,10 +575,10 @@
                     </filter>
                 </defs>
                 
-                <rect width="760" height="880" fill="url(#seaGrad)"/>
+                <rect id="sea-bg" width="760" height="880" fill="url(#seaGrad)"/>
                 
                 <!-- Sea depth latitude curves -->
-                <g stroke="#4e88a8" stroke-width=".5" opacity=".25" fill="none">
+                <g id="sea-latitude-lines" stroke="#4e88a8" stroke-width=".5" opacity=".25" fill="none">
                     <path d="M0,120 Q380,112 760,120"/> 
                     <path d="M0,240 Q380,232 760,240"/>
                     <path d="M0,760 Q380,752 760,760"/> 
@@ -382,41 +588,41 @@
                 <!-- Coastlines -->
                 <path id="india" d="M 0,0 L 760,0 L 760,82 L 675,116 L 656,162 L 664,205 L 643,260 L 618,322 L 615,380 L 610,446 L 596,504 L 573,558 L 546,612 L 514,663 L 481,712 L 450,750 L 415,782 L 374,812 L 332,836 L 293,846 L 263,838 L 240,820 L 214,794 L 191,756 L 173,714 L 165,682 L 147,624 L 133,563 L 125,502 L 125,482 L 118,438 L 118,398 L 106,334 L 94,278 L 94,262 L 88,214 L 84,162 L 93,116 L 110,74 L 0,0 Z" fill="url(#landGrad)" stroke="#68696b" stroke-width="3.5" filter="url(#landshadow)"/>
                 <path id="ceylon-land" d="M 528,718 L 558,699 L 594,700 L 620,718 L 628,750 L 622,800 L 608,850 L 592,880 L 560,880 L 548,850 L 538,800 L 524,742 Z" fill="url(#landGrad)" stroke="#68696b" stroke-width="2.5" filter="url(#landshadow)"/>
-                <path d="M 528,718 L 558,699 L 594,700 L 620,718 L 628,750 L 622,800 L 608,850 L 592,880 L 560,880 L 548,850 L 538,800 L 524,742 Z" fill="none" stroke="#e0cfa0" stroke-width=".8" opacity=".5"/>
+                <path id="ceylon-border" d="M 528,718 L 558,699 L 594,700 L 620,718 L 628,750 L 622,800 L 608,850 L 592,880 L 560,880 L 548,850 L 538,800 L 524,742 Z" fill="none" stroke="#e0cfa0" stroke-width=".8" opacity=".5"/>
                 
                 <!-- Sea Labels -->
-                <text x="44" y="540" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="16" fill="#2a5a7a" opacity=".7" transform="rotate(-90,44,540)">Arabian Sea</text>
-                <text x="726" y="430" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="16" fill="#2a5a7a" opacity=".7" transform="rotate(90,726,430)">Bay of Bengal</text>
-                <text x="480" y="806" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="13" fill="#2a5a7a" opacity=".75">Palk Strait</text>
+                <text class="sea-label" x="44" y="540" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="16" fill="#2a5a7a" opacity=".7" transform="rotate(-90,44,540)">Arabian Sea</text>
+                <text class="sea-label" x="726" y="430" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="16" fill="#2a5a7a" opacity=".7" transform="rotate(90,726,430)">Bay of Bengal</text>
+                <text class="sea-label" x="480" y="806" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="13" fill="#2a5a7a" opacity=".75">Palk Strait</text>
                 
                 <!-- Compass Rose -->
-                <g transform="translate(688,808)" opacity=".45">
-                    <circle r="27" fill="none" stroke="#6a4c1e" stroke-width="1.2"/>
-                    <line x1="0" y1="-27" x2="0" y2="27" stroke="#6a4c1e" stroke-width="1"/>
-                    <line x1="-27" y1="0" x2="27" y2="0" stroke="#6a4c1e" stroke-width="1"/>
-                    <polygon points="0,-27 3,-10 0,-14 -3,-10" fill="#6a4c1e"/>
-                    <polygon points="0,27 3,10 0,14 -3,10" fill="#6a4c1e"/>
-                    <polygon points="-27,0 -10,3 -14,0 -10,-3" fill="#6a4c1e"/>
-                    <polygon points="27,0 10,3 14,0 10,-3" fill="#6a4c1e"/>
-                    <text x="0" y="-31" text-anchor="middle" font-family="Cinzel,serif" font-size="9" font-weight="700" fill="#6a4c1e">N</text>
+                <g id="compass-rose" transform="translate(688,808)" opacity=".65">
+                    <circle class="compass-part" r="27" fill="none" stroke="#6a4c1e" stroke-width="1.2"/>
+                    <line class="compass-part" x1="0" y1="-27" x2="0" y2="27" stroke="#6a4c1e" stroke-width="1"/>
+                    <line class="compass-part" x1="-27" y1="0" x2="27" y2="0" stroke="#6a4c1e" stroke-width="1"/>
+                    <polygon class="compass-part" points="0,-27 3,-10 0,-14 -3,-10" fill="#6a4c1e"/>
+                    <polygon class="compass-part" points="0,27 3,10 0,14 -3,10" fill="#6a4c1e"/>
+                    <polygon class="compass-part" points="-27,0 -10,3 -14,0 -10,-3" fill="#6a4c1e"/>
+                    <polygon class="compass-part" points="27,0 10,3 14,0 10,-3" fill="#6a4c1e"/>
+                    <text class="compass-text" x="0" y="-31" text-anchor="middle" font-family="Cinzel,serif" font-size="9" font-weight="700" fill="#6a4c1e">N</text>
                 </g>
 
                 <!-- Map Title Cartouche (Positioned in bottom-left open sea to guarantee zero element overlap) -->
-                <g transform="translate(20,820)" opacity=".88">
-                    <rect width="186" height="42" rx="3" fill="#e8d8a8" stroke="#7a5c2e" stroke-width="1.2" filter="url(#landshadow)"/>
-                    <rect x="2.5" y="2.5" width="181" height="37" rx="2" fill="none" stroke="#7a5c2e" stroke-width=".5" stroke-dasharray="3,2"/>
-                    <text x="93" y="18" text-anchor="middle" font-family="Cinzel,serif" font-size="10.5" font-weight="700" letter-spacing="2" fill="#2c1a08">SOUTHERN INDIA</text>
-                    <text x="93" y="31" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="8.5" fill="#5a3c18">1790-1792 · Third Anglo-Mysore War</text>
+                <g id="map-cartouche" transform="translate(20,820)" opacity=".92">
+                    <rect id="cartouche-bg" width="186" height="42" rx="3" fill="#e8d8a8" stroke="#7a5c2e" stroke-width="1.2" filter="url(#landshadow)"/>
+                    <rect id="cartouche-border" x="2.5" y="2.5" width="181" height="37" rx="2" fill="none" stroke="#7a5c2e" stroke-width=".5" stroke-dasharray="3,2"/>
+                    <text id="cartouche-title" x="93" y="18" text-anchor="middle" font-family="Cinzel,serif" font-size="10.5" font-weight="700" letter-spacing="2" fill="#2c1a08">SOUTHERN INDIA</text>
+                    <text id="cartouche-sub" x="93" y="31" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="8.5" fill="#5a3c18">1790-1792 · Third Anglo-Mysore War</text>
                 </g>
                 
                 <!-- Road Edges & Maritime Paths -->
                 <g id="edge-layer"></g>
 
-                <!-- Battle Icon Layer -->
-                <g id="battle-layer"></g>
-
                 <!-- Territories & Units Layer -->
                 <g id="node-layer"></g>
+
+                <!-- Battle Icon Layer (Always on top for prominent siege visibility) -->
+                <g id="battle-layer"></g>
             </svg>
         </div>
     </section>
@@ -429,20 +635,20 @@
                 <span>British Hand</span>
             </button>
             <button type="button" id="right-col-tab-moves" class="right-col-tab-btn" onclick="switchRightColumnView('moves')">
-                <span>Notation (<span id="right-col-moves-badge">0</span>)</span>
+                <span>Moves (<span id="right-col-moves-badge">0</span>)</span>
             </button>
         </div>
 
         <div id="british-hand-container" class="british-hand-container">
             <div class="faction-column-header">
-                <div class="faction-title-wrap">
-                    <span class="faction-emblem">🦁</span>
-                    <div class="faction-text">
+                <div class="faction-flag-banner">
+                    <div class="faction-emblem-box british-emblem-box">
+                        <span class="faction-emblem">🦁</span>
+                    </div>
+                    <div class="faction-title-wrap">
                         <h3>BRITISH</h3>
-                        <span class="faction-motto">East India Co. Hand</span>
                     </div>
                 </div>
-                <span id="british-hand-count" class="card-count-badge">6/6</span>
             </div>
 
             <div id="british-cards-list" class="cards-deck">
@@ -451,19 +657,18 @@
         </div>
     </aside>
 
-    <!-- CHESS.COM STYLE NOTATION & GAME REVIEW PANEL -->
+    <!-- CHESS.COM STYLE NOTATION & GAME REVIEW PANEL (MOVES ONLY) -->
     <aside class="notation-panel" id="notation-panel">
-        <!-- Top Navigation Tabs (Moves / Info) -->
-        <div class="notation-tabs-header">
-            <button type="button" id="tab-btn-moves" class="notation-tab-btn active" onclick="switchNotationTab('moves')">
-                Moves <span id="notation-move-badge" class="notation-badge">0</span>
-            </button>
-            <button type="button" id="tab-btn-info" class="notation-tab-btn" onclick="switchNotationTab('info')">
-                Info
-            </button>
+        <!-- Panel Header: Dedicated Moves Notation Header (Zero Redundant Info Tab) -->
+        <div class="notation-panel-header">
+            <div class="notation-title-wrap">
+                <span class="notation-icon">📜</span>
+                <span class="notation-panel-title">MOVES NOTATION</span>
+            </div>
+            <span id="notation-move-badge" class="notation-badge">0</span>
         </div>
 
-        <!-- Panel Content: Moves -->
+        <!-- Panel Content: Moves Only -->
         <div id="notation-tab-moves-content" class="notation-tab-content">
             <!-- Opening / Game Phase Subtitle -->
             <div class="notation-phase-bar">
@@ -507,27 +712,6 @@
                 <button type="button" id="btn-resign-panel" class="notation-action-btn resign-btn" onclick="handleResignClick()">
                     Resign
                 </button>
-            </div>
-        </div>
-
-        <!-- Panel Content: Info -->
-        <div id="notation-tab-info-content" class="notation-tab-content hidden">
-            <div class="info-content-card">
-                <h4>Match Details</h4>
-                <p id="info-mode-label">Mode: Local Pass & Play</p>
-                <p><strong>Victory Conditions:</strong></p>
-                <ul>
-                    <li><strong>British:</strong> Occupy all 5 Key cities simultaneously (Bombay, Hyderabad, Madras, Seringapatam, Coimbatore).</li>
-                    <li><strong>Mysore:</strong> Defend through Turn 4 without British holding all 5 Keys, or eliminate British forces.</li>
-                </ul>
-                <p><strong>Turn Sequence (3-Phase Cycle):</strong></p>
-                <ul>
-                    <li><strong>Phase 0:</strong> British moves one Fresh Army (becomes Tired) or rests.</li>
-                    <li><strong>Phase 1:</strong> Mysore plays a card, commits battle strength, trades, or passes.</li>
-                    <li><strong>Phase 2:</strong> British plays a card, commits strength, trades, or passes. Combat resolves.</li>
-                </ul>
-                <p><strong>Siege Calculation:</strong> Attacker (armies + card) vs Defender (forts + card). Net &gt; 0 captures the fort. Battle loser discards 1 random active card.</p>
-                <p><strong>Trading:</strong> Value 3 cards reclaim any card; Value 2 cards reclaim Value 1 cards.</p>
             </div>
         </div>
     </aside>
