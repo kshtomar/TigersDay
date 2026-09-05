@@ -1,7 +1,28 @@
-# Expansion Notes — Iter D
+# Expansion Notes — Iter G
 
 **Branch:** `architect/expansion`  
 **North star:** intuitive · professional · void of clutter
+
+---
+
+## What changed (Iter G)
+
+- **Absorbed `main` layout & settings modal:** Merged `origin/main` (`2c26b9a`) into `architect/expansion` (not the reverse; never merge to main).
+- **Adopted `main` visual foundation:**
+  - New spacious 2-column Settings Page Modal with dedicated Visual Aesthetics & Board Design (left column) and Match Mode, AI Depth & State Management (right column).
+  - 10 bespoke visual environment themes with rich vector SVG and map styling (`deccan-imperial`, `midnight-tiger`, `royal-velvet`, `emerald-sultan`, `monsoon-mist`, `desert-rajput`, `cyber-warroom`, `sepia-archive`, `crimson-crown`, `ivory-onyx`).
+  - 5 distinctive board unit token systems (Tactical, Classic, Regimental, Minimalist, Antique).
+  - New illustrated vector card layouts with diagonal artwork integration and 3D wax seals.
+  - Zero-letterbox responsive board auto-sizer locking 760:880 aspect ratio.
+- **Preserved and re-ported all Expansion product polish:**
+  - **First-run tutorial:** Auto-opens on first visit, dismissible via "Got it", Esc, ✕, or backdrop click (`tigersday_tutorial_dismissed`), manual ⓘ preserved.
+  - **Local save/load & rename:** Full device persistence with timestamped slots (`tigersday_save_slots`), Rename dialog, Replace confirmation, Load, and Delete inside Settings state management disclosure; clipboard binary state copy/paste preserved.
+  - **Copy notation:** Single-click match algebraic notation export (`exportFullNotation`) in Moves panel with empty-state protection; redundant info tab removed from notation panel in favor of dedicated tutorial drawer.
+  - **Spectator clarity & eval states:** Spectating chip in header with input locking and mode hints; eval empty / waiting / error states with clean player-facing language (no Wasm/WebRTC/Stockfish technical jargon).
+  - **P2P Multiplayer UX:** One-click room code copy with auto-selection and tooltip; clean status strings on `#p2p-status-pill`; quick "Online" header access.
+  - **A11y & progressive disclosure:** Esc closes drawers and modals with focus restoration to trigger buttons; keyboard shortcuts `R` (Rest) and `P` (Pass); ARIA attributes maintained.
+- **Theme migration:** Unified to main's visual theme grid as the sole theme picker (avoiding duplicate UI chrome). Added automatic migration for legacy `tigersday_theme` IDs and synchronized persistence across `tiger_day_theme` and `tigersday_theme`.
+- **Logic & engine parity:** Zero changes to game rules, ONNX/MCTS engine, PyTorch weights, or P2P networking protocols.
 
 ---
 

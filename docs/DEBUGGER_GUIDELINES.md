@@ -141,6 +141,23 @@ python -m http.server 8080 --directory public
 - [ ] Save slots support Rename; name persists across reload
 - [ ] No rules/P2P/logic regressions (A smoke)
 
+
+### K. Iter G layout-merge regressions & locks (added with Iter G)
+- [ ] Settings Page Modal opens cleanly via gear button or "Online" button without clipping or background leakage
+- [ ] Settings modal closes via ✕ button, backdrop click, or Esc key; focus restores to opener
+- [ ] Theme selector grid: all 10 theme cards (Deccan Imperial through Ivory & Onyx) selectable with checkmark and immediate map/chrome color update
+- [ ] Theme migration: previous `tigersday_theme` localStorage values migrate seamlessly without broken styles or errors
+- [ ] No duplicate theme pickers: settings modal contains only the 10-theme grid (no orphaned dropdowns)
+- [ ] Unit token styles: 5 unit styles (Tactical, Classic, Regimental, Minimalist, Antique) switch board token presentation correctly
+- [ ] Card layouts: diagonal vector illustrated artwork renders cleanly; 3D wax strength seals clickable during battle commits
+- [ ] First-run tutorial: drawer auto-opens on fresh visit (`tigersday_tutorial_dismissed` flag absent), dismiss persists flag; manual ⓘ button still opens/closes
+- [ ] Local save slots & rename: Save to device persists position to `tigersday_save_slots`; Rename prompts and updates slot title; Load, Replace, and Delete operate correctly
+- [ ] Notation panel: dedicated Moves notation; Copy notation button exports full algebraic game log with empty-state protection
+- [ ] Spectator mode: "AI vs AI (Spectate)" displays Spectating chip in header, disables board input, and shows mode hint
+- [ ] P2P Online UX: Online button opens settings directly focused on multiplayer panel; Room code supports one-click copy; status pill shows clean non-jargon state
+- [ ] No technical jargon in player-visible UI (no "WebAssembly", "WebRTC", or "Stockfish")
+- [ ] Responsive board: auto-sizer maintains 760:880 map aspect ratio without letterboxing across viewports
+
 ## Report format (to Architect + Code Writer)
 
 ```
