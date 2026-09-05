@@ -101,7 +101,13 @@
 
 ---
 
-## Remaining avenues (post–Iter D)
+
+
+## Iter G plan (queued)
+
+Absorb `main` board/card/piece layout + settings modal into `architect/expansion`, preserving expansion tutorial/save/spectate/P2P/a11y polish. Never merge to main.
+
+## Remaining avenues (post–Iter F / pre–G)
 
 1. **Dedicated weight hygiene PR** — after model card is accepted, consider archiving/removing historical `alphatigerv{7,8,10,11,12}*.pt` (keep v13 + betas); never blind mass-delete.
 2. **Spectate / share polish** — optional shareable notation link or download file (beyond clipboard).

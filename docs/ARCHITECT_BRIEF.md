@@ -152,3 +152,22 @@ After D2 §H PASS. Add: monsoon-glass (solid fallback, no required blur), coasta
 ## Iter F — Spectator & eval clarity
 
 After E PASS. AI-vs-AI/spectator status clarity; eval bar empty/loading states; no logic changes.
+
+## Iter G — Absorb main layout (autonomous)
+
+`main` moved ahead with a large board/card/piece layout + settings modal refresh (`2c26b9a`). Expansion is +45 / −1 vs main and must not merge into main.
+
+1. Merge `origin/main` **into** `architect/expansion` (never the reverse; never merge to main).
+2. Prefer main’s new board/card/piece layout and settings modal structure as the visual base.
+3. Re-apply expansion product polish main still lacks (verify each):
+   - First-run tutorial (`tigersday_tutorial_dismissed`) + manual ⓘ
+   - Local save/load slots + rename (`tigersday_save_slots`)
+   - Notation **Copy notation** export
+   - Spectator chip / eval empty-waiting-error clarity
+   - P2P copy-room-code discoverability + clear Host/Join status
+   - A11y: Esc closes drawers/modals; focus restore; progressive disclosure
+4. Themes: keep main’s theme grid/IDs if they own the new layout; migrate or map old `tigersday_theme` values when cheap; no duplicate theme pickers; stay clutter-free.
+5. Update `docs/EXPANSION_NOTES.md` + living `DEBUGGER_GUIDELINES.md` checks for layout merge regressions.
+6. Smoke: `node --check public/script.js`; static `public/index.html` loads; no rules/engine rewrite; no `.pt` deletes.
+
+Success: commits on `architect/expansion` only; divergence from main resolved or reduced; expansion polish preserved; no merge to main; no Antigravity extra credits.
