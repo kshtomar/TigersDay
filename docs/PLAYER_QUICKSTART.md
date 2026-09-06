@@ -14,7 +14,7 @@ Short path into **Tiger’s Day** (Anglo-Mysore Wars board wargame).
    - **Play mode:** Human vs AI · Pass & Play · Online Multiplayer · AI vs AI (Spectate)
    - **Your side** (Human vs AI): British or Mysore
    - **Themes:** pick one of **10** board environments
-   - **Unit styles:** Tactical · Classic · Regimental · Minimalist · Vintage
+   - **Unit styles:** Tactical · Classic · Regimental · Minimalist · Antique
    - **AI eval bar** + **AI strength** slider
 3. Close settings and play on the board.
 
