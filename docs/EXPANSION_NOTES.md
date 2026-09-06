@@ -1,3 +1,19 @@
+# Expansion Notes — Iter H
+
+**Branch:** `architect/expansion`  
+**North star:** intuitive · professional · void of clutter
+
+---
+
+## What changed (Iter H)
+
+- **Download .txt** beside **Copy notation** — same full algebraic log as `exportFullNotation` / `buildFullNotationText`; empty toast, no empty file.
+- **PLAYER_QUICKSTART** refreshed for post-G UI (settings modal, 10 themes, 5 unit styles, Spectating, saves+rename, Online/P2P, shortcuts).
+- **Light clutter:** shortened settings subtitle; removed unused `.header-subtitle` / `.drawer-icon` CSS.
+- Debugger §L added. No rules/engine/P2P protocol changes.
+
+---
+
 # Expansion Notes — Iter G
 
 **Branch:** `architect/expansion`  

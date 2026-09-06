@@ -1,50 +1,42 @@
 # Tiger’s Day — Player Quickstart
 
-A short path into **Tiger’s Day**, a strategic board wargame set during the Anglo-Mysore Wars (1767–1799).
+Short path into **Tiger’s Day** (Anglo-Mysore Wars board wargame).
 
 ## Objective
 
-- **British East India Co.:** Occupy all **5 Key Cities** at once (*Bombay, Hyderabad, Madras, Seringapatam, Coimbatore*).
-- **Sultanate of Mysore:** Hold out through **Turn 4** without losing all 5 Keys (or break British forces earlier).
+- **British:** Hold all **5 Key Cities** at once (*Bombay, Hyderabad, Madras, Seringapatam, Coimbatore*).
+- **Mysore:** Survive through **Turn 4** without losing all five Keys (or break British forces earlier).
 
-## Start a game
+## Start
 
-1. Open `public/index.html` (or serve `public/` statically).
-2. Open **Settings** (⚙) and pick a **Play mode**:
-   - **Human vs AI** (default)
-   - **Pass & Play (Local)**
-   - **Online Multiplayer**
-   - **AI vs AI (Spectate)**
-3. Under **Your side**, choose British or Mysore.
+1. Open `public/index.html` (or serve `public/`).
+2. Open **Settings** (⚙) — full-page modal:
+   - **Play mode:** Human vs AI · Pass & Play · Online Multiplayer · AI vs AI (Spectate)
+   - **Your side** (Human vs AI): British or Mysore
+   - **Themes:** pick one of **10** board environments
+   - **Unit styles:** Tactical · Classic · Regimental · Minimalist · Vintage
+   - **AI eval bar** + **AI strength** slider
+3. Close settings and play on the board.
 
-## Rules & tutorial
+## Tutorial & spectating
 
-- First visit opens **Rules & Controls** automatically — dismiss with **Got it**, ✕, outside click, or **Esc**.
-- Reopen anytime with **ⓘ** in the header.
-- Each turn cycles: British Move → Mysore Card → British Card. When all British armies are tired, the turn advances and pieces refresh.
+- First visit opens **Rules & Controls** (ⓘ anytime). Dismiss with **Got it**, ✕, outside, or **Esc**.
+- **AI vs AI (Spectate):** header shows **Spectating**; board input stays locked.
 
-## Online multiplayer
+## Online
 
-1. Click **Online** (or choose Online Multiplayer in Settings).
-2. **Host:** Host Room → copy the room code (e.g. `TIGER-ABCD`) → share it.
-3. **Join:** paste the code under **Join a room** → Join.
-4. Host plays British; guest plays Mysore. Room code stays in the multiplayer panel only.
-
-## AI options
-
-- **Show AI evaluation bar** — live win-probability strip while the AI thinks.
-- **AI strength (thinking time)** — higher values search deeper (slower).
+1. **Online** in the header (or Online Multiplayer in Settings).
+2. **Host** → copy room code → share. **Join** → paste code → Join.
+3. Room code lives in the multiplayer panel only (no permanent header chrome).
 
 ## Controls
 
-- Click a Fresh Army → glowing destinations → click to move. Cards: body = ability; wax seal = battle strength.
-- **Esc** — close drawers or cancel selection.
-- **R** / **P** — Rest Unit / Pass Phase when those header buttons are visible.
-- **Moves** tab — notation log and history stepper (`⏮ ◀ ▶ ⏭`).
+- Fresh Army → destinations → move. Cards: body = ability; wax seal = battle strength.
+- **Esc** closes settings/tutorial or cancels selection. **R** / **P** = Rest / Pass when shown.
+- **Moves** panel: notation log, history stepper, **Copy notation** / **Download .txt**.
 
-## Save, load & notation
+## Saves & notation
 
-- **Settings → Game state → Save to this device** — keeps up to 5 positions in this browser (`Load` / `Replace` / delete under **Saved games on this device**).
-- **Copy game state** / paste **Load from paste** — share a position via clipboard.
-- **Moves → Copy notation** — one-click copy of the full match move log.
-
+- **Settings → Game state → Save to this device** — up to 5 slots; **Load / Replace / Rename / Delete**.
+- Clipboard **Copy game state** / paste load still work.
+- **Copy notation** / **Download .txt** — full match log (empty toast if no moves yet).

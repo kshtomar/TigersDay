@@ -545,11 +545,6 @@ body {
     white-space: nowrap;
 }
 
-.header-subtitle {
-    color: #e0c896 !important;
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-}
 
 .header-turn-meta {
     display: flex;
@@ -942,10 +937,6 @@ body {
     gap: 10px;
 }
 
-.settings-page-title-wrap .drawer-icon {
-    font-size: 1.35rem;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
-}
 
 .settings-page-title-wrap h3 {
     font-family: var(--font-heading);
@@ -1582,6 +1573,10 @@ body {
 }
 
 .notation-export-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
     display: flex;
     justify-content: flex-end;
     padding: 2px 0 4px;

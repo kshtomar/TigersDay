@@ -158,6 +158,14 @@ python -m http.server 8080 --directory public
 - [ ] No technical jargon in player-visible UI (no "WebAssembly", "WebRTC", or "Stockfish")
 - [ ] Responsive board: auto-sizer maintains 760:880 map aspect ratio without letterboxing across viewports
 
+
+### L. Iter H notation download + post-G polish
+- [ ] Moves panel shows **Copy notation** and **Download .txt** side by side
+- [ ] With ≥1 history entry, Download saves a `.txt` with the same content as Copy; with 0 moves, toast only (no empty file)
+- [ ] `docs/PLAYER_QUICKSTART.md` mentions settings modal, 10 themes, 5 unit styles, Spectating, saves+rename, Online/P2P, Copy/Download notation
+- [ ] Settings subtitle is concise; no resurrected dead header-subtitle chrome
+- [ ] No rules/engine/P2P protocol regressions (A smoke)
+
 ## Report format (to Architect + Code Writer)
 
 ```

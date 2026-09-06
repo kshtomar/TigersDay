@@ -3236,19 +3236,15 @@ function resetGamePrompt() {
   closeSettingsDrawer(true);
 }
 
-function exportFullNotation() {
-  // Use live length at click time to avoid empty-toast races mid-render
+function buildFullNotationText() {
   const histLen = Array.isArray(gameHistory) ? gameHistory.length : 0;
-  if (histLen < 1) {
-    showToast("No moves to export yet.", 'info');
-    return;
-  }
+  if (histLen < 1) return null;
   const modeEl = document.getElementById('info-mode-label');
   const modeLine = modeEl && modeEl.textContent ? modeEl.textContent.trim() : `Mode: ${modeLabelForSave(matchMode)}`;
   const lines = [
     "Tiger's Day — Match Notation",
     modeLine,
-    `Moves: ${gameHistory.length}`,
+    `Moves: ${histLen}`,
     ''
   ];
   gameHistory.forEach((entry, i) => {
@@ -3259,7 +3255,16 @@ function exportFullNotation() {
     const luck = entry.hasLuck && entry.luckDetail ? `  (${entry.luckDetail})` : '';
     lines.push(`${i + 1}. ${actor}: ${note}${luck}`);
   });
-  const textOut = lines.join('\n');
+  return lines.join('\n');
+}
+
+function exportFullNotation() {
+  // Use live length at click time to avoid empty-toast races mid-render
+  const textOut = buildFullNotationText();
+  if (!textOut) {
+    showToast("No moves to export yet.", 'info');
+    return;
+  }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(textOut).then(() => {
       showToast("Full notation copied to clipboard.", 'success');
@@ -3268,6 +3273,31 @@ function exportFullNotation() {
     });
   } else {
     showToast("Clipboard unavailable.", 'error');
+  }
+}
+
+function downloadNotationTxt() {
+  const textOut = buildFullNotationText();
+  if (!textOut) {
+    showToast("No moves to export yet.", 'info');
+    return;
+  }
+  try {
+    const blob = new Blob([textOut], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    a.href = url;
+    a.download = `tigersday-notation-${stamp}.txt`;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast("Notation downloaded.", 'success');
+  } catch (err) {
+    console.warn('Notation download failed:', err);
+    showToast("Could not download notation.", 'error');
   }
 }
 

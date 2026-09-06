@@ -212,7 +212,7 @@
                 <span class="settings-page-icon">⚙️</span>
                 <div>
                     <h3>GAME SETTINGS & OPTIONS</h3>
-                    <span class="settings-page-subtitle">Configure Themes, Board Unit Styles, AI Intelligence & Gameplay Controls</span>
+                    <span class="settings-page-subtitle">Themes, units, AI &amp; game controls</span>
                 </div>
             </div>
             <button type="button" class="close-drawer-btn" onclick="toggleSettingsMenu()" aria-label="Close Settings">✕</button>
@@ -729,6 +729,9 @@
             <div class="notation-export-row">
                 <button type="button" id="btn-export-notation" class="notation-export-btn" onclick="exportFullNotation()" title="Copy full match notation">
                     Copy notation
+                </button>
+                <button type="button" id="btn-download-notation" class="notation-export-btn" onclick="downloadNotationTxt()" title="Download full match notation as .txt">
+                    Download .txt
                 </button>
             </div>
             <div class="notation-actions-bar">
