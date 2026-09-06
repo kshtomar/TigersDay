@@ -122,21 +122,19 @@
 
 ---
 
+## Iter H plan (queued)
 
+Post-G: notation Download .txt beside Copy; PLAYER_QUICKSTART refresh for new settings/themes/units/spectate; light dead-CSS clutter pass; living §L. Never merge to main.
 
-## Iter G plan (queued)
+## Remaining avenues (post–Iter G)
 
-Absorb `main` board/card/piece layout + settings modal into `architect/expansion`, preserving expansion tutorial/save/spectate/P2P/a11y polish. Never merge to main.
-
-## Remaining avenues (post–Iter F / pre–G)
-
-1. **Dedicated weight hygiene PR** — after model card is accepted, consider archiving/removing historical `alphatigerv{7,8,10,11,12}*.pt` (keep v13 + betas); never blind mass-delete.
-2. **Spectate / share polish** — optional shareable notation link or download file (beyond clipboard).
-3. **Deeper a11y / i18n** — only if player feedback demands it.
-4. **Remaining visual themes** (parked) — Brass Instruments, Monsoon Glass, Chalkboard, Rocket Night, Treaty Ledger, Signal Flags, Twin Courts (7 remaining of 10 from `docs/ARCHITECT_BRIEF.md`). Prototypes 1–3 shipped in Iter D.
+1. **Dedicated weight hygiene PR** — archive historical `alphatigerv{7,8,10,11,12}*.pt` (keep v13 + betas); never blind mass-delete.
+2. **Deeper a11y / i18n** — only if player feedback demands it.
+3. **Settings progressive disclosure** — further collapse of Visual vs Match columns if modal still feels dense after H.
 
 ## Non-goals (still)
 
 - Never merge to `main`.
 - No training rewrite / mass-delete of `.pt` weights.
 - Browser UI does not `fetch()` FastAPI; treat `server.py` as research/Vercel path only.
+

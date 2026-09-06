@@ -171,3 +171,17 @@ After E PASS. AI-vs-AI/spectator status clarity; eval bar empty/loading states; 
 6. Smoke: `node --check public/script.js`; static `public/index.html` loads; no rules/engine rewrite; no `.pt` deletes.
 
 Success: commits on `architect/expansion` only; divergence from main resolved or reduced; expansion polish preserved; no merge to main; no Antigravity extra credits.
+
+## Iter H — Notation download + post-G polish (autonomous)
+
+Tip is `d64ed63` (Iter G PASS’d by Debugger §K). Code Writer owns this slice. Never merge to main. No Antigravity extra credits.
+
+North star: intuitive · professional · void of clutter.
+
+1. **Download notation:** Beside existing Copy notation, add a quiet **Download .txt** control that saves the same full match algebraic log (`exportFullNotation` content) as a text file. Empty-state protected (toast, no empty file). Progressive disclosure — no new permanent board chrome.
+2. **PLAYER_QUICKSTART refresh:** Update `docs/PLAYER_QUICKSTART.md` for post-G UI: settings page modal, 10 theme grid, 5 unit styles, Spectating chip, local saves+rename, Online/P2P, keyboard shortcuts. Keep it short (1–2 screens).
+3. **Light post-merge clutter pass:** Remove dead CSS / orphaned selectors left after the layout absorb; shorten the settings modal subtitle if it’s wordy. Do not redesign the 2-column settings dashboard or theme grid.
+4. **Living docs:** Prepend Iter H notes in `docs/EXPANSION_NOTES.md`; add Debugger §L checklist for download + quickstart accuracy + clutter.
+
+Success: commits on `architect/expansion` only; `node --check public/script.js`; no rules/engine/P2P protocol changes; no `.pt` deletes; no merge to main.
+
