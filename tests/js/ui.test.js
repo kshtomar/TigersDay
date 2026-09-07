@@ -383,13 +383,13 @@ test('SEO & Search Indexing - robots.txt, sitemap.xml & Structured Data', () => 
   assert.ok(robotsContent.includes('User-agent: *'), 'robots.txt must declare User-agent: *');
   assert.ok(robotsContent.includes('Allow: /'), 'robots.txt must allow root browsing');
   assert.ok(robotsContent.includes('Disallow: /api/'), 'robots.txt must disallow /api/ to preserve compute');
-  assert.ok(robotsContent.includes('Sitemap: https://tigers-day.vercel.app/sitemap.xml'), 'robots.txt must specify sitemap');
+  assert.ok(robotsContent.includes('Sitemap: https://alphatiger.vercel.app/sitemap.xml'), 'robots.txt must specify sitemap');
 
   // sitemap.xml validation
   assert.ok(fs.existsSync(sitemapPath), 'sitemap.xml must exist in public directory');
   const sitemapContent = fs.readFileSync(sitemapPath, 'utf8');
   assert.ok(sitemapContent.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'), 'sitemap.xml must have valid namespace');
-  assert.ok(sitemapContent.includes('<loc>https://tigers-day.vercel.app/</loc>'), 'sitemap.xml must list canonical homepage');
+  assert.ok(sitemapContent.includes('<loc>https://alphatiger.vercel.app/</loc>'), 'sitemap.xml must list canonical homepage');
 
   // Open Graph Preview validation
   assert.ok(fs.existsSync(ogPreviewPath), 'og-preview.svg must exist for social scrapers');

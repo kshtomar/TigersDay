@@ -11,23 +11,23 @@
     <meta name="keywords" content="The Tiger's Day, Anglo-Mysore War, Tipu Sultan, historical wargame, board game, MCTS, AlphaZero, Mysore, East India Company, Seringapatam, strategy game, turn-based wargame, Indian history game">
     <meta name="author" content="The Tiger's Day Project">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="canonical" href="https://tigers-day.vercel.app/">
+    <link rel="canonical" href="https://alphatiger.vercel.app/">
 
     <!-- Open Graph / Facebook / LinkedIn / Discord -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tigers-day.vercel.app/">
+    <meta property="og:url" content="https://alphatiger.vercel.app/">
     <meta property="og:site_name" content="The Tiger's Day">
     <meta property="og:title" content="The Tiger's Day – The Anglo-Mysore Wars">
     <meta property="og:description" content="Strategic historical wargame simulating the Fourth Anglo-Mysore War (1799). Play as Tipu Sultan or the British East India Company with MCTS neural AI and online multiplayer.">
-    <meta property="og:image" content="https://tigers-day.vercel.app/og-preview.svg">
+    <meta property="og:image" content="https://alphatiger.vercel.app/og-preview.svg">
     <meta property="og:locale" content="en_US">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://tigers-day.vercel.app/">
+    <meta name="twitter:url" content="https://alphatiger.vercel.app/">
     <meta name="twitter:title" content="The Tiger's Day – The Anglo-Mysore Wars">
     <meta name="twitter:description" content="Strategic historical wargame simulating the Fourth Anglo-Mysore War (1799). Play as Tipu Sultan or the British East India Company with MCTS neural AI and online multiplayer.">
-    <meta name="twitter:image" content="https://tigers-day.vercel.app/og-preview.svg">
+    <meta name="twitter:image" content="https://alphatiger.vercel.app/og-preview.svg">
 
     <!-- Structured Data (JSON-LD) for Search Engine Rich Snippets -->
     <script type="application/ld+json">
@@ -36,7 +36,7 @@
       "@type": "VideoGame",
       "name": "The Tiger's Day: The Anglo-Mysore Wars",
       "alternateName": "Tiger's Day",
-      "url": "https://tigers-day.vercel.app/",
+      "url": "https://alphatiger.vercel.app/",
       "description": "Historical turn-based strategy wargame simulating the Fourth Anglo-Mysore War (1799) between Tipu Sultan and the British East India Company, powered by AlphaZero-style Monte Carlo Tree Search neural AI.",
       "genre": [
         "Historical Wargame",
@@ -183,6 +183,19 @@
     </div>
 
     <div class="drawer-content tutorial-content">
+        <!-- Interactive Onboarding Launch Banner -->
+        <div style="margin-bottom: 20px; padding: 14px; background: rgba(212, 163, 89, 0.12); border: 1px solid #d4a359; border-radius: 6px; text-align: center;">
+            <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: 600; color: #f5d680;">Looking for hands-on onboarding?</p>
+            <div style="display: flex; gap: 8px;">
+                <button id="drawer-launch-tutorial-btn" class="header-action-btn" style="flex: 1; padding: 10px 8px; background: #d4a359; color: #121820; font-weight: bold; border-radius: 4px; cursor: pointer;" onclick="toggleTutorialMenu(); startGuidedTutorial();">
+                    🎓 Start Interactive Tutorial
+                </button>
+                <button id="drawer-launch-lore-btn" class="header-action-btn" style="flex: 1; padding: 10px 8px; background: rgba(212, 163, 89, 0.2); color: #f5eedb; border: 1px solid #d4a359; border-radius: 4px; cursor: pointer;" onclick="toggleTutorialMenu(); openLoreCodex();">
+                    📜 Historical Lore Codex
+                </button>
+            </div>
+        </div>
+
         <!-- 1. OBJECTIVE & VICTORY -->
         <div class="tutorial-item">
             <div class="tutorial-item-title">

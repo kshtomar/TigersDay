@@ -44,4 +44,4 @@ User-agent: CCBot
 Allow: /
 
 # Canonical Sitemap Location
-Sitemap: https://tigers-day.vercel.app/sitemap.xml
+Sitemap: https://alphatiger.vercel.app/sitemap.xml
