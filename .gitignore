@@ -71,3 +71,5 @@ yarn-error.log*
 *.ses
 :memory:.ses
 logs/
+.vercel
+.env*

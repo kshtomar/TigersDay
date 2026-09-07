@@ -14,5 +14,8 @@
     "boardgame"
   ],
   "author": "Kshitij Tomar",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^59.11.7"
+  }
 }

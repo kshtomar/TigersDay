@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "git": {
+    "deploymentEnabled": false
+  },
   "functions": {
     "api/index.py": {
       "memory": 1024,
