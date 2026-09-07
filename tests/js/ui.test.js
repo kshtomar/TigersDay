@@ -370,3 +370,49 @@ test('Mobile Tab Switching & Responsive Layout Controllers', () => {
   assert.ok(scriptContent.includes('function switchRightColumnView('), 'switchRightColumnView function must be defined');
   assert.ok(scriptContent.includes('function adjustBoardDimensions('), 'adjustBoardDimensions function must be defined');
 });
+
+test('SEO & Search Indexing - robots.txt, sitemap.xml & Structured Data', () => {
+  const robotsPath = path.join(__dirname, '../../public/robots.txt');
+  const sitemapPath = path.join(__dirname, '../../public/sitemap.xml');
+  const ogPreviewPath = path.join(__dirname, '../../public/og-preview.svg');
+  const html = fs.readFileSync(HTML_PATH, 'utf8');
+
+  // robots.txt validation
+  assert.ok(fs.existsSync(robotsPath), 'robots.txt must exist in public directory');
+  const robotsContent = fs.readFileSync(robotsPath, 'utf8');
+  assert.ok(robotsContent.includes('User-agent: *'), 'robots.txt must declare User-agent: *');
+  assert.ok(robotsContent.includes('Allow: /'), 'robots.txt must allow root browsing');
+  assert.ok(robotsContent.includes('Disallow: /api/'), 'robots.txt must disallow /api/ to preserve compute');
+  assert.ok(robotsContent.includes('Sitemap: https://tigers-day.vercel.app/sitemap.xml'), 'robots.txt must specify sitemap');
+
+  // sitemap.xml validation
+  assert.ok(fs.existsSync(sitemapPath), 'sitemap.xml must exist in public directory');
+  const sitemapContent = fs.readFileSync(sitemapPath, 'utf8');
+  assert.ok(sitemapContent.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'), 'sitemap.xml must have valid namespace');
+  assert.ok(sitemapContent.includes('<loc>https://tigers-day.vercel.app/</loc>'), 'sitemap.xml must list canonical homepage');
+
+  // Open Graph Preview validation
+  assert.ok(fs.existsSync(ogPreviewPath), 'og-preview.svg must exist for social scrapers');
+
+  // index.html SEO meta tags
+  assert.ok(html.includes('name="description"'), 'Meta description must exist');
+  assert.ok(html.includes('name="keywords"'), 'Meta keywords must exist');
+  assert.ok(html.includes('name="robots" content="index, follow'), 'Robots meta tag must allow index and follow');
+  assert.ok(html.includes('rel="canonical"'), 'Canonical link must be defined');
+
+  // Social tags
+  assert.ok(html.includes('property="og:title"'), 'og:title must exist');
+  assert.ok(html.includes('property="og:description"'), 'og:description must exist');
+  assert.ok(html.includes('property="og:image"'), 'og:image must exist');
+  assert.ok(html.includes('name="twitter:card"'), 'twitter:card must exist');
+
+  // Schema.org JSON-LD Structured Data
+  assert.ok(html.includes('application/ld+json'), 'JSON-LD structured data must exist');
+  assert.ok(html.includes('"@type": "VideoGame"'), 'JSON-LD must classify application as VideoGame');
+  assert.ok(html.includes('"The Tiger\'s Day: The Anglo-Mysore Wars"'), 'JSON-LD must specify game name');
+
+  // Noscript crawler fallback
+  assert.ok(html.includes('<noscript>'), 'Noscript tag must exist for non-JS crawlers');
+  assert.ok(html.includes('Kingdom of Mysore'), 'Noscript must contain historical overview');
+});
+

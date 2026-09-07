@@ -1,0 +1,47 @@
+# Tiger's Day – robots.txt
+# Allows full indexing of the game client, documentation, and historical codex.
+# Disallows serverless AI inference endpoints to protect compute budget.
+
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /style.css
+Allow: /script.js
+Allow: /manifest.json
+Allow: /js/
+Disallow: /api/
+
+# Search Engine Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# AI Crawlers & Scrapers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# Canonical Sitemap Location
+Sitemap: https://tigers-day.vercel.app/sitemap.xml
