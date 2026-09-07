@@ -38,8 +38,8 @@ jobs:
 
       - name: Validate Python Syntax & Critical Lints
         run: |
-          python -m py_compile $(git ls-files '*.py')
-          ruff check . --select=E9,F63,F7,F82
+          python -m compileall -q -f game ai api server.py tests
+          ruff check game ai api tests --select=E9,F63,F7,F82
 
       - name: Validate JavaScript Syntax & Structure
         run: |

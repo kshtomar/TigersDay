@@ -54,6 +54,10 @@
       this._saveSettings();
     }
 
+    setMuted(muted) {
+      this.setEnabled(!muted);
+    }
+
     setVolume(vol) {
       this.volume = Math.max(0, Math.min(1, parseFloat(vol)));
       if (this.masterGain && this.ctx) {

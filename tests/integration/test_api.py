@@ -97,5 +97,30 @@ class TestApiIntegration(unittest.TestCase):
         self.assertIn("notation", data)
         self.assertTrue(len(data["notation"]) > 0)
 
+    def test_api_play_ai(self):
+        state = GameState()
+        state.default_setup()
+        status, data = self._run_request("POST", "/api/play-ai", {
+            "state_str": str(state),
+            "sims": 5
+        })
+        self.assertEqual(status, 200)
+        self.assertIn("best_move", data)
+        self.assertIsInstance(data["best_move"], int)
+        self.assertIn("game_data", data)
+        self.assertIn("notation", data)
+
+    def test_api_eval_step(self):
+        state = GameState()
+        state.default_setup()
+        status, data = self._run_request("POST", "/api/eval-step", {
+            "state_str": str(state),
+            "batch_size": 5
+        })
+        self.assertEqual(status, 200)
+        self.assertIn("score", data)
+        self.assertIn("total_sims", data)
+        self.assertIn("top_moves", data)
+
 if __name__ == '__main__':
     unittest.main()

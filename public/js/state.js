@@ -372,12 +372,13 @@
         this.vector[i] = ch === '1' ? 1 : 0;
       }
 
-      // Validate territory occupation (each node controlled by at most one side)
+      // Validate territory occupation (each node has at most one unit: fresh, tired, or fort)
       for (let i = 0; i < NODES; i++) {
-        const b = this.vector[GameState.IDX_BRITISH_TERRITORY_OFFSET + i];
-        const m = this.vector[GameState.IDX_MYSORE_TERRITORY_OFFSET + i];
-        if (b + m > 1) {
-          throw new Error(`Node ${i} is simultaneously controlled by British and Mysore!`);
+        const start = GameState.IDX_NODES_OFFSET + i * 3;
+        const total = this.vector[start] + this.vector[start + 1] + this.vector[start + 2];
+        if (total > 1) {
+          const name = INDEX_MAP[i] || `Territory ${i}`;
+          throw new Error(`Multiple units assigned to territory ${name}!`);
         }
       }
 

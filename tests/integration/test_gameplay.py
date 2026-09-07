@@ -37,5 +37,50 @@ class TestGameplayIntegration(unittest.TestCase):
         self.assertFalse(current.is_luck)
         self.assertIn(get_state_winner(current), [0, 1, -1])
 
+    def test_multistep_consecutive_turns(self):
+        """Simulates 5 consecutive turns to ensure state machine transitions smoothly."""
+        current = GameState()
+        current.default_setup()
+
+        for step in range(5):
+            self.assertEqual(len(str(current)), 148)
+            winner = get_state_winner(current)
+            if winner != 0:
+                break
+
+            legal_mask = get_legal_moves(current)
+            self.assertGreater(np.sum(legal_mask), 0)
+            move = int(np.where(legal_mask)[0][0])
+            self.assertGreaterEqual(move, 0)
+            self.assertLess(move, 959)
+
+            next_state = get_next_state(current, move)
+            while next_state.is_luck:
+                outcomes = get_luck_outcomes(next_state)
+                self.assertGreater(len(outcomes), 0)
+                next_state = outcomes[0]
+
+            current = next_state
+
+        self.assertEqual(len(str(current)), 148)
+
+    def test_undo_state_restoration(self):
+        """Verifies state can be rolled back cleanly via bit-string."""
+        initial = GameState()
+        initial.default_setup()
+        saved_str = str(initial)
+
+        legal_mask = get_legal_moves(initial)
+        move = int(np.where(legal_mask)[0][0])
+        next_state = get_next_state(initial, move)
+
+        self.assertNotEqual(str(next_state), saved_str)
+
+        # Rollback
+        restored = GameState()
+        restored.read_str(saved_str)
+        self.assertEqual(str(restored), saved_str)
+        self.assertTrue(np.array_equal(restored.vector, initial.vector))
+
 if __name__ == '__main__':
     unittest.main()
