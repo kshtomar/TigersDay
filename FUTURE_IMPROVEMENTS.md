@@ -73,7 +73,7 @@ However, several critical inconsistencies exist:
 ## 3. P0 — Critical Bugs & Interface Discrepancies
 
 ### 3.1 MCTS Method Signatures Divergence (Server & Arena Crashes)
-- **Location:** [`ai/mcts.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/ai/mcts.py), [`server.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/server.py), [`api/index.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/api/index.py), [`ai/arena.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/ai/arena.py)
+- **Location:** [`ai/mcts.py`](./ai/mcts.py), [`server.py`](./server.py), [`api/index.py`](./api/index.py), [`ai/arena.py`](./ai/arena.py)
 - **Root Cause:**
   - `ai/mcts.py` defines `__init__(self, model, ipuct=800, dalpha=0.5, depsilon=0.25)`. It does **not** accept `simulations`.
   - In `server.py` (lines 62, 200), `api/index.py` (lines 76, 173), and `ai/arena.py` (lines 48, 49), callers instantiate `MCTS(..., simulations=..., ...)`. This raises `TypeError: MCTS.__init__() got an unexpected keyword argument 'simulations'`.
@@ -87,7 +87,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 3.2 Swapped Faction Card Names in Live Moves History
-- **Location:** [`public/script.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/script.js#L1929-L1934)
+- **Location:** [`public/script.js`](./public/script.js#L1929-L1934)
 - **Root Cause:**
   Lines 1929–1934 define:
   ```javascript
@@ -113,7 +113,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 3.3 State Vector Bit 94 Initialization Asymmetry
-- **Location:** [`game/state.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/game/state.py#L26-L35), [`public/js/state.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/js/state.js#L162)
+- **Location:** [`game/state.py`](./game/state.py#L26-L35), [`public/js/state.js`](./public/js/state.js#L162)
 - **Root Cause:**
   - In Python `game/state.py`, `__init__` sets `self._card_strength = 0` but leaves `self.vector` all zeros at indices 94–97 (`IDX_COMBAT_STRENGTH`).
   - In JavaScript `public/js/state.js`, `constructor()` sets `this.card_strength = 0;`, which sets bit 94 to `1` (one-hot encoding for 0 strength).
@@ -125,7 +125,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 3.4 Flawed Consecutive Bit Validation in `read_str`
-- **Location:** [`game/state.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/game/state.py#L201-L209)
+- **Location:** [`game/state.py`](./game/state.py#L201-L209)
 - **Root Cause:**
   ```python
   try:
@@ -155,7 +155,7 @@ However, several critical inconsistencies exist:
 ## 4. P1 — Game Engine & AI Pipeline Enhancements
 
 ### 4.1 Action Space Dimension Reconciliation (953 vs 959)
-- **Location:** [`README.md`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/README.md), [`game/constants.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/game/constants.py), [`public/js/state.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/js/state.js#L113)
+- **Location:** [`README.md`](./README.md), [`game/constants.py`](./game/constants.py), [`public/js/state.js`](./public/js/state.js#L113)
 - **Detail:**
   The graph has **25 territories** and **86 directed edges** (43 bidirectional connections, including Poona-Bombay, Poona-Hyderabad, and Poona-Satara). In `MOVE_SPACE`, `Move`, `Divide and Rule`, and `Force March` each consume `EDGES` entries.
   $3 \times 86 = 258$, bringing the action space to **959**, matching the exported ONNX model (`(1, 959)`).
@@ -165,7 +165,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 4.2 `get_next_state` O(1) Action Table Indexing
-- **Location:** [`game/updater.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/game/updater.py#L13-L20), [`public/js/engine.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/js/engine.js#L260-L280)
+- **Location:** [`game/updater.py`](./game/updater.py#L13-L20), [`public/js/engine.js`](./public/js/engine.js#L260-L280)
 - **Detail:**
   `get_next_state` currently scans `MOVE_SPACE` sequentially with `offset <= move < offset + size` for every transition. Over 800 MCTS simulations $\times$ 40 moves per game, this linear scan executes millions of times.
 - **Task:**
@@ -174,7 +174,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 4.3 Net Card Strength Application in Secondary Combat Rollouts
-- **Location:** [`game/updater.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/game/updater.py#L67-L74,L123,L167)
+- **Location:** [`game/updater.py`](./game/updater.py#L67-L74,L123,L167)
 - **Detail:**
   In `Force March` and `Royal Navy`, `resolve_battles(state, attacker, defender, -state.card_strength)` passes net card strength, but inside `resolve_battles`:
   ```python
@@ -188,7 +188,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 4.4 Draw & Repetition Detection Mechanics
-- **Location:** [`game/updater.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/game/updater.py#L142-L148), [`public/js/engine.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/js/engine.js)
+- **Location:** [`game/updater.py`](./game/updater.py#L142-L148), [`public/js/engine.js`](./public/js/engine.js)
 - **Detail:**
   Currently, game termination only checks:
   1. British occupies all 5 Key Cities $\rightarrow$ `+1`
@@ -200,7 +200,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 4.5 Heatmap Dependencies & Multiprocessing CUDA Memory Safeguards
-- **Location:** [`ai/heatmap.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/ai/heatmap.py), [`ai/multitrain.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/ai/multitrain.py), [`requirements-dev.txt`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/requirements-dev.txt)
+- **Location:** [`ai/heatmap.py`](./ai/heatmap.py), [`ai/multitrain.py`](./ai/multitrain.py), [`requirements-dev.txt`](./requirements-dev.txt)
 - **Detail:**
   - `ai/heatmap.py` imports `matplotlib.pyplot` and `seaborn`, which are missing from `requirements.txt` and `requirements-dev.txt`.
   - In `ai/multitrain.py`, passing a CUDA model directly into a `ProcessPoolExecutor` with `ctx = mp.get_context("spawn")` causes CUDA reinitialization faults on GPU servers unless workers keep local CPU copies and aggregate gradients via `torch.multiprocessing.Queue`.
@@ -211,7 +211,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 4.6 ONNX INT8 Dynamic Quantization
-- **Location:** [`ai/onnx.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/ai/onnx.py)
+- **Location:** [`ai/onnx.py`](./ai/onnx.py)
 - **Detail:**
   `public/alphatiger.onnx` currently weighs 1.6 MB with Float32 weights.
 - **Task:**
@@ -220,7 +220,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 4.7 Opening Book Engine & Transposition Table
-- **Location:** [`ai/mcts.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/ai/mcts.py), [`public/js/mcts.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/js/mcts.js)
+- **Location:** [`ai/mcts.py`](./ai/mcts.py), [`public/js/mcts.js`](./public/js/mcts.js)
 - **Detail:**
   Opening moves (e.g. `trv>alw`, `mad>pdc`, `bom>sat`) are repeatedly solved via raw MCTS rollouts at the start of every game.
 - **Task:**
@@ -231,7 +231,7 @@ However, several critical inconsistencies exist:
 ## 5. P2 — Frontend & UX Immersion
 
 ### 5.1 Web Audio API / Atmospheric Soundscape & Sound Effects
-- **Location:** New module [`public/js/sound.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/js/)
+- **Location:** New module [`public/js/sound.js`](./public/js/)
 - **Detail:**
   The game currently features zero audio feedback. Adding procedural Web Audio sound synthesis (zero external audio file dependencies) or lightweight sound bites will dramatically heighten immersion:
   - **Troop March:** Rhythmic military snare drum / boots on turf.
@@ -244,7 +244,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 5.2 Modularization of Monolithic `public/script.js`
-- **Location:** [`public/script.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/script.js) (2,967 lines)
+- **Location:** [`public/script.js`](./public/script.js) (2,967 lines)
 - **Detail:**
   `script.js` contains SVG map geometry, 12 vector card illustrations, theme definitions, token renderers, point-and-click state machines, MCTS coordinator, live history notation, and settings modal controls in a single 122 KB file.
 - **Task:**
@@ -258,7 +258,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 5.3 Dual-Engine Toggle (Client WASM vs Serverless FastAPI)
-- **Location:** [`public/script.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/script.js), [`public/index.html`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/index.html)
+- **Location:** [`public/script.js`](./public/script.js), [`public/index.html`](./public/index.html)
 - **Detail:**
   Currently, client-side inference runs exclusively in the browser. Players on older mobile phones or battery-saver mode may experience frame drops during 800+ MCTS simulations.
 - **Task:**
@@ -280,7 +280,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 5.5 Keyboard Navigation & Full A11y / Screen Reader Support
-- **Location:** [`public/index.html`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/index.html), [`public/script.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/script.js)
+- **Location:** [`public/index.html`](./public/index.html), [`public/script.js`](./public/script.js)
 - **Detail:**
   Map nodes are SVG `<g>` elements that lack keyboard focus (`tabindex="0"`) and ARIA roles.
 - **Task:**
@@ -290,7 +290,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 5.6 WebRTC Signaling & Reconnection Resilience
-- **Location:** [`public/js/multiplayer.js`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/public/js/multiplayer.js)
+- **Location:** [`public/js/multiplayer.js`](./public/js/multiplayer.js)
 - **Detail:**
   P2P multiplayer currently relies solely on public PeerJS cloud brokers without heartbeat reconnects or fallback room recovery if a player briefly switches mobile tabs.
 - **Task:**
@@ -302,7 +302,7 @@ However, several critical inconsistencies exist:
 ## 6. P3 — Server, API & Architecture Hygiene
 
 ### 6.1 Unify `server.py` and `api/index.py`
-- **Location:** [`server.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/server.py), [`api/index.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/api/index.py)
+- **Location:** [`server.py`](./server.py), [`api/index.py`](./api/index.py)
 - **Detail:**
   Both files implement near-identical FastAPI endpoints (`/api/init`, `/api/load-state`, `/api/play-move`, `/api/play-ai`, `/api/eval-step`, `/api/get-notation`), with minor divergent bug fixes in `api/index.py` for Vercel.
 - **Task:**
@@ -311,7 +311,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 6.2 Server-Side Evaluation Tree LRU Cache & Thread Safety
-- **Location:** [`server.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/server.py#L182-L208)
+- **Location:** [`server.py`](./server.py#L182-L208)
 - **Detail:**
   `active_eval_trees` is a naked global dictionary holding reference to MCTS search trees. In concurrent multi-user environments, this dictionary can grow without bounds and suffers from race conditions.
 - **Task:**
@@ -320,7 +320,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 6.3 API Rate Limiting, Input Validation & Security
-- **Location:** [`api/index.py`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/api/index.py)
+- **Location:** [`api/index.py`](./api/index.py)
 - **Detail:**
   Endpoints accept `state_str` without verifying length or character set in Pydantic schema before parsing, allowing potential memory exhaustion from unbounded requests.
 - **Task:**
@@ -343,7 +343,7 @@ However, several critical inconsistencies exist:
 ---
 
 ### 7.2 Dependency Pinning Synchronization
-- **Location:** [`requirements.txt`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/requirements.txt), [`requirements-dev.txt`](file:///Users/kshitij.tomar/Desktop/Berkeley/TigersDay/requirements-dev.txt)
+- **Location:** [`requirements.txt`](./requirements.txt), [`requirements-dev.txt`](./requirements-dev.txt)
 - **Detail:**
   `requirements.txt` specifies `numpy>=1.24.0,<2.0.0`, whereas `requirements-dev.txt` installs `numpy==2.4.3`.
 - **Task:**
