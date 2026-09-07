@@ -261,6 +261,107 @@ def create_app(mount_static: bool = False) -> FastAPI:
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
 
+    # -----------------------------------------------------------------------
+    # WebSocket Matchmaking & Relay Routes (P5.3)
+    # -----------------------------------------------------------------------
+    from api.lobby import global_lobby, Player
+
+    @app.get("/api/lobby/rooms")
+    async def list_lobby_rooms():
+        return {"rooms": global_lobby.list_active_rooms()}
+
+    @app.websocket("/ws/lobby")
+    async def websocket_lobby_matchmaking(websocket: WebSocket):
+        await websocket.accept()
+        player = None
+        try:
+            init_data = await websocket.receive_text()
+            payload = json.loads(init_data)
+            handle = payload.get("handle", f"Player_{random.randint(100, 999)}")
+            elo = payload.get("elo", 1200)
+            player = Player(handle=handle, websocket=websocket, elo=elo)
+
+            room_id = await global_lobby.join_queue(player)
+            if not room_id:
+                await websocket.send_text(json.dumps({"type": "QUEUE_WAITING", "status": "Searching for opponent..."}))
+
+            # Keep connection alive while queued
+            while True:
+                data = await websocket.receive_text()
+                msg = json.loads(data)
+                if msg.get("type") == "LEAVE_QUEUE":
+                    await global_lobby.leave_queue(player)
+                    break
+        except WebSocketDisconnect:
+            if player:
+                await global_lobby.leave_queue(player)
+        except Exception:
+            if player:
+                await global_lobby.leave_queue(player)
+
+    @app.websocket("/ws/room/{room_id}")
+    async def websocket_room_relay(websocket: WebSocket, room_id: str):
+        await websocket.accept()
+        role = "spectator"
+        handle = f"User_{random.randint(100, 999)}"
+        room = global_lobby.get_room(room_id)
+
+        if not room:
+            room = global_lobby.create_room(room_id, host_handle=handle)
+
+        try:
+            init_data = await websocket.receive_text()
+            payload = json.loads(init_data)
+            handle = payload.get("handle", handle)
+            role = payload.get("role", "spectator")
+
+            if role in ["host", "british", "mysore", "guest"]:
+                room.sockets[handle] = websocket
+            else:
+                room.spectators.add(websocket)
+
+            # Send current room state if exists
+            if room.state_str:
+                await websocket.send_text(json.dumps({
+                    "type": "SYNC_STATE",
+                    "state_str": room.state_str,
+                    "moves": room.moves_history
+                }))
+
+            await room.broadcast({
+                "type": "USER_JOINED",
+                "handle": handle,
+                "role": role,
+                "spectator_count": len(room.spectators)
+            })
+
+            # Relay loop
+            while True:
+                text_data = await websocket.receive_text()
+                msg = json.loads(text_data)
+                msg_type = msg.get("type")
+
+                if msg_type == "MOVE":
+                    if "state_str" in msg:
+                        room.state_str = msg["state_str"]
+                    if "move_idx" in msg:
+                        room.moves_history.append(msg["move_idx"])
+
+                # Relay packet to peer / spectators
+                await room.broadcast(msg, sender=handle)
+
+        except WebSocketDisconnect:
+            room.sockets.pop(handle, None)
+            room.spectators.discard(websocket)
+            await room.broadcast({
+                "type": "USER_LEFT",
+                "handle": handle,
+                "spectator_count": len(room.spectators)
+            })
+        except Exception:
+            room.sockets.pop(handle, None)
+            room.spectators.discard(websocket)
+
     # Optional static assets mounting (for local server execution)
     if mount_static:
         public_dir = os.path.join(BASE_DIR, "public")

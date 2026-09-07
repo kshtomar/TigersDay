@@ -675,8 +675,10 @@ let currentEvalLoopState = null;
 
 let settings = {
   showEval: false,
-  showDebugMoves: false
+  showDebugMoves: false,
+  showInfluence: localStorage.getItem('tiger_day_show_influence') === 'true'
 };
+let lastEvalScore = null;
 
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx');
@@ -1168,6 +1170,9 @@ window.renderNodes = function renderNodes() {
   }
 
   refreshMapHighlights();
+  if (typeof updateInfluenceOverlay === 'function') {
+    updateInfluenceOverlay();
+  }
 };
 
 // ==========================================================================
@@ -1786,7 +1791,8 @@ function setEvalBar(score, totalSims) {
 
   const sign = score > 0 ? '+' : '';
   scoreLabel.textContent = `${sign}${score.toFixed(2)}`;
-  if (simsLabel) simsLabel.textContent = `Engine: ${totalSims} sims (Wasm)`;
+  const provider = (typeof mctsEngine !== 'undefined' && mctsEngine.activeProvider) ? mctsEngine.activeProvider.toUpperCase() : 'WASM';
+  if (simsLabel) simsLabel.textContent = `Engine: ${totalSims} sims (${provider})`;
 
   if (winrateLabel) {
     if (score > 0.05) winrateLabel.textContent = `British Win (${(100 - mysorePercentage).toFixed(0)}%)`;
@@ -1806,6 +1812,15 @@ async function startProgressiveEval(stateStr) {
     if (stateStr !== currentBitString || !settings.showEval) return;
 
     setEvalBar(rootNode.eval, mctsEngine.simulations);
+
+    if (lastEvalScore !== null && window.TDAnalytics) {
+      const badge = TDAnalytics.classifyMove(lastEvalScore, rootNode.eval, false, false);
+      const badgeContainer = document.getElementById('eval-badge-container');
+      if (badgeContainer && badge) {
+        badgeContainer.innerHTML = `<span class="eval-badge ${badge.cssClass}">${badge.glyph} ${badge.label}</span>`;
+      }
+    }
+    lastEvalScore = rootNode.eval;
 
     const topLines = mctsEngine.getTopCandidateLines(3);
     if (linesContainer && topLines.length > 0) {
@@ -3008,16 +3023,107 @@ function syncUIStateOnLoad() {
     if (soundLabel) soundLabel.textContent = `${savedVol}%`;
     if (window.TDSound) TDSound.setVolume(Number(savedVol) / 100);
   }
+
+  // 8. Sync Influence Toggle
+  const influenceToggle = document.getElementById('influence-toggle-checkbox');
+  if (influenceToggle) {
+    influenceToggle.checked = settings.showInfluence;
+  }
 }
 
 // ──────────────────────────────────────────────────────────────────────────
 // SOUND & ENGINE SETTINGS HANDLERS
 // ──────────────────────────────────────────────────────────────────────────
-window.handleAiEngineChange = function(mode) {
+window.handleAiEngineChange = async function(mode) {
   aiEngineMode = mode;
   localStorage.setItem('tiger_day_ai_engine', mode);
-  showToast(`Inference Engine: ${mode === 'server' ? 'Server API' : 'Client WASM'}`, 'info');
+  if (mode === 'webgpu' && typeof mctsEngine !== 'undefined') {
+    showToast('Initializing WebGPU Execution Provider...', 'info');
+    await mctsEngine.initModel('webgpu');
+    showToast(`Inference Engine: ${mctsEngine.activeProvider.toUpperCase()}`, 'info');
+  } else if (mode === 'wasm' && typeof mctsEngine !== 'undefined') {
+    await mctsEngine.initModel('wasm');
+    showToast('Inference Engine: Client-Side WASM', 'info');
+  } else {
+    showToast('Inference Engine: Server API (FastAPI)', 'info');
+  }
 };
+
+window.handleScenarioChange = function(scenarioKey) {
+  if (!window.TDScenarios) return;
+  const scState = TDScenarios.createScenarioState(scenarioKey);
+  if (scState) {
+    currentGameState = scState;
+    currentBitString = scState.to_str();
+    historyStack = [];
+    historyIndex = -1;
+    saveStateToHistory(currentGameState, null, 'Campaign Scenario Initialized');
+    if (typeof window.renderNodes === 'function') window.renderNodes();
+    if (typeof renderAllCards === 'function') renderAllCards();
+    if (typeof updateTurnHeader === 'function') updateTurnHeader();
+    const sc = TDScenarios.CAMPAIGN_SCENARIOS[scenarioKey];
+    if (sc) {
+      showToast(`Campaign Loaded: ${sc.name} (${sc.year})`, 'info');
+      const sub = document.getElementById('cartouche-sub');
+      if (sub) sub.textContent = `${sc.year} · ${sc.name}`;
+    }
+  }
+};
+
+window.handleInfluenceToggle = function(enabled) {
+  settings.showInfluence = !!enabled;
+  localStorage.setItem('tiger_day_show_influence', enabled ? 'true' : 'false');
+  updateInfluenceOverlay();
+};
+
+function updateInfluenceOverlay() {
+  const nodeLayer = document.getElementById('node-layer');
+  if (!nodeLayer) return;
+
+  const oldRings = nodeLayer.querySelectorAll('.influence-aura');
+  oldRings.forEach(r => r.remove());
+
+  if (!settings.showInfluence || !currentGameState || !window.TDAnalytics) return;
+
+  const nodeNames = Object.keys(window.NODES);
+  const adjacencies = [];
+  if (typeof EDGES !== 'undefined' && Array.isArray(EDGES)) {
+    for (const edge of EDGES) {
+      const u = nodeNames.indexOf(edge[0]);
+      const v = nodeNames.indexOf(edge[1]);
+      if (u !== -1 && v !== -1) {
+        adjacencies.push([u, v]);
+      }
+    }
+  }
+
+  const influence = TDAnalytics.computeTerritoryInfluence(currentGameState, adjacencies);
+
+  nodeNames.forEach((name, idx) => {
+    const group = document.getElementById(`node-group-${name.replace(/[^a-zA-Z0-9]/g, '_')}`);
+    if (!group) return;
+
+    const inf = influence[idx];
+    if (Math.abs(inf) < 0.1) return;
+
+    const aura = document.createElementNS(SVG_NS, 'circle');
+    aura.setAttribute('class', 'influence-aura');
+    aura.setAttribute('r', '24');
+    aura.setAttribute('pointer-events', 'none');
+
+    if (inf > 0.25) {
+      aura.classList.add('influence-aura-british');
+      aura.setAttribute('stroke-opacity', String(Math.min(1.0, inf)));
+    } else if (inf < -0.25) {
+      aura.classList.add('influence-aura-mysore');
+      aura.setAttribute('stroke-opacity', String(Math.min(1.0, Math.abs(inf))));
+    } else {
+      aura.classList.add('influence-aura-contested');
+    }
+
+    group.insertBefore(aura, group.firstChild);
+  });
+}
 
 window.handleSoundToggle = function(enabled) {
   if (window.TDSound) {

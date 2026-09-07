@@ -707,13 +707,13 @@ Translates an array of historical move indices into algebraic notation.
 The repository features a four-stage automated testing hierarchy guaranteeing absolute byte-for-byte parity, zero regressions, and full device responsiveness:
 
 ```bash
-# 1. Execute full JavaScript engine & UI test battery (27 tests)
+# 1. Execute full JavaScript engine, UI & Visual Regression test battery (33 tests)
 $ npm test
 
-# 2. Execute Python unit test battery (9 tests)
+# 2. Execute Python unit test battery (17 tests)
 $ python3 -m unittest discover -s tests/unit -v
 
-# 3. Execute Python integration test battery (13 tests)
+# 3. Execute Python integration & API test battery (14 tests)
 $ python3 -m unittest discover -s tests/integration -v
 
 # 4. Run static syntax and linter checks
@@ -722,21 +722,24 @@ $ python3 -m compileall -q ai game api tests
 ```
 
 * **Continuous Integration:** Automated on every commit and pull request via [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) across a matrix of Python 3.10, 3.11, 3.12 and Node.js 18, 20, 22.
-* **Test Catalog:** For a detailed breakdown of all 49 individual test cases, engineering rationales, and pipeline locations, consult [`TESTS.md`](./TESTS.md).
+* **Test Catalog:** For a detailed breakdown of all 64 individual test cases, engineering rationales, and pipeline locations, consult [`TESTS.md`](./TESTS.md).
 
 ---
 
 ## 🚀 Roadmap & Future Directions
 
-All original architectural priorities (P0 critical bug fixes, P1 engine optimization with $O(1)$ dispatch and INT8 quantization, P2 Web Audio and offline PWA immersion, P3 FastAPI unification and security, and P4 CI/CD testing) are **100% completed, verified, and passing**.
+All architectural priorities (P0 critical bug fixes, P1 engine optimization with $O(1)$ dispatch and INT8 quantization, P2 Web Audio and offline PWA immersion, P3 FastAPI unification and security, P4 CI/CD testing, and P5 Next-Gen Roadmap initiatives) are **100% completed, verified, and passing**.
 
-Future development (Phase P5) focuses on next-generation artificial intelligence and multiplayer scaling:
-1. **WebGPU Client-Side MCTS:** Migrating browser ONNX inference to WebGPU hardware acceleration for sub-80ms 500-simulation rollouts.
-2. **Tactical Blunder & Influence Analytics:** Chess.com-style blunder categorization (*Brilliant*, *Mistake*, *Blunder*) and dynamic territory threat heatmaps.
-3. **Global Matchmaking & WebSocket Relay:** Centralized fallback server supporting global matchmaking queues, spectator broadcasts, and relay fallback for symmetric NATs.
-4. **Historical Campaign Trilogy:** Expanding to the First (1767–1769), Second (1780–1784), and Fourth (1799) Anglo-Mysore Wars with custom historical starting states.
+Key Next-Generation capabilities delivered in P5 include:
+1. **WebGPU Client-Side MCTS:** Browser neural inference with WebGPU hardware acceleration and graceful fallback to WebAssembly CPU.
+2. **Tactical Blunder & Influence Analytics:** Chess.com-style blunder categorization (*Brilliant*, *Best*, *Inaccuracy*, *Mistake*, *Blunder*) and dynamic 25-node territory threat heatmaps.
+3. **Global Matchmaking & WebSocket Relay:** Centralized lobby server (`api/lobby.py`) supporting matchmaking queues, ELO calculations, and live spectator broadcasts.
+4. **Historical Campaign Scenarios Trilogy:** Multi-era campaign modes covering the First (1767–1769), Second (1780–1784), and Fourth (1799) Anglo-Mysore Wars with historical initial configurations.
+5. **Distributed Multi-GPU Self-Play & Replay Buffer:** High-throughput experience replay memory (`ai/replay_buffer.py`) and distributed training harness (`ai/dist_train.py`).
+6. **Self-Evolving Opening Book Pipeline:** Automated arena tournament engine (`ai/evolve_book.py`) refining and pruning opening variations autonomously.
+7. **Headless Visual Regression Testing:** Automated WCAG 2.1 color contrast verification, SVG boundary checking, and multi-viewport scaling tests (`tests/js/visual.test.js`).
 
-For complete technical specifications on upcoming roadmap initiatives, see [`FUTURE_IMPROVEMENTS.md`](./FUTURE_IMPROVEMENTS.md).
+For complete technical specifications on roadmap milestones and deliverables, see [`FUTURE_IMPROVEMENTS.md`](./FUTURE_IMPROVEMENTS.md).
 
 ---
 

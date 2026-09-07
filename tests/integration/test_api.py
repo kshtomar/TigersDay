@@ -122,5 +122,11 @@ class TestApiIntegration(unittest.TestCase):
         self.assertIn("total_sims", data)
         self.assertIn("top_moves", data)
 
+    def test_api_lobby_rooms(self):
+        status, data = self._run_request("GET", "/api/lobby/rooms")
+        self.assertEqual(status, 200)
+        self.assertIn("rooms", data)
+        self.assertIsInstance(data["rooms"], list)
+
 if __name__ == '__main__':
     unittest.main()

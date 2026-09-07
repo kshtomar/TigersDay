@@ -3243,3 +3243,51 @@ svg#board {
         max-height: 85vh;
     }
 }
+
+/* ==========================================================================
+   MOVE CLASSIFICATION BADGES & MILITARY INFLUENCE HEATMAP (P5.4)
+   ========================================================================== */
+.eval-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: badgePop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes badgePop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.badge-brilliant { background: #064e3b; color: #34d399; border: 1px solid #10b981; }
+.badge-best { background: #0c4a6e; color: #38bdf8; border: 1px solid #0284c7; }
+.badge-excellent { background: #065f46; color: #6ee7b7; border: 1px solid #059669; }
+.badge-good { background: #1e293b; color: #94a3b8; border: 1px solid #475569; }
+.badge-inaccuracy { background: #713f12; color: #facc15; border: 1px solid #ca8a04; }
+.badge-mistake { background: #7c2d12; color: #fb923c; border: 1px solid #ea580c; }
+.badge-blunder { background: #7f1d1d; color: #f87171; border: 1px solid #dc2626; }
+
+/* Military Territory Influence Aura Rings */
+.influence-aura-british {
+    transition: fill 0.3s ease, stroke 0.3s ease;
+    fill: rgba(56, 189, 248, 0.22);
+    stroke: rgba(56, 189, 248, 0.6);
+    stroke-width: 1.5;
+}
+.influence-aura-mysore {
+    transition: fill 0.3s ease, stroke 0.3s ease;
+    fill: rgba(239, 68, 68, 0.22);
+    stroke: rgba(239, 68, 68, 0.6);
+    stroke-width: 1.5;
+}
+.influence-aura-contested {
+    transition: fill 0.3s ease, stroke 0.3s ease;
+    fill: rgba(234, 179, 8, 0.15);
+    stroke: rgba(234, 179, 8, 0.5);
+    stroke-width: 1;
+    stroke-dasharray: 2,2;
+}

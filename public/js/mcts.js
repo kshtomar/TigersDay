@@ -80,6 +80,7 @@
       this.modelPath = modelPath;
       this.session = null;
       this.loadPromise = null;
+      this.activeProvider = 'wasm';
     }
 
     async init() {
@@ -97,9 +98,25 @@
             ort.env.wasm.numThreads = 1;
             ort.env.wasm.simd = true;
           }
+
+          // Check WebGPU hardware acceleration support
+          if (typeof navigator !== 'undefined' && navigator.gpu) {
+            try {
+              this.session = await ort.InferenceSession.create(this.modelPath, {
+                executionProviders: ['webgpu', 'wasm']
+              });
+              this.activeProvider = 'webgpu';
+              console.log(`⚡ Loaded ONNX WebGPU Accelerated Model from ${this.modelPath}`);
+              return this.session;
+            } catch (gpuErr) {
+              console.warn("⚠️ WebGPU session creation failed, falling back to WASM:", gpuErr);
+            }
+          }
+
           this.session = await ort.InferenceSession.create(this.modelPath, {
             executionProviders: ['wasm']
           });
+          this.activeProvider = 'wasm';
           console.log(`✅ Loaded ONNX WebAssembly Model from ${this.modelPath}`);
           return this.session;
         } catch (err) {
@@ -109,6 +126,44 @@
       })();
 
       return this.loadPromise;
+    }
+
+    getActiveProvider() {
+      return this.activeProvider;
+    }
+
+    async predictBatch(states) {
+      if (!this.session) await this.init();
+      if (!this.session || !states || states.length === 0) return [];
+
+      const B = states.length;
+      const V_LEN = states[0].vector.length;
+      const floatVec = new Float32Array(B * V_LEN);
+
+      for (let b = 0; b < B; b++) {
+        const s = states[b];
+        for (let i = 0; i < V_LEN; i++) {
+          floatVec[b * V_LEN + i] = s.vector[i] ? 1.0 : 0.0;
+        }
+      }
+
+      const inputTensor = new ort.Tensor('float32', floatVec, [B, V_LEN]);
+      const inputName = this.session.inputNames[0] || 'board_state';
+      const feeds = {};
+      feeds[inputName] = inputTensor;
+
+      const results = await this.session.run(feeds);
+      const valOut = results.value || results[this.session.outputNames[0]];
+      const polOut = results.policy_logits || results[this.session.outputNames[1]];
+
+      const outputs = [];
+      for (let b = 0; b < B; b++) {
+        const value = valOut ? Number(valOut.data[b]) : 0.0;
+        const rawLogits = polOut ? polOut.data.subarray(b * MOVE_VECTOR_LENGTH, (b + 1) * MOVE_VECTOR_LENGTH) : new Float32Array(MOVE_VECTOR_LENGTH);
+        outputs.push({ value, rawLogits });
+      }
+
+      return outputs;
     }
 
     async predict(state) {

@@ -13,8 +13,10 @@ const ASSETS_TO_CACHE = [
   './js/state.js',
   './js/ui/themes.js',
   './js/engine.js',
+  './js/scenarios.js',
   './js/mcts.js',
   './js/multiplayer.js',
+  './js/analytics.js',
   './js/sound.js',
   './opening_book.json'
 ];

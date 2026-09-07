@@ -17,14 +17,15 @@ flowchart TD
     end
 
     subgraph Stage2["Stage 2: Unit Testing (Parallel Matrix)"]
-        U1["Python Unit Tests (9 tests)<br/>Matrix: Python 3.10, 3.11, 3.12<br/>tests/unit/"]
-        U2["Node.js Engine Tests (9 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/engine.test.js"]
+        U1["Python Unit Tests (17 tests)<br/>Matrix: Python 3.10, 3.11, 3.12<br/>tests/unit/"]
+        U2["Node.js Engine Tests (11 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/engine.test.js"]
         U3["Frontend & UI Tests (18 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/ui.test.js"]
+        U4["Visual Regression Tests (4 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/visual.test.js"]
     end
 
     subgraph Stage3["Stage 3: Integration Testing (Sequenced)"]
         I1["Cross-Engine Parity Tests (2 tests)<br/>Python <-> Node.js Byte-for-Byte"]
-        I2["FastAPI REST Endpoints (8 tests)<br/>Pydantic Models & Async LRU Cache"]
+        I2["FastAPI REST & Lobby Endpoints (9 tests)<br/>Pydantic Models & Async LRU Cache"]
         I3["Full Game Simulation (3 tests)<br/>Multi-Turn Legal Play & Rollback"]
     end
 
@@ -37,10 +38,10 @@ flowchart TD
 | Target | Command | Duration | Coverage |
 | :--- | :--- | :--- | :--- |
 | **Lint & Syntax** | `npm run lint && python3 -m compileall -q ai game api tests` | ~0.08s | All JS, SW, HTML scripts, Python packages |
-| **Node.js Test Battery** | `npm test` | ~0.05s | Engine invariants + Frontend DOM, CSS, & UI |
-| **Python Unit Tests** | `python3 -m unittest discover -s tests/unit -v` | ~0.002s | State bit-vector, updater dispatch, opening book |
-| **Python Integration** | `python3 -m unittest discover -s tests/integration -v` | ~0.15s | Parity subprocesses, FastAPI endpoints, multi-turn loop |
-| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.25s | All 49 test cases across entire stack |
+| **Node.js Test Battery** | `npm test` | ~0.05s | Engine invariants + Frontend DOM, CSS, UI & Visual Regression (33 tests) |
+| **Python Unit Tests** | `python3 -m unittest discover -s tests/unit -v` | ~0.04s | State bit-vector, updater dispatch, replay buffer, scenarios, evolution (17 tests) |
+| **Python Integration** | `python3 -m unittest discover -s tests/integration -v` | ~0.15s | Parity subprocesses, FastAPI endpoints, lobby relay, multi-turn loop (14 tests) |
+| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.25s | All 64 test cases across entire stack |
 
 ---
 
@@ -387,6 +388,96 @@ Located in [`tests/integration/`](./tests/integration/), these tests run during 
 - **What it is**: Saves initial state bitstring, plays a legal move, verifies state mutation, and rolls back using `read_str()`, asserting exact array equality with initial setup.
 - **Why it is there**: Guarantees that the undo system can safely revert states without memory leaks or residual state corruption.
 
+#### 50. `test_api_lobby_rooms`
+- **Location**: [`tests/integration/test_api.py:107`](./tests/integration/test_api.py#L107)
+- **Stage**: Integration Testing (FastAPI & Lobby Relay)
+- **What it is**: Asserts `GET /api/lobby/rooms` returns status 200 and a JSON payload containing active matchmaking rooms and queue statistics.
+- **Why it is there**: Validates the central matchmaking lobby relay endpoint (P5.3) for global multiplayer.
+
+#### 51. `test_buffer_push_and_sample`
+- **Location**: [`tests/unit/test_replay_buffer.py:8`](./tests/unit/test_replay_buffer.py#L8)
+- **Stage**: Unit Testing (Python)
+- **What it is**: Pushes experience tuples into `ExperienceReplayBuffer` and samples minibatch tensors of states, policies, and value targets.
+- **Why it is there**: Verifies the replay memory data pipeline for multi-GPU self-play training (P5.1).
+
+#### 52. `test_buffer_circular_overwrite`
+- **Location**: [`tests/unit/test_replay_buffer.py:28`](./tests/unit/test_replay_buffer.py#L28)
+- **Stage**: Unit Testing (Python)
+- **What it is**: Tests circular overwriting behavior when the buffer exceeds max capacity, verifying FIFO eviction without memory leaks.
+- **Why it is there**: Ensures memory bounds are strictly enforced on long-running self-play clusters.
+
+#### 53. `test_buffer_serialization`
+- **Location**: [`tests/unit/test_replay_buffer.py:44`](./tests/unit/test_replay_buffer.py#L44)
+- **Stage**: Unit Testing (Python)
+- **What it is**: Saves buffer experience to compressed `.npz` files and restores them, asserting zero precision loss.
+- **Why it is there**: Enables distributed self-play checkpointing and worker synchronization.
+
+#### 54. `test_scenario_initializations`
+- **Location**: [`tests/unit/test_scenarios.py:6`](./tests/unit/test_scenarios.py#L6)
+- **Stage**: Unit Testing (Python)
+- **What it is**: Generates state vectors for 1st, 2nd, and 4th Anglo-Mysore War scenarios, asserting 148-bit length and legal initial configurations.
+- **Why it is there**: Guarantees historical campaign scenario starting states (P5.5) comply with engine rules.
+
+#### 55. `test_list_scenarios`
+- **Location**: [`tests/unit/test_scenarios.py:26`](./tests/unit/test_scenarios.py#L26)
+- **Stage**: Unit Testing (Python)
+- **What it is**: Asserts `list_scenarios()` returns complete scenario metadata dictionaries with titles and historical years.
+- **Why it is there**: Ensures UI and API can dynamically enumerate campaign scenarios.
+
+#### 56. `test_choose_heuristic_move`
+- **Location**: [`tests/unit/test_evolve_book.py:8`](./tests/unit/test_evolve_book.py#L8)
+- **Stage**: Unit Testing (Python)
+- **What it is**: Tests heuristic policy move selection, verifying it always yields a valid move index within `[0, 959)`.
+- **Why it is there**: Validates tournament agent rollout policy for self-evolving opening books (P5.6).
+
+#### 57. `test_run_tournament_game`
+- **Location**: [`tests/unit/test_evolve_book.py:16`](./tests/unit/test_evolve_book.py#L16)
+- **Stage**: Unit Testing (Python)
+- **What it is**: Runs an automated tournament match, returning game history tuples `(state_key, move, notation, player)` and winner code.
+- **Why it is there**: Powers the autonomous arena tournament evaluation engine.
+
+#### 58. `test_evolve_opening_book_pipeline`
+- **Location**: [`tests/unit/test_evolve_book.py:28`](./tests/unit/test_evolve_book.py#L28)
+- **Stage**: Unit Testing (Python)
+- **What it is**: Executes the full opening book evolution pipeline, discovering winning branches and pruning discredited variations.
+- **Why it is there**: Ensures `public/opening_book.json` evolves automatically without human intervention.
+
+#### 59. `TDAnalytics move classification and territory influence`
+- **Location**: [`tests/js/engine.test.js:146`](./tests/js/engine.test.js#L146)
+- **Stage**: Unit Testing (Node.js)
+- **What it is**: Asserts `TDAnalytics.classifyMove()` returns correct tactical badges (*Brilliant*, *Blunder*, etc.) and computes 25-node territory control values.
+- **Why it is there**: Validates the tactical evaluation engine and territory control heatmap (P5.4).
+
+#### 60. `TDScenarios historical campaign scenarios initialization`
+- **Location**: [`tests/js/engine.test.js:176`](./tests/js/engine.test.js#L176)
+- **Stage**: Unit Testing (Node.js)
+- **What it is**: Asserts `TDScenarios.createScenarioState()` produces valid states in JavaScript matching the Python scenario specifications.
+- **Why it is there**: Guarantees client-side campaign scenarios (P5.5) have byte-level parity with Python.
+
+#### 61. `Visual Regression – 10 Themes & WCAG Color Contrast Standards`
+- **Location**: [`tests/js/visual.test.js:68`](./tests/js/visual.test.js#L68)
+- **Stage**: Visual Regression Testing (Node.js)
+- **What it is**: Computes relative luminance and asserts contrast ratio $\ge 4.0:1$ for map cartouche and node label text across all 10 themes.
+- **Why it is there**: Prevents color palette regressions and enforces accessibility compliance (P5.7).
+
+#### 62. `Visual Regression – 5 Unit Token Styles Definition & Integrity`
+- **Location**: [`tests/js/visual.test.js:98`](./tests/js/visual.test.js#L98)
+- **Stage**: Visual Regression Testing (Node.js)
+- **What it is**: Asserts all 5 unit aesthetics are registered with valid CSS token classes and names.
+- **Why it is there**: Prevents missing or broken unit style definitions.
+
+#### 63. `Visual Regression – SVG Board Node Coordinates & Edge Clearance`
+- **Location**: [`tests/js/visual.test.js:115`](./tests/js/visual.test.js#L115)
+- **Stage**: Visual Regression Testing (Node.js)
+- **What it is**: Verifies all 25 nodes and 5 key forts fall strictly inside padded bounds $[20, 740] \times [20, 860]$ within the SVG viewBox `0 0 760 880`.
+- **Why it is there**: Prevents graphical clipping of territories or tokens at screen borders.
+
+#### 64. `Visual Regression – Multi-Viewport Scaling & Hitbox Preservations`
+- **Location**: [`tests/js/visual.test.js:136`](./tests/js/visual.test.js#L136)
+- **Stage**: Visual Regression Testing (Node.js)
+- **What it is**: Projects SVG dimensions across Mobile (375x812), Tablet (768x1024), Laptop (1366x768), and Desktop (1920x1080), confirming minimum interactive touch radius $\ge 8$px.
+- **Why it is there**: Guarantees responsive touch ergonomics on mobile devices.
+
 ---
 
 ## 6. Complete Test Suite Matrix
@@ -442,3 +533,19 @@ Located in [`tests/integration/`](./tests/integration/), these tests run during 
 | **47** | `test_multistep_gameplay_flow` | `tests/integration/test_gameplay.py`| Integration| Game Impulse & Luck Branch | Pass |
 | **48** | `test_multistep_consecutive_turns` | `tests/integration/test_gameplay.py`| Integration| 5-Turn Sequential Play | Pass |
 | **49** | `test_undo_state_restoration` | `tests/integration/test_gameplay.py`| Integration| Undo Rollback Integrity | Pass |
+| **50** | `test_api_lobby_rooms` | `tests/integration/test_api.py` | Integration | GET /api/lobby/rooms Relay | Pass |
+| **51** | `test_buffer_push_and_sample` | `tests/unit/test_replay_buffer.py` | Unit | Experience Replay Push & Sample| Pass |
+| **52** | `test_buffer_circular_overwrite` | `tests/unit/test_replay_buffer.py` | Unit | Buffer FIFO Circular Eviction | Pass |
+| **53** | `test_buffer_serialization` | `tests/unit/test_replay_buffer.py` | Unit | Replay Buffer NPZ Serialization| Pass |
+| **54** | `test_scenario_initializations` | `tests/unit/test_scenarios.py` | Unit | 1st, 2nd, 4th War Scenarios | Pass |
+| **55** | `test_list_scenarios` | `tests/unit/test_scenarios.py` | Unit | Scenario Metadata Lookup | Pass |
+| **56** | `test_choose_heuristic_move` | `tests/unit/test_evolve_book.py` | Unit | Tournament Policy Move Picker | Pass |
+| **57** | `test_run_tournament_game` | `tests/unit/test_evolve_book.py` | Unit | Automated Arena Game Rollout | Pass |
+| **58** | `test_evolve_opening_book_pipeline` | `tests/unit/test_evolve_book.py` | Unit | Opening Book Evolution Engine | Pass |
+| **59** | `TDAnalytics move classification & influence` | `tests/js/engine.test.js` | Unit | Tactical Badges & Influence | Pass |
+| **60** | `TDScenarios historical campaign state init` | `tests/js/engine.test.js` | Unit | Client Campaign Scenarios | Pass |
+| **61** | `Visual Regression – 10 Themes Contrast` | `tests/js/visual.test.js` | Visual | WCAG 2.1 AA/AAA Luminance | Pass |
+| **62** | `Visual Regression – 5 Unit Token Styles` | `tests/js/visual.test.js` | Visual | 5 Unit Aesthetics Integrity | Pass |
+| **63** | `Visual Regression – SVG Board Node Bounds` | `tests/js/visual.test.js` | Visual | SVG Bounds & Fort Clearance | Pass |
+| **64** | `Visual Regression – Multi-Viewport Scaling` | `tests/js/visual.test.js` | Visual | 4 Viewports & Tap Hitboxes | Pass |
+

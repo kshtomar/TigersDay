@@ -66,6 +66,7 @@
         </div>
         <div class="eval-meta">
             <span id="eval-sims-label" class="eval-sims-label">Engine: 0 sims</span>
+            <span id="eval-badge-container"></span>
             <span id="eval-winrate-label" class="eval-winrate-label">Even Match</span>
         </div>
     </div>
@@ -425,6 +426,15 @@
                             </select>
                         </div>
                     </div>
+                    <div style="margin-top: 10px;">
+                        <label class="setting-label" for="scenario-select">HISTORICAL CAMPAIGN SCENARIO</label>
+                        <select id="scenario-select" class="mode-select" onchange="handleScenarioChange(this.value)">
+                            <option value="standard">Standard Campaign (1790–1792 Third War)</option>
+                            <option value="first_war">First Anglo-Mysore War (1767–1769)</option>
+                            <option value="second_war">Second Anglo-Mysore War (1780–1784 · Battle of Pollilur)</option>
+                            <option value="fourth_war">Fourth Anglo-Mysore War (1799 · Siege of Seringapatam)</option>
+                        </select>
+                    </div>
 
                     <!-- P2P Multiplayer Panel (Collapsible) -->
                     <div id="multiplayer-panel" class="multiplayer-panel hidden">
@@ -476,8 +486,17 @@
                         <label class="setting-label" for="ai-engine-select">INFERENCE ENGINE</label>
                         <select id="ai-engine-select" class="mode-select" onchange="handleAiEngineChange(this.value)">
                             <option value="wasm">Client-Side WASM (Offline / Instant)</option>
+                            <option value="webgpu">Client-Side WebGPU (Hardware Accelerated)</option>
                             <option value="server">Server API (FastAPI Cloud)</option>
                         </select>
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <label class="toggle-control">
+                            <span class="toggle-label">Military Influence Heatmap</span>
+                            <input type="checkbox" id="influence-toggle-checkbox" onchange="handleInfluenceToggle(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="setting-desc">Visualizes 25-node territory control & threat projection.</span>
                     </div>
                 </div>
 
@@ -770,8 +789,10 @@
 <script src="js/ui/themes.js"></script>
 <script src="js/state.js"></script>
 <script src="js/engine.js"></script>
+<script src="js/scenarios.js"></script>
 <script src="js/mcts.js"></script>
 <script src="js/multiplayer.js"></script>
+<script src="js/analytics.js"></script>
 
 <!-- Frontend Client & UI Controller -->
 <script src="script.js"></script>

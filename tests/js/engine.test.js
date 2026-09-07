@@ -123,3 +123,57 @@ test('TDThemes and UNIT_STYLES module configuration', () => {
   assert.strictEqual(Object.keys(TDThemes.THEMES).length, 10);
   assert.strictEqual(Object.keys(TDThemes.UNIT_STYLES).length, 5);
 });
+
+test('TDAnalytics move classification and territory influence', () => {
+  const TDAnalytics = require('../../public/js/analytics.js');
+  assert.ok(TDAnalytics, 'TDAnalytics module should load');
+
+  // Move classification
+  const brilliant = TDAnalytics.classifyMove(0.2, 0.4, true, true);
+  assert.strictEqual(brilliant.label, 'Brilliant');
+
+  const best = TDAnalytics.classifyMove(0.2, 0.22, true, false);
+  assert.strictEqual(best.label, 'Best');
+
+  const blunder = TDAnalytics.classifyMove(0.5, -0.4, false, false);
+  assert.strictEqual(blunder.label, 'Blunder');
+
+  // Territory influence
+  const s = new GameState();
+  s.default_setup();
+  const influence = TDAnalytics.computeTerritoryInfluence(s);
+  assert.strictEqual(influence.length, 25);
+  // Bombay is British occupied (node 0)
+  assert.strictEqual(influence[0], 1.0);
+  // Seringapatam is Mysore fort (node 3)
+  assert.strictEqual(influence[3], -1.0);
+
+  // Sparkline generation
+  const svg = TDAnalytics.generateEvalSparklineSvg([0.0, 0.2, -0.3, 0.5]);
+  assert.ok(svg.includes('<svg'), 'Sparkline should return valid SVG markup');
+  assert.ok(svg.includes('<polyline'), 'Sparkline should render polyline data');
+});
+
+test('TDScenarios historical campaign scenarios initialization', () => {
+  const TDScenarios = require('../../public/js/scenarios.js');
+  assert.ok(TDScenarios, 'TDScenarios module should load');
+
+  const list = TDScenarios.listScenarios();
+  assert.strictEqual(list.length, 4, 'Should list 4 historical campaign scenarios');
+
+  for (const item of list) {
+    const s = TDScenarios.getScenario(item.id);
+    assert.strictEqual(s.toString().length, 148);
+    assert.strictEqual(s.turn, 1);
+    assert.strictEqual(s.to_move, 0);
+
+    const legal = TDEngine.getLegalMoves(s);
+    let count = 0;
+    for (let i = 0; i < legal.length; i++) {
+      if (legal[i]) count++;
+    }
+    assert.ok(count > 0, `Scenario ${item.id} must have legal moves available`);
+  }
+});
+
+
