@@ -46,3 +46,6 @@ venv
 
 /arena_log.txt
 /replay_log.txt
+*.ses
+:memory:.ses
+logs/

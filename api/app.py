@@ -256,8 +256,8 @@ def create_app(mount_static: bool = False) -> FastAPI:
     @app.post("/api/get-notation")
     async def get_notation(req: HistoryRequest):
         try:
-            replay_notations = interpret(req.replay_log)
-            return {"notation": replay_notations}
+            algebraic, _ = interpret(req.replay_log)
+            return {"notation": algebraic}
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
 

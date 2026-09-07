@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d4a359">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -470,6 +472,39 @@
                             </div>
                         </div>
                     </div>
+                    <div style="margin-top: 8px;">
+                        <label class="setting-label" for="ai-engine-select">INFERENCE ENGINE</label>
+                        <select id="ai-engine-select" class="mode-select" onchange="handleAiEngineChange(this.value)">
+                            <option value="wasm">Client-Side WASM (Offline / Instant)</option>
+                            <option value="server">Server API (FastAPI Cloud)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr class="settings-divider-compact">
+
+                <!-- 4b. ATMOSPHERIC SOUNDSCAPE -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h4>ATMOSPHERIC SOUNDSCAPE</h4>
+                    </div>
+                    <div class="settings-two-col">
+                        <div>
+                            <label class="toggle-control">
+                                <span class="toggle-label">Sound Effects</span>
+                                <input type="checkbox" id="sound-toggle-checkbox" checked onchange="handleSoundToggle(this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="setting-desc">Procedural cannons, marches, and card seals.</span>
+                        </div>
+                        <div>
+                            <label class="setting-label" for="sound-volume-slider">MASTER VOLUME</label>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                                <input type="range" id="sound-volume-slider" class="sims-slider" min="0" max="100" value="50" oninput="handleSoundVolumeInput(this.value)">
+                                <span id="sound-volume-label" class="sims-label">50%</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <hr class="settings-divider-compact">
@@ -731,6 +766,8 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <!-- Client-Side Game Engine & MCTS Modules -->
+<script src="js/sound.js"></script>
+<script src="js/ui/themes.js"></script>
 <script src="js/state.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/mcts.js"></script>

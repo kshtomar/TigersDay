@@ -770,10 +770,21 @@ window.renderNodes = function renderNodes() {
     g.dataset.key = String(key);
     g.dataset.coast = String(coast);
 
+    g.setAttribute('tabindex', '0');
+    g.setAttribute('role', 'button');
+    g.setAttribute('aria-label', `${name}${key ? ' (Key Fort)' : ''}: ${owner === 'mysore' ? 'Mysore' : owner === 'british' ? 'British' : 'Neutral'}, ${armyType} army`);
+
     // Event listeners
     g.addEventListener('click', (e) => {
       e.stopPropagation();
       handleNodeClick(name);
+    });
+    g.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        handleNodeClick(name);
+      }
     });
     g.addEventListener('mousemove', (e) => tooltipShow(e, name, data));
     g.addEventListener('mouseleave', tooltipHide);
@@ -2446,18 +2457,89 @@ function handleLocalGameUpdate(data) {
   }
 }
 
+let aiEngineMode = localStorage.getItem('tiger_day_ai_engine') || 'wasm'; // 'wasm' | 'server'
+
+function playMoveSound(moveIdx, nextState, finalState, trajectory) {
+  if (!window.TDSound) return;
+  const winner = getStateWinner(finalState || nextState);
+  if (winner !== 0) {
+    TDSound.playVictory();
+    return;
+  }
+  const action = (TDEngine.ACTION_DISPATCH && TDEngine.ACTION_DISPATCH[moveIdx]) || null;
+  if (action) {
+    const name = action.name;
+    if (name === 'P') {
+      TDSound.playCardPlay();
+      return;
+    }
+    if (['FA', 'SM', 'MS', 'CR'].includes(name) || (nextState && (nextState.attacker !== 0 || nextState.defender !== 0))) {
+      TDSound.playSiegeClash();
+      return;
+    }
+    if (trajectory && trajectory.some(t => t && t.type && String(t.type).toLowerCase().includes('discard'))) {
+      TDSound.playLuckDiscard();
+      return;
+    }
+    if (['M', 'DR', 'FM', 'ST', 'RN'].includes(name)) {
+      TDSound.playMarch();
+      return;
+    }
+  }
+  TDSound.playClick();
+}
+
 async function triggerAiMove() {
   if (!currentGameState || getStateWinner(currentGameState) !== 0) return;
-  updateConnectionPill('waiting', '⬤ AI THINKING (WASM)…');
+
+  let bestMove = null;
+
+  if (aiEngineMode === 'server') {
+    updateConnectionPill('waiting', '⬤ AI THINKING (SERVER)…');
+    try {
+      const resp = await fetch('/api/play-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          state_str: currentGameState.toString(),
+          simulations: mctsEngine.simulations || 800
+        })
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (typeof data.move === 'number') {
+          bestMove = data.move;
+        }
+      } else {
+        throw new Error(`Server returned ${resp.status}`);
+      }
+    } catch (err) {
+      console.warn("Server AI unreachable, falling back to client-side WASM:", err);
+      showToast("Server AI unavailable, falling back to local WASM.", "warning");
+      bestMove = null;
+    }
+  }
+
+  if (bestMove === null) {
+    updateConnectionPill('waiting', '⬤ AI THINKING (WASM)…');
+    try {
+      const res = await mctsEngine.findMove(currentGameState, 0.0);
+      bestMove = res.bestMove;
+    } catch (err) {
+      console.error("AI execution error:", err);
+      updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
+      return;
+    }
+  }
 
   try {
-    const { bestMove } = await mctsEngine.findMove(currentGameState, 0.0);
     const stateBefore = currentGameState.copy();
     const nextState = TDEngine.getNextState(currentGameState, bestMove);
-    const { finalState } = TDEngine.resolveLuckWithTrajectory(nextState);
+    const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(nextState);
     currentGameState = finalState;
 
     recordMoveInHistory(stateBefore, bestMove, nextState, finalState);
+    playMoveSound(bestMove, nextState, finalState, trajectory);
 
     const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
     updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
@@ -2480,6 +2562,7 @@ window.applyMove = function(moveIdx) {
     currentGameState = finalState;
 
     recordMoveInHistory(stateBefore, moveIdx, nextState, finalState);
+    playMoveSound(moveIdx, nextState, finalState, trajectory);
 
     if (matchMode === 'p2p_multiplayer') {
       multiplayerManager.sendMove(moveIdx, trajectory, currentGameState.toString());
@@ -2590,6 +2673,7 @@ function setupMultiplayerCallbacks() {
         currentGameState = TDEngine.applyLuckTrajectory(nextState, luckTrajectory);
       }
       recordMoveInHistory(stateBefore, moveIdx, nextState, currentGameState);
+      playMoveSound(moveIdx, nextState, currentGameState, luckTrajectory);
       const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
       handleLocalGameUpdate(gameData);
       renderNotationPanel();
@@ -2902,6 +2986,136 @@ function syncUIStateOnLoad() {
   if (modeSelect && typeof handleGameModeChange === 'function') {
     handleGameModeChange(modeSelect.value);
   }
+
+  // 6. Sync AI Inference Engine Mode
+  const aiSelect = document.getElementById('ai-engine-select');
+  if (aiSelect) {
+    aiSelect.value = aiEngineMode;
+  }
+
+  // 7. Sync Sound Settings
+  const soundToggle = document.getElementById('sound-toggle-checkbox');
+  const savedSound = localStorage.getItem('tiger_day_sound_enabled');
+  if (soundToggle) {
+    soundToggle.checked = savedSound !== 'false';
+    if (window.TDSound) TDSound.setMuted(!soundToggle.checked);
+  }
+  const soundSlider = document.getElementById('sound-volume-slider');
+  const soundLabel = document.getElementById('sound-volume-label');
+  const savedVol = localStorage.getItem('tiger_day_sound_volume') || '50';
+  if (soundSlider) {
+    soundSlider.value = savedVol;
+    if (soundLabel) soundLabel.textContent = `${savedVol}%`;
+    if (window.TDSound) TDSound.setVolume(Number(savedVol) / 100);
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// SOUND & ENGINE SETTINGS HANDLERS
+// ──────────────────────────────────────────────────────────────────────────
+window.handleAiEngineChange = function(mode) {
+  aiEngineMode = mode;
+  localStorage.setItem('tiger_day_ai_engine', mode);
+  showToast(`Inference Engine: ${mode === 'server' ? 'Server API' : 'Client WASM'}`, 'info');
+};
+
+window.handleSoundToggle = function(enabled) {
+  if (window.TDSound) {
+    TDSound.setMuted(!enabled);
+  }
+  localStorage.setItem('tiger_day_sound_enabled', enabled ? 'true' : 'false');
+};
+
+window.handleSoundVolumeInput = function(val) {
+  const vol = Number(val) / 100;
+  if (window.TDSound) {
+    TDSound.setVolume(vol);
+  }
+  const label = document.getElementById('sound-volume-label');
+  if (label) label.textContent = `${val}%`;
+  localStorage.setItem('tiger_day_sound_volume', String(val));
+};
+
+// ──────────────────────────────────────────────────────────────────────────
+// UNDO MOVE & KEYBOARD ACCESSIBILITY
+// ──────────────────────────────────────────────────────────────────────────
+function undoMove() {
+  if (matchMode === 'p2p_multiplayer') {
+    showToast("Cannot undo in multiplayer mode.", "warning");
+    return;
+  }
+  if (isViewingHistory) {
+    returnToLiveGame();
+    return;
+  }
+  if (!gameHistory || gameHistory.length === 0) {
+    showToast("No moves to undo.", "info");
+    return;
+  }
+  let stepsToUndo = 1;
+  if (matchMode === 'human_vs_ai' && gameHistory.length >= 2) {
+    stepsToUndo = 2;
+  }
+  let targetStateStr = null;
+  while (stepsToUndo > 0 && gameHistory.length > 0) {
+    const popped = gameHistory.pop();
+    targetStateStr = popped.stateBeforeStr;
+    stepsToUndo--;
+  }
+  if (targetStateStr) {
+    currentGameState = new GameState();
+    currentGameState.read_str(targetStateStr);
+    const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
+    handleLocalGameUpdate(gameData);
+    renderNotationPanel();
+    showToast("Move undone.", "info");
+  }
+}
+window.undoMove = undoMove;
+
+window.addEventListener('keydown', (e) => {
+  const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+  if (e.key === 'Escape') {
+    const settingsDrawer = document.getElementById('settings-drawer');
+    if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
+      settingsDrawer.classList.add('hidden');
+    }
+    const tutorialDrawer = document.getElementById('tutorial-drawer');
+    if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
+      tutorialDrawer.classList.add('hidden');
+    }
+    selectedNode = null;
+    clearTargetCircles();
+    clearMovementLines();
+    if (isViewingHistory) returnToLiveGame();
+  } else if (e.key === 'ArrowLeft') {
+    stepHistoryPrev();
+  } else if (e.key === 'ArrowRight') {
+    stepHistoryNext();
+  } else if (e.key === 'z' || e.key === 'Z') {
+    undoMove();
+  } else if (e.key === 'r' || e.key === 'R') {
+    if (currentMoves) {
+      const restMove = currentMoves.find(m => m.type === 'Rest' || m.desc === 'Rest');
+      if (restMove) window.applyMove(restMove.idx);
+    }
+  } else if (e.key === 'p' || e.key === 'P') {
+    if (currentMoves) {
+      const passMove = currentMoves.find(m => m.type === 'Pass' || m.desc === 'Pass');
+      if (passMove) window.applyMove(passMove.idx);
+    }
+  }
+});
+
+// Register PWA Service Worker for 100% offline capability
+if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('PWA ServiceWorker registered:', reg.scope))
+      .catch(err => console.warn('PWA ServiceWorker registration error:', err));
+  });
 }
 
 // ==========================================================================

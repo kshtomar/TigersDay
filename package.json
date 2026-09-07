@@ -1,0 +1,18 @@
+{
+  "name": "tigers-day",
+  "version": "1.0.0",
+  "description": "Tiger's Day (1799) – Web Board Game & AlphaZero AI Engine",
+  "scripts": {
+    "test": "node --test tests/js/*.test.js",
+    "lint": "node -c public/script.js public/sw.js public/js/*.js public/js/ui/*.js tests/js/*.js"
+  },
+  "keywords": [
+    "wargame",
+    "alphazero",
+    "mcts",
+    "onnx",
+    "boardgame"
+  ],
+  "author": "Kshitij Tomar",
+  "license": "MIT"
+}

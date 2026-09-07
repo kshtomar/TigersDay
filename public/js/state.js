@@ -358,63 +358,75 @@
       return str;
     }
 
+    get state() {
+      return this.vector;
+    }
+
     read_str(bitStr) {
       if (bitStr.length !== GAME_VECTOR_LENGTH) {
         throw new Error(`Invalid bit-string length! Expected ${GAME_VECTOR_LENGTH}, got ${bitStr.length}`);
       }
-      const clone = this.copy();
       for (let i = 0; i < GAME_VECTOR_LENGTH; i++) {
         const ch = bitStr[i];
         if (ch !== '0' && ch !== '1') throw new Error("Bit-string must contain only 1s and 0s.");
-        clone.vector[i] = ch === '1' ? 1 : 0;
+        this.vector[i] = ch === '1' ? 1 : 0;
+      }
+
+      // Validate territory occupation (each node controlled by at most one side)
+      for (let i = 0; i < NODES; i++) {
+        const b = this.vector[GameState.IDX_BRITISH_TERRITORY_OFFSET + i];
+        const m = this.vector[GameState.IDX_MYSORE_TERRITORY_OFFSET + i];
+        if (b + m > 1) {
+          throw new Error(`Node ${i} is simultaneously controlled by British and Mysore!`);
+        }
       }
 
       // Attacker
-      clone._attacker = NO_UNIT;
+      this._attacker = NO_UNIT;
       for (let i = 0; i < NODES; i++) {
-        if (clone.vector[GameState.IDX_ATTACKER_OFFSET + i]) {
-          clone._attacker = i;
+        if (this.vector[GameState.IDX_ATTACKER_OFFSET + i]) {
+          this._attacker = i;
           break;
         }
       }
 
       // Defender
-      clone._defender = NO_UNIT;
+      this._defender = NO_UNIT;
       for (let i = 0; i < NODES; i++) {
-        if (clone.vector[GameState.IDX_DEFENDER_OFFSET + i]) {
-          clone._defender = i;
+        if (this.vector[GameState.IDX_DEFENDER_OFFSET + i]) {
+          this._defender = i;
           break;
         }
       }
 
       // Card strength
-      clone._card_strength = 0;
+      this._card_strength = 0;
       for (let i = 0; i < 4; i++) {
-        if (clone.vector[GameState.IDX_COMBAT_STRENGTH_OFFSET + i]) {
-          clone._card_strength = i;
+        if (this.vector[GameState.IDX_COMBAT_STRENGTH_OFFSET + i]) {
+          this._card_strength = i;
           break;
         }
       }
 
       // To move
-      clone._to_move = 0;
+      this._to_move = 0;
       for (let i = 0; i < 3; i++) {
-        if (clone.vector[GameState.IDX_WHO_TO_MOVE_OFFSET + i]) {
-          clone._to_move = i;
+        if (this.vector[GameState.IDX_WHO_TO_MOVE_OFFSET + i]) {
+          this._to_move = i;
           break;
         }
       }
 
       // Turn
-      clone._turn = 1;
+      this._turn = 1;
       for (let i = 0; i < 4; i++) {
-        if (clone.vector[GameState.IDX_TURN_OFFSET + i]) {
-          clone._turn = i + 1;
+        if (this.vector[GameState.IDX_TURN_OFFSET + i]) {
+          this._turn = i + 1;
           break;
         }
       }
 
-      return clone;
+      return this;
     }
   }
 
@@ -429,7 +441,7 @@
   };
 
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { GameState, TDConstants };
+    module.exports = Object.assign({ GameState, TDConstants }, TDConstants);
   } else {
     global.GameState = GameState;
     global.TDConstants = TDConstants;

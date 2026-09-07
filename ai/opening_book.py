@@ -97,5 +97,29 @@ def build_opening_book(replay_log_path="replay_log.txt", output_path="public/ope
     print(f"✅ Opening book generated with {len(book)} state entries at {output_path}")
     return book
 
+class OpeningBook:
+    """Helper wrapper for loading and querying the opening book."""
+    def __init__(self, book_path="public/opening_book.json"):
+        self.book = {}
+        paths = [
+            book_path,
+            os.path.join(os.path.dirname(__file__), "..", book_path),
+            os.path.join("..", book_path)
+        ]
+        for p in paths:
+            if os.path.exists(p):
+                try:
+                    with open(p, "r", encoding="utf-8") as f:
+                        self.book = json.load(f)
+                    break
+                except Exception:
+                    pass
+
+    def get_move(self, state):
+        key = str(state)
+        if key in self.book:
+            return self.book[key].get("move")
+        return None
+
 if __name__ == "__main__":
     build_opening_book()

@@ -191,29 +191,32 @@ class GameState:
                 save += "0"
         return save
 
+    def to_str(self):
+        return str(self)
+
     def read_str(self, bit_str):
         """ This function is utilized by the frontend and requires certain checks """
 
         if len(bit_str) != GAME_VECTOR_LENGTH:
             raise ValueError(f"Invalid input length! Expected {GAME_VECTOR_LENGTH} bits. ")
-        new_state = self.copy() # creates a copy of itself just in case there is an error
         try:
-            new_state.vector = np.array([bool(int(b)) for b in bit_str], dtype=bool)
+            vec = np.array([bool(int(b)) for b in bit_str], dtype=bool)
         except ValueError:
             raise ValueError("Invalid input! Please provide a string consisting purely of 1s and 0s.")
         for node_idx in range(NODES):
             start = self.IDX_NODES_OFFSET + node_idx * 3
-            if np.sum(new_state.vector[start : start + 3]) > 1:
+            if np.sum(vec[start : start + 3]) > 1:
                 name = INDEX_MAP[node_idx] if node_idx in INDEX_MAP else f"Territory {node_idx}"
                 raise ValueError(f"Invalid Binary: Multiple units assigned to territory {name}")
 
-        new_state._attacker = int(np.argmax(new_state.vector[new_state.IDX_ATTACKER])) if new_state.vector[new_state.IDX_ATTACKER].any() else NO_UNIT
-        new_state._defender = int(np.argmax(new_state.vector[new_state.IDX_DEFENDER])) if new_state.vector[new_state.IDX_DEFENDER].any() else NO_UNIT
-        new_state._card_strength = int(np.argmax(new_state.vector[new_state.IDX_COMBAT_STRENGTH]))
-        new_state._to_move = int(np.argmax(new_state.vector[new_state.IDX_WHO_TO_MOVE]))
-        new_state._turn = int(np.argmax(new_state.vector[new_state.IDX_TURN])) + 1
+        self.vector = vec
+        self._attacker = int(np.argmax(self.vector[self.IDX_ATTACKER])) if self.vector[self.IDX_ATTACKER].any() else NO_UNIT
+        self._defender = int(np.argmax(self.vector[self.IDX_DEFENDER])) if self.vector[self.IDX_DEFENDER].any() else NO_UNIT
+        self._card_strength = int(np.argmax(self.vector[self.IDX_COMBAT_STRENGTH]))
+        self._to_move = int(np.argmax(self.vector[self.IDX_WHO_TO_MOVE]))
+        self._turn = int(np.argmax(self.vector[self.IDX_TURN])) + 1
 
-        return new_state
+        return self
 
 def main():
     default = GameState()

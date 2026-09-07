@@ -832,7 +832,7 @@
   };
 
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = TDEngine;
+    module.exports = Object.assign({ TDEngine }, TDEngine);
   } else {
     global.TDEngine = TDEngine;
     Object.assign(global, TDEngine);
