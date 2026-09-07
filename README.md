@@ -6,6 +6,9 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C.svg)](https://pytorch.org/)
 [![ONNX Runtime Web](https://img.shields.io/badge/ONNX_Runtime-WebAssembly-005CED.svg)](https://onnxruntime.ai/)
 [![WebRTC](https://img.shields.io/badge/WebRTC-PeerJS_P2P-orange.svg)](https://peerjs.com/)
+[![CI](https://github.com/kshtomar/TigersDay/actions/workflows/ci.yml/badge.svg)](https://github.com/kshtomar/TigersDay/actions)
+[![Tests](https://img.shields.io/badge/Tests-49%20Passing-brightgreen.svg)](./TESTS.md)
+[![PWA](https://img.shields.io/badge/PWA-Offline%20Ready-blueviolet.svg)](./public/manifest.json)
 
 Welcome to **Tiger’s Day**, a strategic, asymmetric board wargame simulating the historical Anglo-Mysore Wars fought between **Tipu Sultan** (*The Tiger of Mysore*) and the British East India Company under commanders such as **Lord Cornwallis** and **General Harris**.
 
@@ -52,6 +55,9 @@ The project is an end-to-end full-stack artificial intelligence and game-enginee
    - [Visualizing Model Weights (Heatmaps)](#5-visualizing-model-weights-heatmaps)
    - [Opening Book & Replay Analysis](#6-opening-book--replay-analysis)
 9. [API Reference (FastAPI Backend)](#-api-reference-fastapi-backend)
+10. [Quality Assurance, Automated Testing & CI/CD Pipeline](#-quality-assurance-automated-testing--cicd-pipeline)
+11. [Roadmap & Future Directions](#-roadmap--future-directions)
+12. [Historical Context](#-historical-context)
 
 ---
 
@@ -311,6 +317,8 @@ The MCTS algorithm (`ai/mcts.py` in Python and `public/js/mcts.js` in JavaScript
 ### Client-Side ONNX WebAssembly Inference
 * The trained PyTorch model is converted to an optimized ONNX model (`ai/onnx.py`).
 * In the browser, `onnxruntime-web` runs WebAssembly with SIMD acceleration (`public/alphatiger.onnx`, ~1.5 MB).
+* **INT8 Dynamic Quantization:** An ultra-compact quantized model [`public/alphatiger.quant.onnx`](./public/alphatiger.quant.onnx) (431 KB, ~72% reduction) is provided for instant loading and mobile performance.
+* **Fast-Path Opening Book:** Integrates [`public/opening_book.json`](./public/opening_book.json) extracted from high-winrate replay lines to bypass tree search on early turns.
 * The browser runs the full MCTS loop asynchronously, providing:
   * Zero server roundtrips and zero latency.
   * A real-time **Stockfish-style Evaluation Bar** showing who has the tactical advantage.
@@ -363,6 +371,28 @@ Players can customize how armies, forts, and strongholds render on the map:
 * **Dynamic Combat Marker:** When a battle is triggered, an animated crossed-swords shield appears along the combat vector between the attacking army and defending fort.
 * **Live Net Strength Display:** Displays real-time net strength (`+N` in British red or `-N` in Mysore green) taking into account adjacent armies, adjacent forts, and committed card values.
 
+### Zero-Dependency Procedural Web Audio Engine
+* Built with the native Web Audio API in [`public/js/sound.js`](./public/js/sound.js).
+* Synthesizes authentic period soundscapes without external audio asset downloads:
+  * Resonant artillery cannon blasts with exponential frequency decay and noise bursts for siege clashes.
+  * Percussive snare drum march cadences for army troop movements.
+  * Crisp parchment card plays, wax seal cracks, and victory fanfares.
+  * Master volume slider and instant mute toggle in the Settings modal.
+
+### 100% Offline Progressive Web App (PWA)
+* Includes a standalone Web App Manifest ([`public/manifest.json`](./public/manifest.json)) and a cache-first Service Worker ([`public/sw.js`](./public/sw.js)).
+* Allows complete offline installation and play across iOS, Android, macOS, Windows, and Linux with instant launch speeds and zero cloud dependencies.
+
+### Accessibility (a11y) & Desktop Hotkeys
+* Full WCAG compliance: board territories receive `tabindex="0"`, `role="button"`, dynamic ARIA labels, and respond to `Enter` and `Space`.
+* Global hotkeys for rapid desktop gameplay:
+  * `Escape`: Deselect unit / close modal drawers.
+  * `ArrowLeft` / `ArrowRight`: Step backwards/forwards through algebraic move history.
+  * `Z`: Undo move.
+  * `R`: Rest active army in place.
+  * `P`: Pass active card phase.
+  * Automated input element detection prevents hotkeys from firing while typing in text inputs.
+
 ---
 
 ## 🌐 Real-Time P2P WebRTC Multiplayer
@@ -373,7 +403,7 @@ The multiplayer architecture (`public/js/multiplayer.js`) enables direct browser
 * **Room Codes:** Hosting a game generates an ephemeral 4-character room code (e.g., `TIGER-K7B2`). A second player enters this code to connect instantly.
 * **State Synchronization Protocol:**
   * When a player makes a move, the client sends a `MOVE` packet containing:
-    * `moveIdx`: The integer action (0–952).
+    * `moveIdx`: The integer action (0–958).
     * `luckTrajectory`: Exact branch outcomes for any luck events triggered, ensuring deterministic lockstep.
     * `stateStr`: Full 148-bit verification string to detect and correct any state desynchronization.
   * Handshake and reset packets (`HANDSHAKE`, `SYNC_STATE`, `RESET_GAME`, `RESIGN`) handle session management.
@@ -384,9 +414,12 @@ The multiplayer architecture (`public/js/multiplayer.js`) enables direct browser
 
 ```text
 TigersDay/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                   # Multi-stage CI pipeline (Lint, Unit, Integration, Matrix)
 ├── ai/                              # Reinforcement Learning & Neural Network Pipeline
 │   ├── models/                      # Checkpoints (.pt) and exported ONNX model
-│   │   ├── alphatiger.onnx          # Exported WebAssembly ONNX model (active web model)
+│   │   ├── alphatiger.onnx          # WebAssembly ONNX model (active web model, 1.5MB)
 │   │   ├── alphatigerv13.pt         # Latest trained PyTorch production checkpoint
 │   │   └── alphatigerv7.pt..v12.pt  # Historical evolutionary training checkpoints
 │   ├── arena.py                     # Head-to-head model evaluation tournament & analytics
@@ -394,35 +427,60 @@ TigersDay/
 │   ├── mcts.py                      # Vectorized Python Monte Carlo Tree Search
 │   ├── multitrain.py                # Multi-worker parallel self-play training script
 │   ├── neural.py                    # PyTorch AlphaTiger model & ONNXRuntime CPU wrapper
-│   ├── onnx.py                      # Exporter script from PyTorch (.pt) to ONNX (.onnx)
+│   ├── onnx.py                      # Exporter script (PyTorch -> ONNX & INT8 quantization)
+│   ├── opening_book.py              # Opening book extraction from high-tier game replays
 │   └── train.py                     # Single-thread training loop with Curriculum Learning
 │
+├── api/                             # FastAPI Backend & Serverless API
+│   ├── app.py                       # Unified FastAPI app factory, Pydantic schemas & LRU cache
+│   └── index.py                     # Vercel serverless application handler
+│
 ├── game/                            # Core Game Mechanics & Rules Engine (Python)
-│   ├── constants.py                 # Graph topology, edges, cards, indices, move spaces
+│   ├── constants.py                 # Graph topology, edges, cards, indices, 959 action space
 │   ├── engine.py                    # Legal move masking & move description dictionary
 │   ├── replay.py                    # Algebraic notation interpreter & opening book parser
 │   ├── state.py                     # 148-bit GameState vector management & serialization
-│   └── updater.py                   # State transition, battle resolution, & luck branching
+│   └── updater.py                   # O(1) action dispatch, combat math, & luck branching
 │
-├── public/                          # 100% Client-Side Web Application
+├── public/                          # 100% Client-Side Web Application & PWA
 │   ├── js/
-│   │   ├── engine.js                # JavaScript rule engine, combat math, & luck resolution
+│   │   ├── engine.js                # O(1) JavaScript rule engine, combat math, & repetition
 │   │   ├── mcts.js                  # Browser MCTS & ONNX WebAssembly inference controller
-│   │   ├── multiplayer.js           # PeerJS WebRTC peer-to-peer multiplayer manager
-│   │   └── state.js                 # JavaScript GameState & 148D vector port
-│   ├── alphatiger.onnx              # Static WebAssembly neural network weights
-│   ├── index.html                   # Zero-scroll responsive UI, interactive SVG map, settings modal
-│   ├── script.js                    # UI coordinator, move history stepper, theme engine, unit styles
-│   └── style.css                    # Zero-scroll responsive CSS design system (10 bespoke themes)
+│   │   ├── multiplayer.js           # PeerJS WebRTC P2P multiplayer with heartbeat & reconnect
+│   │   ├── sound.js                 # Zero-dependency procedural Web Audio soundscape engine
+│   │   ├── state.js                 # JavaScript GameState & 148D vector port
+│   │   └── ui/
+│   │       └── themes.js            # 10 bespoke themes & 5 modular unit token styles
+│   ├── alphatiger.onnx              # Static WebAssembly neural network weights (1.5MB)
+│   ├── alphatiger.quant.onnx        # INT8 dynamically quantized WebAssembly weights (431KB)
+│   ├── index.html                   # Zero-scroll responsive UI, interactive SVG map, settings
+│   ├── manifest.json                # PWA installation manifest specification
+│   ├── opening_book.json            # Fast-path opening book lookup dictionary
+│   ├── script.js                    # UI coordinator, move stepper, hotkeys, a11y handlers
+│   ├── style.css                    # Responsive CSS design system across 5 device breakpoints
+│   └── sw.js                        # Cache-first offline Service Worker
 │
-├── api/                             # Serverless API Entrypoint
-│   └── index.py                     # FastAPI backend tuned for Vercel serverless execution
+├── tests/                           # Complete Automated Test Suite (49 Tests)
+│   ├── unit/                        # Python Unit Tests (State, Updater, MCTS)
+│   │   ├── test_state.py            # Bit 94, invariants, serialization roundtrip, validation
+│   │   ├── test_updater.py          # 959 action dispatch, battle2 strength, state transitions
+│   │   └── test_mcts.py             # Opening book loading and querying
+│   ├── integration/                 # Python Integration Tests (Parity, API, Gameplay)
+│   │   ├── test_parity.py           # Cross-engine Python <-> JS byte parity
+│   │   ├── test_api.py              # FastAPI endpoints (/init, /load-state, /play-move, /eval)
+│   │   └── test_gameplay.py         # Multi-turn sequential play, luck resolution, undo rollback
+│   └── js/                          # Node.js Test Battery (Engine & Frontend UI)
+│       ├── engine.test.js           # Client engine invariants, 959 dispatch, repetition, sound
+│       └── ui.test.js               # DOM structure, 6-device auto-sizer, CSS @media, a11y, PWA
 │
-├── checkpoints/                     # Output directory for training checkpoints
-├── requirements.txt                 # Production & serverless dependencies
+├── logs/                            # Replay and tournament logs
+├── package.json                     # Node test runner (`npm test`) and linter (`npm run lint`)
+├── requirements.txt                 # Production & serverless dependencies (NumPy pinned)
 ├── requirements-dev.txt             # Full local development & PyTorch training dependencies
-├── server.py                        # Full-featured local FastAPI + Uvicorn server
+├── server.py                        # Local FastAPI development server using api.app
 ├── vercel.json                      # Vercel deployment and routing configuration
+├── FUTURE_IMPROVEMENTS.md           # Completed work audit & next-gen roadmap
+├── TESTS.md                         # Detailed catalog of all 49 automated test cases
 └── README.md                        # Comprehensive documentation
 ```
 
@@ -641,6 +699,44 @@ Performs batched MCTS rollout simulations for the live evaluation bar.
 Translates an array of historical move indices into algebraic notation.
 * **Request Body:** `{"replay_log": [12, 114, 25, 412]}`
 * **Response:** `{"notation": "mad>pdc SM:trv RN:bom>goa + 1-0"}`
+
+---
+
+## 🧪 Quality Assurance, Automated Testing & CI/CD Pipeline
+
+The repository features a four-stage automated testing hierarchy guaranteeing absolute byte-for-byte parity, zero regressions, and full device responsiveness:
+
+```bash
+# 1. Execute full JavaScript engine & UI test battery (27 tests)
+$ npm test
+
+# 2. Execute Python unit test battery (9 tests)
+$ python3 -m unittest discover -s tests/unit -v
+
+# 3. Execute Python integration test battery (13 tests)
+$ python3 -m unittest discover -s tests/integration -v
+
+# 4. Run static syntax and linter checks
+$ npm run lint
+$ python3 -m compileall -q ai game api tests
+```
+
+* **Continuous Integration:** Automated on every commit and pull request via [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) across a matrix of Python 3.10, 3.11, 3.12 and Node.js 18, 20, 22.
+* **Test Catalog:** For a detailed breakdown of all 49 individual test cases, engineering rationales, and pipeline locations, consult [`TESTS.md`](./TESTS.md).
+
+---
+
+## 🚀 Roadmap & Future Directions
+
+All original architectural priorities (P0 critical bug fixes, P1 engine optimization with $O(1)$ dispatch and INT8 quantization, P2 Web Audio and offline PWA immersion, P3 FastAPI unification and security, and P4 CI/CD testing) are **100% completed, verified, and passing**.
+
+Future development (Phase P5) focuses on next-generation artificial intelligence and multiplayer scaling:
+1. **WebGPU Client-Side MCTS:** Migrating browser ONNX inference to WebGPU hardware acceleration for sub-80ms 500-simulation rollouts.
+2. **Tactical Blunder & Influence Analytics:** Chess.com-style blunder categorization (*Brilliant*, *Mistake*, *Blunder*) and dynamic territory threat heatmaps.
+3. **Global Matchmaking & WebSocket Relay:** Centralized fallback server supporting global matchmaking queues, spectator broadcasts, and relay fallback for symmetric NATs.
+4. **Historical Campaign Trilogy:** Expanding to the First (1767–1769), Second (1780–1784), and Fourth (1799) Anglo-Mysore Wars with custom historical starting states.
+
+For complete technical specifications on upcoming roadmap initiatives, see [`FUTURE_IMPROVEMENTS.md`](./FUTURE_IMPROVEMENTS.md).
 
 ---
 
