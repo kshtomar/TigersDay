@@ -1,6 +1,6 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
-import { TutorialManager, LESSONS } from '../../public/js/tutorial.js';
+const { describe, it } = require('node:test');
+const assert = require('node:assert');
+const { TutorialManager, LESSONS } = require('../../public/js/tutorial.js');
 
 describe('Guided Interactive Tutorial Engine (6.12)', () => {
   it('should define 4 sequential lessons covering core mechanics', () => {

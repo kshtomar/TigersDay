@@ -1,6 +1,6 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
-import TDLore from '../../public/js/lore.js';
+const { describe, it } = require('node:test');
+const assert = require('node:assert');
+const TDLore = require('../../public/js/lore.js');
 
 describe('Historical Lore Codex & Strategic Territory HUD (6.14)', () => {
   it('should define all 25 game territories with complete metadata', () => {

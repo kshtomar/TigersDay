@@ -341,7 +341,7 @@
           <strong>Tactical Intel:</strong> ${data.tactical}
         </div>
         <div class="lore-connections">
-          <span class="lore-meta-label">Adjacent Regions (${data.connections.length}):</span>
+          <span class="lore-meta-label">Adjacent Regions:</span>
           <span class="lore-adj-list">${data.connections.join(' · ')}</span>
         </div>
       </div>
@@ -427,7 +427,19 @@
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = TDLore;
+    module.exports.default = TDLore;
+    module.exports.getAllLore = getAllLore;
+    module.exports.getLore = getLore;
+    module.exports.renderLoreTooltipHTML = renderLoreTooltipHTML;
+    module.exports.showLoreModal = showLoreModal;
+    module.exports.hideLoreModal = hideLoreModal;
   }
-  global.TDLore = TDLore;
+  if (typeof window !== 'undefined') {
+    window.TDLore = TDLore;
+  }
+  if (typeof globalThis !== 'undefined') {
+    globalThis.TDLore = TDLore;
+  }
 
 })(typeof window !== 'undefined' ? window : global);
+
