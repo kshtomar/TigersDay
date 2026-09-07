@@ -3,18 +3,24 @@
  * Enables complete offline play with WebAssembly and local assets.
  */
 
-const CACHE_NAME = 'tigersday-v1.1';
+const CACHE_NAME = 'tigersday-v2.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './script.js',
   './manifest.json',
+  './robots.txt',
+  './sitemap.xml',
+  './og-preview.svg',
   './js/state.js',
   './js/ui/themes.js',
   './js/engine.js',
   './js/scenarios.js',
   './js/mcts.js',
+  './js/replay.js',
+  './js/lore.js',
+  './js/tutorial.js',
   './js/multiplayer.js',
   './js/analytics.js',
   './js/sound.js',
