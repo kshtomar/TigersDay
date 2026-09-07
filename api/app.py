@@ -5,8 +5,9 @@ import asyncio
 from collections import OrderedDict
 from typing import List, Dict, Any, Optional
 
+import json
 import numpy as np
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -144,7 +145,7 @@ def create_app(mount_static: bool = False) -> FastAPI:
     )
 
     # Lazy load neural models on startup
-    ai_models = {}
+    ai_models: Dict[str, Any] = {}
     eval_cache = EvalTreeLRUCache(capacity=32)
 
     def get_models():
@@ -264,7 +265,7 @@ def create_app(mount_static: bool = False) -> FastAPI:
     # -----------------------------------------------------------------------
     # WebSocket Matchmaking & Relay Routes (P5.3)
     # -----------------------------------------------------------------------
-    from api.lobby import global_lobby, Player
+    from api.lobby import global_lobby, Player, MatchRoom
 
     @app.get("/api/lobby/rooms")
     async def list_lobby_rooms():
@@ -304,10 +305,11 @@ def create_app(mount_static: bool = False) -> FastAPI:
         await websocket.accept()
         role = "spectator"
         handle = f"User_{random.randint(100, 999)}"
-        room = global_lobby.get_room(room_id)
-
-        if not room:
-            room = global_lobby.create_room(room_id, host_handle=handle)
+        target_room = global_lobby.get_room(room_id)
+        if target_room is None:
+            room: MatchRoom = global_lobby.create_room(room_id, host_handle=handle)
+        else:
+            room = target_room
 
         try:
             init_data = await websocket.receive_text()
@@ -352,7 +354,8 @@ def create_app(mount_static: bool = False) -> FastAPI:
 
         except WebSocketDisconnect:
             room.sockets.pop(handle, None)
-            room.spectators.discard(websocket)
+            if isinstance(websocket, WebSocket):
+                room.spectators.discard(websocket)
             await room.broadcast({
                 "type": "USER_LEFT",
                 "handle": handle,
@@ -360,7 +363,8 @@ def create_app(mount_static: bool = False) -> FastAPI:
             })
         except Exception:
             room.sockets.pop(handle, None)
-            room.spectators.discard(websocket)
+            if isinstance(websocket, WebSocket):
+                room.spectators.discard(websocket)
 
     # Optional static assets mounting (for local server execution)
     if mount_static:

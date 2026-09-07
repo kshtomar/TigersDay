@@ -10,7 +10,14 @@ import torch
 
 from ai.mcts import MCTS
 from ai.neural import AlphaTiger, load_checkpoint, save_checkpoint
-from ai.train import * # type: ignore
+from ai.train import (
+    CurriculumStage,
+    TrainerConfig,
+    ReplayBuffer,
+    self_play_game,
+    train_step,
+    setup_training_run,
+)
 
 def train(
     curriculum: List[CurriculumStage],

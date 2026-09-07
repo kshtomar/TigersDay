@@ -71,7 +71,7 @@ def run_tournament_game(
         state = GameState()
         state.default_setup()
     else:
-        state = starting_state.clone()
+        state = starting_state.copy()
 
     history: List[Tuple[str, int, str, int]] = []
     winner = 0.5
@@ -145,7 +145,9 @@ def evolve_opening_book(
 
     # 2. Run tournament games
     # state_str -> move -> {wins, total, notation}
-    tournament_stats = defaultdict(lambda: defaultdict(lambda: {"wins": 0.0, "total": 0, "notation": ""}))
+    tournament_stats: Dict[str, Dict[int, Dict[str, Any]]] = defaultdict(
+        lambda: defaultdict(lambda: {"wins": 0.0, "total": 0, "notation": ""})
+    )
 
     for _ in range(num_games):
         history, winner = run_tournament_game(max_plies=40, starting_state=starting_state)
@@ -153,9 +155,9 @@ def evolve_opening_book(
             # Player perspective: 0/2 is British, 1 is Mysore
             side_won = winner if player in (0, 2) else (1.0 - winner)
             stats = tournament_stats[s_key][move]
-            stats["total"] += 1
-            stats["wins"] += side_won
-            stats["notation"] = notation
+            stats["total"] = int(stats["total"]) + 1
+            stats["wins"] = float(stats["wins"]) + float(side_won)
+            stats["notation"] = str(notation)
 
     added = 0
     updated = 0
@@ -163,43 +165,44 @@ def evolve_opening_book(
 
     # 3. Integrate new discoveries
     for s_key, moves_dict in tournament_stats.items():
-        best_candidate = None
-        best_winrate = -1.0
-        best_stats = None
+        best_candidate: Optional[int] = None
+        best_winrate: float = -1.0
+        best_stats: Optional[Dict[str, Any]] = None
 
         for move, stats in moves_dict.items():
-            if stats["total"] >= min_samples:
-                wr = stats["wins"] / stats["total"]
+            total_count = int(stats["total"])
+            if total_count >= min_samples:
+                wr = float(stats["wins"]) / total_count
                 if wr >= min_winrate and wr > best_winrate:
                     best_winrate = wr
                     best_candidate = move
                     best_stats = stats
 
-        if best_candidate is not None:
+        if best_candidate is not None and best_stats is not None:
             if s_key in existing_book:
                 # Merge totals
                 curr = existing_book[s_key]
                 if curr.get("move") == best_candidate:
-                    total = curr.get("total", 0) + best_stats["total"]
-                    wins = (curr.get("win_rate", 0.5) * curr.get("total", 0)) + best_stats["wins"]
+                    total = int(curr.get("total", 0)) + int(best_stats["total"])
+                    wins = (float(curr.get("win_rate", 0.5)) * int(curr.get("total", 0))) + float(best_stats["wins"])
                     new_wr = round(wins / max(1, total), 3)
                     existing_book[s_key]["total"] = total
                     existing_book[s_key]["win_rate"] = new_wr
                     updated += 1
-                elif best_winrate > curr.get("win_rate", 0.0) + 0.15:
+                elif best_winrate > float(curr.get("win_rate", 0.0)) + 0.15:
                     # New superior variation discovered
                     existing_book[s_key] = {
                         "move": int(best_candidate),
-                        "notation": best_stats["notation"],
-                        "total": best_stats["total"],
+                        "notation": str(best_stats["notation"]),
+                        "total": int(best_stats["total"]),
                         "win_rate": round(best_winrate, 3)
                     }
                     updated += 1
             else:
                 existing_book[s_key] = {
                     "move": int(best_candidate),
-                    "notation": best_stats["notation"],
-                    "total": best_stats["total"],
+                    "notation": str(best_stats["notation"]),
+                    "total": int(best_stats["total"]),
                     "win_rate": round(best_winrate, 3)
                 }
                 added += 1

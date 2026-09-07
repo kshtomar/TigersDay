@@ -45,7 +45,7 @@ def export_model(tiger_path = DEFAULT_MODEL, onnx_path="ai/models/alphatiger.onn
 def quantize_model(input_onnx_path="public/alphatiger.onnx", output_onnx_path="public/alphatiger.quant.onnx"):
     """Applies dynamic INT8 quantization to ONNX weights, reducing footprint by ~70%."""
     try:
-        from onnxruntime.quantization import quantize_dynamic, QuantType
+        from onnxruntime.quantization import quantize_dynamic, QuantType  # type: ignore[import-untyped]
         print(f"Quantizing ONNX model: {input_onnx_path} -> {output_onnx_path}...")
         quantize_dynamic(
             model_input=input_onnx_path,

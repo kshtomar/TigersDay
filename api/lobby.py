@@ -15,7 +15,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 
 
 class Player:
-    def __init__(self, handle: str, websocket: WebSocket, elo: int = 1200):
+    def __init__(self, handle: str, websocket: WebSocket, elo: int = 1200) -> None:
         self.handle = handle
         self.websocket = websocket
         self.elo = elo
@@ -23,7 +23,7 @@ class Player:
 
 
 class MatchRoom:
-    def __init__(self, room_id: str, host_handle: str):
+    def __init__(self, room_id: str, host_handle: str) -> None:
         self.room_id = room_id
         self.host_handle = host_handle
         self.guest_handle: Optional[str] = None
@@ -59,11 +59,12 @@ class MatchRoom:
                 dead_specs.append(ws)
                 
         for ws in dead_specs:
-            self.spectators.discard(ws)
+            if isinstance(ws, WebSocket):
+                self.spectators.discard(ws)
 
 
 class MatchmakingLobby:
-    def __init__(self):
+    def __init__(self) -> None:
         self.queue: List[Player] = []
         self.rooms: Dict[str, MatchRoom] = {}
         self._lock = asyncio.Lock()

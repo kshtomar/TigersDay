@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 import numpy as np
 from game.constants import GAME_VECTOR_LENGTH, MOVE_VECTOR_LENGTH, MOVE_SPACE, NODES, COASTAL_INDICES
 
@@ -17,7 +18,7 @@ except ImportError:
 # Optional ONNX Runtime import (for serverless production inference)
 # ---------------------------------------------------------------------------
 try:
-    import onnxruntime as ort
+    import onnxruntime as ort  # type: ignore[import-untyped]
     ONNX_AVAILABLE = True
 except ImportError:
     ONNX_AVAILABLE = False
@@ -199,7 +200,7 @@ if TORCH_AVAILABLE:
 # ===========================================================================
 # Model Loader Dispatcher (Prioritizes ONNX on serverless, fallback to Torch)
 # ===========================================================================
-def load_ai_model(model_path: str = None):
+def load_ai_model(model_path: Optional[str] = None):
     """
     Dynamically loads either an ONNX model or PyTorch model based on availability.
     """

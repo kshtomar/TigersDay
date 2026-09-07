@@ -1,4 +1,5 @@
 import numpy as np
+from typing import List, Any
 from game.state import GameState
 from game.constants import *
 
@@ -10,7 +11,7 @@ def main():
         print(state)
 
 # Precompute O(1) action dispatch lookup table
-ACTION_DISPATCH = [None] * MOVE_VECTOR_LENGTH
+ACTION_DISPATCH: List[Any] = [None] * MOVE_VECTOR_LENGTH
 _offset = 0
 for _name, _size, _move_type in MOVE_SPACE:
     for _idx in range(_size):

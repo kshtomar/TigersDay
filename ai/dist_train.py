@@ -11,7 +11,7 @@ import argparse
 import os
 import sys
 import time
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any
 
 import numpy as np
 import torch
@@ -84,7 +84,7 @@ class DistributedTrainer:
         device: Optional[torch.device] = None
     ):
         self.device = device or (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))
-        self.model = model.to(self.device)
+        self.model: Any = model.to(self.device)
         
         # PyTorch 2.x compile acceleration
         if use_compile and hasattr(torch, "compile") and self.device.type == "cuda":
