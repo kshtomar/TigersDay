@@ -2842,6 +2842,180 @@ function resetGamePrompt() {
 }
 
 // ==========================================================================
+// GUIDED TUTORIAL, LORE CODEX, LOBBY & REPLAY HANDLERS (P6 Initiatives)
+// ==========================================================================
+
+function startGuidedTutorial() {
+  if (window.TDTutorial) {
+    window.TDTutorial.start(0);
+    showToast("Interactive Tutorial started! Follow the guided objectives.", "info");
+  }
+}
+
+function openLoreCodex() {
+  if (window.TDLore) {
+    window.TDLore.showLoreModal();
+  }
+}
+
+function openLobbyModal() {
+  const modal = document.getElementById('lobby-browser-modal');
+  if (modal) {
+    modal.classList.add('visible');
+    refreshLobbyRooms();
+  }
+}
+
+function closeLobbyModal(e) {
+  if (e && e.target && !e.target.classList.contains('lobby-modal-backdrop') && !e.target.classList.contains('lobby-modal-close')) {
+    return;
+  }
+  const modal = document.getElementById('lobby-browser-modal');
+  if (modal) {
+    modal.classList.remove('visible');
+  }
+}
+
+async function refreshLobbyRooms() {
+  const tbody = document.getElementById('lobby-rooms-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #a89f91; padding: 12px;">Fetching active rooms...</td></tr>`;
+
+  try {
+    const rooms = await multiplayerManager.fetchPublicRooms();
+    if (!rooms || rooms.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #a89f91; padding: 16px;">No public rooms active. Click "Host Room" or "Find Match" to start!</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rooms.map(r => `
+      <tr>
+        <td><strong style="color: #fef08a;">${r.room_id}</strong></td>
+        <td>${r.clients_count || 1} / 2 ${r.spectators_count ? `(+${r.spectators_count} 👁)` : ''}</td>
+        <td><span style="color: ${r.clients_count >= 2 ? '#f87171' : '#34d399'}; font-size: 0.76rem; font-weight: 700;">${r.clients_count >= 2 ? 'In Progress' : 'Waiting'}</span></td>
+        <td>
+          ${r.clients_count < 2
+            ? `<button class="primary-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="joinLobbyRoom('${r.room_id}')">Join</button>`
+            : `<button class="secondary-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="spectateLobbyRoom('${r.room_id}')">Spectate</button>`
+          }
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #f87171; padding: 12px;">Failed to connect to lobby server.</td></tr>`;
+  }
+}
+
+async function handleQuickMatchQueue() {
+  const btn = document.getElementById('btn-quick-match');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Searching...';
+  }
+
+  setupMultiplayerCallbacks();
+  try {
+    showToast("Searching for ranked matchmaking opponent...", "info");
+    await multiplayerManager.joinMatchmakingQueue(1500, null);
+    closeLobbyModal();
+    showToast("Match found! Entering battle...", "success");
+  } catch (err) {
+    showToast("Matchmaking failed or timed out.", "error");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Find Match';
+    }
+  }
+}
+
+async function joinLobbyRoom(code) {
+  setupMultiplayerCallbacks();
+  closeLobbyModal();
+  try {
+    await multiplayerManager.joinGame(code);
+    showToast(`Joining room ${code}...`, 'info');
+  } catch (err) {
+    showToast("Failed to join room.", 'error');
+  }
+}
+
+async function spectateLobbyRoom(code) {
+  setupMultiplayerCallbacks();
+  closeLobbyModal();
+  try {
+    await multiplayerManager.connectWebSocketRelay(code, true);
+    showToast(`Spectating match in ${code}`, 'info');
+  } catch (err) {
+    showToast("Failed to spectate room.", 'error');
+  }
+}
+
+function handleExportTDR() {
+  if (!gameHistory || gameHistory.length === 0) {
+    showToast("No moves to export yet.", "error");
+    return;
+  }
+  if (!window.TDReplay) {
+    showToast("Replay module not loaded.", "error");
+    return;
+  }
+
+  const exportData = {
+    metadata: {
+      game: "The Tiger's Day",
+      exported_at: new Date().toISOString(),
+      match_mode: matchMode,
+      total_moves: gameHistory.length
+    },
+    moves: gameHistory.map(h => ({
+      moveIdx: h.moveIdx,
+      notation: h.notation,
+      luck: h.luck || [],
+      desc: h.desc || ''
+    }))
+  };
+
+  const filename = `tigers_day_match_${Date.now()}.tdr`;
+  window.TDReplay.exportTDR(exportData, filename);
+  showToast(`Replay exported as ${filename}`, "success");
+}
+
+function handleImportTDR(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  if (!window.TDReplay) {
+    showToast("Replay module not loaded.", "error");
+    return;
+  }
+
+  window.TDReplay.loadFromFile(file, (err, replay) => {
+    if (err || !replay || !Array.isArray(replay.moves)) {
+      showToast(`Failed to parse replay file: ${err ? err.message : 'Invalid structure'}`, "error");
+      return;
+    }
+
+    initGame();
+    showToast(`Replay loaded: ${replay.moves.length} moves`, "success");
+
+    // Play through recorded moves sequentially
+    let delay = 0;
+    for (const m of replay.moves) {
+      if (m.moveIdx !== undefined && m.moveIdx >= 0) {
+        setTimeout(() => {
+          playMove(m.moveIdx, m.luck || []);
+        }, delay);
+        delay += 100;
+      }
+    }
+  });
+
+  // Reset file input value
+  event.target.value = '';
+}
+
+// ==========================================================================
 // 13. FLOATING TOOLTIPS & TOAST NOTIFICATIONS
 // ==========================================================================
 const tooltip = document.getElementById('tooltip');
@@ -2853,10 +3027,33 @@ function tooltipShow(e, name, data) {
   const armyLabel = { active: '⚔ Fresh Army', tired: '😴 Tired Army', fort: '🏰 Fort', empty: 'Empty' };
 
   let extra = '';
-  if (data.key) extra += ' · ⬛ Key';
-  if (data.coast) extra += ' · 🌊 Coast';
+  if (data.key) extra += ' · ⬛ Key City';
+  if (data.coast) extra += ' · 🌊 Port';
 
-  tooltip.innerHTML = `<b>${name}</b><span style="color:#6a4c1e;">${owner} · ${armyLabel[armyType] || ''}${extra}</span>`;
+  let loreSnippet = '';
+  if (window.TDLore) {
+    const lore = window.TDLore.getLore(name);
+    if (lore) {
+      loreSnippet = `
+        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(212,163,89,0.3); font-size: 0.72rem; color: #ded6c9;">
+          <div style="color: #fef08a; font-style: italic; margin-bottom: 2px;">${lore.title}</div>
+          <div style="color: #a7f3d0; margin-bottom: 3px;"><strong>Intel:</strong> ${lore.tactical}</div>
+          <div style="color: #a89f91; font-size: 0.68rem;">Adjacency: ${lore.connections.join(', ')}</div>
+        </div>
+      `;
+    }
+  }
+
+  tooltip.innerHTML = `
+    <div style="font-family: inherit;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+        <b style="font-size: 0.88rem; color: #fff;">${name}</b>
+        <span style="font-size: 0.7rem; color: #d4a359;">${extra}</span>
+      </div>
+      <div style="color: #e5a93c; font-size: 0.76rem; margin-top: 2px;">${owner} · ${armyLabel[armyType] || ''}</div>
+      ${loreSnippet}
+    </div>
+  `;
   tooltip.classList.add('show');
   tooltip.style.left = (e.clientX + 14) + 'px';
   tooltip.style.top = (e.clientY + 14) + 'px';

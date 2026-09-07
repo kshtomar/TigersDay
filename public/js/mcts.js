@@ -213,6 +213,7 @@
       this.root = null;
       this.openingBook = options.openingBook || null;
       this.useOpeningBook = options.useOpeningBook !== false;
+      this.transpositionTable = new Map();
     }
 
     async loadOpeningBook(url = './opening_book.json') {
@@ -369,32 +370,43 @@
           continue;
         }
 
-        // 4. Neural Network Inference
-        const { value, rawLogits } = await this.model.predict(node.state);
-        const legalMask = getLegalMoves(node.state);
+        // 4. Neural Network Inference or Transposition Table Lookup
+        let value, policy;
+        const zHash = node.state.zobristHash ? node.state.zobristHash() : node.state.toString();
+        if (this.transpositionTable.has(zHash)) {
+          const cached = this.transpositionTable.get(zHash);
+          value = cached.value;
+          policy = cached.policy;
+        } else {
+          const pred = await this.model.predict(node.state);
+          value = pred.value;
+          const rawLogits = pred.rawLogits;
+          const legalMask = getLegalMoves(node.state);
 
-        let maxLogit = -Infinity;
-        for (let i = 0; i < MOVE_VECTOR_LENGTH; i++) {
-          if (legalMask[i]) {
-            if (rawLogits[i] > maxLogit) maxLogit = rawLogits[i];
-          }
-        }
-
-        let sumExp = 0;
-        const expLogits = new Float32Array(MOVE_VECTOR_LENGTH);
-        for (let i = 0; i < MOVE_VECTOR_LENGTH; i++) {
-          if (legalMask[i]) {
-            const e = Math.exp(rawLogits[i] - maxLogit);
-            expLogits[i] = e;
-            sumExp += e;
-          }
-        }
-
-        const policy = new Float32Array(MOVE_VECTOR_LENGTH);
-        if (sumExp > 0) {
+          let maxLogit = -Infinity;
           for (let i = 0; i < MOVE_VECTOR_LENGTH; i++) {
-            if (legalMask[i]) policy[i] = expLogits[i] / sumExp;
+            if (legalMask[i] && rawLogits[i] > maxLogit) {
+              maxLogit = rawLogits[i];
+            }
           }
+
+          let sumExp = 0;
+          const expLogits = new Float32Array(MOVE_VECTOR_LENGTH);
+          for (let i = 0; i < MOVE_VECTOR_LENGTH; i++) {
+            if (legalMask[i]) {
+              const e = Math.exp(rawLogits[i] - maxLogit);
+              expLogits[i] = e;
+              sumExp += e;
+            }
+          }
+
+          policy = new Float32Array(MOVE_VECTOR_LENGTH);
+          if (sumExp > 0) {
+            for (let i = 0; i < MOVE_VECTOR_LENGTH; i++) {
+              if (legalMask[i]) policy[i] = expLogits[i] / sumExp;
+            }
+          }
+          this.transpositionTable.set(zHash, { value, policy });
         }
 
         node.expand_decision(policy);
@@ -408,7 +420,44 @@
       return this.root;
     }
 
-    async findMove(state, temperature = 0.0) {
+    async searchTimeBudget(rootState, timeBudgetMs = 1500, minSims = 50, maxSims = 2000, stop = true, onProgress = null) {
+      const startTime = (typeof performance !== 'undefined' ? performance : Date).now();
+      let effectiveBudget = timeBudgetMs;
+
+      // Contested fortress bonus (+15% time on Turn 2/3)
+      if (rootState.turn === 2 || rootState.turn === 3) {
+        let contested = false;
+        for (let i = 0; i < 25; i++) {
+          if (rootState.forts[i]) {
+            for (let j = 0; j < 25; j++) {
+              if (TDConstants.ADJACENCY_MATRIX && TDConstants.ADJACENCY_MATRIX[i * 25 + j] && (rootState.fresh_armies[j] || rootState.tired_armies[j])) {
+                contested = true;
+                break;
+              }
+            }
+          }
+          if (contested) break;
+        }
+        if (contested) effectiveBudget = Math.floor(timeBudgetMs * 1.15);
+      }
+
+      // Early exit if <= 1 legal move
+      const legalMask = getLegalMoves(rootState);
+      let legalCount = 0;
+      for (let i = 0; i < MOVE_VECTOR_LENGTH; i++) if (legalMask[i]) legalCount++;
+      if (legalCount <= 1) {
+        this.simulations = minSims;
+        return this.search(rootState, false, onProgress);
+      }
+
+      this.simulations = maxSims;
+      const root = await this.search(rootState, stop, (sim, total) => {
+        if (onProgress) onProgress(sim, total);
+      });
+      return root;
+    }
+
+    async findMove(state, temperature = 0.0, timeBudgetMs = null) {
       if (this.useOpeningBook && this.openingBook) {
         const stateKey = state.toString();
         const entry = this.openingBook[stateKey];
@@ -422,7 +471,7 @@
         }
       }
 
-      const root = await this.search(state, true);
+      const root = timeBudgetMs ? await this.searchTimeBudget(state, timeBudgetMs) : await this.search(state, true);
       const counts = new Float32Array(MOVE_VECTOR_LENGTH);
 
       for (const [m, child] of root.children.entries()) {

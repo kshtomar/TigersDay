@@ -7,7 +7,7 @@
 [![ONNX Runtime Web](https://img.shields.io/badge/ONNX_Runtime-WebAssembly-005CED.svg)](https://onnxruntime.ai/)
 [![WebRTC](https://img.shields.io/badge/WebRTC-PeerJS_P2P-orange.svg)](https://peerjs.com/)
 [![CI](https://github.com/kshtomar/TigersDay/actions/workflows/ci.yml/badge.svg)](https://github.com/kshtomar/TigersDay/actions)
-[![Tests](https://img.shields.io/badge/Tests-49%20Passing-brightgreen.svg)](./TESTS.md)
+[![Tests](https://img.shields.io/badge/Tests-64%20Passing-brightgreen.svg)](./TESTS.md)
 [![PWA](https://img.shields.io/badge/PWA-Offline%20Ready-blueviolet.svg)](./public/manifest.json)
 
 Welcome to **Tiger’s Day**, a strategic, asymmetric board wargame simulating the historical Anglo-Mysore Wars fought between **Tipu Sultan** (*The Tiger of Mysore*) and the British East India Company under commanders such as **Lord Cornwallis** and **General Harris**.
@@ -247,27 +247,27 @@ All possible actions across every phase map into a unified **959-element action 
 
 | Phase | Action Name | Dimension | Target Type |
 | :--- | :--- | :---: | :--- |
-| **Phase 0: British Move** (87) | Edge Movement | 86 | Edge (`src -> dest`) |
-| | Rest | 1 | Global blank action |
+| **Phase 0: British Move** (111) | Edge Movement | 86 | Edge (`src -> dest`) |
+| | Tire in Place | 25 | Territory node (`0..24`) |
 | **Phase 1: Mysore Card** (351) | Sepoy Mutiny | 25 | Territory node |
 | | French Alliance | 25 | Territory node |
 | | Monsoon | 25 | Territory node |
 | | Cavalry Raid | 1 | Global blank action |
 | | Sea Trade | 250 | Coastal origin $\times$ Destination ($25 \times 10$) |
 | | Mysore Power | 6 | Card committed in combat |
-| | Draw Iron Rockets | 6 | Card trade |
-| | Draw Sepoy Mutiny | 6 | Card trade |
-| | Draw French Alliance | 6 | Card trade |
+| | Draw Iron Rockets | 6 | Card trade (trade card 0 for 1..5) |
+| | Draw Sepoy Mutiny | 6 | Card trade (trade card 1 for 3..5) |
+| | Draw French Alliance | 6 | Card trade (trade card 2 for 3..5) |
 | | Pass Mysore | 1 | Blank pass action |
-| **Phase 2: British Card** (495) | Highlanders | 25 | Coastal territory node |
+| **Phase 2: British Card** (497) | Highlanders | 25 | Coastal territory node |
 | | Royal Navy | 250 | Origin node $\times$ Coastal destination ($25 \times 10$) |
 | | Divide and Rule | 86 | Edge (`fort -> empty`) |
 | | Force March | 86 | Edge (`tired -> dest`) |
 | | Princely States | 25 | Key City territory node |
 | | British Power | 6 | Card committed in combat |
-| | Draw Wall Breach | 6 | Card trade |
-| | Draw Highlanders | 6 | Card trade |
-| | Draw Royal Navy | 6 | Card trade |
+| | Draw Wall Breach | 6 | Card trade (trade card 0 for 1..5) |
+| | Draw Highlanders | 6 | Card trade (trade card 1 for 3..5) |
+| | Draw Royal Navy | 6 | Card trade (trade card 2 for 3..5) |
 | | Pass British | 1 | Blank pass action |
 
 ---

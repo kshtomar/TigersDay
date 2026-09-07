@@ -36,6 +36,7 @@
 
     _initContext() {
       if (!this.ctx) {
+        if (typeof window === 'undefined') return false;
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return false;
         this.ctx = new AudioCtx();
@@ -59,7 +60,8 @@
     }
 
     setVolume(vol) {
-      this.volume = Math.max(0, Math.min(1, parseFloat(vol)));
+      let parsed = parseFloat(vol);
+      this.volume = isNaN(parsed) ? 0.0 : Math.max(0, Math.min(1, parsed));
       if (this.masterGain && this.ctx) {
         this.masterGain.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.05);
       }
@@ -325,7 +327,9 @@
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = TDSound;
+    module.exports.SoundEngine = SoundEngine;
   } else {
     global.TDSound = TDSound;
+    global.SoundEngine = SoundEngine;
   }
 })(typeof window !== 'undefined' ? window : this);

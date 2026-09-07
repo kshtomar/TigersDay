@@ -11,12 +11,19 @@ class TestApiIntegration(unittest.TestCase):
 
     def _run_request(self, method, path, body=None):
         async def _req():
+            if "?" in path:
+                path_part, query_part = path.split("?", 1)
+                q_string = query_part.encode("ascii")
+            else:
+                path_part = path
+                q_string = b""
+
             scope = {
                 "type": "http",
                 "method": method,
-                "path": path,
-                "raw_path": path.encode("ascii"),
-                "query_string": b"",
+                "path": path_part,
+                "raw_path": path_part.encode("ascii"),
+                "query_string": q_string,
                 "headers": [(b"host", b"testserver"), (b"content-type", b"application/json")],
                 "server": ("testserver", 80),
                 "client": ("127.0.0.1", 12345),
@@ -128,5 +135,34 @@ class TestApiIntegration(unittest.TestCase):
         self.assertIn("rooms", data)
         self.assertIsInstance(data["rooms"], list)
 
+    def test_api_metrics(self):
+        status, data = self._run_request("GET", "/api/metrics")
+        self.assertEqual(status, 200)
+        self.assertIn("uptime_seconds", data)
+        self.assertIn("total_requests", data)
+        self.assertIn("latency_ms", data)
+        self.assertIn("p50", data["latency_ms"])
+
+    def test_api_leaderboard_and_match_recording(self):
+        # 1. Record a match
+        status, match_res = self._run_request("POST", "/api/player/record-match", {
+            "winner_handle": "Wellesley",
+            "loser_handle": "TipuSultan",
+            "is_draw": False,
+            "winner_faction": "british"
+        })
+        self.assertEqual(status, 200)
+        self.assertEqual(match_res["status"], "ok")
+        self.assertIn("winner", match_res["result"])
+        self.assertGreater(match_res["result"]["winner"]["new_elo"], 1200)
+
+        # 2. Get leaderboard
+        status, lb_res = self._run_request("GET", "/api/leaderboard?limit=10")
+        self.assertEqual(status, 200)
+        self.assertIn("leaderboard", lb_res)
+        handles = [p["handle"] for p in lb_res["leaderboard"]]
+        self.assertIn("Wellesley", handles)
+
 if __name__ == '__main__':
     unittest.main()
+

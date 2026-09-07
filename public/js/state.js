@@ -429,7 +429,51 @@
 
       return this;
     }
+
+    zobristHash() {
+      let hash = 0n;
+      for (let i = 0; i < 148; i++) {
+        if (this.vector[i] === 1) {
+          hash ^= ZOBRIST_KEYS[i];
+        }
+      }
+      return hash.toString(16);
+    }
   }
+
+  const ZOBRIST_HEX_KEYS = [
+    "0xc6aa0c083f434d3d", "0x04a71bfb246e5adb", "0x7cc5f88557040745", "0x5a13541d232cc612", "0xa13698a483258126",
+    "0xc6ff2a684ecbfb37", "0xad7cb0ad0936f3c3", "0x0c438955ec98f137", "0xbe78b6cf46dc69ed", "0x899181d0dac3a4f7",
+    "0xe7170ac390e73f87", "0x2123ed073482b473", "0xac5440c449971460", "0x3d3a6e523ee6474f", "0xfa99aaee4fbb823a",
+    "0xacb1881c71e94cf7", "0xdfb1cc7c215066b5", "0x28618e0a8b370b48", "0x34a31099fb80ea66", "0xf9ff886e8ec833ae",
+    "0x070a5fbd85c8e9c5", "0xf273b707b9960cb2", "0x10cb14122fc66de5", "0x8573ec2fda7009f7", "0xaffaf29d9524adc2",
+    "0xfe8b33ec1c1965da", "0xf0d8baa43939945d", "0xcfa04b778899960a", "0x43255f341d8e5a11", "0x63eeb5284a3d6036",
+    "0xdb97acebc9984ad0", "0xddabdf8f6e0dc43e", "0x257b4a2d4e11d2e6", "0x956a0821007a74bd", "0x420c50842ae24213",
+    "0xe57d9f26215aa0cf", "0x76cfabf877c0a308", "0x8b04571d0ee3e8ad", "0xc122701d026aa889", "0xafa3ac75c4a0815f",
+    "0xd2410e796242e4b7", "0xe6c0e1382f56ac0b", "0x35053766e7c56b9a", "0x9a0393fff1131d71", "0xa50e1dbe251f57ff",
+    "0x449cfe201c870a45", "0x4ff13148af0c57b5", "0xca5459109f70281c", "0xad3ff33a42f7f8b1", "0x9f645d9be179a0a0",
+    "0x334c24844b4adc35", "0xeefa097c0ddfe8b9", "0xe9c9b4bd08fd8a3a", "0x3560199f60cde5b4", "0x0d0f1a78d156ef3f",
+    "0xfd083bc0d2a3944f", "0xae4b8bf8312e1eb2", "0x0ac65f8b83b9cd61", "0x81f9356ed5b9a4fe", "0xe651933e5de0e621",
+    "0x4538c6c79f35ff0a", "0x9156a255a56b52d5", "0x00901b066b5686d4", "0xf163efae0f1c3316", "0x3cf6bb567d04eaf4",
+    "0xfb3ec881e24ed21f", "0x3f7263ce4beef35b", "0xd355d587bb8d8ecf", "0x4726dbeaac5259fc", "0x7318bddcdbfca578",
+    "0x940c4b64ab1f81ea", "0xbcdc5e47a5540c2f", "0x16c8035fa85d73c5", "0x4fc34cfbd2dc865d", "0x981db1fa0f84e653",
+    "0x6d297ce8a032f430", "0xf2a3e03baca5a5a2", "0xb8941e6a96d882db", "0xf6d338f3d5100f88", "0xee02043545208559",
+    "0xd25247cae86b25f3", "0xad625e2e1d8aa0ab", "0xd3a59ad7ee364a0e", "0xba4908c49bfb1c72", "0x611b6d007da7214d",
+    "0x78e3cd5ff6acb47d", "0xfe778e88c499aa5e", "0x7d0ddd982e57cb69", "0x0651eaaccfe51ba4", "0x9c565c1d7de9dac8",
+    "0xde6b5d605d063b1d", "0xb274ef3efb57187f", "0x8aa48191b879cb24", "0xba31aa72fc6e59b3", "0x5a7386bf13d1c890",
+    "0x81f5b5a87096d9ac", "0xe09882b39aaf0cc5", "0xb7160814e1ecb7af", "0x6a4da9a268cb3936", "0x4f95d44cf6f3030a",
+    "0x98da546fcad61e37", "0xc47bd2473c51d3a1", "0x1a28cd5c6dacbb35", "0x3e2410617bb58e4f", "0xfbd683bffcb253d3",
+    "0x1dc46f929aef91ab", "0x8dc10fe9a0550744", "0xf8f78bd2dbd2d9e8", "0xbbe7907768267cd1", "0x4d9405239899d6a1",
+    "0xe8b1dc402ce44323", "0x204e6a2c1b9b4b3b", "0xacb0e4bdae2da119", "0xaa824863263adb19", "0xb5f7e36604f3c29b",
+    "0x858fca3423800a80", "0xd09bf32d328f255b", "0x586da6e54bc44d94", "0xddf2e084f3536e3c", "0x3241068a8c04cbb0",
+    "0xc98e26692ab7ff1d", "0xa300522468b473d3", "0x83ac6fc151cb759d", "0x5ff5f674f7820709", "0xeaa6d37958c8e3e5",
+    "0x64a4661ac2343778", "0xaa48273ce054d847", "0xed737d70681d265f", "0xd7c983d0840cb245", "0x471981274bcc340f",
+    "0x4c2bc7cac3a5fe20", "0x1caebb86b83c36d0", "0x23fe88c2f89d24a6", "0x7443aa86c77fd037", "0x7bacdee68b188d70",
+    "0x9e6b1e2d1ea939d9", "0x8fd0bd52cb6be718", "0xa60e0e3a7df2549e", "0x681015d8b713b881", "0x39bfebd6a260460a",
+    "0x0a3327b02b6d9f94", "0x21fe02eccee1506f", "0x29f1bf0e8e8ed16a", "0x7e67e1221dd4c533", "0x641588c2e9b4c4db",
+    "0xb20fe3cfccec10c0", "0x12f1b25b09d5c9e8", "0x292c54af6d75b826"
+  ];
+  const ZOBRIST_KEYS = ZOBRIST_HEX_KEYS.map(h => BigInt(h));
 
   // Export to global scope / modules
   const TDConstants = {

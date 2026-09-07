@@ -64,6 +64,23 @@ class ONNXAlphaTiger:
         policy_logits = np.squeeze(outputs[1], axis=0)
         return value, policy_logits
 
+    def predict_batch(self, states):
+        """
+        Batched evaluation of multiple GameState objects.
+        Returns:
+            values (np.ndarray): 1D array of scalar evaluations in [-1.0, 1.0]
+            policy_logits (np.ndarray): 2D array of logits (B, MOVE_VECTOR_LENGTH)
+        """
+        if not states:
+            return np.array([], dtype=np.float32), np.zeros((0, MOVE_VECTOR_LENGTH), dtype=np.float32)
+        vectors = np.stack([np.asarray(s.vector, dtype=np.float32) for s in states], axis=0)
+        outputs = self.session.run(self.output_names, {self.input_name: vectors})
+        values = np.squeeze(outputs[0], axis=-1)
+        if values.ndim == 0:
+            values = np.array([float(values)], dtype=np.float32)
+        policies = outputs[1]
+        return values, policies
+
 
 # ===========================================================================
 # Dummy Fallback Model (Prevents Server Crashes if Checkpoints are Missing)
@@ -72,6 +89,10 @@ class DummyAlphaTiger:
     """Provides uniform random/neutral priors if no model file is found."""
     def predict(self, state):
         return 0.0, np.zeros(MOVE_VECTOR_LENGTH, dtype=np.float32)
+
+    def predict_batch(self, states):
+        B = len(states)
+        return np.zeros(B, dtype=np.float32), np.zeros((B, MOVE_VECTOR_LENGTH), dtype=np.float32)
 
 
 # ===========================================================================
@@ -166,6 +187,19 @@ if TORCH_AVAILABLE:
             x = torch.tensor(state.vector, dtype=torch.float32, device=device).unsqueeze(0)
             value, policy_logits = self.forward(x)
             return value.item(), policy_logits.squeeze(0).cpu().numpy()
+
+        @torch.no_grad()
+        def predict_batch(self, states):
+            if not states:
+                return np.array([], dtype=np.float32), np.zeros((0, MOVE_VECTOR_LENGTH), dtype=np.float32)
+            device = next(self.parameters()).device
+            vectors = np.stack([s.vector for s in states], axis=0)
+            x = torch.tensor(vectors, dtype=torch.float32, device=device)
+            values, policy_logits = self.forward(x)
+            val_arr = values.squeeze(-1).cpu().numpy()
+            if val_arr.ndim == 0:
+                val_arr = np.array([float(val_arr)], dtype=np.float32)
+            return val_arr, policy_logits.cpu().numpy()
 
     def save_checkpoint(model, optimizer, iteration, path):
         torch.save({

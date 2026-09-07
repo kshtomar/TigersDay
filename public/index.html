@@ -42,6 +42,21 @@
     </div>
     
     <div class="header-actions">
+        <!-- Guided Tutorial (6.12) -->
+        <button id="guided-tutorial-btn" class="icon-btn" title="Guided Interactive Tutorial" aria-label="Guided Interactive Tutorial" onclick="startGuidedTutorial()">
+            <span style="font-size: 15px;">🎓</span>
+        </button>
+
+        <!-- Historical Lore Codex (6.14) -->
+        <button id="lore-codex-btn" class="icon-btn" title="Historical Lore Codex" aria-label="Historical Lore Codex" onclick="openLoreCodex()">
+            <span style="font-size: 15px;">📜</span>
+        </button>
+
+        <!-- Online Matchmaking Lobby Browser (6.13) -->
+        <button id="lobby-browser-btn" class="icon-btn" title="Online Matchmaking Lobby" aria-label="Online Matchmaking Lobby" onclick="openLobbyModal()">
+            <span style="font-size: 15px;">🌐</span>
+        </button>
+
         <!-- Tutorial (i) Button -->
         <button id="tutorial-toggle-btn" class="icon-btn" title="How to Play & Controls" aria-label="How to Play" onclick="toggleTutorialMenu()">
             <span class="info-glyph">ⓘ</span>
@@ -767,6 +782,17 @@
                     Resign
                 </button>
             </div>
+
+            <!-- Replay (.tdr) Import / Export Action Bar (6.11) -->
+            <div class="notation-replay-bar">
+                <button type="button" id="btn-export-tdr" class="notation-action-btn replay-btn" title="Export game replay (.tdr)" onclick="handleExportTDR()">
+                    Export Replay (.tdr)
+                </button>
+                <label for="input-import-tdr" class="notation-action-btn replay-btn" style="display: inline-flex; align-items: center; justify-content: center; margin: 0; cursor: pointer;" title="Load .tdr or .json replay">
+                    Load Replay
+                    <input type="file" id="input-import-tdr" accept=".tdr,.json" style="display: none;" onchange="handleImportTDR(event)" />
+                </label>
+            </div>
         </div>
     </aside>
 
@@ -777,6 +803,44 @@
 
 <!-- INLINE TOAST CONTAINER (ZERO POPUPS / ZERO MODALS) -->
 <div id="toast-container" class="toast-container"></div>
+
+<!-- LOBBY BROWSER & MATCHMAKING MODAL (6.13) -->
+<div id="lobby-browser-modal" class="lobby-modal-backdrop" onclick="closeLobbyModal(event)">
+    <div class="lobby-modal-dialog" onclick="event.stopPropagation()">
+        <div class="lobby-modal-header">
+            <h3>ONLINE MATCHMAKING & LOBBY</h3>
+            <button class="lobby-modal-close" onclick="closeLobbyModal()">✕</button>
+        </div>
+        <div class="lobby-quick-match-box">
+            <div>
+                <strong style="color: #fef08a; font-size: 0.95rem;">Ranked Quick Match</strong>
+                <p style="margin: 4px 0 0; font-size: 0.8rem; color: #ded6c9;">Auto-pairs you against an opponent with similar ELO rating.</p>
+            </div>
+            <button id="btn-quick-match" class="primary-btn" onclick="handleQuickMatchQueue()">Find Match</button>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h4 style="margin: 0; font-family: var(--font-heading, serif); font-size: 0.9rem; color: #d4a359;">Public Active Rooms</h4>
+            <button class="secondary-btn" style="padding: 3px 8px; font-size: 0.72rem;" onclick="refreshLobbyRooms()">Refresh</button>
+        </div>
+        <div class="lobby-rooms-table-wrap">
+            <table class="lobby-table">
+                <thead>
+                    <tr>
+                        <th>Room Code</th>
+                        <th>Host / Players</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="lobby-rooms-tbody">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #a89f91; padding: 16px;">Click Refresh to load public rooms</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <!-- ONNX Runtime Web (WebAssembly CPU Inference) -->
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/ort.min.js"></script>
@@ -791,6 +855,9 @@
 <script src="js/engine.js"></script>
 <script src="js/scenarios.js"></script>
 <script src="js/mcts.js"></script>
+<script src="js/replay.js"></script>
+<script src="js/lore.js"></script>
+<script src="js/tutorial.js"></script>
 <script src="js/multiplayer.js"></script>
 <script src="js/analytics.js"></script>
 

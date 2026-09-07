@@ -59,8 +59,7 @@ class MatchRoom:
                 dead_specs.append(ws)
                 
         for ws in dead_specs:
-            if isinstance(ws, WebSocket):
-                self.spectators.discard(ws)
+            self.spectators.discard(ws)
 
 
 class MatchmakingLobby:

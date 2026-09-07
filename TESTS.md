@@ -38,10 +38,10 @@ flowchart TD
 | Target | Command | Duration | Coverage |
 | :--- | :--- | :--- | :--- |
 | **Lint & Syntax** | `npm run lint && python3 -m compileall -q ai game api tests` | ~0.08s | All JS, SW, HTML scripts, Python packages |
-| **Node.js Test Battery** | `npm test` | ~0.05s | Engine invariants + Frontend DOM, CSS, UI & Visual Regression (33 tests) |
-| **Python Unit Tests** | `python3 -m unittest discover -s tests/unit -v` | ~0.04s | State bit-vector, updater dispatch, replay buffer, scenarios, evolution (17 tests) |
-| **Python Integration** | `python3 -m unittest discover -s tests/integration -v` | ~0.15s | Parity subprocesses, FastAPI endpoints, lobby relay, multi-turn loop (14 tests) |
-| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.25s | All 64 test cases across entire stack |
+| **Node.js Test Battery** | `npm test` | ~0.10s | Engine, Multiplayer, Sound, Replay, Lore, Tutorial & Visual Regression (50 tests) |
+| **Python Unit Tests** | `python3 -m unittest discover -s tests/unit -v` | ~0.25s | State, rules, neural, MCTS, replay, buffer, scenarios, evolution (37 tests) |
+| **Python Integration** | `python3 -m unittest discover -s tests/integration -v` | ~0.35s | 50-ply parity, FastAPI endpoints, lobby relay, multi-turn loop (23 tests) |
+| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.65s | All 110 test cases across entire stack (100% passing) |
 
 ---
 

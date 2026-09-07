@@ -163,3 +163,10 @@ NODES_ABBREV = {
     15: "mhe", 16: "pdc", 17: "erd", 18: "tri", 19: "alw",
     20: "dng", 21: "rmd", 22: "trv", 23: "cyl", 24: "pna"
 }
+
+def _init_zobrist_keys():
+    import random
+    rng = random.Random(1799)
+    return np.array([rng.getrandbits(64) for _ in range(GAME_VECTOR_LENGTH)], dtype=np.uint64)
+
+ZOBRIST_KEYS = _init_zobrist_keys()

@@ -7,7 +7,8 @@ from typing import List, Dict, Any, Optional
 
 import json
 import numpy as np
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -47,6 +48,15 @@ class EvalStepRequest(BaseModel):
 
 class HistoryRequest(BaseModel):
     replay_log: List[int] = Field(..., description="Array of executed move indices")
+
+class MatchRecordRequest(BaseModel):
+    winner_handle: str = Field(..., min_length=1, max_length=50)
+    loser_handle: str = Field(..., min_length=1, max_length=50)
+    is_draw: bool = False
+    winner_faction: str = "british"
+
+from api.leaderboard import global_leaderboard
+from api.metrics import global_metrics, global_rate_limiter
 
 
 # ---------------------------------------------------------------------------
@@ -144,6 +154,32 @@ def create_app(mount_static: bool = False) -> FastAPI:
         allow_headers=["*"],
     )
 
+    @app.middleware("http")
+    async def rate_limiting_and_metrics_middleware(request: Request, call_next):
+        import time
+        start_t = time.perf_counter()
+        client_ip = request.client.host if request.client else "127.0.0.1"
+
+        # Rate limit compute-intensive endpoints
+        if request.url.path in ["/api/play-ai", "/api/eval-step"]:
+            allowed, remaining, retry_after = await global_rate_limiter.is_allowed(client_ip)
+            if not allowed:
+                return JSONResponse(
+                    status_code=429,
+                    content={"detail": "Rate limit exceeded. Please wait before requesting AI moves."},
+                    headers={"Retry-After": str(int(retry_after) + 1), "X-RateLimit-Remaining": "0"}
+                )
+
+        try:
+            response = await call_next(request)
+            elapsed_ms = (time.perf_counter() - start_t) * 1000.0
+            global_metrics.record_request(elapsed_ms, is_error=response.status_code >= 400)
+            return response
+        except Exception as e:
+            elapsed_ms = (time.perf_counter() - start_t) * 1000.0
+            global_metrics.record_request(elapsed_ms, is_error=True)
+            raise e
+
     # Lazy load neural models on startup
     ai_models: Dict[str, Any] = {}
     eval_cache = EvalTreeLRUCache(capacity=32)
@@ -195,6 +231,7 @@ def create_app(mount_static: bool = False) -> FastAPI:
 
             mcts = MCTS(active_model, simulations=req.sims, depsilon=0)
             best_move, policy = mcts.find_move(state)
+            global_metrics.record_mcts_sims(req.sims or 250)
             next_state = get_next_state(state, best_move)
             next_state = resolve_luck_stochastic(next_state)
 
@@ -217,12 +254,17 @@ def create_app(mount_static: bool = False) -> FastAPI:
 
             tree_data = await eval_cache.get(req.state_str)
             if tree_data is None:
+                global_metrics.record_cache_miss()
                 mcts_instance = MCTS(active_model, simulations=req.batch_size, depsilon=0)
                 tree_data = {
                     "mcts": mcts_instance,
                     "total_sims": 0
                 }
                 await eval_cache.set(req.state_str, tree_data)
+            else:
+                global_metrics.record_cache_hit()
+
+            global_metrics.record_mcts_sims(req.batch_size)
 
             mcts = tree_data["mcts"]
             mcts.simulations = req.batch_size
@@ -266,6 +308,28 @@ def create_app(mount_static: bool = False) -> FastAPI:
     # WebSocket Matchmaking & Relay Routes (P5.3)
     # -----------------------------------------------------------------------
     from api.lobby import global_lobby, Player, MatchRoom
+
+    # -----------------------------------------------------------------------
+    # Production Observability & Persistent ELO Leaderboard (P6.15)
+    # -----------------------------------------------------------------------
+    @app.get("/api/metrics")
+    async def get_metrics():
+        active_rooms = len(global_lobby.rooms)
+        return global_metrics.get_summary(active_rooms=active_rooms)
+
+    @app.get("/api/leaderboard")
+    async def get_leaderboard(limit: int = 20):
+        return {"leaderboard": global_leaderboard.get_leaderboard(limit=min(100, max(1, limit)))}
+
+    @app.post("/api/player/record-match")
+    async def record_player_match(req: MatchRecordRequest):
+        res = global_leaderboard.record_match(
+            winner_handle=req.winner_handle,
+            loser_handle=req.loser_handle,
+            is_draw=req.is_draw,
+            winner_faction=req.winner_faction
+        )
+        return {"status": "ok", "result": res}
 
     @app.get("/api/lobby/rooms")
     async def list_lobby_rooms():

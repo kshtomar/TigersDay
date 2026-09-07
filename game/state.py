@@ -218,6 +218,16 @@ class GameState:
 
         return self
 
+    def zobrist_hash(self) -> int:
+        """
+        Computes 64-bit Zobrist Hash of the 148-bit game state vector.
+        Fast XOR reduction over all active bits.
+        """
+        active_indices = np.where(self.vector == 1)[0]
+        if len(active_indices) == 0:
+            return 0
+        return int(np.bitwise_xor.reduce(ZOBRIST_KEYS[active_indices]))
+
 def main():
     default = GameState()
     default.default_setup()

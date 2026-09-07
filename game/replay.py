@@ -72,7 +72,7 @@ def notate(state, move):
                 return move_string + card_name
             elif move_type == "blank":
                 if name == "Cavalry Raid":
-                    return move_string
+                    return "CR"
                 else:
                     return "pass"
             elif move_type == "coastal":
@@ -238,6 +238,46 @@ def get_popular_moves(filepath, threshold=300):
             print(f"{move} {count}")
         else:
             break
+
+import json
+import time
+
+def export_tdr(moves, player_british="British", player_mysore="Mysore", winner="draw", metadata=None):
+    """
+    Serializes a played match into Tiger's Day Replay (.tdr) JSON format.
+    """
+    algebraic, _ = interpret(moves)
+    payload = {
+        "format": "TigerDayReplay",
+        "version": "1.0",
+        "timestamp": time.time(),
+        "players": {
+            "british": player_british,
+            "mysore": player_mysore
+        },
+        "winner": winner,
+        "moves": [int(m) for m in moves],
+        "algebraic": algebraic,
+        "metadata": metadata or {}
+    }
+    return json.dumps(payload, indent=2)
+
+def import_tdr(tdr_content):
+    """
+    Parses and validates a Tiger's Day Replay (.tdr) JSON string.
+    Returns parsed dictionary containing validated move sequence and metadata.
+    """
+    if isinstance(tdr_content, (bytes, bytearray)):
+        tdr_content = tdr_content.decode("utf-8")
+    data = json.loads(tdr_content)
+    if not isinstance(data, dict) or data.get("format") != "TigerDayReplay":
+        raise ValueError("Invalid format: Not a valid Tiger's Day Replay (.tdr) file.")
+    if "moves" not in data or not isinstance(data["moves"], list):
+        raise ValueError("Malformed replay: Missing 'moves' array.")
+    for m in data["moves"]:
+        if not isinstance(m, int) or m < 0 or m >= 959:
+            raise ValueError(f"Illegal move index in replay: {m}")
+    return data
 
 if __name__ == "__main__":
     filepath = "replay_log.txt"

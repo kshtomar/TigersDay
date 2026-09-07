@@ -15,20 +15,34 @@
       this.opponentSide = 'mysore';
       this.roomCode = null;
       this.status = 'offline'; // 'offline' | 'connecting' | 'hosting' | 'connected'
+      this.transportMode = 'webrtc'; // 'webrtc' | 'websocket'
+      this.wsRelay = null;
+      this.wsLobby = null;
+      this.fallbackTimeoutMs = 8000;
+      this._fallbackTimer = null;
 
       // Callbacks
       this.onStatusChange = null;
       this.onMoveReceived = null;
       this.onStateSyncReceived = null;
       this.onGameResetReceived = null;
+      this.onMatchFound = null;
       this.onError = null;
     }
 
     generateRoomCode() {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      if (!this._generatedCodes) this._generatedCodes = new Set();
       let code = '';
-      for (let i = 0; i < 4; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      for (let attempt = 0; attempt < 100; attempt++) {
+        code = '';
+        for (let i = 0; i < 4; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        if (!this._generatedCodes.has(code)) {
+          this._generatedCodes.add(code);
+          break;
+        }
       }
       return `TIGER-${code}`;
     }
@@ -112,15 +126,156 @@
       const cleanCode = (roomCode || '').trim().toUpperCase();
       this.roomCode = cleanCode;
 
-      await this.initPeer();
+      this._clearFallbackTimer();
+      this._fallbackTimer = setTimeout(() => {
+        if (this.status !== 'connected') {
+          console.warn(`⏳ WebRTC handshake timed out after ${this.fallbackTimeoutMs}ms. Falling back to WebSocket relay.`);
+          this.fallbackToWebSocket(cleanCode);
+        }
+      }, this.fallbackTimeoutMs);
+
+      try {
+        await this.initPeer();
+        this._updateStatus('connecting');
+
+        const connection = this.peer.connect(cleanCode, {
+          reliable: true
+        });
+
+        this._setupConnection(connection, false);
+      } catch (err) {
+        console.warn("Peer connection setup failed, immediately falling back to WebSocket relay:", err);
+        this.fallbackToWebSocket(cleanCode);
+      }
+      return cleanCode;
+    }
+
+    _clearFallbackTimer() {
+      if (this._fallbackTimer) {
+        clearTimeout(this._fallbackTimer);
+        this._fallbackTimer = null;
+      }
+    }
+
+    async fallbackToWebSocket(roomCode) {
+      this._clearFallbackTimer();
+      console.log(`🔌 Initializing WebSocket Relay fallback for room ${roomCode}...`);
+      this.transportMode = 'websocket';
+      return this.connectWebSocketRelay(roomCode);
+    }
+
+    async connectWebSocketRelay(roomCode, isSpectator = false) {
+      this._clearFallbackTimer();
+      const host = (typeof window !== 'undefined' && window.location && window.location.host) ? window.location.host : 'localhost:8000';
+      const protocol = (typeof window !== 'undefined' && window.location && window.location.protocol === 'https:') ? 'wss:' : 'ws:';
+      const url = `${protocol}//${host}/ws/room/${encodeURIComponent(roomCode)}${isSpectator ? '?spectator=true' : ''}`;
+
+      if (this.wsRelay) {
+        try { this.wsRelay.close(); } catch (_) {}
+      }
+
       this._updateStatus('connecting');
 
-      const connection = this.peer.connect(cleanCode, {
-        reliable: true
-      });
+      return new Promise((resolve, reject) => {
+        if (typeof WebSocket === 'undefined') {
+          const err = new Error("WebSocket API not available in this environment");
+          if (this.onError) this.onError(err.message);
+          return reject(err);
+        }
 
-      this._setupConnection(connection, false);
-      return cleanCode;
+        try {
+          this.wsRelay = new WebSocket(url);
+
+          this.wsRelay.onopen = () => {
+            console.log(`🤝 WebSocket Relay connected for room ${roomCode}!`);
+            this.transportMode = 'websocket';
+            this._updateStatus('connected');
+            resolve(this.wsRelay);
+          };
+
+          this.wsRelay.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              this._handleIncomingData(data);
+            } catch (e) {
+              console.warn("Failed to parse WebSocket message:", event.data);
+            }
+          };
+
+          this.wsRelay.onclose = () => {
+            console.log("WebSocket relay closed.");
+            if (this.status === 'connected') {
+              this._updateStatus('offline');
+            }
+          };
+
+          this.wsRelay.onerror = (err) => {
+            console.warn("WebSocket relay error:", err);
+            if (this.onError) this.onError("WebSocket relay error");
+            reject(err);
+          };
+        } catch (e) {
+          if (this.onError) this.onError(e.message);
+          reject(e);
+        }
+      });
+    }
+
+    async joinMatchmakingQueue(playerElo = 1500, sidePreference = null) {
+      const host = (typeof window !== 'undefined' && window.location && window.location.host) ? window.location.host : 'localhost:8000';
+      const protocol = (typeof window !== 'undefined' && window.location && window.location.protocol === 'https:') ? 'wss:' : 'ws:';
+      const url = `${protocol}//${host}/ws/lobby`;
+
+      if (this.wsLobby) {
+        try { this.wsLobby.close(); } catch (_) {}
+      }
+
+      return new Promise((resolve, reject) => {
+        if (typeof WebSocket === 'undefined') {
+          return reject(new Error("WebSocket not available"));
+        }
+
+        this.wsLobby = new WebSocket(url);
+
+        this.wsLobby.onopen = () => {
+          this.wsLobby.send(JSON.stringify({
+            action: 'join_queue',
+            elo: playerElo,
+            side_pref: sidePreference
+          }));
+        };
+
+        this.wsLobby.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'MATCH_FOUND') {
+              this.roomCode = data.room_id;
+              this.mySide = data.side;
+              this.opponentSide = data.side === 'british' ? 'mysore' : 'british';
+              if (this.onMatchFound) this.onMatchFound(data);
+              // Connect automatically to room
+              this.connectWebSocketRelay(data.room_id).then(resolve).catch(reject);
+            }
+          } catch (e) {
+            console.warn("Lobby parse error:", e);
+          }
+        };
+
+        this.wsLobby.onerror = (err) => reject(err);
+      });
+    }
+
+    async fetchPublicRooms() {
+      if (typeof fetch === 'undefined') return [];
+      try {
+        const resp = await fetch('/api/lobby/rooms');
+        if (!resp.ok) return [];
+        const data = await resp.json();
+        return data.rooms || [];
+      } catch (err) {
+        console.warn("Failed to fetch lobby rooms:", err);
+        return [];
+      }
     }
 
     _setupConnection(connection, isIncoming) {
@@ -132,6 +287,8 @@
       this._stopHeartbeat();
 
       this.conn.on('open', () => {
+        this._clearFallbackTimer();
+        this.transportMode = 'webrtc';
         console.log(`🤝 P2P Connection established! (Host: ${this.isHost})`);
         this._updateStatus('connected');
         this._startHeartbeat();
@@ -230,12 +387,28 @@
           break;
 
         case 'MOVE':
+          if (typeof data.moveIdx !== 'number' || data.moveIdx < 0 || data.moveIdx >= 959) {
+            console.warn("Invalid moveIdx rejected:", data.moveIdx);
+            if (this.onError) this.onError("Rejected invalid move payload.");
+            break;
+          }
+          if (data.stateStr && (typeof data.stateStr !== 'string' || !/^[01]{148}$/.test(data.stateStr))) {
+            console.warn("Corrupted stateStr rejected:", data.stateStr);
+            if (this.onError) this.onError("Rejected corrupted state payload.");
+            break;
+          }
+          const luck = Array.isArray(data.luckIndices) ? data.luckIndices : (Array.isArray(data.luckTrajectory) ? data.luckTrajectory : []);
           if (this.onMoveReceived) {
-            this.onMoveReceived(data.moveIdx, data.luckIndices || data.luckTrajectory || [], data.stateStr);
+            this.onMoveReceived(data.moveIdx, luck, data.stateStr);
           }
           break;
 
         case 'SYNC_STATE':
+          if (data.stateStr && (typeof data.stateStr !== 'string' || !/^[01]{148}$/.test(data.stateStr))) {
+            console.warn("Corrupted SYNC_STATE payload rejected.");
+            if (this.onError) this.onError("Rejected corrupted sync state.");
+            break;
+          }
           if (this.onStateSyncReceived) {
             this.onStateSyncReceived(data.stateStr);
           }
@@ -277,10 +450,12 @@
     }
 
     send(payload) {
-      if (this.conn && this.conn.open) {
+      if (this.transportMode === 'websocket' && this.wsRelay && this.wsRelay.readyState === 1) {
+        this.wsRelay.send(typeof payload === 'string' ? payload : JSON.stringify(payload));
+      } else if (this.conn && this.conn.open) {
         this.conn.send(payload);
       } else {
-        console.warn("Cannot send message: P2P connection not open.");
+        console.warn("Cannot send message: Neither WebRTC nor WebSocket relay is connected.");
       }
     }
 
@@ -334,6 +509,7 @@
     }
 
     disconnect() {
+      this._clearFallbackTimer();
       if (this.conn) {
         this.conn.close();
         this.conn = null;
@@ -342,6 +518,15 @@
         this.peer.destroy();
         this.peer = null;
       }
+      if (this.wsRelay) {
+        try { this.wsRelay.close(); } catch (_) {}
+        this.wsRelay = null;
+      }
+      if (this.wsLobby) {
+        try { this.wsLobby.close(); } catch (_) {}
+        this.wsLobby = null;
+      }
+      this.transportMode = 'webrtc';
       this._updateStatus('offline');
     }
 
