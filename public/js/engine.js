@@ -394,7 +394,7 @@
     }
 
     if (attacker !== NO_UNIT) {
-      battle2 = isBattleWon(state, defender, 0);
+      battle2 = isBattleWon(state, defender, netCardStrength);
       if (battle2) {
         state.mluck += 1;
       } else {
@@ -421,142 +421,144 @@
     return state;
   }
 
+  // Precompute O(1) action dispatch lookup table
+  const ACTION_DISPATCH = new Array(MOVE_VECTOR_LENGTH);
+  let _engineOffset = 0;
+  for (const [name, size, moveType] of MOVE_SPACE) {
+    for (let idx = 0; idx < size; idx++) {
+      ACTION_DISPATCH[_engineOffset + idx] = { name, moveType, idx };
+    }
+    _engineOffset += size;
+  }
+
   // =========================================================================
   // 4. GAME STATE ADVANCEMENT (get_next_state)
   // =========================================================================
   function getNextState(state, move) {
     const nextState = state.copy();
-    let offset = 0;
+    const action = ACTION_DISPATCH[move];
+    if (!action) return nextState;
+    const { name, moveType, idx } = action;
 
-    for (const [name, size, moveType] of MOVE_SPACE) {
-      if (move >= offset && move < offset + size) {
-        const idx = move - offset;
+    if (moveType === "node") {
+      if (name === "Tire") {
+        nextState.set_node_tired_army(idx);
+      } else if (name === "Sepoy Mutiny") {
+        nextState.mysore_cards[1] = 0;
+        if (state.attacker === idx) nextState.clear_battle();
+        nextState.set_node_empty(idx);
+      } else if (name === "French Alliance") {
+        nextState.mysore_cards[2] = 0;
+        nextState.set_node_fort(idx);
+      } else if (name === "Monsoon") {
+        nextState.mysore_cards[3] = 0;
+        nextState.set_node_tired_army(idx);
+      } else if (name === "Highlanders") {
+        nextState.british_cards[1] = 0;
+        nextState.set_node_fresh_army(idx);
+      } else if (name === "Princely States") {
+        nextState.british_cards[5] = 0;
+        nextState.set_node_tired_army(idx);
+      }
+    } else if (moveType === "edge") {
+      const src = EDGE_SOURCES[idx];
+      const dest = EDGE_DESTS[idx];
+      const isFortDefending = Boolean(state.forts[dest]);
 
-        if (moveType === "node") {
-          if (name === "Tire") {
-            nextState.set_node_tired_army(idx);
-          } else if (name === "Sepoy Mutiny") {
-            nextState.mysore_cards[1] = 0;
-            if (state.attacker === idx) nextState.clear_battle();
-            nextState.set_node_empty(idx);
-          } else if (name === "French Alliance") {
-            nextState.mysore_cards[2] = 0;
-            nextState.set_node_fort(idx);
-          } else if (name === "Monsoon") {
-            nextState.mysore_cards[3] = 0;
-            nextState.set_node_tired_army(idx);
-          } else if (name === "Highlanders") {
-            nextState.british_cards[1] = 0;
-            nextState.set_node_fresh_army(idx);
-          } else if (name === "Princely States") {
-            nextState.british_cards[5] = 0;
-            nextState.set_node_tired_army(idx);
-          }
-        } else if (moveType === "edge") {
-          const src = EDGE_SOURCES[idx];
-          const dest = EDGE_DESTS[idx];
-          const isFortDefending = Boolean(state.forts[dest]);
+      if (name === "Move") {
+        if (isFortDefending) {
+          nextState.set_node_tired_army(src);
+          nextState.attacker = src;
+          nextState.defender = dest;
+          nextState.card_strength = 0;
+        } else {
+          nextState.set_node_empty(src);
+          nextState.set_node_tired_army(dest);
+        }
+      } else if (name === "Divide and Rule") {
+        nextState.british_cards[3] = 0;
+        if (state.defender === src) {
+          nextState.set_node_tired_army(src);
+          nextState.set_node_empty(state.attacker);
+          nextState.clear_battle();
+        } else {
+          nextState.set_node_empty(src);
+        }
+        nextState.set_node_fort(dest);
+      } else if (name === "Force March") {
+        nextState.british_cards[4] = 0;
+        if (state.attacker === src) nextState.clear_battle();
+        if (isFortDefending) {
+          resolveBattles(nextState, src, dest, -state.card_strength);
+        } else {
+          nextState.set_node_empty(src);
+          nextState.set_node_tired_army(dest);
+        }
+      }
+    } else if (moveType === "bcard") {
+      if (name === "British Power") {
+        nextState.british_cards[idx] = 0;
+        resolveBattles(nextState, NO_UNIT, NO_UNIT, CARD_VALUE[idx] - state.card_strength);
+      } else if (name === "Draw Wall Breach") {
+        nextState.british_cards[0] = 0;
+        nextState.british_cards[idx] = 1;
+      } else if (name === "Draw Highlanders") {
+        nextState.british_cards[1] = 0;
+        nextState.british_cards[idx] = 1;
+      } else if (name === "Draw Royal Navy") {
+        nextState.british_cards[2] = 0;
+        nextState.british_cards[idx] = 1;
+      }
+    } else if (moveType === "mcard") {
+      if (name === "Mysore Power") {
+        nextState.mysore_cards[idx] = 0;
+        nextState.card_strength = CARD_VALUE[idx];
+      } else if (name === "Draw Iron Rockets") {
+        nextState.mysore_cards[0] = 0;
+        nextState.mysore_cards[idx] = 1;
+      } else if (name === "Draw Sepoy Mutiny") {
+        nextState.mysore_cards[1] = 0;
+        nextState.mysore_cards[idx] = 1;
+      } else if (name === "Draw French Alliance") {
+        nextState.mysore_cards[2] = 0;
+        nextState.mysore_cards[idx] = 1;
+      }
+    } else if (moveType === "blank") {
+      if (name === "Cavalry Raid") {
+        nextState.mysore_cards[4] = 0;
+        nextState.bluck += 1;
+      }
+    } else if (moveType === "coastal") {
+      const numCoasts = COASTAL_INDICES.length;
+      const node = Math.floor(idx / numCoasts);
+      const coast = COASTAL_INDICES[idx % numCoasts];
 
-          if (name === "Move") {
-            if (isFortDefending) {
-              nextState.set_node_tired_army(src);
-              nextState.attacker = src;
-              nextState.defender = dest;
-              nextState.card_strength = 0;
-            } else {
-              nextState.set_node_empty(src);
-              nextState.set_node_tired_army(dest);
-            }
-          } else if (name === "Divide and Rule") {
-            nextState.british_cards[3] = 0;
-            if (state.defender === src) {
-              nextState.set_node_tired_army(src);
-              nextState.set_node_empty(state.attacker);
-              nextState.clear_battle();
-            } else {
-              nextState.set_node_empty(src);
-            }
-            nextState.set_node_fort(dest);
-          } else if (name === "Force March") {
-            nextState.british_cards[4] = 0;
-            if (state.attacker === src) nextState.clear_battle();
-            if (isFortDefending) {
-              resolveBattles(nextState, src, dest, -state.card_strength);
-            } else {
-              nextState.set_node_empty(src);
-              nextState.set_node_tired_army(dest);
-            }
-          }
-        } else if (moveType === "bcard") {
-          if (name === "British Power") {
-            nextState.british_cards[idx] = 0;
-            resolveBattles(nextState, NO_UNIT, NO_UNIT, CARD_VALUE[idx] - state.card_strength);
-          } else if (name === "Draw Wall Breach") {
-            nextState.british_cards[0] = 0;
-            nextState.british_cards[idx] = 1;
-          } else if (name === "Draw Highlanders") {
-            nextState.british_cards[1] = 0;
-            nextState.british_cards[idx] = 1;
-          } else if (name === "Draw Royal Navy") {
-            nextState.british_cards[2] = 0;
-            nextState.british_cards[idx] = 1;
-          }
-        } else if (moveType === "mcard") {
-          if (name === "Mysore Power") {
-            nextState.mysore_cards[idx] = 0;
-            nextState.card_strength = CARD_VALUE[idx];
-          } else if (name === "Draw Iron Rockets") {
-            nextState.mysore_cards[0] = 0;
-            nextState.mysore_cards[idx] = 1;
-          } else if (name === "Draw Sepoy Mutiny") {
-            nextState.mysore_cards[1] = 0;
-            nextState.mysore_cards[idx] = 1;
-          } else if (name === "Draw French Alliance") {
-            nextState.mysore_cards[2] = 0;
-            nextState.mysore_cards[idx] = 1;
-          }
-        } else if (moveType === "blank") {
-          if (name === "Cavalry Raid") {
-            nextState.mysore_cards[4] = 0;
-            nextState.bluck += 1;
-          } else if (name === "Pass Mysore" || name === "Pass British") {
-            // Pass
-          }
-        } else if (moveType === "coastal") {
-          const numCoasts = COASTAL_INDICES.length;
-          const node = Math.floor(idx / numCoasts);
-          const coast = COASTAL_INDICES[idx % numCoasts];
-
-          if (name === "Sea Trade") {
-            nextState.mysore_cards[5] = 0;
-            if (state.defender === coast) {
-              nextState.set_node_tired_army(coast);
-              nextState.set_node_empty(state.attacker);
-              nextState.clear_battle();
-            } else {
-              nextState.set_node_empty(coast);
-            }
-            nextState.set_node_fort(node);
-          } else if (name === "Royal Navy") {
-            nextState.british_cards[2] = 0;
-            if (state.attacker === node) nextState.clear_battle();
-            const isFortDefending = Boolean(state.forts[coast]);
-            if (isFortDefending) {
-              resolveBattles(nextState, node, coast, -state.card_strength);
-            } else {
-              const isFresh = state.fresh_armies[node];
-              nextState.set_node_empty(node);
-              if (isFresh) {
-                nextState.set_node_fresh_army(coast);
-              } else {
-                nextState.set_node_tired_army(coast);
-              }
-            }
+      if (name === "Sea Trade") {
+        nextState.mysore_cards[5] = 0;
+        if (state.defender === coast) {
+          nextState.set_node_tired_army(coast);
+          nextState.set_node_empty(state.attacker);
+          nextState.clear_battle();
+        } else {
+          nextState.set_node_empty(coast);
+        }
+        nextState.set_node_fort(node);
+      } else if (name === "Royal Navy") {
+        nextState.british_cards[2] = 0;
+        if (state.attacker === node) nextState.clear_battle();
+        const isFortDefending = Boolean(state.forts[coast]);
+        if (isFortDefending) {
+          resolveBattles(nextState, node, coast, -state.card_strength);
+        } else {
+          const isFresh = state.fresh_armies[node];
+          nextState.set_node_empty(node);
+          if (isFresh) {
+            nextState.set_node_fresh_army(coast);
+          } else {
+            nextState.set_node_tired_army(coast);
           }
         }
-        break;
       }
-      offset += size;
     }
 
     // End of Phase 2 check
@@ -797,7 +799,23 @@
     };
   }
 
+  function checkRepetition(history, currentState = null) {
+    const counts = {};
+    for (const s of history) {
+      const k = typeof s === 'string' ? s : s.toString();
+      counts[k] = (counts[k] || 0) + 1;
+      if (counts[k] >= 3) return true;
+    }
+    if (currentState) {
+      const k = typeof currentState === 'string' ? currentState : currentState.toString();
+      if ((counts[k] || 0) + 1 >= 3) return true;
+    }
+    return false;
+  }
+
   const TDEngine = {
+    ACTION_DISPATCH,
+    checkRepetition,
     getLegalMoves,
     legalMovesDict,
     calculateBattleStrength,

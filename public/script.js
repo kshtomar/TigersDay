@@ -1926,11 +1926,11 @@ let isViewingHistory = false;
 let browsingHistoryIndex = -1;
 let liveGameState = null;
 
-const BRITISH_CARD_NAMES = [
-  "Iron Rockets", "Wall Breach", "Sepoy Mutiny", "French Help", "Maratha Alliance", "Chitaldoorg Defection"
-];
 const MYSORE_CARD_NAMES = [
-  "Royal Navy", "Highlanders", "Force March", "Sea Trade", "Diplomatic Mission", "Cavalry Raid"
+  "Iron Rockets", "Sepoy Mutiny", "French Alliance", "Monsoon", "Cavalry Raid", "Sea Trade"
+];
+const BRITISH_CARD_NAMES = [
+  "Wall Breach", "Highlanders", "Royal Navy", "Divide and Rule", "Force March", "Princely States"
 ];
 
 function isTurnBlockedForLocalPlayer() {

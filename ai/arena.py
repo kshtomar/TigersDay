@@ -66,8 +66,8 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
         
         # Both models evaluate with variable openings
         temperature = 1.0 if move_num < 6 else 0.0
-        move_m, _ = mcts_mysore.find_move(state, temperature)
-        move_b, _ = mcts_british.find_move(state, temperature)
+        move_m, _ = mcts_mysore.find_move(state, temperature=temperature)
+        move_b, _ = mcts_british.find_move(state, temperature=temperature)
         
         assert mcts_mysore.root is not None
         assert mcts_british.root is not None

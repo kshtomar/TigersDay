@@ -129,10 +129,12 @@
       }
 
       this.conn = connection;
+      this._stopHeartbeat();
 
       this.conn.on('open', () => {
         console.log(`🤝 P2P Connection established! (Host: ${this.isHost})`);
         this._updateStatus('connected');
+        this._startHeartbeat();
 
         if (this.isHost) {
           // Host sends initial handshaking configuration
@@ -141,6 +143,9 @@
             hostSide: this.mySide,
             guestSide: this.opponentSide
           });
+        } else {
+          // Guest requests state sync upon reconnect
+          this.send({ type: 'REQUEST_STATE_SYNC' });
         }
       });
 
@@ -150,20 +155,66 @@
 
       this.conn.on('close', () => {
         console.log("⚠️ Peer connection closed.");
+        this._stopHeartbeat();
         this._updateStatus(this.isHost ? 'hosting' : 'offline');
-        if (this.onError) this.onError("Opponent disconnected.");
+        if (this.onError) this.onError("Opponent temporarily disconnected.");
+
+        // Resilience: Guest attempts auto-reconnect after brief disconnect
+        if (!this.isHost && this.roomCode && this.status !== 'connected') {
+          console.log("🔄 Attempting P2P auto-reconnect to room:", this.roomCode);
+          setTimeout(() => {
+            if (this.status !== 'connected' && this.roomCode) {
+              this.joinGame(this.roomCode).catch(e => console.warn("Reconnect attempt failed:", e));
+            }
+          }, 3000);
+        }
       });
 
       this.conn.on('error', (err) => {
         console.warn("Connection error:", err);
+        this._stopHeartbeat();
         if (this.onError) this.onError(err.message || String(err));
       });
+    }
+
+    _startHeartbeat() {
+      this._stopHeartbeat();
+      this.lastPongTime = Date.now();
+      this._heartbeatTimer = setInterval(() => {
+        if (this.conn && this.conn.open) {
+          this.send({ type: 'PING', timestamp: Date.now() });
+          if (Date.now() - this.lastPongTime > 20000) {
+            console.warn("⚠️ Heartbeat timeout: No PONG received in 20s");
+          }
+        }
+      }, 5000);
+    }
+
+    _stopHeartbeat() {
+      if (this._heartbeatTimer) {
+        clearInterval(this._heartbeatTimer);
+        this._heartbeatTimer = null;
+      }
     }
 
     _handleIncomingData(data) {
       if (!data || !data.type) return;
 
       switch (data.type) {
+        case 'PING':
+          this.send({ type: 'PONG' });
+          break;
+
+        case 'PONG':
+          this.lastPongTime = Date.now();
+          break;
+
+        case 'REQUEST_STATE_SYNC':
+          if (this.getCurrentStateStr) {
+            this.send({ type: 'SYNC_STATE', stateStr: this.getCurrentStateStr() });
+          }
+          break;
+
         case 'HANDSHAKE':
           this.mySide = data.guestSide;
           this.opponentSide = data.hostSide;

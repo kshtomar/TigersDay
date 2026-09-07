@@ -42,7 +42,11 @@ def train(
 
         games_played = 0
         
-        model.share_memory() 
+        # Maintain CPU copy for worker processes to prevent CUDA multiprocessing IPC faults
+        cpu_model = AlphaTiger(use_factorization=getattr(model, 'use_factorization', True)).to("cpu")
+        cpu_model.load_state_dict(model.state_dict())
+        cpu_model.eval()
+        cpu_model.share_memory()
         num_workers = 8
         
         ctx = mp.get_context("spawn")
@@ -51,11 +55,12 @@ def train(
             batch_size = min(num_workers, stage.iterations - games_played)
             
             model.eval()
+            cpu_model.load_state_dict(model.state_dict())
             
             with ProcessPoolExecutor(max_workers=batch_size, mp_context=ctx) as executor:
                 futures = []
                 for _ in range(batch_size):
-                    mcts_worker = MCTS(model)
+                    mcts_worker = MCTS(cpu_model)
                     futures.append(
                         executor.submit(
                             self_play_game,

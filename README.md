@@ -26,24 +26,32 @@ The project is an end-to-end full-stack artificial intelligence and game-enginee
    - [Algebraic Replay Notation](#algebraic-replay-notation)
 3. [AI & Neural Network Architecture](#-ai--neural-network-architecture)
    - [148-Bit Binary State Representation](#148-bit-binary-state-representation)
-   - [953-Dimensional Action Space](#953-dimensional-action-space)
+   - [959-Dimensional Action Space](#959-dimensional-action-space)
    - [Factorized Policy Head Architecture](#factorized-policy-head-architecture)
    - [Monte Carlo Tree Search (MCTS) Engine](#monte-carlo-tree-search-mcts-engine)
    - [Client-Side ONNX WebAssembly Inference](#client-side-onnx-webassembly-inference)
-4. [Real-Time P2P WebRTC Multiplayer](#-real-time-p2p-webrtc-multiplayer)
-5. [Repository Directory Structure](#-repository-directory-structure)
-6. [Quickstart & Execution Guide](#-quickstart--execution-guide)
+4. [Modernized Frontend & Visual Experience](#-modernized-frontend--visual-experience)
+   - [Zero-Scroll Responsive Layout](#zero-scroll-responsive-layout)
+   - [10 Bespoke Historical Themes](#10-bespoke-historical-themes)
+   - [5 Modular Board Unit Styles](#5-modular-board-unit-styles)
+   - [Interactive Battle Cards & Wax Seal Badges](#interactive-battle-cards--wax-seal-badges)
+   - [Chess.com-Style Live Moves Notation & History Stepper](#chesscom-style-live-moves-notation--history-stepper)
+   - [Zero-Scroll Command Settings Modal](#zero-scroll-command-settings-modal)
+   - [Animated Siege Clash & Net Strength Tag](#animated-siege-clash--net-strength-tag)
+5. [Real-Time P2P WebRTC Multiplayer](#-real-time-p2p-webrtc-multiplayer)
+6. [Repository Directory Structure](#-repository-directory-structure)
+7. [Quickstart & Execution Guide](#-quickstart--execution-guide)
    - [Option A: Pure Client-Side Static Hosting (Zero Server)](#option-a-pure-client-side-static-hosting-zero-server)
    - [Option B: Local FastAPI + AI Server](#option-b-local-fastapi--ai-server)
    - [Option C: Serverless Deployment (Vercel)](#option-c-serverless-deployment-vercel)
-7. [AI Training, Arena & Research Workflows](#-ai-training-arena--research-workflows)
+8. [AI Training, Arena & Research Workflows](#-ai-training-arena--research-workflows)
    - [Single-Thread Curriculum Training](#1-single-thread-curriculum-training)
    - [Multi-Process Parallel Training](#2-multi-process-parallel-training)
    - [Tournament Arena & Model Evaluation](#3-tournament-arena--model-evaluation)
    - [Exporting PyTorch Checkpoints to ONNX](#4-exporting-pytorch-checkpoints-to-onnx)
    - [Visualizing Model Weights (Heatmaps)](#5-visualizing-model-weights-heatmaps)
    - [Opening Book & Replay Analysis](#6-opening-book--replay-analysis)
-8. [API Reference (FastAPI Backend)](#-api-reference-fastapi-backend)
+9. [API Reference (FastAPI Backend)](#-api-reference-fastapi-backend)
 
 ---
 
@@ -228,14 +236,14 @@ The complete state of the game is compressed into a compact **148-bit boolean ve
 
 ---
 
-### 953-Dimensional Action Space
-All possible actions across every phase map into a unified **953-element action vector** (`MOVE_VECTOR_LENGTH = 953`):
+### 959-Dimensional Action Space
+All possible actions across every phase map into a unified **959-element action vector** (`MOVE_VECTOR_LENGTH = 959`):
 
 | Phase | Action Name | Dimension | Target Type |
 | :--- | :--- | :---: | :--- |
-| **Phase 0: British Move** (109) | Edge Movement | 84 | Edge (`src -> dest`) |
-| | Tire in Place | 25 | Territory node |
-| **Phase 1: Mysore Card** (345) | Sepoy Mutiny | 25 | Territory node |
+| **Phase 0: British Move** (87) | Edge Movement | 86 | Edge (`src -> dest`) |
+| | Rest | 1 | Global blank action |
+| **Phase 1: Mysore Card** (351) | Sepoy Mutiny | 25 | Territory node |
 | | French Alliance | 25 | Territory node |
 | | Monsoon | 25 | Territory node |
 | | Cavalry Raid | 1 | Global blank action |
@@ -245,10 +253,10 @@ All possible actions across every phase map into a unified **953-element action 
 | | Draw Sepoy Mutiny | 6 | Card trade |
 | | Draw French Alliance | 6 | Card trade |
 | | Pass Mysore | 1 | Blank pass action |
-| **Phase 2: British Card** (499) | Highlanders | 25 | Coastal territory node |
+| **Phase 2: British Card** (495) | Highlanders | 25 | Coastal territory node |
 | | Royal Navy | 250 | Origin node $\times$ Coastal destination ($25 \times 10$) |
-| | Divide and Rule | 84 | Edge (`fort -> empty`) |
-| | Force March | 84 | Edge (`tired -> dest`) |
+| | Divide and Rule | 86 | Edge (`fort -> empty`) |
+| | Force March | 86 | Edge (`tired -> dest`) |
 | | Princely States | 25 | Key City territory node |
 | | British Power | 6 | Card committed in combat |
 | | Draw Wall Breach | 6 | Card trade |
@@ -259,7 +267,7 @@ All possible actions across every phase map into a unified **953-element action 
 ---
 
 ### Factorized Policy Head Architecture
-Standard neural policy heads output an unconstrained dense vector over 953 logits. However, large coastal actions (*Royal Navy* and *Sea Trade*) account for over 500 logits ($250 + 250$), which can lead to overparameterization and slow convergence.
+Standard neural policy heads output an unconstrained dense vector over 959 logits. However, large coastal actions (*Royal Navy* and *Sea Trade*) account for over 500 logits ($250 + 250$), which can lead to overparameterization and slow convergence.
 
 `AlphaTiger` implements **Action Space Factorization** in `ai/neural.py`:
 * Instead of outputting 250 monolithic logits for *Royal Navy*, the policy network outputs 25 source logits and 25 destination logits.
@@ -284,7 +292,7 @@ Linear(256 -> 64) + ReLU   Linear(256 -> 256) + ReLU
 Linear(64 -> 1) + Tanh     Linear(256 -> Factorized Size)
      │                         │
 Scalar Value [-1.0, +1.0]  Decompose & Broadcast Factorized RN/ST Logits
-                           Full 953-Dimensional Policy Logits
+                           Full 959-Dimensional Policy Logits
 ```
 
 ---
@@ -307,6 +315,53 @@ The MCTS algorithm (`ai/mcts.py` in Python and `public/js/mcts.js` in JavaScript
   * Zero server roundtrips and zero latency.
   * A real-time **Stockfish-style Evaluation Bar** showing who has the tactical advantage.
   * **Top Engine Lines (Principal Variations)** displayed dynamically in the UI.
+
+---
+
+## 🎨 Modernized Frontend & Visual Experience
+
+The frontend web application (`public/`) delivers a modern, high-contrast, zero-scroll wargaming interface that combines rich historic aesthetics with fluid real-time interactivity:
+
+### Zero-Scroll Responsive Layout
+* **Unified Single-Screen Viewport:** The layout dynamically auto-fits standard laptops, desktop monitors, and tablets without requiring vertical scrolling, keeping the map, card decks, algebraic notation feed, and match status perpetually in view.
+* **Centered Heraldic Standards:** Both Mysore (`🐅 MYSORE` in emerald green) and the British (`🦁 BRITISH` in imperial crimson) feature center-aligned faction banners with diagonal emblem accents in their respective card columns.
+
+### 10 Bespoke Historical Themes
+Players can select from 10 distinct, contrasting visual palettes directly from the Settings modal:
+1. **Deccan Imperial (Default):** Warm historic parchment, antique gold (`#e5a93c`), and brass accents.
+2. **Midnight Tiger:** Stealth dark mode with deep obsidian (`#070d18`) and glowing neon amber (`#f59e0b`).
+3. **Royal Velvet:** Regal navy sapphire (`#0c1938`) with rich gold leaf (`#eab308`).
+4. **Emerald Sultan:** Mysorean court aesthetic with deep jade (`#052620`), forest emerald (`#10b981`), and polished brass.
+5. **Monsoon Mist:** Storm slate (`#182d38`), oceanic dark teal, and vibrant coastal paths (`#38bdf8`).
+6. **Desert Rajput:** Sandstone (`#e4b878`), terracotta red (`#9a3412`), and azure seas (`#0284c7`).
+7. **Cyber War-Room:** Tactical HUD aesthetic with void black (`#020617`), slate panels, and cyan neon edges (`#06b6d4`).
+8. **Sepia Archive:** 18th-century copperplate engraving on warm aged cotton paper (`#f5eee0`) with umber ink (`#4a3820`).
+9. **Crimson Crown:** British imperial regimental ruby (`#f43f5e`), dark charcoal velvet, and silver highlights.
+10. **Ivory & Onyx:** Minimalist luxury monochrome with high-contrast pearl whites, deep blacks, and gold trim.
+
+### 5 Modular Board Unit Styles
+Players can customize how armies, forts, and strongholds render on the map:
+1. **Tactical Tokens (Default):** 3D-embossed circular military medallions, stone citadels, and geometric star forts.
+2. **Classic Squares:** Original wargame geometric red and green squares and diamonds with diagonal tire slashes.
+3. **Regimental Crests:** Heraldic battle shields, crossed steel swords, and fortress tower battlements.
+4. **Minimalist Counters:** Sleek circular counters with clean typographic star (`★`) and crescent (`☽`) faction glyphs.
+5. **Antique Miniatures:** Sculpted 3D pewter and bronze relief figurines with metallic edge highlights.
+
+### Interactive Battle Cards & Wax Seal Badges
+* **Tactile Parchment Cards:** Styled with diagonal faction cuts matching the column headers and clean title labels.
+* **Direct Wax Seal Action:** Tactile wax seals (+1, +2, +3) can be clicked directly during combat to commit battle strength without needing secondary menus.
+
+### Chess.com-Style Live Moves Notation & History Stepper
+* **Dedicated Moves Feed:** A dedicated right-hand panel recording every troop move, card operation, siege combat, and turn refresh in standard algebraic notation.
+* **Historical Stepper Controls:** Inspect prior moves step-by-step (`⏮ First`, `◀ Prev`, `Next ▶`, `⏭ Live`) with an automatic read-only review banner, allowing players to review opening sequences and jump back to the live game seamlessly.
+
+### Zero-Scroll Command Settings Modal
+* **2-Column Master Dashboard:** Replacing narrow side drawers with a centered modal dialog featuring a wide, zero-scroll layout.
+* **Complete Configuration at a Glance:** Directly adjust themes, board unit styles, match opponent mode (Pass & Play, WebAssembly AI, P2P Multiplayer, AI Spectator), Stockfish-style evaluation bar, MCTS simulation depth slider (250 – 1,000,000 rollouts), and binary state save/load strings.
+
+### Animated Siege Clash & Net Strength Tag
+* **Dynamic Combat Marker:** When a battle is triggered, an animated crossed-swords shield appears along the combat vector between the attacking army and defending fort.
+* **Live Net Strength Display:** Displays real-time net strength (`+N` in British red or `-N` in Mysore green) taking into account adjacent armies, adjacent forts, and committed card values.
 
 ---
 
@@ -356,9 +411,9 @@ TigersDay/
 │   │   ├── multiplayer.js           # PeerJS WebRTC peer-to-peer multiplayer manager
 │   │   └── state.js                 # JavaScript GameState & 148D vector port
 │   ├── alphatiger.onnx              # Static WebAssembly neural network weights
-│   ├── index.html                   # Historic parchment UI, interactive SVG map, drawers
-│   ├── script.js                    # UI coordinator, point-and-click handler, eval bar
-│   └── style.css                    # Responsive CSS design system (Deccan parchment aesthetic)
+│   ├── index.html                   # Zero-scroll responsive UI, interactive SVG map, settings modal
+│   ├── script.js                    # UI coordinator, move history stepper, theme engine, unit styles
+│   └── style.css                    # Zero-scroll responsive CSS design system (10 bespoke themes)
 │
 ├── api/                             # Serverless API Entrypoint
 │   └── index.py                     # FastAPI backend tuned for Vercel serverless execution

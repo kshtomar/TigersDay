@@ -32,6 +32,9 @@ class GameState:
         self.mluck = 0
         self.mysore_cards[:] = True
         self.british_cards[:] = True
+        self.turn = 1
+        self.to_move = 0
+        self.card_strength = 0
 
     def default_setup(self):
         self.set_node_fresh_army(NODE_TO_IDX["Bombay"])
@@ -198,14 +201,11 @@ class GameState:
             new_state.vector = np.array([bool(int(b)) for b in bit_str], dtype=bool)
         except ValueError:
             raise ValueError("Invalid input! Please provide a string consisting purely of 1s and 0s.")
-        try:
-            for i in range(12, 136):
-                if all(new_state.vector[i : i+3]):
-                    t_idx = (i - 12) // 3
-                    name = INDEX_MAP[t_idx] if t_idx in INDEX_MAP else f"Bit {i}"
-                    raise ValueError(f"Invalid Binary: Triple consecutive 1s detected starting at {name}")
-        except ValueError:
-            raise ValueError(f"Invalid Binary: Triple consecutive 1s detected starting at {name}")
+        for node_idx in range(NODES):
+            start = self.IDX_NODES_OFFSET + node_idx * 3
+            if np.sum(new_state.vector[start : start + 3]) > 1:
+                name = INDEX_MAP[node_idx] if node_idx in INDEX_MAP else f"Territory {node_idx}"
+                raise ValueError(f"Invalid Binary: Multiple units assigned to territory {name}")
 
         new_state._attacker = int(np.argmax(new_state.vector[new_state.IDX_ATTACKER])) if new_state.vector[new_state.IDX_ATTACKER].any() else NO_UNIT
         new_state._defender = int(np.argmax(new_state.vector[new_state.IDX_DEFENDER])) if new_state.vector[new_state.IDX_DEFENDER].any() else NO_UNIT

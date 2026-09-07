@@ -156,6 +156,23 @@
       this.dalpha = options.dalpha || 0.5;
       this.depsilon = options.depsilon || 0.25;
       this.root = null;
+      this.openingBook = options.openingBook || null;
+      this.useOpeningBook = options.useOpeningBook !== false;
+    }
+
+    async loadOpeningBook(url = './opening_book.json') {
+      try {
+        if (typeof fetch !== 'undefined') {
+          const resp = await fetch(url);
+          if (resp.ok) {
+            this.openingBook = await resp.json();
+            return this.openingBook;
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load opening book:", err);
+      }
+      return null;
     }
 
     sampleGamma(shape, scale = 1.0) {
@@ -337,6 +354,19 @@
     }
 
     async findMove(state, temperature = 0.0) {
+      if (this.useOpeningBook && this.openingBook) {
+        const stateKey = state.toString();
+        const entry = this.openingBook[stateKey];
+        if (entry && entry.move !== undefined) {
+          const legalMask = getLegalMoves(state);
+          if (legalMask[entry.move]) {
+            const counts = new Float32Array(MOVE_VECTOR_LENGTH);
+            counts[entry.move] = 1;
+            return { bestMove: entry.move, counts, isBook: true, notation: entry.notation };
+          }
+        }
+      }
+
       const root = await this.search(state, true);
       const counts = new Float32Array(MOVE_VECTOR_LENGTH);
 

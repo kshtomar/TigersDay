@@ -110,7 +110,7 @@
 
   let totalMoves = 0;
   for (const [, size] of MOVE_SPACE) totalMoves += size;
-  const MOVE_VECTOR_LENGTH = totalMoves; // 953
+  const MOVE_VECTOR_LENGTH = totalMoves; // 959
 
   const CARDS_ABBREV = {
     "Iron Rockets": "IR", "Sepoy Mutiny": "SM", "French Alliance": "FA",

@@ -1,3 +1,4 @@
+import os
 import weakref
 import numpy as np
 import random
@@ -61,23 +62,47 @@ class Node:
                 self.children[i] = Node(outcome, self, i, prior)
 
 class MCTS:
-    def __init__(self, model, ipuct = 800, dalpha = 0.5, depsilon = 0.25):
+    def __init__(self, model, simulations = DEFAULT_SIMS, ipuct = 800, dalpha = 0.5, depsilon = 0.25, opening_book = None):
         self.model = model
+        self.simulations = simulations
         self.ipuct = ipuct
         self.dalpha = dalpha
         self.depsilon = depsilon
         self.root = None
+        
+        if opening_book is not None:
+            self.opening_book = opening_book
+        else:
+            self.opening_book = None
+            for book_path in ["public/opening_book.json", "../public/opening_book.json"]:
+                if os.path.exists(book_path):
+                    try:
+                        import json
+                        with open(book_path, "r", encoding="utf-8") as f:
+                            self.opening_book = json.load(f)
+                        break
+                    except Exception:
+                        pass
 
-    def search(self, root_state, simulations):
+    def search(self, root_state, simulations = None, stop = False):
         # only call search on decision nodes
+        sims = self.simulations if simulations is None else simulations
 
         if self.root is None:
             self.root = Node(root_state.copy())
 
         # lazy generate dirichlet root noise
         noise_dict = None
+        warmup = sims // 5 if stop else sims
+        stop_threshold = 0.9
 
-        for sim in range(simulations):
+        for sim in range(sims):
+            # Early stopping if a single move dominates
+            if stop and sim > warmup and len(self.root.children) > 0:
+                max_visits = max(child.visit_count for child in self.root.children.values())
+                if self.root.visit_count > 0 and (max_visits / self.root.visit_count) > stop_threshold:
+                    return self.root
+
             node = self.root
 
             while node.is_expanded:
@@ -170,8 +195,18 @@ class MCTS:
         self.root = current_node
         self.root.parent = None
 
-    def find_move(self, state, simulations, temperature = 0.0):
-        root = self.search(state, simulations)
+    def find_move(self, state, simulations = None, temperature = 0.0, stop = True, use_book = True):
+        if use_book and self.opening_book:
+            key = str(state)
+            if key in self.opening_book:
+                book_move = self.opening_book[key].get("move")
+                legal_mask = Engine.get_legal_moves(state)
+                if book_move is not None and legal_mask[book_move]:
+                    policy = np.zeros(MOVE_VECTOR_LENGTH, dtype=np.float32)
+                    policy[book_move] = 1.0
+                    return int(book_move), policy
+
+        root = self.search(state, simulations, stop = stop)
         counts = np.zeros(MOVE_VECTOR_LENGTH, dtype=np.float32)
         for m, child in root.children.items():
             counts[m] = child.visit_count

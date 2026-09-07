@@ -1,0 +1,19 @@
+{
+  "name": "The Tiger's Day – Anglo-Mysore Wars",
+  "short_name": "Tiger's Day",
+  "description": "Historical wargame & AlphaZero reinforcement learning neural engine simulating the Anglo-Mysore Wars (1767–1799).",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121820",
+  "theme_color": "#d4a359",
+  "categories": ["games", "strategy", "education"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐅</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
