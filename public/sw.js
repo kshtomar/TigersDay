@@ -11,6 +11,7 @@ const ASSETS_TO_CACHE = [
   './script.js',
   './manifest.json',
   './js/state.js',
+  './js/ui/themes.js',
   './js/engine.js',
   './js/mcts.js',
   './js/multiplayer.js',
