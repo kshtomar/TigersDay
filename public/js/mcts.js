@@ -11,7 +11,12 @@
     GAME_VECTOR_LENGTH,
     INDEX_MAP,
     CARDS_ABBREV,
-    NODES_ABBREV
+    NODES_ABBREV,
+    EDGE_SOURCES,
+    EDGE_DESTS,
+    COASTAL_INDICES,
+    MOVE_SPACE,
+    NO_UNIT
   } = global.TDConstants || require('./state.js').TDConstants;
 
   const {
@@ -513,46 +518,186 @@
       return { bestMove: chosenMove, counts };
     }
 
+    decodeMoveGeometry(state, move) {
+      if (!MOVE_SPACE) return { type: "Unknown", fromNode: null, toNode: null, isAttack: false };
+      let offset = 0;
+      for (const [name, size, moveType] of MOVE_SPACE) {
+        if (move >= offset && move < offset + size) {
+          const idx = move - offset;
+          if (moveType === "edge") {
+            const src = EDGE_SOURCES[idx];
+            const dest = EDGE_DESTS[idx];
+            return {
+              type: name,
+              fromNode: src,
+              toNode: dest,
+              isAttack: Boolean(state && state.forts && state.forts[dest])
+            };
+          } else if (moveType === "node") {
+            return {
+              type: name,
+              fromNode: idx,
+              toNode: idx,
+              isAttack: false
+            };
+          } else if (moveType === "coastal") {
+            const numCoasts = COASTAL_INDICES.length;
+            const nodeIdx = Math.floor(idx / numCoasts);
+            const coastIdx = COASTAL_INDICES[idx % numCoasts];
+            if (name === "Royal Navy") {
+              return {
+                type: name,
+                fromNode: nodeIdx,
+                toNode: coastIdx,
+                isAttack: Boolean(state && state.forts && state.forts[coastIdx])
+              };
+            } else {
+              return {
+                type: name,
+                fromNode: coastIdx,
+                toNode: nodeIdx,
+                isAttack: false
+              };
+            }
+          } else {
+            const battleTerritory = (state && state.is_battle && state.defender !== undefined && state.defender !== NO_UNIT)
+              ? state.defender
+              : null;
+            return {
+              type: name,
+              fromNode: battleTerritory,
+              toNode: battleTerritory,
+              isAttack: false
+            };
+          }
+        }
+        offset += size;
+      }
+      return { type: "Unknown", fromNode: null, toNode: null, isAttack: false };
+    }
+
     getTopCandidateLines(limit = 3) {
       if (!this.root || this.root.children.size === 0) return [];
 
       const sortedChildren = Array.from(this.root.children.entries())
-        .sort((a, b) => b[1].visit_count - a[1].visit_count);
+        .sort((a, b) => {
+          if (b[1].visit_count !== a[1].visit_count) {
+            return b[1].visit_count - a[1].visit_count;
+          }
+          return b[1].prior - a[1].prior;
+        });
 
       const topLines = [];
       const rootState = this.root.state;
+      const effectiveLimit = Math.max(1, Math.min(Number(limit) || 3, sortedChildren.length));
 
-      for (let i = 0; i < Math.min(limit, sortedChildren.length); i++) {
+      for (let i = 0; i < effectiveLimit; i++) {
         const [move, node] = sortedChildren[i];
-        const pvLine = [notate(rootState, move)];
+        const firstNotation = notate(rootState, move);
+        const pvLine = [firstNotation];
+        const geom = this.decodeMoveGeometry(rootState, move);
 
-        let currState = getNextState(rootState, move);
+        let currState = (node && node.state) ? node.state : getNextState(rootState, move);
         let currNode = node;
+        let reachedLuck = false;
+        let luckType = null;
 
-        while (currState && !currState.is_luck && currNode.children.size > 0 && pvLine.length < 6) {
-          let bestChildMove = null;
-          let bestChildNode = null;
-          let maxVisits = -1;
+        // Check if move 1 immediately reached a luck state
+        if (currState && currState.is_luck) {
+          reachedLuck = true;
+          if (currState.is_battle) {
+            const targetName = (currState.defender !== undefined && INDEX_MAP[currState.defender]) ? INDEX_MAP[currState.defender] : "Fort";
+            luckType = `Battle: ${targetName}`;
+            pvLine.push(`[🎲 Battle: ${targetName}]`);
+          } else {
+            luckType = "Luck Roll";
+            pvLine.push("[🎲 Luck Roll]");
+          }
+        } else {
+          // Project forward step-by-step until luck state, terminal state, or max depth (10 plies)
+          while (currState && !currState.is_luck && pvLine.length < 10) {
+            const winner = getStateWinner(currState);
+            if (winner !== 0) {
+              pvLine.push(winner === 1 ? "[👑 British Victory]" : "[🐅 Mysore Victory]");
+              break;
+            }
 
-          for (const [m, c] of currNode.children.entries()) {
-            if (c.visit_count > maxVisits) {
-              maxVisits = c.visit_count;
-              bestChildMove = m;
-              bestChildNode = c;
+            let bestChildMove = null;
+            let bestChildNode = null;
+            let maxVisits = -1;
+
+            if (currNode && currNode.children && currNode.children.size > 0) {
+              for (const [m, c] of currNode.children.entries()) {
+                if (c.visit_count > maxVisits) {
+                  maxVisits = c.visit_count;
+                  bestChildMove = m;
+                  bestChildNode = c;
+                }
+              }
+            }
+
+            // If frontier reached in MCTS tree, check legal moves for single-response or pass
+            if (bestChildMove === null) {
+              const legalMask = getLegalMoves(currState);
+              let firstLegal = null;
+              let legalCount = 0;
+              for (let m = 0; m < MOVE_VECTOR_LENGTH; m++) {
+                if (legalMask[m]) {
+                  if (firstLegal === null) firstLegal = m;
+                  legalCount++;
+                }
+              }
+              if (legalCount === 1) {
+                bestChildMove = firstLegal;
+              } else {
+                break;
+              }
+            }
+
+            if (bestChildMove === null) break;
+
+            pvLine.push(notate(currState, bestChildMove));
+            currState = (bestChildNode && bestChildNode.state) ? bestChildNode.state : getNextState(currState, bestChildMove);
+            currNode = bestChildNode;
+
+            if (currState && currState.is_luck) {
+              reachedLuck = true;
+              if (currState.is_battle) {
+                const targetName = (currState.defender !== undefined && INDEX_MAP[currState.defender]) ? INDEX_MAP[currState.defender] : "Fort";
+                luckType = `Battle: ${targetName}`;
+                pvLine.push(`[🎲 Battle: ${targetName}]`);
+              } else {
+                luckType = "Luck Roll";
+                pvLine.push("[🎲 Luck Roll]");
+              }
+              break;
             }
           }
-
-          if (bestChildMove === null) break;
-          pvLine.push(notate(currState, bestChildMove));
-          currState = getNextState(currState, bestChildMove);
-          currNode = bestChildNode;
         }
 
+        // Winrate calculation based on perspective
+        const rawEval = Number(node.eval.toFixed(2));
+        const winratePct = rootState.to_move === 1
+          ? Math.round((1 - rawEval) / 2 * 100)
+          : Math.round((rawEval + 1) / 2 * 100);
+
         topLines.push({
+          rank: i + 1,
           moveIdx: move,
+          firstMoveNotation: firstNotation,
           moveName: pvLine.join(' '),
-          eval: Number(node.eval.toFixed(2)),
-          visits: node.visit_count
+          lineNotation: pvLine.join(' '),
+          eval: rawEval,
+          visits: node.visit_count,
+          winrate: `${winratePct}%`,
+          fromNode: geom.fromNode,
+          toNode: geom.toNode,
+          fromName: geom.fromNode !== null && INDEX_MAP ? INDEX_MAP[geom.fromNode] : null,
+          toName: geom.toNode !== null && INDEX_MAP ? INDEX_MAP[geom.toNode] : null,
+          actionType: geom.type,
+          isAttack: geom.isAttack,
+          reachedLuck: reachedLuck,
+          luckType: luckType
         });
       }
 
@@ -563,7 +708,8 @@
   const TDMCTS = {
     MCTSNode,
     ONNXModelWrapper,
-    MCTS
+    MCTS,
+    decodeMoveGeometry: (state, move) => (new MCTS(null)).decodeMoveGeometry(state, move)
   };
 
   if (typeof module !== 'undefined' && module.exports) {

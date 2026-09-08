@@ -170,6 +170,8 @@
             <span id="eval-badge-container"></span>
             <span id="eval-winrate-label" class="eval-winrate-label">Even Match</span>
         </div>
+        <!-- AI Top Candidate Moves & Notation Lines -->
+        <div id="engine-lines-container" class="engine-lines-container"></div>
     </div>
 </div>
 
@@ -612,6 +614,27 @@
                         </label>
                         <span class="setting-desc">Visualizes 25-node territory control & threat projection.</span>
                     </div>
+
+                    <div style="margin-top: 10px;">
+                        <label class="setting-label" for="top-k-candidates-select">TOP CANDIDATE MOVES (K)</label>
+                        <select id="top-k-candidates-select" class="mode-select" onchange="handleTopKCandidatesChange(this.value)">
+                            <option value="1">Top 1 Move (Solo Best Line)</option>
+                            <option value="2">Top 2 Moves</option>
+                            <option value="3" selected>Top 3 Moves (Default)</option>
+                            <option value="4">Top 4 Moves</option>
+                            <option value="5">Top 5 Moves</option>
+                        </select>
+                        <span class="setting-desc">Number of principal variation candidate lines to calculate and display.</span>
+                    </div>
+
+                    <div style="margin-top: 8px;">
+                        <label class="toggle-control">
+                            <span class="toggle-label">Visual Board Tactical Arrows</span>
+                            <input type="checkbox" id="show-candidate-arrows-checkbox" checked onchange="handleShowCandidateArrowsToggle(this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="setting-desc">Renders color-coded tactical arrows & rank badges for top-k moves on the map.</span>
+                    </div>
                 </div>
 
                 <hr class="settings-divider-compact">
@@ -741,6 +764,22 @@
                             <feMergeNode in="SourceGraphic"/>
                         </feMerge>
                     </filter>
+                    <!-- Markers for Top Candidate Tactical Arrows -->
+                    <marker id="ai-arrow-1" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
+                    </marker>
+                    <marker id="ai-arrow-2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
+                    </marker>
+                    <marker id="ai-arrow-3" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f43f5e" />
+                    </marker>
+                    <marker id="ai-arrow-4" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#10b981" />
+                    </marker>
+                    <marker id="ai-arrow-5" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#a855f7" />
+                    </marker>
                 </defs>
                 
                 <rect id="sea-bg" width="760" height="880" fill="url(#seaGrad)"/>
@@ -791,6 +830,9 @@
 
                 <!-- Battle Icon Layer (Always on top for prominent siege visibility) -->
                 <g id="battle-layer"></g>
+
+                <!-- AI Candidate Moves & Tactical Arrows Layer -->
+                <g id="candidate-moves-layer"></g>
             </svg>
         </div>
     </section>

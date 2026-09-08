@@ -676,9 +676,13 @@ let currentEvalLoopState = null;
 let settings = {
   showEval: false,
   showDebugMoves: false,
-  showInfluence: localStorage.getItem('tiger_day_show_influence') === 'true'
+  showInfluence: localStorage.getItem('tiger_day_show_influence') === 'true',
+  topKCandidates: parseInt(localStorage.getItem('tiger_top_k_candidates') || '3', 10),
+  showCandidateArrows: localStorage.getItem('tiger_show_candidate_arrows') !== 'false'
 };
 let lastEvalScore = null;
+let lastTopCandidateLines = [];
+const RANK_COLORS = ['#f59e0b', '#38bdf8', '#f43f5e', '#10b981', '#a855f7'];
 
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx');
@@ -1772,11 +1776,128 @@ function handleEvalToggle(enabled) {
     if (currentBitString) startProgressiveEval(currentBitString);
   } else {
     panel.classList.add('hidden');
+    clearCandidateArrows();
+    const linesContainer = document.getElementById('engine-lines-container');
+    if (linesContainer) linesContainer.innerHTML = '';
   }
   if (typeof adjustBoardDimensions === 'function') {
     setTimeout(adjustBoardDimensions, 10);
   }
 }
+
+function handleTopKCandidatesChange(val) {
+  settings.topKCandidates = parseInt(val, 10) || 3;
+  localStorage.setItem('tiger_top_k_candidates', settings.topKCandidates);
+  if (currentBitString && settings.showEval) {
+    startProgressiveEval(currentBitString);
+  }
+}
+window.handleTopKCandidatesChange = handleTopKCandidatesChange;
+
+function handleShowCandidateArrowsToggle(checked) {
+  settings.showCandidateArrows = Boolean(checked);
+  localStorage.setItem('tiger_show_candidate_arrows', settings.showCandidateArrows ? 'true' : 'false');
+  if (settings.showCandidateArrows && lastTopCandidateLines.length > 0) {
+    renderCandidateArrows(lastTopCandidateLines);
+  } else {
+    clearCandidateArrows();
+  }
+}
+window.handleShowCandidateArrowsToggle = handleShowCandidateArrowsToggle;
+
+function clearCandidateArrows() {
+  const layer = document.getElementById('candidate-moves-layer');
+  if (layer) layer.innerHTML = '';
+}
+window.clearCandidateArrows = clearCandidateArrows;
+
+function highlightCandidateArrow(rank, active) {
+  const arrows = document.querySelectorAll(`.candidate-arrow-${rank}`);
+  const badges = document.querySelectorAll(`.candidate-rank-badge-${rank}`);
+  const rings = document.querySelectorAll(`.candidate-target-ring-${rank}`);
+
+  arrows.forEach(el => {
+    if (active) {
+      el.classList.add('highlighted');
+      el.setAttribute('stroke-width', '5');
+      el.setAttribute('opacity', '1.0');
+    } else {
+      el.classList.remove('highlighted');
+      el.setAttribute('stroke-width', rank === 1 ? '3.5' : '2.5');
+      el.setAttribute('opacity', '0.9');
+    }
+  });
+
+  badges.forEach(el => {
+    if (active) el.classList.add('pulse-scale');
+    else el.classList.remove('pulse-scale');
+  });
+
+  rings.forEach(el => {
+    if (active) el.classList.add('pulse-scale');
+    else el.classList.remove('pulse-scale');
+  });
+}
+window.highlightCandidateArrow = highlightCandidateArrow;
+
+function renderCandidateArrows(topLines) {
+  const layer = document.getElementById('candidate-moves-layer');
+  if (!layer) return;
+  layer.innerHTML = '';
+
+  if (!settings.showCandidateArrows || !settings.showEval || !topLines || topLines.length === 0) {
+    return;
+  }
+
+  topLines.forEach(item => {
+    const rank = item.rank || 1;
+    const color = RANK_COLORS[(rank - 1) % RANK_COLORS.length];
+
+    if (item.fromName && item.toName && item.fromName !== item.toName && NODES[item.fromName] && NODES[item.toName]) {
+      const a = NODES[item.fromName];
+      const b = NODES[item.toName];
+
+      // Stagger curves slightly by rank to prevent overlapping paths
+      const curveOffset = 0.15 + (rank - 1) * 0.08;
+      const { cx, cy } = splineControlPoint(a.x, a.y, b.x, b.y, curveOffset);
+
+      const path = document.createElementNS(SVG_NS, 'path');
+      path.setAttribute('d', `M ${a.x},${a.y} Q ${cx},${cy} ${b.x},${b.y}`);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', rank === 1 ? '3.5' : '2.5');
+      path.setAttribute('stroke-dasharray', item.isAttack ? 'none' : '6,3');
+      path.setAttribute('marker-end', `url(#ai-arrow-${rank})`);
+      path.setAttribute('class', `candidate-arrow candidate-arrow-${rank}`);
+      path.setAttribute('data-rank', rank);
+      path.setAttribute('opacity', '0.9');
+      layer.appendChild(path);
+
+      // Rank badge pill at curve apex
+      const badgeG = document.createElementNS(SVG_NS, 'g');
+      badgeG.setAttribute('class', `candidate-rank-badge candidate-rank-badge-${rank}`);
+      badgeG.setAttribute('transform', `translate(${cx}, ${cy})`);
+      badgeG.innerHTML = `
+        <circle r="9" fill="#18202a" stroke="${color}" stroke-width="2"/>
+        <text text-anchor="middle" dy="3.5" font-family="Cinzel, serif" font-weight="bold" font-size="10" fill="${color}">${rank}</text>
+      `;
+      layer.appendChild(badgeG);
+    } else if (item.toName && NODES[item.toName]) {
+      // In-place or territory action
+      const node = NODES[item.toName];
+      const ringG = document.createElementNS(SVG_NS, 'g');
+      ringG.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+      ringG.setAttribute('class', `candidate-target-ring candidate-target-ring-${rank}`);
+      ringG.innerHTML = `
+        <circle r="19" fill="none" stroke="${color}" stroke-width="2.2" stroke-dasharray="4,3"/>
+        <circle cx="15" cy="-15" r="8" fill="#18202a" stroke="${color}" stroke-width="1.8"/>
+        <text x="15" y="-12" text-anchor="middle" font-family="Cinzel, serif" font-weight="bold" font-size="9" fill="${color}">${rank}</text>
+      `;
+      layer.appendChild(ringG);
+    }
+  });
+}
+window.renderCandidateArrows = renderCandidateArrows;
 
 function setEvalBar(score, totalSims) {
   const bar = document.getElementById('eval-bar-mysore');
@@ -1802,7 +1923,12 @@ function setEvalBar(score, totalSims) {
 }
 
 async function startProgressiveEval(stateStr) {
-  if (!settings.showEval || !currentGameState) return;
+  if (!settings.showEval || !currentGameState) {
+    clearCandidateArrows();
+    const linesContainer = document.getElementById('engine-lines-container');
+    if (linesContainer) linesContainer.innerHTML = '';
+    return;
+  }
   currentEvalLoopState = stateStr;
 
   const linesContainer = document.getElementById('engine-lines-container');
@@ -1822,23 +1948,46 @@ async function startProgressiveEval(stateStr) {
     }
     lastEvalScore = rootNode.eval;
 
-    const topLines = mctsEngine.getTopCandidateLines(3);
-    if (linesContainer && topLines.length > 0) {
-      linesContainer.innerHTML = '';
-      topLines.forEach(item => {
-        const evalVal = item.eval;
-        let evalStr = evalVal.toFixed(2);
-        if (evalVal > 0) evalStr = '+' + evalStr;
-        const squareClass = evalVal > 0.05 ? 'british-favored' : (evalVal < -0.05 ? 'mysore-favored' : 'neutral');
+    const k = settings.topKCandidates || 3;
+    const topLines = mctsEngine.getTopCandidateLines(k);
+    lastTopCandidateLines = topLines;
 
-        const lineDiv = document.createElement('div');
-        lineDiv.className = 'engine-line';
-        lineDiv.innerHTML = `
-          <span class="engine-eval-square ${squareClass}">${evalStr}</span>
-          <span class="engine-move">${item.moveName} (${item.visits}v)</span>
-        `;
-        linesContainer.appendChild(lineDiv);
-      });
+    renderCandidateArrows(topLines);
+
+    if (linesContainer) {
+      linesContainer.innerHTML = '';
+      if (topLines.length > 0) {
+        topLines.forEach(item => {
+          const evalVal = item.eval;
+          let evalStr = evalVal.toFixed(2);
+          if (evalVal > 0) evalStr = '+' + evalStr;
+          const squareClass = evalVal > 0.05 ? 'british-favored' : (evalVal < -0.05 ? 'mysore-favored' : 'neutral');
+          const rankColor = RANK_COLORS[(item.rank - 1) % RANK_COLORS.length];
+
+          const lineDiv = document.createElement('div');
+          lineDiv.className = `engine-line engine-candidate-card rank-${item.rank}`;
+          lineDiv.setAttribute('data-rank', item.rank);
+          lineDiv.onmouseenter = () => highlightCandidateArrow(item.rank, true);
+          lineDiv.onmouseleave = () => highlightCandidateArrow(item.rank, false);
+
+          const luckBadge = item.reachedLuck ? `<span class="luck-badge-pill" title="Line calculates up to a probabilistic battle/luck state">🎲 Luck State</span>` : '';
+
+          lineDiv.innerHTML = `
+            <div class="candidate-meta-row">
+              <span class="candidate-rank-pill" style="border-color: ${rankColor}; color: ${rankColor}">#${item.rank}</span>
+              <span class="engine-eval-square ${squareClass}">${evalStr}</span>
+              <span class="candidate-winrate">${item.winrate || ''}</span>
+              <span class="candidate-visits">${item.visits} visits</span>
+              ${luckBadge}
+            </div>
+            <div class="candidate-line-text">
+              <strong class="first-move-code" style="color: ${rankColor}">${item.firstMoveNotation}</strong>
+              <span class="full-pv-sequence">${item.lineNotation}</span>
+            </div>
+          `;
+          linesContainer.appendChild(lineDiv);
+        });
+      }
     }
   } catch (err) {
     console.warn("Client eval error:", err);
@@ -3225,6 +3374,18 @@ function syncUIStateOnLoad() {
   const influenceToggle = document.getElementById('influence-toggle-checkbox');
   if (influenceToggle) {
     influenceToggle.checked = settings.showInfluence;
+  }
+
+  // 9. Sync Top-K Candidates Selector
+  const topKSelect = document.getElementById('top-k-candidates-select');
+  if (topKSelect) {
+    topKSelect.value = String(settings.topKCandidates || 3);
+  }
+
+  // 10. Sync Candidate Arrows Checkbox
+  const arrowsCheckbox = document.getElementById('show-candidate-arrows-checkbox');
+  if (arrowsCheckbox) {
+    arrowsCheckbox.checked = settings.showCandidateArrows !== false;
   }
 }
 
