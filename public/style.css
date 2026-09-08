@@ -3281,32 +3281,39 @@ svg#board {
    ────────────────────────────────────────────────────────────────────────── */
 @media (min-width: 1400px) {
     .app-header,
-    .eval-panel,
-    .game-container {
-        max-width: min(1920px, 96vw);
+    .eval-panel {
+        max-width: min(1920px, 98vw);
     }
     .game-container {
+        max-width: none;
+        width: 100%;
         display: flex;
         flex-direction: row;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        gap: 12px;
-        height: calc(100dvh - 52px);
-        max-height: calc(100dvh - 52px);
+        gap: 0 !important;
+        height: calc(100dvh - 44px);
+        max-height: calc(100dvh - 44px);
+        box-sizing: border-box;
     }
     .play-area {
-        flex: 1 1 auto;
-        height: 100%;
+        flex: 0 0 auto;
+        width: fit-content;
+        height: auto;
         max-height: 100%;
         min-height: 0;
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 0;
+        margin: 0;
+        padding: 0;
     }
     .game-middle-area {
-        flex: 1 1 auto;
-        height: 100%;
+        flex: 0 0 auto;
+        width: fit-content;
+        height: auto;
+        max-height: 100%;
         min-height: 0;
         min-width: 0;
         display: flex;
@@ -3314,37 +3321,56 @@ svg#board {
         align-items: center;
         justify-content: center;
         gap: 0;
+        margin: 0;
+        padding: 0;
     }
     .faction-column.mysore-column {
         flex: 0 0 270px;
         width: 270px;
-        height: 100%;
+        height: auto;
         max-height: 100%;
         display: flex !important;
         flex-direction: column;
-        gap: 6px;
+        gap: 0;
+        margin: 0;
+        padding: 0;
     }
     .faction-column.british-column {
         flex: 0 0 270px;
         width: 270px;
-        height: 100%;
+        height: auto;
         max-height: 100%;
         display: flex !important;
         flex-direction: column;
-        gap: 6px;
+        gap: 0;
+        margin: 0;
+        padding: 0;
     }
     .british-hand-container {
         display: flex !important;
+        height: 100%;
+        gap: 0;
     }
     .right-col-tabs-bar {
         display: none !important;
     }
     .notation-panel {
         flex: 0 0 290px;
-        height: 100%;
+        width: 290px;
+        height: auto;
         max-height: 100%;
         display: flex !important;
         flex-direction: column;
+        margin: 0;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-left: 1.5px solid var(--border) !important;
+        box-shadow: none !important;
+    }
+    .notation-panel-header {
+        height: 44px;
+        box-sizing: border-box;
+        border-top-left-radius: 0 !important;
     }
     .board-section {
         flex: 0 0 auto;
@@ -3357,6 +3383,7 @@ svg#board {
     .faction-column-header {
         height: 44px;
         padding: 5px 10px;
+        box-sizing: border-box;
     }
     .faction-emblem {
         font-size: 2rem;
@@ -3522,26 +3549,54 @@ svg#board {
         display: none !important;
     }
 
-    /* Seamless Card-to-Map Attachment on Desktop */
+    /* Seamless 4-Column Console Attachment on Desktop (Mysore | Board | British | Moves Notation) */
+    .mysore-column {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        border-right: none !important;
+    }
     .mysore-column .faction-column-header {
         border-top-right-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
         border-right: none !important;
+        height: 44px;
     }
     .mysore-column .player-card {
         border-top-right-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
         border-right: none !important;
     }
-    .british-column .faction-column-header {
-        border-top-left-radius: 0 !important;
-        border-bottom-left-radius: 0 !important;
+    .board-card {
+        border-radius: 0 !important;
         border-left: none !important;
+        border-right: none !important;
+    }
+    .british-column {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+    }
+    .british-column .faction-column-header {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        height: 44px;
     }
     .british-column .player-card {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+    }
+    .notation-panel {
         border-top-left-radius: 0 !important;
         border-bottom-left-radius: 0 !important;
-        border-left: none !important;
+        border-left: 1.5px solid var(--border) !important;
+        box-shadow: none !important;
+    }
+    .notation-panel-header {
+        border-top-left-radius: 0 !important;
+        height: 44px;
+        box-sizing: border-box;
     }
 }
 

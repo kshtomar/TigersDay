@@ -3970,11 +3970,14 @@ if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || wi
 function adjustBoardDimensions() {
   const boardSection = document.getElementById('board-section');
   const boardCard = document.getElementById('board-card');
+  const gameContainer = document.querySelector('.game-container');
   const gameMiddleArea = document.getElementById('game-middle-area');
+  const playArea = document.getElementById('play-area');
   if (!boardSection || !boardCard) return;
 
   const mysoreCol = document.getElementById('mysore-column');
   const britishCol = document.getElementById('british-column');
+  const notationPanel = document.getElementById('notation-panel');
 
   let reservedHeight = 0;
   const debugConsole = document.getElementById('debug-move-console');
@@ -3987,80 +3990,102 @@ function adjustBoardDimensions() {
   }
 
   // Detect horizontal desktop layout (Mysore and British cards attached to left & right of board)
-  const isDesktopRow = window.innerWidth >= 1024 && gameMiddleArea;
-
-  let availWidth = 0;
-  let availHeight = 0;
-
-  if (isDesktopRow) {
-    const mysoreWidth = (mysoreCol && window.getComputedStyle(mysoreCol).display !== 'none') ? mysoreCol.offsetWidth : 0;
-    const britishWidth = (britishCol && window.getComputedStyle(britishCol).display !== 'none') ? britishCol.offsetWidth : 0;
-    availWidth = Math.max(100, gameMiddleArea.clientWidth - mysoreWidth - britishWidth);
-    availHeight = Math.max(100, gameMiddleArea.clientHeight - reservedHeight);
-  } else {
-    availWidth = boardSection.clientWidth || (gameMiddleArea ? gameMiddleArea.clientWidth : window.innerWidth);
-    availHeight = Math.max(100, (boardSection.clientHeight || (gameMiddleArea ? gameMiddleArea.clientHeight : 500)) - reservedHeight);
-  }
-
-  if (availWidth <= 0 || availHeight <= 0) return;
-
-  const aspect = 760 / 880;
+  const isDesktopRow = window.innerWidth >= 1024;
+  const isNotationVisible = isDesktopRow && notationPanel && window.getComputedStyle(notationPanel).display !== 'none';
 
   let targetWidth, targetHeight;
-  if (availWidth / availHeight > aspect) {
-    // Height is the limiting constraint
-    targetHeight = availHeight;
-    targetWidth = targetHeight * aspect;
-  } else {
-    // Width is the limiting constraint
-    targetWidth = availWidth;
-    targetHeight = targetWidth / aspect;
-  }
-
-  targetWidth = Math.floor(targetWidth);
-  targetHeight = Math.floor(targetHeight);
-
-  boardCard.style.width = `${targetWidth}px`;
-  boardCard.style.height = `${targetHeight}px`;
+  const aspect = 760 / 880;
 
   if (isDesktopRow) {
+    // 1. Total available height for the game console (fill available viewport height minus header and margins)
+    const header = document.getElementById('turn-header');
+    const headerHeight = header ? header.offsetHeight + 4 : 40;
+    const bodyPadding = 7;
+    const viewportAvailHeight = window.innerHeight - headerHeight - bodyPadding;
+    const containerHeight = (gameContainer && gameContainer.clientHeight > 0)
+      ? Math.max(gameContainer.clientHeight, viewportAvailHeight)
+      : viewportAvailHeight;
+    const maxAvailHeight = Math.max(200, containerHeight - reservedHeight);
+
+    // 2. Total available width for the entire game console
+    const containerWidth = (gameContainer && gameContainer.clientWidth > 0)
+      ? gameContainer.clientWidth
+      : (window.innerWidth - 12);
+
+    const mysoreWidth = (mysoreCol && window.getComputedStyle(mysoreCol).display !== 'none') ? mysoreCol.offsetWidth : 0;
+    const britishWidth = (britishCol && window.getComputedStyle(britishCol).display !== 'none') ? britishCol.offsetWidth : 0;
+    const notationWidth = isNotationVisible ? notationPanel.offsetWidth : 0;
+
+    // Remaining width available for the map board
+    const maxBoardWidth = Math.max(100, containerWidth - mysoreWidth - britishWidth - notationWidth);
+
+    // Priority: "The map should also take as much vertical space as possible."
+    // Try to fill 100% of the available vertical height
+    let proposedHeight = maxAvailHeight;
+    let proposedWidth = proposedHeight * aspect;
+
+    // If the map at full vertical height exceeds the available width, scale down to fit width
+    if (proposedWidth > maxBoardWidth) {
+      proposedWidth = maxBoardWidth;
+      proposedHeight = proposedWidth / aspect;
+    }
+
+    targetWidth = Math.floor(proposedWidth);
+    targetHeight = Math.floor(proposedHeight);
+
+    boardCard.style.width = `${targetWidth}px`;
+    boardCard.style.height = `${targetHeight}px`;
+
     boardSection.style.width = `${targetWidth}px`;
     boardSection.style.flex = `0 0 ${targetWidth}px`;
 
-    // Seamlessly match card column heights to board so cards are perfectly attached top-to-bottom
-    const totalHeight = targetHeight + reservedHeight;
+    // Seamlessly match all side columns (Mysore, British, Notation) to the map height
+    const totalConsoleHeight = targetHeight + reservedHeight;
     if (mysoreCol) {
-      mysoreCol.style.height = `${totalHeight}px`;
-      mysoreCol.style.maxHeight = `${totalHeight}px`;
+      mysoreCol.style.height = `${totalConsoleHeight}px`;
+      mysoreCol.style.maxHeight = `${totalConsoleHeight}px`;
     }
     if (britishCol) {
-      britishCol.style.height = `${totalHeight}px`;
-      britishCol.style.maxHeight = `${totalHeight}px`;
+      britishCol.style.height = `${totalConsoleHeight}px`;
+      britishCol.style.maxHeight = `${totalConsoleHeight}px`;
+    }
+    if (isNotationVisible && notationPanel) {
+      notationPanel.style.height = `${totalConsoleHeight}px`;
+      notationPanel.style.maxHeight = `${totalConsoleHeight}px`;
     }
   } else {
+    // Mobile / vertical layout
+    const availWidth = boardSection.clientWidth || (gameMiddleArea ? gameMiddleArea.clientWidth : window.innerWidth);
+    const availHeight = Math.max(100, (boardSection.clientHeight || 500) - reservedHeight);
+    if (availWidth / availHeight > aspect) {
+      targetHeight = availHeight;
+      targetWidth = targetHeight * aspect;
+    } else {
+      targetWidth = availWidth;
+      targetHeight = targetWidth / aspect;
+    }
+    targetWidth = Math.floor(targetWidth);
+    targetHeight = Math.floor(targetHeight);
+
+    boardCard.style.width = `${targetWidth}px`;
+    boardCard.style.height = `${targetHeight}px`;
     boardSection.style.width = '';
     boardSection.style.flex = '';
-    if (mysoreCol) {
-      mysoreCol.style.height = '';
-      mysoreCol.style.maxHeight = '';
-    }
-    if (britishCol) {
-      britishCol.style.height = '';
-      britishCol.style.maxHeight = '';
-    }
+    if (mysoreCol) { mysoreCol.style.height = ''; mysoreCol.style.maxHeight = ''; }
+    if (britishCol) { britishCol.style.height = ''; britishCol.style.maxHeight = ''; }
+    if (notationPanel) { notationPanel.style.height = ''; notationPanel.style.maxHeight = ''; }
   }
 }
 
 function initBoardResponsiveAutoSizer() {
   adjustBoardDimensions();
-  const gameMiddleArea = document.getElementById('game-middle-area');
-  const playArea = document.getElementById('play-area');
+  const gameContainer = document.querySelector('.game-container');
   if (window.ResizeObserver) {
     const observer = new ResizeObserver(() => {
       adjustBoardDimensions();
     });
-    if (gameMiddleArea) observer.observe(gameMiddleArea);
-    if (playArea) observer.observe(playArea);
+    if (gameContainer) observer.observe(gameContainer);
+    observer.observe(document.body);
   }
   window.addEventListener('resize', adjustBoardDimensions);
   window.addEventListener('orientationchange', adjustBoardDimensions);

@@ -423,11 +423,12 @@ test('Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping', () => 
   const css = fs.readFileSync(CSS_PATH, 'utf8');
   const script = fs.readFileSync(SCRIPT_PATH, 'utf8');
 
-  // Verify CSS zero-gap layout for middle game area
+  // Verify CSS zero-gap layout for middle game area and game-container
   assert.ok(css.includes('.game-middle-area'), 'Must define .game-middle-area');
   assert.ok(css.includes('gap: 0;'), 'Must specify gap: 0; for flush card-to-map attachment');
+  assert.ok(css.includes('gap: 0 !important;'), 'Must specify gap: 0 !important; in game-container on desktop');
 
-  // Verify border radius clipping on desktop
+  // Verify border radius clipping on desktop for Mysore, Board, British, and Notation
   assert.ok(css.includes('.mysore-column .player-card'), 'Must style Mysore player-cards');
   assert.ok(css.includes('.mysore-column .faction-column-header'), 'Must style Mysore header');
   assert.ok(css.includes('border-top-right-radius: 0 !important;'), 'Mysore cards/header must clip cleanly to board');
@@ -435,13 +436,17 @@ test('Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping', () => 
 
   assert.ok(css.includes('.british-column .player-card'), 'Must style British player-cards');
   assert.ok(css.includes('.british-column .faction-column-header'), 'Must style British header');
-  assert.ok(css.includes('border-top-left-radius: 0 !important;'), 'British cards/header must clip cleanly to board');
   assert.ok(css.includes('border-left: none !important;'), 'British left border must be omitted for seamless seam');
 
-  // Verify responsive auto-sizer aligns board-section and card heights to eliminate gaps
+  assert.ok(css.includes('.notation-panel'), 'Must style notation-panel');
+  assert.ok(css.includes('border-top-left-radius: 0 !important;'), 'Notation panel must clip cleanly to British cards');
+
+  // Verify responsive auto-sizer maximizes vertical space and aligns board-section and all 4 column heights
+  assert.ok(script.includes('let proposedHeight = maxAvailHeight;'), 'Must prioritize vertical height for map');
   assert.ok(script.includes('boardSection.style.flex = `0 0 ${targetWidth}px`;'), 'Script must clamp boardSection flex to targetWidth');
-  assert.ok(script.includes('mysoreCol.style.height = `${totalHeight}px`;'), 'Mysore column height must match board card');
-  assert.ok(script.includes('britishCol.style.height = `${totalHeight}px`;'), 'British column height must match board card');
+  assert.ok(script.includes('mysoreCol.style.height = `${totalConsoleHeight}px`;'), 'Mysore column height must match board card');
+  assert.ok(script.includes('britishCol.style.height = `${totalConsoleHeight}px`;'), 'British column height must match board card');
+  assert.ok(script.includes('notationPanel.style.height = `${totalConsoleHeight}px`;'), 'Notation panel height must match board card');
 });
 
 

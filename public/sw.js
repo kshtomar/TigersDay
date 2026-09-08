@@ -3,7 +3,7 @@
  * Enables complete offline play with WebAssembly and local assets.
  */
 
-const CACHE_NAME = 'tigersday-v2.10';
+const CACHE_NAME = 'tigersday-v2.11';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

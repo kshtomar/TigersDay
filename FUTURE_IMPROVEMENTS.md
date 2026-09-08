@@ -381,11 +381,11 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
     - Move highlight badges on cards (`PLAYED`, `POWER`, `TRADED`, `RECLAIMED`) and active/exhausted status pills.
     - Automated test coverage in [`tests/js/replay.test.js`](./tests/js/replay.test.js).
 
-  - **Seamless Card-to-Map Deck Attachment & Zero-Gap Layout**:
-    - Eliminated horizontal gap between card decks and game map (`gap: 0` on `.game-middle-area`), anchoring Mysore cards flush to the left map border and British cards flush to the right border.
-    - Replaced expanding `flex: 1 1 auto` on `.board-section` with locked `flex: 0 0 auto` and dynamic `width: targetWidth`, eliminating empty margin wings.
-    - Added desktop edge clipping removing internal border-radius and borders between cards and map board.
-    - Synchronized card deck column heights to dynamic board map height via `ResizeObserver`.
+  - **Seamless 4-Column Console Attachment & Vertical Map Space Maximization**:
+    - Eliminated horizontal gaps across all 4 desktop console elements (`gap: 0` on `.game-middle-area` and `.game-container`), anchoring Mysore cards flush to the left map border, British cards flush to the right map border, and Moves Notation panel directly clipped to the right edge of British cards.
+    - Added desktop edge clipping across all 4 components removing inner borders and radii, aligning headers (`MYSORE`, map top, `BRITISH`, and `MOVES NOTATION`) along a continuous 44px top line.
+    - Maximized map vertical space by setting `proposedHeight = maxAvailHeight`, filling the entire viewport height below the header with zero top/bottom empty padding whenever horizontal width permits.
+    - Synchronized all 4 component heights (`mysoreCol`, `boardCard`, `britishCol`, `notationPanel`) dynamically to `totalConsoleHeight` with zero sizing feedback loops.
     - Automated test coverage in [`tests/js/ui.test.js`](./tests/js/ui.test.js).
 
 ---
