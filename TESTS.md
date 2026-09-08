@@ -21,7 +21,7 @@ flowchart TD
         U2["Node.js Candidate Lines & Dock (17 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/candidate_lines.test.js"]
         U3["Node.js Engine & Analytics (11 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/engine.test.js"]
         U4["Frontend & UI System Tests (19 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/ui.test.js"]
-        U5["Multiplayer, Sound, Lore, Tutorial & Replay (17 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/{multiplayer,sound,lore,tutorial,replay}.test.js"]
+        U5["Multiplayer, Sound, Lore, Tutorial & Replay (18 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/{multiplayer,sound,lore,tutorial,replay}.test.js"]
         U6["Visual Regression Tests (4 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/visual.test.js"]
     end
 
@@ -41,10 +41,10 @@ flowchart TD
 | Target | Command | Duration | Coverage |
 | :--- | :--- | :--- | :--- |
 | **Lint & Syntax** | `npm run lint && python3 -m compileall -q ai game api tests` | ~0.08s | All JS, SW, HTML scripts, Python packages |
-| **Node.js Test Battery** | `npm test` | ~0.10s | Candidate Lines, Engine, Multiplayer, Sound, Replay, Lore, Tutorial, UI & Visual Regression (68 tests) |
+| **Node.js Test Battery** | `npm test` | ~0.10s | Candidate Lines, Engine, Multiplayer, Sound, Replay, Lore, Tutorial, UI & Visual Regression (69 tests) |
 | **Python Unit Tests** | `python3 -m unittest discover -s tests/unit -v` | ~0.30s | State, rules, neural, MCTS, replay, buffer, scenarios, evolution (38 tests) |
 | **Python Integration** | `python3 -m unittest discover -s tests/integration -v` | ~0.25s | 50-ply parity, FastAPI endpoints, lobby relay, multi-turn loop (22 tests) |
-| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.65s | All 128 test cases across entire stack (100% passing) |
+| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.65s | All 129 test cases across entire stack (100% passing) |
 
 ---
 
@@ -214,7 +214,7 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 
 ---
 
-## 7. JavaScript Multiplayer, Sound, Lore, Tutorial & Replay Tests (17 Tests)
+## 7. JavaScript Multiplayer, Sound, Lore, Tutorial & Replay Tests (18 Tests)
 
 ### 7.1 [`tests/js/multiplayer.test.js`](./tests/js/multiplayer.test.js) (5 Tests)
 108. **`MultiplayerManager - Room Code Generation Invariants`**: Validates random 4-character alphanumeric room code generation with character set guards.
@@ -223,25 +223,26 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 111. **`MultiplayerManager - Ping/Pong Heartbeat and Teardown State Machine`**: Tests keep-alive heartbeat ping/pong timer and graceful teardown on disconnection.
 112. **`MultiplayerManager - WebRTC to WebSocket Fallback & Matchmaking Queue (6.13)`**: Validates automatic fallback from WebRTC P2P to centralized WebSocket relay when symmetric NAT prevents direct peer connection.
 
-### 7.2 [`tests/js/sound.test.js`](./tests/js/sound.test.js) (4 Tests)
+### 7.2 [`tests/js/sound.test.js`](./tests/js/sound.test.js) (5 Tests)
 113. **`SoundEngine - Volume Range Clamping and NaN protection`**: Confirms volume setter clamps out-of-bounds inputs and protects against NaN or undefined.
 114. **`SoundEngine - Storage Persistence Invariants`**: Verifies sound volume and mute preferences persist to localStorage.
 115. **`SoundEngine - Headless Safe Audio Execution without AudioContext`**: Verifies sound calls execute safely without errors in headless environments lacking Web Audio API.
 116. **`SoundEngine - Headless Safe Audio Execution with Mock AudioContext`**: Simulates complete synthesizer audio graph execution using mock AudioContext.
+117. **`SoundEngine - Win, Defeat, and Resign API Availability and Function Signatures`**: Confirms `playWin()`, `playVictory()` (backward-compatible alias), `playDefeat()`, and `playResign()` are properly exported, accept faction/context parameters, and execute safely without throwing in headless environments.
 
 ### 7.3 [`tests/js/lore.test.js`](./tests/js/lore.test.js) (4 Tests)
-117. **`Historical Lore Codex - should define all 25 game territories with complete metadata`**: Verifies historical background, strategic value, and geographic metadata for all 25 territories.
-118. **`Historical Lore Codex - should accurately tag the 5 Key Victory Cities`**: Validates victory key tags on Bombay, Hyderabad, Madras, Seringapatam, and Coimbatore.
-119. **`Historical Lore Codex - should accurately designate coastal ports and maritime hubs`**: Validates coastal tags on all 10 maritime territories.
-120. **`Historical Lore Codex - should resolve territories case-insensitively and render rich HTML tooltips`**: Tests case-insensitive lookup and rich HTML tooltip generation.
+118. **`Historical Lore Codex - should define all 25 game territories with complete metadata`**: Verifies historical background, strategic value, and geographic metadata for all 25 territories.
+119. **`Historical Lore Codex - should accurately tag the 5 Key Victory Cities`**: Validates victory key tags on Bombay, Hyderabad, Madras, Seringapatam, and Coimbatore.
+120. **`Historical Lore Codex - should accurately designate coastal ports and maritime hubs`**: Validates coastal tags on all 10 maritime territories.
+121. **`Historical Lore Codex - should resolve territories case-insensitively and render rich HTML tooltips`**: Tests case-insensitive lookup and rich HTML tooltip generation.
 
 ### 7.4 [`tests/js/tutorial.test.js`](./tests/js/tutorial.test.js) (3 Tests)
-121. **`Guided Interactive Tutorial - should define 4 sequential lessons covering core mechanics`**: Verifies four curriculum lessons (Movement, Combat, Cards, Victory).
-122. **`Guided Interactive Tutorial - should step forward and backward correctly through tutorial flow`**: Validates forward/backward stepping through interactive lesson cards.
-123. **`Guided Interactive Tutorial - should validate targeted tutorial moves`**: Enforces target territory validation during interactive guided steps.
+122. **`Guided Interactive Tutorial - should define 4 sequential lessons covering core mechanics`**: Verifies four curriculum lessons (Movement, Combat, Cards, Victory).
+123. **`Guided Interactive Tutorial - should step forward and backward correctly through tutorial flow`**: Validates forward/backward stepping through interactive lesson cards.
+124. **`Guided Interactive Tutorial - should validate targeted tutorial moves`**: Enforces target territory validation during interactive guided steps.
 
 ### 7.5 [`tests/js/replay.test.js`](./tests/js/replay.test.js) (1 Test)
-124. **`TDReplay - parseReplay validates structure and move boundaries`**: Verifies parser validation of `.tdr` replay files, structure headers, and move boundaries.
+125. **`TDReplay - parseReplay validates structure and move boundaries`**: Verifies parser validation of `.tdr` replay files, structure headers, and move boundaries.
 
 ---
 
@@ -249,14 +250,14 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 
 Located in [`tests/js/visual.test.js`](./tests/js/visual.test.js), these tests assert visual accessibility, color contrast, and SVG boundary clearance.
 
-125. **`Visual Regression – 10 Themes & WCAG Color Contrast Standards`**: Computes relative luminance and asserts contrast ratio $\ge 4.0:1$ across all 10 theme palettes.
-126. **`Visual Regression – 5 Unit Token Styles Definition & Integrity`**: Asserts all 5 unit styles are defined with valid CSS classes and rendering assets.
-127. **`Visual Regression – SVG Board Node Coordinates & Edge Clearance`**: Asserts all 25 nodes and forts fall strictly within padded bounds $[20, 740] \times [20, 860]$ in the viewBox.
-128. **`Visual Regression – Multi-Viewport Scaling & Hitbox Preservations`**: Confirms minimum interactive touch radius $\ge 8$px across mobile, tablet, laptop, and desktop viewports.
+126. **`Visual Regression – 10 Themes & WCAG Color Contrast Standards`**: Computes relative luminance and asserts contrast ratio $\ge 4.0:1$ across all 10 theme palettes.
+127. **`Visual Regression – 5 Unit Token Styles Definition & Integrity`**: Asserts all 5 unit styles are defined with valid CSS classes and rendering assets.
+128. **`Visual Regression – SVG Board Node Coordinates & Edge Clearance`**: Asserts all 25 nodes and forts fall strictly within padded bounds $[20, 740] \times [20, 860]$ in the viewBox.
+129. **`Visual Regression – Multi-Viewport Scaling & Hitbox Preservations`**: Confirms minimum interactive touch radius $\ge 8$px across mobile, tablet, laptop, and desktop viewports.
 
 ---
 
-## 9. Complete 128-Test Suite Matrix
+## 9. Complete 129-Test Suite Matrix
 
 | # | Test Name | File | Suite Stage | Target Component | Status |
 | :-: | :--- | :--- | :--- | :--- | :-: |
@@ -376,15 +377,16 @@ Located in [`tests/js/visual.test.js`](./tests/js/visual.test.js), these tests a
 | **114** | `SoundEngine - Storage Persistence Invariants` | `tests/js/sound.test.js` | JS Audio | LocalStorage Volume Settings | Pass |
 | **115** | `SoundEngine - Headless Safe Audio Execution without AudioContext` | `tests/js/sound.test.js` | JS Audio | Headless Web Audio Safety | Pass |
 | **116** | `SoundEngine - Headless Safe Audio Execution with Mock AudioContext` | `tests/js/sound.test.js` | JS Audio | Audio Graph Synthesis | Pass |
-| **117** | `Lore Codex - define all 25 game territories with metadata` | `tests/js/lore.test.js` | JS Lore | 25 Territory Historical Lore | Pass |
-| **118** | `Lore Codex - accurately tag the 5 Key Victory Cities` | `tests/js/lore.test.js` | JS Lore | Key Victory City Designations | Pass |
-| **119** | `Lore Codex - accurately designate coastal ports & maritime hubs` | `tests/js/lore.test.js` | JS Lore | Coastal Port Classifications | Pass |
-| **120** | `Lore Codex - resolve territories case-insensitively & render tooltips` | `tests/js/lore.test.js` | JS Lore | Case-Insensitive Tooltips | Pass |
-| **121** | `Tutorial - define 4 sequential lessons covering core mechanics` | `tests/js/tutorial.test.js` | JS Tutorial | 4 Guided Lessons Curriculum | Pass |
-| **122** | `Tutorial - step forward and backward correctly through tutorial flow` | `tests/js/tutorial.test.js` | JS Tutorial | Lesson Card Flow Navigation | Pass |
-| **123** | `Tutorial - validate targeted tutorial moves` | `tests/js/tutorial.test.js` | JS Tutorial | Targeted Move Validation | Pass |
-| **124** | `TDReplay - parseReplay validates structure and move boundaries` | `tests/js/replay.test.js` | JS Replay | TDR Replay Parsing | Pass |
-| **125** | `Visual Regression – 10 Themes Contrast` | `tests/js/visual.test.js` | Visual | WCAG 2.1 AA/AAA Luminance | Pass |
-| **126** | `Visual Regression – 5 Unit Token Styles` | `tests/js/visual.test.js` | Visual | 5 Unit Aesthetics Integrity | Pass |
-| **127** | `Visual Regression – SVG Board Node Bounds` | `tests/js/visual.test.js` | Visual | SVG Bounds & Fort Clearance | Pass |
-| **128** | `Visual Regression – Multi-Viewport Scaling` | `tests/js/visual.test.js` | Visual | 4 Viewports & Tap Hitboxes | Pass |
+| **117** | `SoundEngine - Win, Defeat, and Resign API Availability` | `tests/js/sound.test.js` | JS Audio | Win, Defeat & Resign APIs | Pass |
+| **118** | `Lore Codex - define all 25 game territories with metadata` | `tests/js/lore.test.js` | JS Lore | 25 Territory Historical Lore | Pass |
+| **119** | `Lore Codex - accurately tag the 5 Key Victory Cities` | `tests/js/lore.test.js` | JS Lore | Key Victory City Designations | Pass |
+| **120** | `Lore Codex - accurately designate coastal ports & maritime hubs` | `tests/js/lore.test.js` | JS Lore | Coastal Port Classifications | Pass |
+| **121** | `Lore Codex - resolve territories case-insensitively & render tooltips` | `tests/js/lore.test.js` | JS Lore | Case-Insensitive Tooltips | Pass |
+| **122** | `Tutorial - define 4 sequential lessons covering core mechanics` | `tests/js/tutorial.test.js` | JS Tutorial | 4 Guided Lessons Curriculum | Pass |
+| **123** | `Tutorial - step forward and backward correctly through tutorial flow` | `tests/js/tutorial.test.js` | JS Tutorial | Lesson Card Flow Navigation | Pass |
+| **124** | `Tutorial - validate targeted tutorial moves` | `tests/js/tutorial.test.js` | JS Tutorial | Targeted Move Validation | Pass |
+| **125** | `TDReplay - parseReplay validates structure and move boundaries` | `tests/js/replay.test.js` | JS Replay | TDR Replay Parsing | Pass |
+| **126** | `Visual Regression – 10 Themes Contrast` | `tests/js/visual.test.js` | Visual | WCAG 2.1 AA/AAA Luminance | Pass |
+| **127** | `Visual Regression – 5 Unit Token Styles` | `tests/js/visual.test.js` | Visual | 5 Unit Aesthetics Integrity | Pass |
+| **128** | `Visual Regression – SVG Board Node Bounds` | `tests/js/visual.test.js` | Visual | SVG Bounds & Fort Clearance | Pass |
+| **129** | `Visual Regression – Multi-Viewport Scaling` | `tests/js/visual.test.js` | Visual | 4 Viewports & Tap Hitboxes | Pass |

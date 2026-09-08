@@ -2708,6 +2708,9 @@ function handleResignClick() {
 
   const winnerVal = resigningSide === 'british' ? -1 : 1;
   const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
+  if (window.TDSound) {
+    TDSound.playResign();
+  }
   showToast(`${resigningSide.toUpperCase()} resigned. ${winnerName} wins!`, 'info');
 
   const header = document.getElementById('turn-header');
@@ -2848,7 +2851,18 @@ function playMoveSound(moveIdx, nextState, finalState, trajectory) {
   if (!window.TDSound) return;
   const winner = getStateWinner(finalState || nextState);
   if (winner !== 0) {
-    TDSound.playVictory();
+    const isMysore = winner === -1;
+    if (matchMode === 'human_vs_ai' || matchMode === 'p2p_multiplayer') {
+      const isHumanWinner = (winner === 1 && humanPlayerSide === 'british') ||
+                            (winner === -1 && humanPlayerSide === 'mysore');
+      if (isHumanWinner) {
+        TDSound.playWin(isMysore);
+      } else {
+        TDSound.playDefeat();
+      }
+    } else {
+      TDSound.playWin(isMysore);
+    }
     return;
   }
   const action = (TDEngine.ACTION_DISPATCH && TDEngine.ACTION_DISPATCH[moveIdx]) || null;
@@ -3086,6 +3100,9 @@ function setupMultiplayerCallbacks() {
   multiplayerManager.onResignReceived = (resigningSide) => {
     const winnerVal = resigningSide === 'british' ? -1 : 1;
     const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
+    if (window.TDSound) {
+      TDSound.playWin(winnerVal === -1);
+    }
     showToast(`Opponent (${resigningSide.toUpperCase()}) resigned! ${winnerName} wins!`, 'success');
 
     const header = document.getElementById('turn-header');

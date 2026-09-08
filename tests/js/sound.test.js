@@ -85,6 +85,10 @@ test('SoundEngine - Headless Safe Audio Execution without AudioContext', () => {
   assert.doesNotThrow(() => engine.playLuckDiscard(), 'playLuckDiscard should execute safely without AudioContext');
   assert.doesNotThrow(() => engine.playVictory(true), 'playVictory (Mysore) should execute safely without AudioContext');
   assert.doesNotThrow(() => engine.playVictory(false), 'playVictory (British) should execute safely without AudioContext');
+  assert.doesNotThrow(() => engine.playWin(true), 'playWin (Mysore) should execute safely without AudioContext');
+  assert.doesNotThrow(() => engine.playWin(false), 'playWin (British) should execute safely without AudioContext');
+  assert.doesNotThrow(() => engine.playDefeat(), 'playDefeat should execute safely without AudioContext');
+  assert.doesNotThrow(() => engine.playResign(), 'playResign should execute safely without AudioContext');
   assert.doesNotThrow(() => engine.playClick(), 'playClick should execute safely without AudioContext');
 });
 
@@ -140,5 +144,23 @@ test('SoundEngine - Headless Safe Audio Execution with Mock AudioContext', () =>
   assert.doesNotThrow(() => mockEngine.playLuckDiscard());
   assert.doesNotThrow(() => mockEngine.playVictory(true));
   assert.doesNotThrow(() => mockEngine.playVictory(false));
+  assert.doesNotThrow(() => mockEngine.playWin(true), 'playWin (Mysore) should synthesize successfully');
+  assert.doesNotThrow(() => mockEngine.playWin(false), 'playWin (British) should synthesize successfully');
+  assert.doesNotThrow(() => mockEngine.playDefeat(), 'playDefeat should synthesize successfully');
+  assert.doesNotThrow(() => mockEngine.playResign(), 'playResign should synthesize successfully');
   assert.doesNotThrow(() => mockEngine.playClick());
+});
+
+test('SoundEngine - Win, Defeat, and Resign API Availability and Function Signatures', () => {
+  const engine = new SoundEngine();
+
+  assert.strictEqual(typeof engine.playWin, 'function', 'playWin must be a defined method');
+  assert.strictEqual(typeof engine.playDefeat, 'function', 'playDefeat must be a defined method');
+  assert.strictEqual(typeof engine.playResign, 'function', 'playResign must be a defined method');
+  assert.strictEqual(typeof engine.playVictory, 'function', 'playVictory must be retained as backward-compatible alias');
+
+  // Verify TDSound singleton exposes the new methods
+  assert.strictEqual(typeof TDSound.playWin, 'function', 'TDSound.playWin singleton method must exist');
+  assert.strictEqual(typeof TDSound.playDefeat, 'function', 'TDSound.playDefeat singleton method must exist');
+  assert.strictEqual(typeof TDSound.playResign, 'function', 'TDSound.playResign singleton method must exist');
 });

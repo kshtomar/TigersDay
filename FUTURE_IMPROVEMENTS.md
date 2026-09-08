@@ -33,7 +33,7 @@ This document provides a systematic architectural record of the **Tiger’s Day 
 Tiger's Day is an asymmetric strategic wargame combining historical simulation, deep reinforcement learning (AlphaZero + MCTS), 100% client-side WebAssembly ONNX inference, and WebRTC peer-to-peer multiplayer.
 
 ### Current System Health: **EXCELLENT (Production Ready)**
-- **Automated Verification:** 128 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
+- **Automated Verification:** 129 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
 - **Parity Guarantees:** 100% byte-for-byte mathematical parity between Python NumPy state transitions and JavaScript Uint8Array client transitions.
 - **Continuous Integration:** Multi-stage GitHub Actions CI pipeline executing bytecode compilation, Ruff linting, Node syntax verification, unit matrix tests, and end-to-end integration tests on every commit and PR.
 - **Model Efficiency:** Model compressed by ~72% via INT8 dynamic quantization ([`public/alphatiger.quant.onnx`](./public/alphatiger.quant.onnx), 431KB).
@@ -366,11 +366,15 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
   - **Player Deck Card AI Recommendation Number Badges**: For recommended tactical card plays, card decks render compact, high-contrast rank number badges (`#1`, `#2`, etc.) positioned alongside the strength seal (`top: 4px; right: 36px`), and `#rank ↺` for card trade-ins.
   - **Visual Spatial Correspondence**: Bi-directional micro-interactions connect cards in the player's hand with the corresponding target territory/square on the board; hovering a recommended card pulses the map arrow and target ring, while hovering candidate cards pulses both the card in hand and board elements.
   - **Refined Candidate Move Presentation**: Candidate cards prominently feature visit counts (`210 visits`) via dedicated `.candidate-visits-badge` right-aligned pills.
-  - **Clean Professional Iconography**: Removed disruptive emoticons (`🧠`, `📜`, `💡`, `🎲`) and redundant `[TOP K]` badge boxes across the dock, board HUD, and notation sidebar for a minimalist, period-authentic military command aesthetic.
-  - Comprehensive unit & integration test suite in [`tests/js/candidate_lines.test.js`](./tests/js/candidate_lines.test.js) (17 tests covering geometry decoding, `getCardInfoForMove`, arbitrary $K$ values, fewer moves than $K$ edge cases, luck frontiers, multi-ply lines, empty trees, SVG defs, bottom dock DOM hierarchy, card badges, and clean iconography invariants).
+  - **Procedural Resign, Winning, and Defeat Sound Effects (`TDSound`)**:
+    - `playWin(isMysore)`: Faction-tailored victory fanfare featuring triumphant Mysore Nagara drums & pentatonic flourish, or British regimental brass fanfare with celebratory snare rolls (backward-compatible alias `playVictory`).
+    - `playDefeat()`: Damped funeral sub-bass drum thud followed by a mournful descending minor triad brass motif (`D4 -> Bb3 -> G3 -> Eb3 -> D3`).
+    - `playResign()`: Metallic weapon-yielding / sword-sheathing slide transient, two-tone ceasefire white-flag bugle call (`A3 -> E3`), and hollow surrender rim strike.
+    - Full gameplay integration across Human vs AI, P2P Multiplayer (opponent surrender vs self-surrender), and explicit Resign action clicks.
+    - Automated test coverage in [`tests/js/sound.test.js`](./tests/js/sound.test.js) with zero external audio assets.
 
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 128 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 129 passing automated tests across Python and JavaScript runtimes.*
 
 

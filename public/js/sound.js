@@ -249,36 +249,74 @@
     }
 
     /**
-     * Victory: Regimental fanfare or Mysore royal nagara resonance
+     * Winning: Triumphant celebratory fanfare (British) or Mysore Royal Nagara resonance
      */
-    playVictory(isMysore = false) {
+    playWin(isMysore = false) {
       if (!this.enabled || !this._initContext()) return;
       const now = this.ctx.currentTime;
 
       if (isMysore) {
-        // Mysore Royal Nagara Drums & Gong
-        const notes = [65, 82, 98, 131];
-        notes.forEach((freq, idx) => {
-          const t = now + idx * 0.22;
+        // Mysore Royal Nagara Drums & Triumphal Gong Flourish
+        const drumNotes = [55, 73, 98, 131];
+        drumNotes.forEach((freq, idx) => {
+          const t = now + idx * 0.18;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sine';
           osc.frequency.setValueAtTime(freq, t);
-          osc.frequency.exponentialRampToValueAtTime(freq * 0.8, t + 0.6);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.75, t + 0.55);
 
-          gain.gain.setValueAtTime(0.4, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+          gain.gain.setValueAtTime(0.45, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.65);
 
           osc.connect(gain);
           gain.connect(this.masterGain);
           osc.start(t);
-          osc.stop(t + 0.75);
+          osc.stop(t + 0.7);
+        });
+
+        // Ascending pentatonic victory brass/gong chime
+        const flourish = [196, 261.63, 329.63, 392, 523.25];
+        flourish.forEach((freq, idx) => {
+          const t = now + 0.35 + idx * 0.12;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t);
+
+          gain.gain.setValueAtTime(0.28, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          osc.start(t);
+          osc.stop(t + 0.65);
         });
       } else {
-        // British Regimental Bugle / Fanfare triad
-        const fanfare = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+        // British Regimental Brass Fanfare with Snare Roll
+        for (let s = 0; s < 4; s++) {
+          const st = now + s * 0.06;
+          const snareNoise = this.ctx.createBufferSource();
+          snareNoise.buffer = this._createNoiseBuffer(0.05);
+          const sFilter = this.ctx.createBiquadFilter();
+          sFilter.type = 'highpass';
+          sFilter.frequency.setValueAtTime(1000, st);
+
+          const sGain = this.ctx.createGain();
+          sGain.gain.setValueAtTime(0.18, st);
+          sGain.gain.exponentialRampToValueAtTime(0.001, st + 0.05);
+
+          snareNoise.connect(sFilter);
+          sFilter.connect(sGain);
+          sGain.connect(this.masterGain);
+          snareNoise.start(st);
+          snareNoise.stop(st + 0.06);
+        }
+
+        // Triumphant bugle fanfare triad (C4, E4, G4, C5, E5)
+        const fanfare = [261.63, 329.63, 392.00, 523.25, 659.25];
         fanfare.forEach((freq, idx) => {
-          const t = now + idx * 0.16;
+          const t = now + 0.22 + idx * 0.14;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sawtooth';
@@ -286,18 +324,142 @@
 
           const filter = this.ctx.createBiquadFilter();
           filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(1800, t);
+          filter.frequency.setValueAtTime(2200, t);
+          filter.frequency.exponentialRampToValueAtTime(1200, t + (idx === fanfare.length - 1 ? 0.8 : 0.28));
 
-          gain.gain.setValueAtTime(0.25, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+          const dur = (idx === fanfare.length - 1) ? 0.9 : 0.32;
+          gain.gain.setValueAtTime(0.32, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
 
           osc.connect(filter);
           filter.connect(gain);
           gain.connect(this.masterGain);
           osc.start(t);
-          osc.stop(t + 0.38);
+          osc.stop(t + dur + 0.05);
         });
       }
+    }
+
+    /**
+     * Victory alias for backward compatibility
+     */
+    playVictory(isMysore = false) {
+      this.playWin(isMysore);
+    }
+
+    /**
+     * Defeated: Somber, mournful descending minor military cadence
+     */
+    playDefeat() {
+      if (!this.enabled || !this._initContext()) return;
+      const now = this.ctx.currentTime;
+
+      // Heavy muffled funeral drum thud
+      const drumOsc = this.ctx.createOscillator();
+      const drumGain = this.ctx.createGain();
+      drumOsc.type = 'sine';
+      drumOsc.frequency.setValueAtTime(80, now);
+      drumOsc.frequency.exponentialRampToValueAtTime(32, now + 0.5);
+
+      drumGain.gain.setValueAtTime(0.55, now);
+      drumGain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+
+      drumOsc.connect(drumGain);
+      drumGain.connect(this.masterGain);
+      drumOsc.start(now);
+      drumOsc.stop(now + 0.7);
+
+      // Mournful descending minor brass motif: D4 -> Bb3 -> G3 -> Eb3 -> D3
+      const minorNotes = [293.66, 233.08, 196.00, 155.56, 146.83];
+      minorNotes.forEach((freq, idx) => {
+        const t = now + 0.12 + idx * 0.24;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, t);
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(900, t);
+        filter.frequency.exponentialRampToValueAtTime(350, t + 0.45);
+
+        const noteDur = idx === minorNotes.length - 1 ? 0.9 : 0.35;
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + noteDur);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(t);
+        osc.stop(t + noteDur + 0.05);
+      });
+    }
+
+    /**
+     * Resign: Tactical surrender / yielding weapons with ceasefire signal
+     */
+    playResign() {
+      if (!this.enabled || !this._initContext()) return;
+      const now = this.ctx.currentTime;
+
+      // 1. Sword sheathing / weapon yielding metallic friction transient
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = this._createNoiseBuffer(0.2);
+      const bandpass = this.ctx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      bandpass.frequency.setValueAtTime(2400, now);
+      bandpass.frequency.exponentialRampToValueAtTime(800, now + 0.16);
+      bandpass.Q.setValueAtTime(4.0, now);
+
+      const noiseGain = this.ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.35, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+      noise.connect(bandpass);
+      bandpass.connect(noiseGain);
+      noiseGain.connect(this.masterGain);
+      noise.start(now);
+      noise.stop(now + 0.2);
+
+      // 2. Ceasefire white-flag bugle call: Descending solemn two-tone signal (A3 -> E3)
+      const tones = [220.00, 164.81];
+      tones.forEach((freq, idx) => {
+        const t = now + 0.15 + idx * 0.28;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, t);
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1100, t);
+        filter.frequency.exponentialRampToValueAtTime(400, t + 0.4);
+
+        const dur = idx === 1 ? 0.75 : 0.35;
+        gain.gain.setValueAtTime(0.25, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(t);
+        osc.stop(t + dur + 0.05);
+      });
+
+      // 3. Low hollow surrender rim stroke
+      const rimOsc = this.ctx.createOscillator();
+      const rimGain = this.ctx.createGain();
+      rimOsc.type = 'triangle';
+      rimOsc.frequency.setValueAtTime(140, now + 0.12);
+      rimOsc.frequency.exponentialRampToValueAtTime(50, now + 0.25);
+
+      rimGain.gain.setValueAtTime(0.28, now + 0.12);
+      rimGain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+
+      rimOsc.connect(rimGain);
+      rimGain.connect(this.masterGain);
+      rimOsc.start(now + 0.12);
+      rimOsc.stop(now + 0.28);
     }
 
     /**
