@@ -196,6 +196,7 @@ gantt
     P6.7: Interactive Replay Import/Export (.tdr) :done, p6_7, 2026-09-07, 2026-09-07
     P6.8: Onboarding Tutorial & Lore Tooltips HUD :done, p6_8, 2026-09-07, 2026-09-07
     P6.9: Lobby Web UI & ELO Leaderboard System   :done, p6_9, 2026-09-07, 2026-09-07
+    P6.10: Top-K AI Candidate Moves & Luck Lines  :done, p6_10, 2026-09-07, 2026-09-07
 ```
 
 ---
@@ -206,7 +207,7 @@ Following an in-depth audit of the dual-stack game engine, neural training pipel
 1. **Identified Automated Testing Gaps & Missing Test Suites** (100% Implemented & Verified)
 2. **Next-Horizon Platform Engineering Improvements** (100% Implemented & Verified)
 
-Total automated test suite coverage expanded from **64 tests** to **110 automated tests** (50 JavaScript tests + 60 Python tests, 0 failures).
+Total automated test suite coverage expanded to **119 automated tests** (59 JavaScript tests + 60 Python tests, 0 failures).
 
 ---
 
@@ -349,8 +350,23 @@ Total automated test suite coverage expanded from **64 tests** to **110 automate
   - Production observability metrics endpoint (`GET /api/metrics`) reporting MCTS simulations, cache hit rates, active spectator rooms, and inference latency percentiles ($p_{50}, p_{95}, p_{99}$).
   - Tested in [`tests/integration/test_api.py`](./tests/integration/test_api.py).
 
+#### 6.16 Top-K AI Candidate Moves Visualization, Principal Variation Line Tracing & Luck State Frontier
+* **Architecture:** [`public/js/mcts.js`](./public/js/mcts.js), [`public/index.html`](./public/index.html), [`public/style.css`](./public/style.css), [`public/script.js`](./public/script.js)
+* **Status:** Completed
+* **Deliverables:**
+  - `getTopCandidateLines(limit)` in client MCTS engine extracting top-$k$ ranked moves sorted by visit count and network priors.
+  - Forward line simulation in standard algebraic notation (`notate`) tracing variations up to 10 plies deep.
+  - **Luck State Frontier Invariant**: Halts line calculation when encountering stochastic state boundaries (`state.is_luck === true`, e.g., fortress assault battle initiation or card draws) and annotates lines with formatted badges (`[🎲 Battle: <Territory>]`, `[🎲 Luck Roll]`).
+  - Move geometry decoder (`decodeMoveGeometry`) extracting territory origins, destinations, coastal landing zones, single-node targets, and attack designations.
+  - Evaluation Panel candidate cards HUD (`#engine-lines-container`) rendering rank badges, win percentage, numerical eval, visit counts, and interactive hover states.
+  - SVG Board Tactical Layer (`#candidate-moves-layer`) featuring 5 color-coded marker arrows (`#ai-arrow-1` to `#ai-arrow-5`), midpoint rank pills, and animated target rings.
+  - User-configurable Settings drawer controls with `localStorage` persistence:
+    1. **Top Candidate Moves ($K$)**: Configurable selector from 1 to 5 moves.
+    2. **Visual Board Tactical Arrows**: Toggle to display or hide board arrows.
+  - Dedicated unit test suite in [`tests/js/candidate_lines.test.js`](./tests/js/candidate_lines.test.js) (8 tests covering geometry decoding, $K$-limit clamping, luck frontiers, multi-ply lines, empty trees, SVG defs, and script settings).
+
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 110 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 119 passing automated tests across Python and JavaScript runtimes.*
 
 

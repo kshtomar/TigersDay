@@ -28,6 +28,24 @@ test('decodeMoveGeometry decodes edge moves and captures', () => {
   assert.strictEqual(geomPass.type, 'Pass British');
   assert.strictEqual(geomPass.fromNode, null);
   assert.strictEqual(geomPass.toNode, null);
+
+  // Fortress attack detection: place fort on node 5 (Satara)
+  const sAttack = s.copy();
+  sAttack.set_node_fort(5);
+  const geomAttack = decodeMoveGeometry(sAttack, 0);
+  assert.strictEqual(geomAttack.isAttack, true);
+
+  // Card target: Highlanders (single node)
+  const geomHighlanders = decodeMoveGeometry(s, 462); // 462 is Highlanders at node 0
+  assert.strictEqual(geomHighlanders.type, 'Highlanders');
+  assert.strictEqual(geomHighlanders.fromNode, 0);
+  assert.strictEqual(geomHighlanders.toNode, 0);
+
+  // Coastal: Sea Trade
+  const geomST = decodeMoveGeometry(s, 187);
+  assert.strictEqual(geomST.type, 'Sea Trade');
+  assert.ok(geomST.fromNode !== null);
+  assert.ok(geomST.toNode !== null);
 });
 
 test('MCTS getTopCandidateLines respects K limits and traces notation', () => {
@@ -69,7 +87,56 @@ test('MCTS getTopCandidateLines respects K limits and traces notation', () => {
     assert.strictEqual(top5[i].rank, i + 1);
     assert.ok(typeof top5[i].eval === 'number');
     assert.ok(typeof top5[i].winrate === 'string');
+    assert.ok(top5[i].actionType);
   }
+
+  // Clamping when k exceeds available children (e.g. limit = 10 on 5 children)
+  const topClamped = mcts.getTopCandidateLines(10);
+  assert.strictEqual(topClamped.length, 5);
+});
+
+test('MCTS getTopCandidateLines handles empty or unsearched tree safely', () => {
+  const mcts = new MCTS(null);
+  assert.deepStrictEqual(mcts.getTopCandidateLines(3), []);
+
+  const s = new GameState();
+  s.default_setup();
+  mcts.root = new MCTSNode(s);
+  // Root exists but has 0 children
+  assert.deepStrictEqual(mcts.getTopCandidateLines(3), []);
+});
+
+test('MCTS getTopCandidateLines traces multi-ply variation lines', () => {
+  const s = new GameState();
+  s.default_setup();
+
+  const mcts = new MCTS(null);
+  const root = new MCTSNode(s);
+  root.is_expanded = true;
+
+  // Move 0 leads to state1
+  const s1 = s.copy();
+  s1.turn = 1;
+  s1.to_move = 1; // Mysore to move
+  const child0 = new MCTSNode(s1, root, 0, 0.5);
+  child0.visit_count = 100;
+  child0.is_expanded = true;
+
+  // Deep child: Mysore moves pass (move 461)
+  const s2 = s1.copy();
+  s2.to_move = 2; // British Card
+  const grandChild = new MCTSNode(s2, child0, 461, 0.5);
+  grandChild.visit_count = 80;
+  child0.children.set(461, grandChild);
+
+  root.children.set(0, child0);
+  mcts.root = root;
+
+  const lines = mcts.getTopCandidateLines(1);
+  assert.strictEqual(lines.length, 1);
+  // Should contain both plies
+  assert.ok(lines[0].lineNotation.includes('bom>sat'));
+  assert.ok(lines[0].lineNotation.includes('pass'));
 });
 
 test('MCTS getTopCandidateLines stops at luck states and adds luck indicator', () => {
@@ -115,4 +182,25 @@ test('HTML template includes candidate moves layer and UI settings controls', ()
   // Settings dropdown and toggle
   assert.ok(html.includes('id="top-k-candidates-select"'), 'Missing #top-k-candidates-select');
   assert.ok(html.includes('id="show-candidate-arrows-checkbox"'), 'Missing #show-candidate-arrows-checkbox');
+});
+
+test('CSS includes styling rules for candidate lines and tactical arrows', () => {
+  const cssPath = path.resolve(__dirname, '../../public/style.css');
+  const css = fs.readFileSync(cssPath, 'utf8');
+
+  assert.ok(css.includes('.engine-lines-container'), 'Missing .engine-lines-container in style.css');
+  assert.ok(css.includes('.engine-candidate-card'), 'Missing .engine-candidate-card in style.css');
+  assert.ok(css.includes('.candidate-arrow'), 'Missing .candidate-arrow in style.css');
+  assert.ok(css.includes('.candidate-rank-badge'), 'Missing .candidate-rank-badge in style.css');
+  assert.ok(css.includes('.luck-badge-pill'), 'Missing .luck-badge-pill in style.css');
+});
+
+test('Client script defines top-k settings and default values', () => {
+  const scriptPath = path.resolve(__dirname, '../../public/script.js');
+  const script = fs.readFileSync(scriptPath, 'utf8');
+
+  assert.ok(script.includes('topKCandidates:'), 'Missing topKCandidates setting');
+  assert.ok(script.includes('showCandidateArrows:'), 'Missing showCandidateArrows setting');
+  assert.ok(script.includes('renderCandidateArrows'), 'Missing renderCandidateArrows function');
+  assert.ok(script.includes('clearCandidateArrows'), 'Missing clearCandidateArrows function');
 });
