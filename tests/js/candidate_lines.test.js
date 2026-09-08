@@ -203,4 +203,61 @@ test('Client script defines top-k settings and default values', () => {
   assert.ok(script.includes('showCandidateArrows:'), 'Missing showCandidateArrows setting');
   assert.ok(script.includes('renderCandidateArrows'), 'Missing renderCandidateArrows function');
   assert.ok(script.includes('clearCandidateArrows'), 'Missing clearCandidateArrows function');
+  assert.ok(script.includes('getRankColor'), 'Missing getRankColor function for arbitrary k');
+  assert.ok(script.includes('ensureArrowMarker'), 'Missing ensureArrowMarker function for dynamic SVG markers');
 });
+
+test('MCTS getTopCandidateLines supports arbitrary positive integer K and handles fewer moves than K', () => {
+  const mockModel = { predict: () => ({ policy: new Float32Array(959).fill(1 / 959), value: 0.0 }) };
+  const mcts = new MCTS(mockModel, { simulations: 5 });
+
+  const s = new GameState();
+  const root = new MCTSNode(s, null, null, 1.0);
+
+  // Add exactly 3 children
+  for (let i = 0; i < 3; i++) {
+    const nextState = s.copy();
+    const child = new MCTSNode(nextState, root, i, 1.0);
+    child.visit_count = 10 - i;
+    child.value_sum = 2;
+    root.children.set(i, child);
+  }
+  mcts.root = root;
+
+  // When k is larger than available moves (e.g. k=10, k=50), it safely outputs all 3 valid lines
+  const candidatesK10 = mcts.getTopCandidateLines(10);
+  assert.strictEqual(candidatesK10.length, 3, 'Should output all 3 valid lines when k=10 > 3');
+
+  const candidatesK50 = mcts.getTopCandidateLines(50);
+  assert.strictEqual(candidatesK50.length, 3, 'Should output all 3 valid lines when k=50 > 3');
+
+  // When k is smaller (e.g. k=1, k=2), it outputs exactly k lines
+  const candidatesK1 = mcts.getTopCandidateLines(1);
+  assert.strictEqual(candidatesK1.length, 1);
+  assert.strictEqual(candidatesK1[0].rank, 1);
+
+  const candidatesK2 = mcts.getTopCandidateLines(2);
+  assert.strictEqual(candidatesK2.length, 2);
+  assert.strictEqual(candidatesK2[1].rank, 2);
+});
+
+test('DOM Architecture places eval bar & candidate lines in bottom-analysis-dock, not notation panel', () => {
+  const htmlPath = path.resolve(__dirname, '../../public/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+
+  // #bottom-analysis-dock must exist and contain #eval-panel and #engine-analysis-section
+  assert.ok(html.includes('id="bottom-analysis-dock"'), 'Missing #bottom-analysis-dock');
+  const dockIdx = html.indexOf('id="bottom-analysis-dock"');
+  const evalIdx = html.indexOf('id="eval-panel"');
+  const engineIdx = html.indexOf('id="engine-analysis-section"');
+  const notationIdx = html.indexOf('id="notation-panel"');
+
+  assert.ok(dockIdx < evalIdx, '#eval-panel must be inside #bottom-analysis-dock');
+  assert.ok(dockIdx < engineIdx, '#engine-analysis-section must be inside #bottom-analysis-dock');
+  assert.ok(engineIdx < notationIdx, '#engine-analysis-section must precede #notation-panel');
+
+  // #notation-tab-moves-content must NOT contain #engine-analysis-section
+  const notationContent = html.substring(notationIdx);
+  assert.ok(!notationContent.includes('id="engine-analysis-section"'), '#engine-analysis-section must NOT be in notation panel');
+});
+

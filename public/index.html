@@ -158,20 +158,7 @@
     </div>
 </header>
 
-<!-- PROGRESSIVE NEURAL NETWORK EVALUATION BAR (Active in top slot when toggled ON) -->
-<div id="eval-panel" class="eval-panel hidden">
-    <div class="eval-bar-container">
-        <div id="eval-bar-track" class="eval-bar-track">
-            <div id="eval-bar-mysore" class="eval-bar-mysore" style="width: 50%;"></div>
-            <div id="eval-bar-score" class="eval-bar-score">0.00</div>
-        </div>
-        <div class="eval-meta">
-            <span id="eval-sims-label" class="eval-sims-label">Engine: 0 sims</span>
-            <span id="eval-badge-container"></span>
-            <span id="eval-winrate-label" class="eval-winrate-label">Even Match</span>
-        </div>
-    </div>
-</div>
+
 
 <!-- TUTORIAL / RULES MENU DRAWER (Comprehensive Rules & Controls) -->
 <div id="tutorial-drawer" class="drawer-panel hidden">
@@ -615,14 +602,8 @@
 
                     <div style="margin-top: 10px;">
                         <label class="setting-label" for="top-k-candidates-select">TOP CANDIDATE MOVES (K)</label>
-                        <select id="top-k-candidates-select" class="mode-select" onchange="handleTopKCandidatesChange(this.value)">
-                            <option value="1">Top 1 Move (Solo Best Line)</option>
-                            <option value="2">Top 2 Moves</option>
-                            <option value="3" selected>Top 3 Moves (Default)</option>
-                            <option value="4">Top 4 Moves</option>
-                            <option value="5">Top 5 Moves</option>
-                        </select>
-                        <span class="setting-desc">Number of principal variation candidate lines to calculate and display.</span>
+                        <input type="number" id="top-k-candidates-select" class="mode-select" min="1" step="1" value="3" placeholder="e.g. 3" style="width: 100%; box-sizing: border-box;" onchange="handleTopKCandidatesChange(this.value)" oninput="handleTopKCandidatesChange(this.value)">
+                        <span class="setting-desc">Configure any positive integer for candidate lines (1, 2, 3, 5, 10...). When fewer valid moves exist, all valid lines are shown.</span>
                     </div>
 
                     <div style="margin-top: 8px;">
@@ -702,8 +683,12 @@
         </button>
     </div>
 
-    <!-- LEFT COLUMN: SULTANATE OF MYSORE CARDS & INTEL -->
-    <aside class="faction-column mysore-column" id="mysore-column">
+    <!-- MAIN GAMEPLAY PLAY-AREA (CARDS, MAP & BOTTOM ANALYSIS DOCK) -->
+    <div class="play-area" id="play-area">
+        <div class="game-middle-area" id="game-middle-area">
+
+            <!-- LEFT COLUMN: SULTANATE OF MYSORE CARDS & INTEL -->
+            <aside class="faction-column mysore-column" id="mysore-column">
         <div class="faction-column-header">
             <div class="faction-flag-banner">
                 <div class="faction-emblem-box mysore-emblem-box">
@@ -868,8 +853,46 @@
             <div id="british-cards-list" class="cards-deck">
                 <!-- Dynamically populated cards with wax seal strength badges -->
             </div>
-        </div>
-    </aside>
+        </aside>
+
+        </div><!-- /game-middle-area -->
+
+        <!-- BOTTOM ENGINE ANALYSIS & EVALUATION DOCK (Under Mysore, Map & British) -->
+        <div id="bottom-analysis-dock" class="bottom-analysis-dock hidden">
+            <!-- PROGRESSIVE NEURAL NETWORK EVALUATION BAR -->
+            <div id="eval-panel" class="eval-panel hidden">
+                <div class="eval-bar-container">
+                    <div id="eval-bar-track" class="eval-bar-track">
+                        <div id="eval-bar-mysore" class="eval-bar-mysore" style="width: 50%;"></div>
+                        <div id="eval-bar-score" class="eval-bar-score">0.00</div>
+                    </div>
+                    <div class="eval-meta">
+                        <span id="eval-sims-label" class="eval-sims-label">Engine: 0 sims</span>
+                        <span id="eval-badge-container"></span>
+                        <span id="eval-winrate-label" class="eval-winrate-label">Even Match</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Engine Multi-PV Candidate Lines Section -->
+            <div id="engine-analysis-section" class="engine-analysis-section hidden">
+                <div class="engine-analysis-header" onclick="toggleEngineLinesCollapse()">
+                    <div class="engine-analysis-title-wrap">
+                        <span class="engine-icon">🧠</span>
+                        <span class="engine-title">AI CANDIDATE MOVES</span>
+                        <span id="engine-k-badge" class="engine-k-badge">TOP 3</span>
+                    </div>
+                    <div class="engine-analysis-controls">
+                        <span id="engine-lines-summary" class="engine-lines-summary"></span>
+                        <button type="button" id="btn-toggle-engine-lines" class="engine-collapse-btn" title="Toggle Candidate Lines" aria-label="Toggle Candidate Lines">
+                            <span id="engine-lines-collapse-icon" class="engine-collapse-icon">▼</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="engine-lines-container" class="engine-lines-container"></div>
+            </div>
+        </div><!-- /bottom-analysis-dock -->
+    </div><!-- /play-area -->
 
     <!-- CHESS.COM STYLE NOTATION & GAME REVIEW PANEL (MOVES ONLY) -->
     <aside class="notation-panel" id="notation-panel">
@@ -890,23 +913,7 @@
                 <span id="notation-eval-tag" class="notation-eval-tag">0.00</span>
             </div>
 
-            <!-- AI Engine Multi-PV Candidate Lines Section -->
-            <div id="engine-analysis-section" class="engine-analysis-section hidden">
-                <div class="engine-analysis-header" onclick="toggleEngineLinesCollapse()">
-                    <div class="engine-analysis-title-wrap">
-                        <span class="engine-icon">🧠</span>
-                        <span class="engine-title">AI CANDIDATE MOVES</span>
-                        <span id="engine-k-badge" class="engine-k-badge">TOP 3</span>
-                    </div>
-                    <div class="engine-analysis-controls">
-                        <span id="engine-lines-summary" class="engine-lines-summary"></span>
-                        <button type="button" id="btn-toggle-engine-lines" class="engine-collapse-btn" title="Toggle Candidate Lines" aria-label="Toggle Candidate Lines">
-                            <span id="engine-lines-collapse-icon" class="engine-collapse-icon">▼</span>
-                        </button>
-                    </div>
-                </div>
-                <div id="engine-lines-container" class="engine-lines-container"></div>
-            </div>
+
 
             <!-- Scrollable Move Notation Table -->
             <div class="notation-table-wrap">

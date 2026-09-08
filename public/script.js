@@ -682,7 +682,36 @@ let settings = {
 };
 let lastEvalScore = null;
 let lastTopCandidateLines = [];
-const RANK_COLORS = ['#f59e0b', '#38bdf8', '#f43f5e', '#10b981', '#a855f7'];
+const RANK_COLORS = ['#f59e0b', '#38bdf8', '#f43f5e', '#10b981', '#a855f7', '#ec4899', '#06b6d4', '#84cc16', '#eab308', '#6366f1'];
+
+function getRankColor(rank) {
+  if (rank <= RANK_COLORS.length) {
+    return RANK_COLORS[rank - 1];
+  }
+  const hue = Math.round(((rank - 1) * 137.508) % 360);
+  return `hsl(${hue}, 85%, 55%)`;
+}
+
+function ensureArrowMarker(rank, color) {
+  const markerId = `ai-arrow-${rank}`;
+  let marker = document.getElementById(markerId);
+  if (!marker) {
+    const defs = document.querySelector('svg#board defs');
+    if (defs) {
+      marker = document.createElementNS(SVG_NS, 'marker');
+      marker.setAttribute('id', markerId);
+      marker.setAttribute('viewBox', '0 0 10 10');
+      marker.setAttribute('refX', '7');
+      marker.setAttribute('refY', '5');
+      marker.setAttribute('markerWidth', '6');
+      marker.setAttribute('markerHeight', '6');
+      marker.setAttribute('orient', 'auto-start-reverse');
+      marker.innerHTML = `<path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="${color}" />`;
+      defs.appendChild(marker);
+    }
+  }
+  return markerId;
+}
 
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx');
@@ -1770,12 +1799,15 @@ function handleSimsSliderInput(sliderPos) {
 // ==========================================================================
 function handleEvalToggle(enabled) {
   settings.showEval = enabled;
+  const dock = document.getElementById('bottom-analysis-dock');
   const panel = document.getElementById('eval-panel');
   if (enabled) {
-    panel.classList.remove('hidden');
+    if (dock) dock.classList.remove('hidden');
+    if (panel) panel.classList.remove('hidden');
     if (currentBitString) startProgressiveEval(currentBitString);
   } else {
-    panel.classList.add('hidden');
+    if (dock) dock.classList.add('hidden');
+    if (panel) panel.classList.add('hidden');
     clearCandidateArrows();
     const linesContainer = document.getElementById('engine-lines-container');
     if (linesContainer) linesContainer.innerHTML = '';
@@ -1786,8 +1818,12 @@ function handleEvalToggle(enabled) {
 }
 
 function handleTopKCandidatesChange(val) {
-  settings.topKCandidates = parseInt(val, 10) || 3;
+  settings.topKCandidates = Math.max(1, parseInt(val, 10) || 1);
   localStorage.setItem('tiger_top_k_candidates', settings.topKCandidates);
+  const input = document.getElementById('top-k-candidates-select');
+  if (input && String(input.value) !== String(settings.topKCandidates)) {
+    input.value = settings.topKCandidates;
+  }
   if (currentBitString && settings.showEval) {
     startProgressiveEval(currentBitString);
   }
@@ -1816,6 +1852,8 @@ function clearCandidateArrows() {
   if (summary) summary.textContent = '';
   const linesContainer = document.getElementById('engine-lines-container');
   if (linesContainer) linesContainer.innerHTML = '';
+  const dock = document.getElementById('bottom-analysis-dock');
+  if (dock && !settings.showEval) dock.classList.add('hidden');
 }
 window.clearCandidateArrows = clearCandidateArrows;
 
@@ -1868,7 +1906,8 @@ function renderCandidateArrows(topLines) {
 
   topLines.forEach(item => {
     const rank = item.rank || 1;
-    const color = RANK_COLORS[(rank - 1) % RANK_COLORS.length];
+    const color = getRankColor(rank);
+    ensureArrowMarker(rank, color);
 
     if (item.fromName && item.toName && item.fromName !== item.toName && NODES[item.fromName] && NODES[item.toName]) {
       const a = NODES[item.fromName];
@@ -1965,7 +2004,16 @@ async function startProgressiveEval(stateStr) {
     }
     lastEvalScore = rootNode.eval;
 
-    const k = settings.topKCandidates || 3;
+    const dock = document.getElementById('bottom-analysis-dock');
+    if (dock && settings.showEval) {
+      dock.classList.remove('hidden');
+    }
+    const panel = document.getElementById('eval-panel');
+    if (panel && settings.showEval) {
+      panel.classList.remove('hidden');
+    }
+
+    const k = Math.max(1, parseInt(settings.topKCandidates, 10) || 3);
     const topLines = mctsEngine.getTopCandidateLines(k);
     lastTopCandidateLines = topLines;
 
@@ -2011,11 +2059,12 @@ async function startProgressiveEval(stateStr) {
           let evalStr = evalVal.toFixed(2);
           if (evalVal > 0) evalStr = '+' + evalStr;
           const squareClass = evalVal > 0.05 ? 'british-favored' : (evalVal < -0.05 ? 'mysore-favored' : 'neutral');
-          const rankColor = RANK_COLORS[(item.rank - 1) % RANK_COLORS.length];
+          const rankColor = getRankColor(item.rank);
 
           const lineDiv = document.createElement('div');
           lineDiv.className = `engine-line engine-candidate-card rank-${item.rank}`;
           lineDiv.setAttribute('data-rank', item.rank);
+          lineDiv.style.borderLeftColor = rankColor;
           lineDiv.title = `Line: ${item.lineNotation}. Click to highlight arrow on map.`;
           lineDiv.onclick = () => highlightCandidateArrow(item.rank, true);
           lineDiv.onmouseenter = () => highlightCandidateArrow(item.rank, true);
@@ -3654,10 +3703,7 @@ function adjustBoardDimensions() {
   const debugConsole = document.getElementById('debug-move-console');
 
   let reservedHeight = 0;
-  if (evalPanel && !evalPanel.classList.contains('hidden')) {
-    reservedHeight += evalPanel.offsetHeight + 6;
-  }
-  if (debugConsole && !debugConsole.classList.contains('hidden')) {
+  if (debugConsole && !debugConsole.classList.contains('hidden') && boardSection.contains(debugConsole)) {
     reservedHeight += debugConsole.offsetHeight + 6;
   }
 

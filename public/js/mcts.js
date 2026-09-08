@@ -589,7 +589,8 @@
 
       const topLines = [];
       const rootState = this.root.state;
-      const effectiveLimit = Math.max(1, Math.min(Number(limit) || 3, sortedChildren.length));
+      const parsedLimit = Math.max(1, parseInt(limit, 10) || 3);
+      const effectiveLimit = Math.min(parsedLimit, sortedChildren.length);
 
       for (let i = 0; i < effectiveLimit; i++) {
         const [move, node] = sortedChildren[i];

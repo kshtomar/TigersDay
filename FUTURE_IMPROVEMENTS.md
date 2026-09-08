@@ -350,23 +350,23 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
   - Production observability metrics endpoint (`GET /api/metrics`) reporting MCTS simulations, cache hit rates, active spectator rooms, and inference latency percentiles ($p_{50}, p_{95}, p_{99}$).
   - Tested in [`tests/integration/test_api.py`](./tests/integration/test_api.py).
 
-#### 6.16 Top-K AI Candidate Moves Visualization, Principal Variation Line Tracing & Luck State Frontier
+#### 6.16 Top-K AI Candidate Moves Visualization, Principal Variation Line Tracing & Bottom Analysis Dock
 * **Architecture:** [`public/js/mcts.js`](./public/js/mcts.js), [`public/index.html`](./public/index.html), [`public/style.css`](./public/style.css), [`public/script.js`](./public/script.js)
 * **Status:** Completed
 * **Deliverables:**
   - `getTopCandidateLines(limit)` in client MCTS engine extracting top-$k$ ranked moves sorted by visit count and network priors.
   - Forward line simulation in standard algebraic notation (`notate`) tracing variations up to 10 plies deep.
   - **Luck State Frontier Invariant**: Halts line calculation when encountering stochastic state boundaries (`state.is_luck === true`, e.g., fortress assault battle initiation or card draws) and annotates lines with formatted badges (`[🎲 Battle: <Territory>]`, `[🎲 Luck Roll]`).
+  - **Bottom Map & Decks AI Analysis Dock (`#bottom-analysis-dock`)**: Relocated both the evaluation bar (`#eval-panel`) and top-$k$ candidate move cards into a unified, glassmorphic dock situated directly beneath the Mysore deck, board map, and British deck.
+  - **Proportional Board & Cards Scaling**: Flexbox architecture automatically scales the board height/width and faction card deck heights proportionally when the dock is visible, preventing window scrollbars or layout shifts outside the play area.
+  - **Dedicated Move Notation Sidebar**: Clean right-side `#notation-panel` dedicated purely to algebraic move history, turn header, stepping controls, and draw/resign actions.
+  - **Arbitrary Positive Integer $K$ Support**: Settings input accepts any positive integer ($k \ge 1$); dynamic SVG marker definitions and golden-ratio color generation for $k > 5$; edge cases with fewer valid moves than $k$ gracefully return all available valid moves without error.
   - Move geometry decoder (`decodeMoveGeometry`) extracting territory origins, destinations, coastal landing zones, single-node targets, and attack designations.
-  - Evaluation Panel candidate cards HUD (`#engine-lines-container`) rendering rank badges, win percentage, numerical eval, visit counts, and interactive hover states.
-  - SVG Board Tactical Layer (`#candidate-moves-layer`) featuring 5 color-coded marker arrows (`#ai-arrow-1` to `#ai-arrow-5`), midpoint rank pills, and animated target rings.
-  - User-configurable Settings drawer controls with `localStorage` persistence:
-    1. **Top Candidate Moves ($K$)**: Configurable selector from 1 to 5 moves.
-    2. **Visual Board Tactical Arrows**: Toggle to display or hide board arrows.
-  - Dedicated unit test suite in [`tests/js/candidate_lines.test.js`](./tests/js/candidate_lines.test.js) (8 tests covering geometry decoding, $K$-limit clamping, luck frontiers, multi-ply lines, empty trees, SVG defs, and script settings).
+  - SVG Board Tactical Layer (`#candidate-moves-layer`) featuring color-coded marker arrows, midpoint rank pills, and animated target rings.
+  - Dedicated unit test suite in [`tests/js/candidate_lines.test.js`](./tests/js/candidate_lines.test.js) (10 tests covering geometry decoding, arbitrary $K$ values, fewer moves than $K$ edge cases, luck frontiers, multi-ply lines, empty trees, SVG defs, bottom dock DOM hierarchy, and script settings).
 
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 119 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 121 passing automated tests across Python and JavaScript runtimes.*
 
 
