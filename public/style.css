@@ -2718,18 +2718,26 @@ svg#board {
 .historical-review-banner {
     width: 100%;
     max-width: 760px;
-    background: linear-gradient(135deg, #3d1c08 0%, #1c0e04 100%);
+    background: linear-gradient(135deg, #2b1406 0%, #150903 100%);
     border: 1.5px solid var(--mysore-gold);
-    border-radius: 4px;
-    padding: 3px 10px;
+    border-radius: 6px;
+    padding: 6px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.8), 0 0 10px var(--gold-glow);
-    margin-bottom: 2px;
+    gap: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.85), 0 0 12px var(--gold-glow);
+    margin-bottom: 4px;
     box-sizing: border-box;
     animation: fadeIn 0.2s ease-out;
+}
+
+.review-banner-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
 .review-banner-text {
@@ -2737,7 +2745,7 @@ svg#board {
     align-items: center;
     gap: 6px;
     font-family: var(--font-heading);
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     color: #ffe090;
     white-space: nowrap;
     overflow: hidden;
@@ -2756,6 +2764,129 @@ svg#board {
     letter-spacing: 0.08em;
     padding: 1px 5px;
     border-radius: 4px;
+}
+
+.review-banner-cards-hud {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.hist-card-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-family: var(--font-body);
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    white-space: nowrap;
+}
+
+.hist-card-pill.mysore-pill {
+    border-color: rgba(74, 222, 128, 0.45);
+    color: #bbf7d0;
+}
+
+.hist-card-pill.british-pill {
+    border-color: rgba(248, 113, 113, 0.45);
+    color: #fecaca;
+}
+
+.hist-pill-cards {
+    font-weight: 700;
+}
+
+.hist-pill-cards .hist-card-names {
+    font-weight: 500;
+    font-size: 0.65rem;
+    opacity: 0.95;
+}
+
+.hand-count-badge {
+    margin-left: 8px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(212, 163, 89, 0.4);
+    color: #ffd885;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    transition: all 0.2s ease;
+}
+
+.mysore-column .hand-count-badge {
+    border-color: rgba(85, 200, 85, 0.5);
+    color: #a7f3d0;
+}
+
+.british-column .hand-count-badge {
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+}
+
+/* Card Replay Status & Historical Action Highlights */
+.card-replay-status {
+    margin-left: auto;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.card-replay-status.status-active {
+    background: rgba(16, 185, 129, 0.25);
+    color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+}
+
+.card-replay-status.status-exhausted {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.player-card.card-historical-action {
+    border: 2px solid #ffd700 !important;
+    box-shadow: 0 0 14px rgba(255, 215, 0, 0.7), 0 2px 8px rgba(0,0,0,0.8) !important;
+}
+
+.player-card.card-historical-reclaimed {
+    border: 2px dashed #4ade80 !important;
+    box-shadow: 0 0 12px rgba(74, 222, 128, 0.6) !important;
+}
+
+.card-historical-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #fbbf24;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+    z-index: 5;
+    pointer-events: none;
+    text-transform: uppercase;
+}
+
+.card-historical-badge.card-reclaim-hist-badge {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    border-color: #34d399;
 }
 
 .btn-return-live {

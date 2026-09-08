@@ -33,7 +33,7 @@ This document provides a systematic architectural record of the **Tiger’s Day 
 Tiger's Day is an asymmetric strategic wargame combining historical simulation, deep reinforcement learning (AlphaZero + MCTS), 100% client-side WebAssembly ONNX inference, and WebRTC peer-to-peer multiplayer.
 
 ### Current System Health: **EXCELLENT (Production Ready)**
-- **Automated Verification:** 131 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
+- **Automated Verification:** 132 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
 - **Parity Guarantees:** 100% byte-for-byte mathematical parity between Python NumPy state transitions and JavaScript Uint8Array client transitions.
 - **Continuous Integration:** Multi-stage GitHub Actions CI pipeline executing bytecode compilation, Ruff linting, Node syntax verification, unit matrix tests, and end-to-end integration tests on every commit and PR.
 - **Model Efficiency:** Model compressed by ~72% via INT8 dynamic quantization ([`public/alphatiger.quant.onnx`](./public/alphatiger.quant.onnx), 431KB).
@@ -374,8 +374,15 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
     - Full gameplay integration across Human vs AI, P2P Multiplayer (opponent surrender vs self-surrender), and explicit Resign action clicks.
     - Automated test coverage in [`tests/js/sound.test.js`](./tests/js/sound.test.js) with zero external audio assets.
 
+  - **Replay Active Card Visibility & Historical Inspection HUD (`TDReplay`)**:
+    - Synchronizes `lastUiState` with historical snapshots during replay step-through, ensuring both player and opponent card decks accurately reflect active and exhausted card states.
+    - Historical review banner HUD (`#review-banner-cards-hud`) displaying compact active card pill tags (`#hist-mysore-cards-list`, `#hist-british-cards-list`) pinned above the board.
+    - Active hand count badges (`#mysore-hand-count`, `#british-hand-count`, `#mobile-mysore-count`, `#mobile-british-count`) reflecting real-time and historical card counts.
+    - Move highlight badges on cards (`PLAYED`, `POWER`, `TRADED`, `RECLAIMED`) and active/exhausted status pills.
+    - Automated test coverage in [`tests/js/replay.test.js`](./tests/js/replay.test.js).
+
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 131 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 132 passing automated tests across Python and JavaScript runtimes.*
 
 

@@ -41,10 +41,10 @@ flowchart TD
 | Target | Command | Duration | Coverage |
 | :--- | :--- | :--- | :--- |
 | **Lint & Syntax** | `npm run lint && python3 -m compileall -q ai game api tests` | ~0.08s | All JS, SW, HTML scripts, Python packages |
-| **Node.js Test Battery** | `npm test` | ~0.10s | Candidate Lines, Engine, Multiplayer, Sound, Replay, Lore, Tutorial, UI & Visual Regression (71 tests) |
+| **Node.js Test Battery** | `npm test` | ~0.10s | Candidate Lines, Engine, Multiplayer, Sound, Replay, Lore, Tutorial, UI & Visual Regression (72 tests) |
 | **Python Unit Tests** | `python3 -m unittest discover -s tests/unit -v` | ~0.30s | State, rules, neural, MCTS, replay, buffer, scenarios, evolution (38 tests) |
 | **Python Integration** | `python3 -m unittest discover -s tests/integration -v` | ~0.25s | 50-ply parity, FastAPI endpoints, lobby relay, multi-turn loop (22 tests) |
-| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.65s | All 131 test cases across entire stack (100% passing) |
+| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.65s | All 132 test cases across entire stack (100% passing) |
 
 ---
 
@@ -214,7 +214,7 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 
 ---
 
-## 7. JavaScript Multiplayer, Sound, Lore, Tutorial & Replay Tests (20 Tests)
+## 7. JavaScript Multiplayer, Sound, Lore, Tutorial & Replay Tests (21 Tests)
 
 ### 7.1 [`tests/js/multiplayer.test.js`](./tests/js/multiplayer.test.js) (5 Tests)
 108. **`MultiplayerManager - Room Code Generation Invariants`**: Validates random 4-character alphanumeric room code generation with character set guards.
@@ -241,10 +241,11 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 123. **`Guided Interactive Tutorial - should step forward and backward correctly through tutorial flow`**: Validates forward/backward stepping through interactive lesson cards.
 124. **`Guided Interactive Tutorial - should validate targeted tutorial moves`**: Enforces target territory validation during interactive guided steps.
 
-### 7.5 [`tests/js/replay.test.js`](./tests/js/replay.test.js) (3 Tests)
+### 7.5 [`tests/js/replay.test.js`](./tests/js/replay.test.js) (4 Tests)
 125. **`TDReplay - parseReplay validates structure and move boundaries`**: Verifies parser validation of `.tdr` replay files, structure headers, and move boundaries.
 126. **`TDReplay - exportReplay and exportTDR payload generation & normalization`**: Asserts `exportReplay` and `exportTDR` generate spec-compliant `.tdr` documents, handle integer arrays and move wrappers, normalize indices, and preserve match metadata.
 127. **`TDReplay - loadFromFile interface and HTML action button bindings`**: Validates `loadFromFile` async Promise and callback interface, and asserts `#btn-export-tdr`, `#btn-import-tdr`, and `#input-import-tdr` are wired correctly.
+128. **`TDReplay - Active Card Decks and Historical Inspection HUD synchronization`**: Verifies `#mysore-hand-count`, `#british-hand-count`, `#mobile-mysore-count`, `#mobile-british-count`, `#review-banner-cards-hud`, and asserts `handleHistoricalRender` updates `lastUiState` and marks played/active cards accurately during historical navigation.
 
 ---
 
@@ -252,14 +253,14 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 
 Located in [`tests/js/visual.test.js`](./tests/js/visual.test.js), these tests assert visual accessibility, color contrast, and SVG boundary clearance.
 
-128. **`Visual Regression – 10 Themes & WCAG Color Contrast Standards`**: Computes relative luminance and asserts contrast ratio $\ge 4.0:1$ across all 10 theme palettes.
-129. **`Visual Regression – 5 Unit Token Styles Definition & Integrity`**: Asserts all 5 unit styles are defined with valid CSS classes and rendering assets.
-130. **`Visual Regression – SVG Board Node Coordinates & Edge Clearance`**: Asserts all 25 nodes and forts fall strictly within padded bounds $[20, 740] \times [20, 860]$ in the viewBox.
-131. **`Visual Regression – Multi-Viewport Scaling & Hitbox Preservations`**: Confirms minimum interactive touch radius $\ge 8$px across mobile, tablet, laptop, and desktop viewports.
+129. **`Visual Regression – 10 Themes & WCAG Color Contrast Standards`**: Computes relative luminance and asserts contrast ratio $\ge 4.0:1$ across all 10 theme palettes.
+130. **`Visual Regression – 5 Unit Token Styles Definition & Integrity`**: Asserts all 5 unit styles are defined with valid CSS classes and rendering assets.
+131. **`Visual Regression – SVG Board Node Coordinates & Edge Clearance`**: Asserts all 25 nodes and forts fall strictly within padded bounds $[20, 740] \times [20, 860]$ in the viewBox.
+132. **`Visual Regression – Multi-Viewport Scaling & Hitbox Preservations`**: Confirms minimum interactive touch radius $\ge 8$px across mobile, tablet, laptop, and desktop viewports.
 
 ---
 
-## 9. Complete 131-Test Suite Matrix
+## 9. Complete 132-Test Suite Matrix
 
 | # | Test Name | File | Suite Stage | Target Component | Status |
 | :-: | :--- | :--- | :--- | :--- | :-: |
@@ -390,7 +391,8 @@ Located in [`tests/js/visual.test.js`](./tests/js/visual.test.js), these tests a
 | **125** | `TDReplay - parseReplay validates structure and move boundaries` | `tests/js/replay.test.js` | JS Replay | TDR Replay Parsing | Pass |
 | **126** | `TDReplay - exportReplay and exportTDR payload generation & normalization` | `tests/js/replay.test.js` | JS Replay | TDR Serialization & Format | Pass |
 | **127** | `TDReplay - loadFromFile interface and HTML action button bindings` | `tests/js/replay.test.js` | JS Replay | Async Loading & Button Wiring | Pass |
-| **128** | `Visual Regression – 10 Themes Contrast` | `tests/js/visual.test.js` | Visual | WCAG 2.1 AA/AAA Luminance | Pass |
-| **129** | `Visual Regression – 5 Unit Token Styles` | `tests/js/visual.test.js` | Visual | 5 Unit Aesthetics Integrity | Pass |
-| **130** | `Visual Regression – SVG Board Node Bounds` | `tests/js/visual.test.js` | Visual | SVG Bounds & Fort Clearance | Pass |
-| **131** | `Visual Regression – Multi-Viewport Scaling` | `tests/js/visual.test.js` | Visual | 4 Viewports & Tap Hitboxes | Pass |
+| **128** | `TDReplay - Active Card Decks & Historical Inspection HUD` | `tests/js/replay.test.js` | JS Replay | Active Card Visibility & Replay HUD | Pass |
+| **129** | `Visual Regression – 10 Themes Contrast` | `tests/js/visual.test.js` | Visual | WCAG 2.1 AA/AAA Luminance | Pass |
+| **130** | `Visual Regression – 5 Unit Token Styles` | `tests/js/visual.test.js` | Visual | 5 Unit Aesthetics Integrity | Pass |
+| **131** | `Visual Regression – SVG Board Node Bounds` | `tests/js/visual.test.js` | Visual | SVG Bounds & Fort Clearance | Pass |
+| **132** | `Visual Regression – Multi-Viewport Scaling` | `tests/js/visual.test.js` | Visual | 4 Viewports & Tap Hitboxes | Pass |

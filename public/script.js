@@ -1572,7 +1572,11 @@ function renderCardDeck(faction, availArray) {
 
     const headerRow = document.createElement('div');
     headerRow.className = 'card-header-row';
-    headerRow.innerHTML = `<span class="card-name">${card.name}</span>`;
+    let statusPillHtml = '';
+    if (isViewingHistory) {
+      statusPillHtml = `<span class="card-replay-status ${isUsable ? 'status-active' : 'status-exhausted'}">${isUsable ? 'ACTIVE' : 'USED'}</span>`;
+    }
+    headerRow.innerHTML = `<span class="card-name">${card.name}</span>${statusPillHtml}`;
     contentWrap.appendChild(headerRow);
 
     const desc = document.createElement('div');
@@ -1594,13 +1598,37 @@ function renderCardDeck(faction, availArray) {
     reclaim.textContent = 'RECLAIM';
     cardDiv.appendChild(reclaim);
 
+    // 6. Historical Inspection Move Highlight Badge
+    if (isViewingHistory && browsingHistoryIndex >= 0 && browsingHistoryIndex < gameHistory.length) {
+      const histEntry = gameHistory[browsingHistoryIndex];
+      if (histEntry) {
+        const cardInfo = getCardInfoForMove(histEntry.moveIdx);
+        if (cardInfo && cardInfo.faction === faction && cardInfo.cardName === card.name) {
+          cardDiv.classList.add('card-historical-action');
+          const actionBadge = document.createElement('div');
+          actionBadge.className = 'card-historical-badge';
+          actionBadge.textContent = cardInfo.isTrade ? 'TRADED' : (cardInfo.isPower ? 'POWER' : 'PLAYED');
+          actionBadge.title = `Card ${cardInfo.isTrade ? 'traded' : 'played'} on Move #${histEntry.step}`;
+          cardDiv.appendChild(actionBadge);
+        }
+        if (cardInfo && cardInfo.faction === faction && cardInfo.isTrade && cardInfo.tradeTargetCard === index) {
+          cardDiv.classList.add('card-historical-reclaimed');
+          const reclaimBadge = document.createElement('div');
+          reclaimBadge.className = 'card-historical-badge card-reclaim-hist-badge';
+          reclaimBadge.textContent = 'RECLAIMED';
+          reclaimBadge.title = `Card reclaimed from discard on Move #${histEntry.step}`;
+          cardDiv.appendChild(reclaimBadge);
+        }
+      }
+    }
+
     cardDiv.addEventListener('click', (e) => {
       e.stopPropagation();
       handleCardBodyClick(faction, index, card.name, isUsable);
     });
 
-    // 6. AI Candidate Move Number Badge (Clean number with matching color)
-    if (settings.showCandidateArrows && lastTopCandidateLines && lastTopCandidateLines.length > 0) {
+    // 7. AI Candidate Move Number Badge (Suppressed in historical inspection)
+    if (!isViewingHistory && settings.showCandidateArrows && lastTopCandidateLines && lastTopCandidateLines.length > 0) {
       const rec = lastTopCandidateLines.find(line => {
         const info = getCardInfoForMove(line.firstMove);
         return info && info.faction === faction && info.cardName === card.name;
@@ -2491,8 +2519,8 @@ function renderNotationPanel() {
       btnLive.classList.remove('live-active');
     }
   } else {
-    if (btnStart) btnStart.disabled = browsingHistoryIndex <= 0;
-    if (btnPrev) btnPrev.disabled = browsingHistoryIndex <= 0;
+    if (btnStart) btnStart.disabled = browsingHistoryIndex <= -1;
+    if (btnPrev) btnPrev.disabled = browsingHistoryIndex <= -1;
     if (btnNext) btnNext.disabled = false;
     if (btnLive) {
       btnLive.disabled = false;
@@ -2505,7 +2533,8 @@ function renderNotationPanel() {
 // HISTORICAL STATE INSPECTION (READ-ONLY)
 // ──────────────────────────────────────────────────────────────────────────
 function viewHistoricalStep(stepIndex) {
-  if (stepIndex < 0 || stepIndex >= gameHistory.length) return;
+  if (gameHistory.length === 0) return;
+  if (stepIndex < -1 || stepIndex >= gameHistory.length) return;
 
   if (!isViewingHistory) {
     liveGameState = currentGameState.copy();
@@ -2514,9 +2543,28 @@ function viewHistoricalStep(stepIndex) {
   isViewingHistory = true;
   browsingHistoryIndex = stepIndex;
 
-  const entry = gameHistory[stepIndex];
   try {
-    const histState = new GameState().read_str(entry.stateAfterStr);
+    let histState;
+    let entry;
+    if (stepIndex === -1) {
+      histState = new GameState().read_str(gameHistory[0].stateBeforeStr);
+      entry = {
+        step: 0,
+        turn: 1,
+        actor: 'british',
+        moveIdx: -1,
+        notation: 'Start',
+        desc: 'Initial starting board position',
+        stateBeforeStr: gameHistory[0].stateBeforeStr,
+        stateAfterStr: gameHistory[0].stateBeforeStr,
+        hasLuck: false,
+        luckDetail: null
+      };
+    } else {
+      entry = gameHistory[stepIndex];
+      histState = new GameState().read_str(entry.stateAfterStr);
+    }
+
     currentGameState = histState;
 
     const gameData = TDEngine.generateGameData(histState, matchMode, humanPlayerSide);
@@ -2527,7 +2575,11 @@ function viewHistoricalStep(stepIndex) {
     const banner = document.getElementById('historical-review-banner');
     const title = document.getElementById('review-banner-title');
     if (banner && title) {
-      title.textContent = `Viewing Move #${entry.step} (${entry.notation}) · ${entry.actor === 'british' ? 'British' : 'Mysore'} Turn ${entry.turn}`;
+      if (stepIndex === -1) {
+        title.textContent = 'Viewing Starting Position · Initial Setup (Turn 1)';
+      } else {
+        title.textContent = `Viewing Move #${entry.step} (${entry.notation}) · ${entry.actor === 'british' ? 'British' : 'Mysore'} Turn ${entry.turn}`;
+      }
       banner.classList.remove('hidden');
     }
 
@@ -2540,8 +2592,10 @@ function viewHistoricalStep(stepIndex) {
 }
 
 function handleHistoricalRender(data, entry) {
+  lastUiState = data.ui_state;
   clearAllInteractionState();
   currentMoves = []; // Disallow moves in historical review mode
+  if (typeof clearCandidateArrows === 'function') clearCandidateArrows();
 
   if (data.ui_state && data.ui_state.nodes) {
     data.ui_state.nodes.forEach(nodeData => {
@@ -2566,6 +2620,7 @@ function handleHistoricalRender(data, entry) {
 
   window.renderNodes();
   renderAllCards();
+  updateHistoricalCardsHUD(data, entry);
 
   // Update header in review mode
   const header = document.getElementById('turn-header');
@@ -2579,8 +2634,45 @@ function handleHistoricalRender(data, entry) {
       ? 'app-header british-phase historical-mode'
       : 'app-header mysore-phase historical-mode';
   }
-  if (counter) counter.textContent = `HISTORY · MOVE #${entry.step}`;
-  if (title) title.textContent = `${entry.actor.toUpperCase()}: ${entry.notation}`;
+  if (counter) counter.textContent = entry.step > 0 ? `HISTORY · MOVE #${entry.step}` : `HISTORY · START POSITION`;
+  if (title) title.textContent = entry.step > 0 ? `${entry.actor.toUpperCase()}: ${entry.notation}` : `GAME START SETUP`;
+  if (instruction) instruction.textContent = `Reviewing historical board & card state · Read Only`;
+}
+
+function updateHistoricalCardsHUD(data, entry) {
+  const mList = document.getElementById('hist-mysore-cards-list');
+  const bList = document.getElementById('hist-british-cards-list');
+  if (!data || !data.ui_state) return;
+
+  const mCards = data.ui_state.mysore_cards || [];
+  const bCards = data.ui_state.british_cards || [];
+
+  const mActiveNames = [];
+  const bActiveNames = [];
+
+  mCards.forEach((avail, idx) => {
+    if (avail && MYSORE_CARD_DATA[idx]) {
+      mActiveNames.push(MYSORE_CARD_DATA[idx].name);
+    }
+  });
+
+  bCards.forEach((avail, idx) => {
+    if (avail && BRITISH_CARD_DATA[idx]) {
+      bActiveNames.push(BRITISH_CARD_DATA[idx].name);
+    }
+  });
+
+  if (mList) {
+    const count = mActiveNames.length;
+    mList.innerHTML = `<span class="hist-card-count">${count}/6 Active</span>` +
+      (count > 0 ? `: <span class="hist-card-names">${mActiveNames.join(', ')}</span>` : ' (All Exhausted)');
+  }
+
+  if (bList) {
+    const count = bActiveNames.length;
+    bList.innerHTML = `<span class="hist-card-count">${count}/6 Active</span>` +
+      (count > 0 ? `: <span class="hist-card-names">${bActiveNames.join(', ')}</span>` : ' (All Exhausted)');
+  }
 }
 
 function returnToLiveGame() {
@@ -2610,6 +2702,8 @@ function stepHistoryPrev() {
     viewHistoricalStep(gameHistory.length - 1);
   } else if (browsingHistoryIndex > 0) {
     viewHistoricalStep(browsingHistoryIndex - 1);
+  } else if (browsingHistoryIndex === 0) {
+    viewHistoricalStep(-1);
   }
 }
 
