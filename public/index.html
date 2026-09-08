@@ -170,8 +170,6 @@
             <span id="eval-badge-container"></span>
             <span id="eval-winrate-label" class="eval-winrate-label">Even Match</span>
         </div>
-        <!-- AI Top Candidate Moves & Notation Lines -->
-        <div id="engine-lines-container" class="engine-lines-container"></div>
     </div>
 </div>
 
@@ -738,6 +736,12 @@
 
         <!-- MAIN INTERACTIVE SVG BOARD (Placed first to align top with Mysore and British) -->
         <div class="board-card" id="board-card">
+            <!-- Floating Board AI Tactical HUD Pill -->
+            <div id="board-ai-pill" class="board-ai-pill hidden" onclick="highlightCandidateArrow(1)" title="AI top recommendation. Click to highlight arrow on map.">
+                <span class="ai-pill-icon">💡</span>
+                <span id="board-ai-pill-text" class="ai-pill-text">AI Best</span>
+                <span id="board-ai-pill-eval" class="ai-pill-eval">+0.00</span>
+            </div>
             <svg id="board" viewBox="0 0 760 880" width="760" height="880" preserveAspectRatio="xMidYMin meet" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="seaGrad" x1="0" y1="0" x2="1" y2="1">
@@ -884,6 +888,24 @@
             <div class="notation-phase-bar">
                 <span id="notation-phase-name" class="notation-phase-name">Turn 1 · British Action Phase</span>
                 <span id="notation-eval-tag" class="notation-eval-tag">0.00</span>
+            </div>
+
+            <!-- AI Engine Multi-PV Candidate Lines Section -->
+            <div id="engine-analysis-section" class="engine-analysis-section hidden">
+                <div class="engine-analysis-header" onclick="toggleEngineLinesCollapse()">
+                    <div class="engine-analysis-title-wrap">
+                        <span class="engine-icon">🧠</span>
+                        <span class="engine-title">AI CANDIDATE MOVES</span>
+                        <span id="engine-k-badge" class="engine-k-badge">TOP 3</span>
+                    </div>
+                    <div class="engine-analysis-controls">
+                        <span id="engine-lines-summary" class="engine-lines-summary"></span>
+                        <button type="button" id="btn-toggle-engine-lines" class="engine-collapse-btn" title="Toggle Candidate Lines" aria-label="Toggle Candidate Lines">
+                            <span id="engine-lines-collapse-icon" class="engine-collapse-icon">▼</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="engine-lines-container" class="engine-lines-container"></div>
             </div>
 
             <!-- Scrollable Move Notation Table -->

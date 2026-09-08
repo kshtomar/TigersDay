@@ -1808,8 +1808,25 @@ window.handleShowCandidateArrowsToggle = handleShowCandidateArrowsToggle;
 function clearCandidateArrows() {
   const layer = document.getElementById('candidate-moves-layer');
   if (layer) layer.innerHTML = '';
+  const boardPill = document.getElementById('board-ai-pill');
+  if (boardPill) boardPill.classList.add('hidden');
+  const section = document.getElementById('engine-analysis-section');
+  if (section) section.classList.add('hidden');
+  const summary = document.getElementById('engine-lines-summary');
+  if (summary) summary.textContent = '';
+  const linesContainer = document.getElementById('engine-lines-container');
+  if (linesContainer) linesContainer.innerHTML = '';
 }
 window.clearCandidateArrows = clearCandidateArrows;
+
+function toggleEngineLinesCollapse() {
+  const section = document.getElementById('engine-analysis-section');
+  if (!section) return;
+  section.classList.toggle('collapsed');
+  const isCollapsed = section.classList.contains('collapsed');
+  localStorage.setItem('tiger_candidate_lines_collapsed', isCollapsed ? 'true' : 'false');
+}
+window.toggleEngineLinesCollapse = toggleEngineLinesCollapse;
 
 function highlightCandidateArrow(rank, active) {
   const arrows = document.querySelectorAll(`.candidate-arrow-${rank}`);
@@ -1954,6 +1971,38 @@ async function startProgressiveEval(stateStr) {
 
     renderCandidateArrows(topLines);
 
+    const section = document.getElementById('engine-analysis-section');
+    const badgeK = document.getElementById('engine-k-badge');
+    const summary = document.getElementById('engine-lines-summary');
+    const boardPill = document.getElementById('board-ai-pill');
+    const boardPillText = document.getElementById('board-ai-pill-text');
+    const boardPillEval = document.getElementById('board-ai-pill-eval');
+
+    if (topLines.length > 0) {
+      if (section) section.classList.remove('hidden');
+      if (badgeK) badgeK.textContent = `TOP ${topLines.length}`;
+
+      const best = topLines[0];
+      const bestEvalStr = (best.eval > 0 ? '+' : '') + best.eval.toFixed(2);
+      if (summary) {
+        summary.textContent = `1. ${best.firstMoveNotation} (${bestEvalStr})`;
+      }
+
+      if (boardPill && settings.showCandidateArrows) {
+        boardPill.classList.remove('hidden');
+        if (boardPillText) boardPillText.textContent = `AI: ${best.firstMoveNotation}`;
+        if (boardPillEval) {
+          boardPillEval.textContent = bestEvalStr;
+          boardPillEval.style.color = best.eval > 0.05 ? '#fca5a5' : (best.eval < -0.05 ? '#86efac' : '#93c5fd');
+        }
+      } else if (boardPill) {
+        boardPill.classList.add('hidden');
+      }
+    } else {
+      if (section) section.classList.add('hidden');
+      if (boardPill) boardPill.classList.add('hidden');
+    }
+
     if (linesContainer) {
       linesContainer.innerHTML = '';
       if (topLines.length > 0) {
@@ -1967,10 +2016,12 @@ async function startProgressiveEval(stateStr) {
           const lineDiv = document.createElement('div');
           lineDiv.className = `engine-line engine-candidate-card rank-${item.rank}`;
           lineDiv.setAttribute('data-rank', item.rank);
+          lineDiv.title = `Line: ${item.lineNotation}. Click to highlight arrow on map.`;
+          lineDiv.onclick = () => highlightCandidateArrow(item.rank, true);
           lineDiv.onmouseenter = () => highlightCandidateArrow(item.rank, true);
           lineDiv.onmouseleave = () => highlightCandidateArrow(item.rank, false);
 
-          const luckBadge = item.reachedLuck ? `<span class="luck-badge-pill" title="Line calculates up to a probabilistic battle/luck state">🎲 Luck State</span>` : '';
+          const luckBadge = item.reachedLuck ? `<span class="luck-badge-pill" title="Calculates up to a probabilistic battle/luck state">🎲 Luck State</span>` : '';
 
           lineDiv.innerHTML = `
             <div class="candidate-meta-row">
@@ -3386,6 +3437,13 @@ function syncUIStateOnLoad() {
   const arrowsCheckbox = document.getElementById('show-candidate-arrows-checkbox');
   if (arrowsCheckbox) {
     arrowsCheckbox.checked = settings.showCandidateArrows !== false;
+  }
+
+  // 11. Sync Candidate Lines Collapsed State
+  const isCollapsed = localStorage.getItem('tiger_candidate_lines_collapsed') === 'true';
+  const section = document.getElementById('engine-analysis-section');
+  if (section && isCollapsed) {
+    section.classList.add('collapsed');
   }
 }
 
