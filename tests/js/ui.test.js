@@ -52,8 +52,11 @@ test('HTML Template - Responsive Containers & Layout Sections', () => {
 
   const requiredContainers = [
     'id="turn-header"',
+    'id="play-area"',
+    'id="game-middle-area"',
     'id="board-section"',
     'id="board-card"',
+    'id="bottom-analysis-dock"',
     'id="eval-panel"',
     'id="mysore-column"',
     'id="british-column"',

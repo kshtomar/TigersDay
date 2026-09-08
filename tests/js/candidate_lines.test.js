@@ -261,3 +261,79 @@ test('DOM Architecture places eval bar & candidate lines in bottom-analysis-dock
   assert.ok(!notationContent.includes('id="engine-analysis-section"'), '#engine-analysis-section must NOT be in notation panel');
 });
 
+test('MCTS getTopCandidateLines boundary values, string inputs, and monotonicity', () => {
+  const mockModel = { predict: () => ({ policy: new Float32Array(959).fill(1 / 959), value: 0.0 }) };
+  const mcts = new MCTS(mockModel, { simulations: 5 });
+  const s = new GameState();
+  const root = new MCTSNode(s, null, null, 1.0);
+
+  // Add 4 children with distinct visit counts
+  const visitCounts = [45, 30, 15, 8];
+  for (let i = 0; i < visitCounts.length; i++) {
+    const nextState = s.copy();
+    const child = new MCTSNode(nextState, root, i, 1.0);
+    child.visit_count = visitCounts[i];
+    child.value_sum = visitCounts[i] * 0.2;
+    root.children.set(i, child);
+  }
+  mcts.root = root;
+
+  // String input limit e.g. "3"
+  const candStr = mcts.getTopCandidateLines("3");
+  assert.strictEqual(candStr.length, 3);
+
+  // Negative or zero limit defaults safely to at least 1 / safe limit
+  const candNeg = mcts.getTopCandidateLines(-5);
+  assert.ok(candNeg.length >= 1 && candNeg.length <= 4);
+
+  const candZero = mcts.getTopCandidateLines(0);
+  assert.ok(candZero.length >= 1 && candZero.length <= 4);
+
+  // Large limit e.g. 100 on 4 children outputs all 4
+  const candLarge = mcts.getTopCandidateLines(100);
+  assert.strictEqual(candLarge.length, 4);
+
+  // Monotonicity invariants: visits must be non-increasing, ranks 1, 2, 3, 4
+  for (let i = 0; i < candLarge.length; i++) {
+    assert.strictEqual(candLarge[i].rank, i + 1, `Rank should be ${i + 1}`);
+    assert.ok(typeof candLarge[i].eval === 'number' && !isNaN(candLarge[i].eval), 'eval must be a valid number');
+    assert.ok(typeof candLarge[i].visits === 'number' && candLarge[i].visits > 0, 'visits must be positive');
+    if (i > 0) {
+      assert.ok(candLarge[i - 1].visits >= candLarge[i].visits, 'Visits must be descending/non-increasing');
+    }
+  }
+});
+
+test('Settings input attributes and client script parsing invariants', () => {
+  const htmlPath = path.resolve(__dirname, '../../public/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+
+  // Input attributes for positive integer entry
+  assert.ok(html.includes('type="number"'), 'Top-k input must have type="number"');
+  assert.ok(html.includes('id="top-k-candidates-select"'), 'Top-k input must retain id="top-k-candidates-select"');
+  assert.ok(html.includes('min="1"'), 'Top-k input must have min="1" constraint');
+  assert.ok(html.includes('step="1"'), 'Top-k input must have step="1" integer constraint');
+
+  const scriptPath = path.resolve(__dirname, '../../public/script.js');
+  const script = fs.readFileSync(scriptPath, 'utf8');
+
+  // Verify handleTopKCandidatesChange parses with Math.max(1, ...)
+  assert.ok(script.includes('Math.max(1,'), 'handleTopKCandidatesChange must clamp to minimum of 1');
+});
+
+test('CSS layout rules guarantee horizontal scrolling rail and responsive display contents', () => {
+  const cssPath = path.resolve(__dirname, '../../public/style.css');
+  const css = fs.readFileSync(cssPath, 'utf8');
+
+  // Horizontal scrolling rail in dock
+  assert.ok(css.includes('.bottom-analysis-dock'), 'Missing .bottom-analysis-dock in style.css');
+  assert.ok(css.includes('overflow-x: auto'), 'Candidate lines container must have overflow-x: auto');
+  assert.ok(css.includes('flex-direction: row'), 'Candidate lines container must be flex-direction: row');
+
+  // Responsive tablet/mobile display: contents to preserve grid
+  assert.ok(css.includes('display: contents'), 'Must use display: contents for mobile/tablet responsive layout');
+  assert.ok(css.includes('.play-area'), 'Missing .play-area in style.css');
+  assert.ok(css.includes('.game-middle-area'), 'Missing .game-middle-area in style.css');
+});
+
+
