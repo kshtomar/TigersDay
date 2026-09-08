@@ -3970,45 +3970,97 @@ if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || wi
 function adjustBoardDimensions() {
   const boardSection = document.getElementById('board-section');
   const boardCard = document.getElementById('board-card');
+  const gameMiddleArea = document.getElementById('game-middle-area');
   if (!boardSection || !boardCard) return;
 
-  const evalPanel = document.getElementById('eval-panel');
-  const debugConsole = document.getElementById('debug-move-console');
+  const mysoreCol = document.getElementById('mysore-column');
+  const britishCol = document.getElementById('british-column');
 
   let reservedHeight = 0;
+  const debugConsole = document.getElementById('debug-move-console');
   if (debugConsole && !debugConsole.classList.contains('hidden') && boardSection.contains(debugConsole)) {
     reservedHeight += debugConsole.offsetHeight + 6;
   }
+  const banner = document.getElementById('historical-review-banner');
+  if (banner && !banner.classList.contains('hidden') && boardSection.contains(banner)) {
+    reservedHeight += banner.offsetHeight + 4;
+  }
 
-  const availWidth = boardSection.clientWidth;
-  const availHeight = Math.max(100, boardSection.clientHeight - reservedHeight);
+  // Detect horizontal desktop layout (Mysore and British cards attached to left & right of board)
+  const isDesktopRow = window.innerWidth >= 1024 && gameMiddleArea;
+
+  let availWidth = 0;
+  let availHeight = 0;
+
+  if (isDesktopRow) {
+    const mysoreWidth = (mysoreCol && window.getComputedStyle(mysoreCol).display !== 'none') ? mysoreCol.offsetWidth : 0;
+    const britishWidth = (britishCol && window.getComputedStyle(britishCol).display !== 'none') ? britishCol.offsetWidth : 0;
+    availWidth = Math.max(100, gameMiddleArea.clientWidth - mysoreWidth - britishWidth);
+    availHeight = Math.max(100, gameMiddleArea.clientHeight - reservedHeight);
+  } else {
+    availWidth = boardSection.clientWidth || (gameMiddleArea ? gameMiddleArea.clientWidth : window.innerWidth);
+    availHeight = Math.max(100, (boardSection.clientHeight || (gameMiddleArea ? gameMiddleArea.clientHeight : 500)) - reservedHeight);
+  }
+
   if (availWidth <= 0 || availHeight <= 0) return;
 
   const aspect = 760 / 880;
 
   let targetWidth, targetHeight;
   if (availWidth / availHeight > aspect) {
-    // Section is wider than map -> height is the limiting constraint
+    // Height is the limiting constraint
     targetHeight = availHeight;
     targetWidth = targetHeight * aspect;
   } else {
-    // Section is taller than map -> width is the limiting constraint
+    // Width is the limiting constraint
     targetWidth = availWidth;
     targetHeight = targetWidth / aspect;
   }
 
-  boardCard.style.width = `${Math.floor(targetWidth)}px`;
-  boardCard.style.height = `${Math.floor(targetHeight)}px`;
+  targetWidth = Math.floor(targetWidth);
+  targetHeight = Math.floor(targetHeight);
+
+  boardCard.style.width = `${targetWidth}px`;
+  boardCard.style.height = `${targetHeight}px`;
+
+  if (isDesktopRow) {
+    boardSection.style.width = `${targetWidth}px`;
+    boardSection.style.flex = `0 0 ${targetWidth}px`;
+
+    // Seamlessly match card column heights to board so cards are perfectly attached top-to-bottom
+    const totalHeight = targetHeight + reservedHeight;
+    if (mysoreCol) {
+      mysoreCol.style.height = `${totalHeight}px`;
+      mysoreCol.style.maxHeight = `${totalHeight}px`;
+    }
+    if (britishCol) {
+      britishCol.style.height = `${totalHeight}px`;
+      britishCol.style.maxHeight = `${totalHeight}px`;
+    }
+  } else {
+    boardSection.style.width = '';
+    boardSection.style.flex = '';
+    if (mysoreCol) {
+      mysoreCol.style.height = '';
+      mysoreCol.style.maxHeight = '';
+    }
+    if (britishCol) {
+      britishCol.style.height = '';
+      britishCol.style.maxHeight = '';
+    }
+  }
 }
 
 function initBoardResponsiveAutoSizer() {
   adjustBoardDimensions();
-  const boardSection = document.getElementById('board-section');
-  if (boardSection && window.ResizeObserver) {
+  const gameMiddleArea = document.getElementById('game-middle-area');
+  const playArea = document.getElementById('play-area');
+  if (window.ResizeObserver) {
     const observer = new ResizeObserver(() => {
       adjustBoardDimensions();
     });
-    observer.observe(boardSection);
+    if (gameMiddleArea) observer.observe(gameMiddleArea);
+    if (playArea) observer.observe(playArea);
   }
   window.addEventListener('resize', adjustBoardDimensions);
   window.addEventListener('orientationchange', adjustBoardDimensions);

@@ -419,3 +419,29 @@ test('SEO & Search Indexing - robots.txt, sitemap.xml & Structured Data', () => 
   assert.ok(html.includes('Kingdom of Mysore'), 'Noscript must contain historical overview');
 });
 
+test('Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping', () => {
+  const css = fs.readFileSync(CSS_PATH, 'utf8');
+  const script = fs.readFileSync(SCRIPT_PATH, 'utf8');
+
+  // Verify CSS zero-gap layout for middle game area
+  assert.ok(css.includes('.game-middle-area'), 'Must define .game-middle-area');
+  assert.ok(css.includes('gap: 0;'), 'Must specify gap: 0; for flush card-to-map attachment');
+
+  // Verify border radius clipping on desktop
+  assert.ok(css.includes('.mysore-column .player-card'), 'Must style Mysore player-cards');
+  assert.ok(css.includes('.mysore-column .faction-column-header'), 'Must style Mysore header');
+  assert.ok(css.includes('border-top-right-radius: 0 !important;'), 'Mysore cards/header must clip cleanly to board');
+  assert.ok(css.includes('border-right: none !important;'), 'Mysore right border must be omitted for seamless seam');
+
+  assert.ok(css.includes('.british-column .player-card'), 'Must style British player-cards');
+  assert.ok(css.includes('.british-column .faction-column-header'), 'Must style British header');
+  assert.ok(css.includes('border-top-left-radius: 0 !important;'), 'British cards/header must clip cleanly to board');
+  assert.ok(css.includes('border-left: none !important;'), 'British left border must be omitted for seamless seam');
+
+  // Verify responsive auto-sizer aligns board-section and card heights to eliminate gaps
+  assert.ok(script.includes('boardSection.style.flex = `0 0 ${targetWidth}px`;'), 'Script must clamp boardSection flex to targetWidth');
+  assert.ok(script.includes('mysoreCol.style.height = `${totalHeight}px`;'), 'Mysore column height must match board card');
+  assert.ok(script.includes('britishCol.style.height = `${totalHeight}px`;'), 'British column height must match board card');
+});
+
+

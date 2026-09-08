@@ -1541,9 +1541,9 @@ body {
     min-width: 0;
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 0;
     box-sizing: border-box;
 }
 
@@ -2391,11 +2391,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     min-height: 0;
     min-width: 0;
     position: relative;
     box-sizing: border-box;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
 }
 
 .board-card {
@@ -2411,7 +2414,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto;
+    margin: 0;
+    position: relative;
+    z-index: 2;
     box-sizing: border-box;
 }
 
@@ -3306,12 +3311,13 @@ svg#board {
         min-width: 0;
         display: flex;
         flex-direction: row;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        gap: 12px;
+        gap: 0;
     }
     .faction-column.mysore-column {
         flex: 0 0 270px;
+        width: 270px;
         height: 100%;
         max-height: 100%;
         display: flex !important;
@@ -3320,6 +3326,7 @@ svg#board {
     }
     .faction-column.british-column {
         flex: 0 0 270px;
+        width: 270px;
         height: 100%;
         max-height: 100%;
         display: flex !important;
@@ -3340,10 +3347,12 @@ svg#board {
         flex-direction: column;
     }
     .board-section {
-        flex: 1 1 auto;
-        height: 100%;
+        flex: 0 0 auto;
+        height: auto;
         max-height: 100%;
-        justify-content: flex-start;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
     }
     .faction-column-header {
         height: 44px;
@@ -3425,7 +3434,9 @@ svg#board {
         min-width: 0;
         display: flex;
         flex-direction: row;
-        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
     }
     .mysore-column {
         flex: 0 0 clamp(230px, 19vw, 260px);
@@ -3500,13 +3511,37 @@ svg#board {
         right: 4px;
     }
     .board-section {
-        flex: 1 1 auto;
-        height: 100%;
+        flex: 0 0 auto;
+        height: auto;
         max-height: 100%;
-        justify-content: flex-start;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
     }
     .mobile-faction-tabs {
         display: none !important;
+    }
+
+    /* Seamless Card-to-Map Attachment on Desktop */
+    .mysore-column .faction-column-header {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        border-right: none !important;
+    }
+    .mysore-column .player-card {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        border-right: none !important;
+    }
+    .british-column .faction-column-header {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-left: none !important;
+    }
+    .british-column .player-card {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-left: none !important;
     }
 }
 

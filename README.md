@@ -7,7 +7,7 @@
 [![ONNX Runtime Web](https://img.shields.io/badge/ONNX_Runtime-WebAssembly-005CED.svg)](https://onnxruntime.ai/)
 [![WebRTC](https://img.shields.io/badge/WebRTC-PeerJS_P2P-orange.svg)](https://peerjs.com/)
 [![CI](https://github.com/kshtomar/TigersDay/actions/workflows/ci.yml/badge.svg)](https://github.com/kshtomar/TigersDay/actions)
-[![Tests](https://img.shields.io/badge/Tests-132%20Passing-brightgreen.svg)](./TESTS.md)
+[![Tests](https://img.shields.io/badge/Tests-133%20Passing-brightgreen.svg)](./TESTS.md)
 [![PWA](https://img.shields.io/badge/PWA-Offline%20Ready-blueviolet.svg)](./public/manifest.json)
 
 Welcome to **Tiger’s Day**, a strategic, asymmetric board wargame simulating the historical Anglo-Mysore Wars fought between **Tipu Sultan** (*The Tiger of Mysore*) and the British East India Company under commanders such as **Lord Cornwallis** and **General Harris**.
@@ -725,7 +725,7 @@ Translates an array of historical move indices into algebraic notation.
 The repository features a four-stage automated testing hierarchy guaranteeing absolute byte-for-byte parity, zero regressions, and full device responsiveness:
 
 ```bash
-# 1. Execute full JavaScript engine, UI, Candidate Lines & Visual Regression battery (72 tests)
+# 1. Execute full JavaScript engine, UI, Candidate Lines & Visual Regression battery (73 tests)
 $ npm test
 
 # 2. Execute Python unit test battery (38 tests)
@@ -740,7 +740,7 @@ $ python3 -m compileall -q ai game api tests
 ```
 
 * **Continuous Integration:** Automated on every commit and pull request via [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) across a matrix of Python 3.10, 3.11, 3.12 and Node.js 18, 20, 22.
-* **Test Catalog:** For a detailed breakdown of all 132 individual test cases, engineering rationales, and pipeline locations, consult [`TESTS.md`](./TESTS.md).
+* **Test Catalog:** For a detailed breakdown of all 133 individual test cases, engineering rationales, and pipeline locations, consult [`TESTS.md`](./TESTS.md).
 
 ---
 

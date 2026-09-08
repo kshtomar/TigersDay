@@ -33,7 +33,7 @@ This document provides a systematic architectural record of the **Tiger’s Day 
 Tiger's Day is an asymmetric strategic wargame combining historical simulation, deep reinforcement learning (AlphaZero + MCTS), 100% client-side WebAssembly ONNX inference, and WebRTC peer-to-peer multiplayer.
 
 ### Current System Health: **EXCELLENT (Production Ready)**
-- **Automated Verification:** 132 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
+- **Automated Verification:** 133 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
 - **Parity Guarantees:** 100% byte-for-byte mathematical parity between Python NumPy state transitions and JavaScript Uint8Array client transitions.
 - **Continuous Integration:** Multi-stage GitHub Actions CI pipeline executing bytecode compilation, Ruff linting, Node syntax verification, unit matrix tests, and end-to-end integration tests on every commit and PR.
 - **Model Efficiency:** Model compressed by ~72% via INT8 dynamic quantization ([`public/alphatiger.quant.onnx`](./public/alphatiger.quant.onnx), 431KB).
@@ -381,8 +381,15 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
     - Move highlight badges on cards (`PLAYED`, `POWER`, `TRADED`, `RECLAIMED`) and active/exhausted status pills.
     - Automated test coverage in [`tests/js/replay.test.js`](./tests/js/replay.test.js).
 
+  - **Seamless Card-to-Map Deck Attachment & Zero-Gap Layout**:
+    - Eliminated horizontal gap between card decks and game map (`gap: 0` on `.game-middle-area`), anchoring Mysore cards flush to the left map border and British cards flush to the right border.
+    - Replaced expanding `flex: 1 1 auto` on `.board-section` with locked `flex: 0 0 auto` and dynamic `width: targetWidth`, eliminating empty margin wings.
+    - Added desktop edge clipping removing internal border-radius and borders between cards and map board.
+    - Synchronized card deck column heights to dynamic board map height via `ResizeObserver`.
+    - Automated test coverage in [`tests/js/ui.test.js`](./tests/js/ui.test.js).
+
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 132 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 133 passing automated tests across Python and JavaScript runtimes.*
 
 
