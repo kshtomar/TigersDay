@@ -3340,7 +3340,7 @@ async function spectateLobbyRoom(code) {
 
 function handleExportTDR() {
   if (!gameHistory || gameHistory.length === 0) {
-    showToast("No moves to export yet.", "error");
+    showToast("No moves to export yet. Play some moves first!", "warning");
     return;
   }
   if (!window.TDReplay) {
@@ -3348,24 +3348,32 @@ function handleExportTDR() {
     return;
   }
 
-  const exportData = {
+  const moves = gameHistory.map(h => h.moveIdx);
+  const winnerVal = typeof getStateWinner === 'function' ? getStateWinner() : 0;
+  const winnerStr = winnerVal === 1 ? "british" : (winnerVal === -1 ? "mysore" : "draw");
+  const filename = `tigers_day_match_${Date.now()}.tdr`;
+
+  const options = {
+    british: (humanPlayerSide === 'british' && matchMode === 'human_vs_ai') ? 'Human (British)' : (matchMode === 'human_vs_ai' ? 'AlphaTiger AI' : 'British Commander'),
+    mysore: (humanPlayerSide === 'mysore' && matchMode === 'human_vs_ai') ? 'Human (Mysore)' : (matchMode === 'human_vs_ai' ? 'AlphaTiger AI' : 'Mysore Commander'),
+    winner: winnerStr,
+    algebraic: gameHistory.map(h => h.notation).join(' '),
+    filename: filename,
+    scenario: typeof currentScenario !== 'undefined' ? currentScenario : 'standard',
     metadata: {
-      game: "The Tiger's Day",
-      exported_at: new Date().toISOString(),
       match_mode: matchMode,
-      total_moves: gameHistory.length
-    },
-    moves: gameHistory.map(h => ({
-      moveIdx: h.moveIdx,
-      notation: h.notation,
-      luck: h.luck || [],
-      desc: h.desc || ''
-    }))
+      total_moves: gameHistory.length,
+      exported_at: new Date().toISOString()
+    }
   };
 
-  const filename = `tigers_day_match_${Date.now()}.tdr`;
-  window.TDReplay.exportTDR(exportData, filename);
-  showToast(`Replay exported as ${filename}`, "success");
+  try {
+    window.TDReplay.exportTDR(moves, options);
+    showToast(`Replay exported: ${filename}`, "success");
+  } catch (err) {
+    console.error("Export error:", err);
+    showToast(`Export failed: ${err.message}`, "error");
+  }
 }
 
 function handleImportTDR(event) {
@@ -3374,32 +3382,63 @@ function handleImportTDR(event) {
 
   if (!window.TDReplay) {
     showToast("Replay module not loaded.", "error");
+    event.target.value = '';
     return;
   }
 
   window.TDReplay.loadFromFile(file, (err, replay) => {
+    event.target.value = ''; // Reset file input so same file can be reloaded
     if (err || !replay || !Array.isArray(replay.moves)) {
-      showToast(`Failed to parse replay file: ${err ? err.message : 'Invalid structure'}`, "error");
+      showToast(`Failed to parse replay: ${err ? err.message : 'Invalid structure'}`, "error");
       return;
     }
 
-    initGame();
-    showToast(`Replay loaded: ${replay.moves.length} moves`, "success");
+    if (replay.moves.length === 0) {
+      showToast("Replay file contains no moves.", "warning");
+      return;
+    }
 
-    // Play through recorded moves sequentially
-    let delay = 0;
-    for (const m of replay.moves) {
-      if (m.moveIdx !== undefined && m.moveIdx >= 0) {
-        setTimeout(() => {
-          playMove(m.moveIdx, m.luck || []);
-        }, delay);
-        delay += 100;
+    // Switch to local review mode so AI does not make conflicting moves
+    matchMode = 'local_pass_and_play';
+    players = { british: 'human', mysore: 'human' };
+    const infoMode = document.getElementById('info-mode-label');
+    if (infoMode) infoMode.textContent = 'Mode: REPLAY REVIEW';
+
+    // Reset game state to start
+    initGame();
+
+    // Replay each move in sequence to populate history
+    let appliedCount = 0;
+    for (let i = 0; i < replay.moves.length; i++) {
+      const m = replay.moves[i];
+      const moveIdx = typeof m === 'number' ? m : (m && typeof m.moveIdx === 'number' ? m.moveIdx : -1);
+      if (moveIdx >= 0 && moveIdx < 959) {
+        try {
+          const stateBefore = currentGameState.copy();
+          const nextState = TDEngine.getNextState(currentGameState, moveIdx);
+          const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(nextState);
+          currentGameState = finalState;
+          recordMoveInHistory(stateBefore, moveIdx, nextState, finalState);
+          appliedCount++;
+        } catch (moveErr) {
+          console.warn(`Move #${i + 1} (${moveIdx}) could not be applied:`, moveErr);
+          break;
+        }
       }
     }
-  });
 
-  // Reset file input value
-  event.target.value = '';
+    // Update board display and notation table
+    const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
+    handleLocalGameUpdate(gameData);
+    renderNotationPanel();
+
+    showToast(`Replay loaded: ${appliedCount} moves`, "success");
+
+    // Open historical review at the final position
+    if (gameHistory.length > 0) {
+      viewHistoricalStep(gameHistory.length - 1);
+    }
+  });
 }
 
 // ==========================================================================

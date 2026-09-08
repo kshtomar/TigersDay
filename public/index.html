@@ -941,10 +941,10 @@
                 <button type="button" id="btn-export-tdr" class="notation-action-btn replay-btn" title="Export game replay (.tdr)" onclick="handleExportTDR()">
                     Export Replay (.tdr)
                 </button>
-                <label for="input-import-tdr" class="notation-action-btn replay-btn" style="display: inline-flex; align-items: center; justify-content: center; margin: 0; cursor: pointer;" title="Load .tdr or .json replay">
+                <button type="button" id="btn-import-tdr" class="notation-action-btn replay-btn" title="Load .tdr or .json replay" onclick="document.getElementById('input-import-tdr').click()">
                     Load Replay
-                    <input type="file" id="input-import-tdr" accept=".tdr,.json" style="display: none;" onchange="handleImportTDR(event)" />
-                </label>
+                </button>
+                <input type="file" id="input-import-tdr" accept=".tdr,.json" style="display: none;" onchange="handleImportTDR(event)" />
             </div>
         </div>
     </aside>

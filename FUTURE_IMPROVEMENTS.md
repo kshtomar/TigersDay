@@ -33,7 +33,7 @@ This document provides a systematic architectural record of the **Tiger’s Day 
 Tiger's Day is an asymmetric strategic wargame combining historical simulation, deep reinforcement learning (AlphaZero + MCTS), 100% client-side WebAssembly ONNX inference, and WebRTC peer-to-peer multiplayer.
 
 ### Current System Health: **EXCELLENT (Production Ready)**
-- **Automated Verification:** 129 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
+- **Automated Verification:** 131 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
 - **Parity Guarantees:** 100% byte-for-byte mathematical parity between Python NumPy state transitions and JavaScript Uint8Array client transitions.
 - **Continuous Integration:** Multi-stage GitHub Actions CI pipeline executing bytecode compilation, Ruff linting, Node syntax verification, unit matrix tests, and end-to-end integration tests on every commit and PR.
 - **Model Efficiency:** Model compressed by ~72% via INT8 dynamic quantization ([`public/alphatiger.quant.onnx`](./public/alphatiger.quant.onnx), 431KB).
@@ -312,8 +312,9 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
 * **Architecture:** [`game/replay.py`](./game/replay.py), [`public/js/replay.js`](./public/js/replay.js), [`public/index.html`](./public/index.html), [`public/script.js`](./public/script.js)
 * **Status:** Completed
 * **Deliverables:**
-  - Full `.tdr` / JSON export and import pipeline with format validation and replay stepping.
-  - Frontend UI buttons ("Export Replay (.tdr)" and "Load Replay") embedded in the moves notation panel.
+  - Full `.tdr` / JSON export and import pipeline with format validation, flexible array/wrapper normalization, and replay stepping.
+  - Frontend UI buttons ("Export Replay (.tdr)" via `#btn-export-tdr` and "Load Replay" via `#btn-import-tdr` + `#input-import-tdr`) embedded in the moves notation panel.
+  - Automatic review mode initialization on replay load, executing transitions in sequence and jumping to historical step review with move stepping controls.
   - Unit tests in [`tests/unit/test_replay.py`](./tests/unit/test_replay.py) and [`tests/js/replay.test.js`](./tests/js/replay.test.js).
 
 #### 6.12 Guided Interactive Tutorial & Historical Battle Scenarios Onboarding
@@ -375,6 +376,6 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
 
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 129 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 131 passing automated tests across Python and JavaScript runtimes.*
 
 
