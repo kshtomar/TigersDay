@@ -363,10 +363,14 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
   - **Arbitrary Positive Integer $K$ Support**: Settings input accepts any positive integer ($k \ge 1$); dynamic SVG marker definitions and golden-ratio color generation for $k > 5$; edge cases with fewer valid moves than $k$ gracefully return all available valid moves without error.
   - Move geometry decoder (`decodeMoveGeometry`) extracting territory origins, destinations, coastal landing zones, single-node targets, and attack designations.
   - SVG Board Tactical Layer (`#candidate-moves-layer`) featuring color-coded marker arrows, midpoint rank pills, and animated target rings.
-  - Dedicated unit test suite in [`tests/js/candidate_lines.test.js`](./tests/js/candidate_lines.test.js) (10 tests covering geometry decoding, arbitrary $K$ values, fewer moves than $K$ edge cases, luck frontiers, multi-ply lines, empty trees, SVG defs, bottom dock DOM hierarchy, and script settings).
+  - **Player Deck Card AI Recommendation Number Badges**: For recommended tactical card plays, card decks render compact, high-contrast rank number badges (`#1`, `#2`, etc.) positioned alongside the strength seal (`top: 4px; right: 36px`), and `#rank ↺` for card trade-ins.
+  - **Visual Spatial Correspondence**: Bi-directional micro-interactions connect cards in the player's hand with the corresponding target territory/square on the board; hovering a recommended card pulses the map arrow and target ring, while hovering candidate cards pulses both the card in hand and board elements.
+  - **Refined Candidate Move Presentation**: Candidate cards prominently feature visit counts (`210 visits`) via dedicated `.candidate-visits-badge` right-aligned pills.
+  - **Clean Professional Iconography**: Removed disruptive emoticons (`🧠`, `📜`, `💡`, `🎲`) and redundant `[TOP K]` badge boxes across the dock, board HUD, and notation sidebar for a minimalist, period-authentic military command aesthetic.
+  - Comprehensive unit & integration test suite in [`tests/js/candidate_lines.test.js`](./tests/js/candidate_lines.test.js) (17 tests covering geometry decoding, `getCardInfoForMove`, arbitrary $K$ values, fewer moves than $K$ edge cases, luck frontiers, multi-ply lines, empty trees, SVG defs, bottom dock DOM hierarchy, card badges, and clean iconography invariants).
 
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 121 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 128 passing automated tests across Python and JavaScript runtimes.*
 
 

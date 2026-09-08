@@ -706,11 +706,78 @@
     }
   }
 
+  function getCardInfoForMove(moveIndex) {
+    if (!MOVE_SPACE || moveIndex === null || moveIndex === undefined || moveIndex < 0) return null;
+    let offset = 0;
+    for (const [name, size] of MOVE_SPACE) {
+      if (moveIndex >= offset && moveIndex < offset + size) {
+        const subIdx = moveIndex - offset;
+        switch (name) {
+          case "Sepoy Mutiny":
+            return { faction: "mysore", cardName: "Sepoy Mutiny", cardIndex: 1, toNode: subIdx, isTrade: false };
+          case "French Alliance":
+            return { faction: "mysore", cardName: "French Alliance", cardIndex: 2, toNode: subIdx, isTrade: false };
+          case "Monsoon":
+            return { faction: "mysore", cardName: "Monsoon", cardIndex: 3, toNode: subIdx, isTrade: false };
+          case "Cavalry Raid":
+            return { faction: "mysore", cardName: "Cavalry Raid", cardIndex: 4, toNode: null, isTrade: false };
+          case "Sea Trade": {
+            const numCoasts = typeof COASTAL_INDICES !== 'undefined' ? COASTAL_INDICES.length : 5;
+            const nodeIdx = Math.floor(subIdx / numCoasts);
+            const coastIdx = (typeof COASTAL_INDICES !== 'undefined') ? COASTAL_INDICES[subIdx % numCoasts] : 0;
+            return { faction: "mysore", cardName: "Sea Trade", cardIndex: 5, fromNode: coastIdx, toNode: nodeIdx, isTrade: false };
+          }
+          case "Mysore Power":
+            return { faction: "mysore", cardName: "Iron Rockets", cardIndex: 0, toNode: null, isTrade: false, isPower: true };
+          case "Draw Iron Rockets":
+            return { faction: "mysore", cardName: "Iron Rockets", cardIndex: 0, tradeTargetCard: subIdx, isTrade: true };
+          case "Draw Sepoy Mutiny":
+            return { faction: "mysore", cardName: "Sepoy Mutiny", cardIndex: 1, tradeTargetCard: subIdx, isTrade: true };
+          case "Draw French Alliance":
+            return { faction: "mysore", cardName: "French Alliance", cardIndex: 2, tradeTargetCard: subIdx, isTrade: true };
+          case "Highlanders":
+            return { faction: "british", cardName: "Highlanders", cardIndex: 1, toNode: subIdx, isTrade: false };
+          case "Royal Navy": {
+            const numCoasts = typeof COASTAL_INDICES !== 'undefined' ? COASTAL_INDICES.length : 5;
+            const nodeIdx = Math.floor(subIdx / numCoasts);
+            const coastIdx = (typeof COASTAL_INDICES !== 'undefined') ? COASTAL_INDICES[subIdx % numCoasts] : 0;
+            return { faction: "british", cardName: "Royal Navy", cardIndex: 2, fromNode: nodeIdx, toNode: coastIdx, isTrade: false };
+          }
+          case "Divide and Rule": {
+            const src = typeof EDGE_SOURCES !== 'undefined' ? EDGE_SOURCES[subIdx] : null;
+            const dest = typeof EDGE_DESTS !== 'undefined' ? EDGE_DESTS[subIdx] : null;
+            return { faction: "british", cardName: "Divide and Rule", cardIndex: 3, fromNode: src, toNode: dest, isTrade: false };
+          }
+          case "Force March": {
+            const src = typeof EDGE_SOURCES !== 'undefined' ? EDGE_SOURCES[subIdx] : null;
+            const dest = typeof EDGE_DESTS !== 'undefined' ? EDGE_DESTS[subIdx] : null;
+            return { faction: "british", cardName: "Force March", cardIndex: 4, fromNode: src, toNode: dest, isTrade: false };
+          }
+          case "Princely States":
+            return { faction: "british", cardName: "Princely States", cardIndex: 5, toNode: subIdx, isTrade: false };
+          case "British Power":
+            return { faction: "british", cardName: "Wall Breach", cardIndex: 0, toNode: null, isTrade: false, isPower: true };
+          case "Draw Wall Breach":
+            return { faction: "british", cardName: "Wall Breach", cardIndex: 0, tradeTargetCard: subIdx, isTrade: true };
+          case "Draw Highlanders":
+            return { faction: "british", cardName: "Highlanders", cardIndex: 1, tradeTargetCard: subIdx, isTrade: true };
+          case "Draw Royal Navy":
+            return { faction: "british", cardName: "Royal Navy", cardIndex: 2, tradeTargetCard: subIdx, isTrade: true };
+          default:
+            return null;
+        }
+      }
+      offset += size;
+    }
+    return null;
+  }
+
   const TDMCTS = {
     MCTSNode,
     ONNXModelWrapper,
     MCTS,
-    decodeMoveGeometry: (state, move) => (new MCTS(null)).decodeMoveGeometry(state, move)
+    decodeMoveGeometry: (state, move) => (new MCTS(null)).decodeMoveGeometry(state, move),
+    getCardInfoForMove
   };
 
   if (typeof module !== 'undefined' && module.exports) {

@@ -2294,15 +2294,50 @@ body {
     color: #a89470;
 }
 
-.luck-badge-pill {
+.candidate-visits-badge {
     margin-left: auto;
-    font-size: 0.62rem;
+    font-size: 0.65rem;
     font-weight: 600;
-    padding: 1px 6px;
+    padding: 1px 7px;
     border-radius: 3px;
-    background: rgba(245, 158, 11, 0.2);
-    color: #fcd34d;
-    border: 1px solid rgba(245, 158, 11, 0.4);
+    background: rgba(0, 0, 0, 0.45);
+    color: #f5d680;
+    border: 1px solid rgba(212, 163, 89, 0.35);
+    letter-spacing: 0.02em;
+}
+
+.luck-badge-pill {
+    display: none !important;
+}
+
+/* Card AI Recommendation Number Badge */
+.card-ai-num-badge,
+.card-ai-trade-badge {
+    position: absolute;
+    top: 4px;
+    right: 36px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(14, 11, 8, 0.9);
+    border: 1.5px solid;
+    z-index: 5;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+    transition: transform 0.2s ease, filter 0.2s ease;
+    pointer-events: none;
+}
+
+.card-ai-num-badge.pulse-scale,
+.card-ai-trade-badge.pulse-scale {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.9));
+}
+
+.player-card.ai-highlighted {
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.85);
+    transform: translateY(-2px);
 }
 
 .candidate-line-text {

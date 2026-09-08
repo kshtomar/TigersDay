@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const { GameState, MOVE_SPACE } = require('../../public/js/state.js');
 const { TDEngine } = require('../../public/js/engine.js');
-const { MCTS, MCTSNode, decodeMoveGeometry } = require('../../public/js/mcts.js');
+const { MCTS, MCTSNode, decodeMoveGeometry, getCardInfoForMove } = require('../../public/js/mcts.js');
 
 test('decodeMoveGeometry decodes edge moves and captures', () => {
   const s = new GameState();
@@ -335,5 +335,183 @@ test('CSS layout rules guarantee horizontal scrolling rail and responsive displa
   assert.ok(css.includes('.play-area'), 'Missing .play-area in style.css');
   assert.ok(css.includes('.game-middle-area'), 'Missing .game-middle-area in style.css');
 });
+
+test('getCardInfoForMove decodes card plays, trades, powers, and rejects army/pass moves', () => {
+  // Non-card regular army moves (Move: 0..85, Tire: 86..110) should return null
+  assert.strictEqual(getCardInfoForMove(0), null);
+  assert.strictEqual(getCardInfoForMove(50), null);
+  assert.strictEqual(getCardInfoForMove(85), null);
+  assert.strictEqual(getCardInfoForMove(86), null);
+  assert.strictEqual(getCardInfoForMove(110), null);
+
+  // Pass moves (Pass Mysore: 461, Pass British: 958) and out of range should return null
+  assert.strictEqual(getCardInfoForMove(461), null);
+  assert.strictEqual(getCardInfoForMove(958), null);
+  assert.strictEqual(getCardInfoForMove(959), null);
+  assert.strictEqual(getCardInfoForMove(-1), null);
+  assert.strictEqual(getCardInfoForMove(null), null);
+
+  // Mysore cards
+  const sepoyMutiny = getCardInfoForMove(111);
+  assert.ok(sepoyMutiny);
+  assert.strictEqual(sepoyMutiny.faction, 'mysore');
+  assert.strictEqual(sepoyMutiny.cardName, 'Sepoy Mutiny');
+  assert.strictEqual(sepoyMutiny.cardIndex, 1);
+  assert.strictEqual(sepoyMutiny.toNode, 0);
+
+  const frenchAlliance = getCardInfoForMove(136);
+  assert.ok(frenchAlliance);
+  assert.strictEqual(frenchAlliance.faction, 'mysore');
+  assert.strictEqual(frenchAlliance.cardName, 'French Alliance');
+  assert.strictEqual(frenchAlliance.cardIndex, 2);
+
+  const monsoon = getCardInfoForMove(161);
+  assert.ok(monsoon);
+  assert.strictEqual(monsoon.faction, 'mysore');
+  assert.strictEqual(monsoon.cardName, 'Monsoon');
+  assert.strictEqual(monsoon.cardIndex, 3);
+
+  const cavalryRaid = getCardInfoForMove(186);
+  assert.ok(cavalryRaid);
+  assert.strictEqual(cavalryRaid.faction, 'mysore');
+  assert.strictEqual(cavalryRaid.cardName, 'Cavalry Raid');
+  assert.strictEqual(cavalryRaid.cardIndex, 4);
+
+  const seaTrade = getCardInfoForMove(187);
+  assert.ok(seaTrade);
+  assert.strictEqual(seaTrade.faction, 'mysore');
+  assert.strictEqual(seaTrade.cardName, 'Sea Trade');
+  assert.strictEqual(seaTrade.cardIndex, 5);
+  assert.strictEqual(seaTrade.isTrade, false);
+
+  const mysorePower = getCardInfoForMove(437);
+  assert.ok(mysorePower);
+  assert.strictEqual(mysorePower.faction, 'mysore');
+  assert.strictEqual(mysorePower.cardName, 'Iron Rockets');
+  assert.strictEqual(mysorePower.cardIndex, 0);
+  assert.strictEqual(mysorePower.isPower, true);
+
+  const mysoreTrade = getCardInfoForMove(443);
+  assert.ok(mysoreTrade);
+  assert.strictEqual(mysoreTrade.faction, 'mysore');
+  assert.strictEqual(mysoreTrade.cardName, 'Iron Rockets');
+  assert.strictEqual(mysoreTrade.isTrade, true);
+  assert.strictEqual(mysoreTrade.tradeTargetCard, 0);
+
+  // British cards
+  const highlanders = getCardInfoForMove(462);
+  assert.ok(highlanders);
+  assert.strictEqual(highlanders.faction, 'british');
+  assert.strictEqual(highlanders.cardName, 'Highlanders');
+  assert.strictEqual(highlanders.cardIndex, 1);
+  assert.strictEqual(highlanders.toNode, 0);
+
+  const royalNavy = getCardInfoForMove(487);
+  assert.ok(royalNavy);
+  assert.strictEqual(royalNavy.faction, 'british');
+  assert.strictEqual(royalNavy.cardName, 'Royal Navy');
+  assert.strictEqual(royalNavy.cardIndex, 2);
+
+  const divideAndRule = getCardInfoForMove(737);
+  assert.ok(divideAndRule);
+  assert.strictEqual(divideAndRule.faction, 'british');
+  assert.strictEqual(divideAndRule.cardName, 'Divide and Rule');
+  assert.strictEqual(divideAndRule.cardIndex, 3);
+
+  const forceMarch = getCardInfoForMove(823);
+  assert.ok(forceMarch);
+  assert.strictEqual(forceMarch.faction, 'british');
+  assert.strictEqual(forceMarch.cardName, 'Force March');
+  assert.strictEqual(forceMarch.cardIndex, 4);
+
+  const princelyStates = getCardInfoForMove(909);
+  assert.ok(princelyStates);
+  assert.strictEqual(princelyStates.faction, 'british');
+  assert.strictEqual(princelyStates.cardName, 'Princely States');
+  assert.strictEqual(princelyStates.cardIndex, 5);
+
+  const britishPower = getCardInfoForMove(934);
+  assert.ok(britishPower);
+  assert.strictEqual(britishPower.faction, 'british');
+  assert.strictEqual(britishPower.cardName, 'Wall Breach');
+  assert.strictEqual(britishPower.cardIndex, 0);
+  assert.strictEqual(britishPower.isPower, true);
+
+  const britishTrade = getCardInfoForMove(940);
+  assert.ok(britishTrade);
+  assert.strictEqual(britishTrade.faction, 'british');
+  assert.strictEqual(britishTrade.cardName, 'Wall Breach');
+  assert.strictEqual(britishTrade.isTrade, true);
+  assert.strictEqual(britishTrade.tradeTargetCard, 0);
+
+  const drawRNTrade = getCardInfoForMove(952);
+  assert.ok(drawRNTrade);
+  assert.strictEqual(drawRNTrade.faction, 'british');
+  assert.strictEqual(drawRNTrade.cardName, 'Royal Navy');
+  assert.strictEqual(drawRNTrade.isTrade, true);
+});
+
+test('HTML template removes out-of-place emoticons and TOP K box', () => {
+  const htmlPath = path.resolve(__dirname, '../../public/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+
+  // AI Candidate Moves header: no brain emoji, no TOP K badge
+  const engineSection = html.substring(html.indexOf('id="engine-analysis-section"'), html.indexOf('id="notation-panel"'));
+  assert.ok(!engineSection.includes('🧠'), 'Brain emoji 🧠 must be removed from engine analysis header');
+  assert.ok(!engineSection.includes('badge-k'), 'Badge-k box must be removed from header');
+  assert.ok(engineSection.includes('AI CANDIDATE MOVES'), 'Clean header AI CANDIDATE MOVES must remain');
+
+  // Moves Notation header: no scroll/scribe emoji
+  const notationPanel = html.substring(html.indexOf('id="notation-panel"'));
+  assert.ok(!notationPanel.includes('📜'), 'Scroll emoji 📜 must be removed from notation panel');
+  assert.ok(notationPanel.includes('MOVES NOTATION'), 'Clean header MOVES NOTATION must remain');
+
+  // Board AI Pill: no lightbulb emoji
+  const boardPill = html.substring(html.indexOf('id="board-ai-pill"'), html.indexOf('id="board-ai-pill"') + 200);
+  assert.ok(!boardPill.includes('💡'), 'Lightbulb emoji 💡 must be removed from board AI pill');
+  assert.ok(html.includes('id="board-ai-pill"'), '#board-ai-pill must exist');
+});
+
+test('Candidate card presentation renders visit count badge and excludes luck badge', () => {
+  const scriptPath = path.resolve(__dirname, '../../public/script.js');
+  const script = fs.readFileSync(scriptPath, 'utf8');
+  const cssPath = path.resolve(__dirname, '../../public/style.css');
+  const css = fs.readFileSync(cssPath, 'utf8');
+
+  // Script renders candidate-visits-badge with visits count
+  assert.ok(script.includes('class="candidate-visits-badge"'), 'Script must render candidate-visits-badge');
+  assert.ok(script.includes('${item.visits} visits'), 'Script must display visit count in badge');
+
+  // Script does not render luck-badge-pill in candidate card template
+  assert.ok(!script.includes('luck-badge-pill'), 'Script must not render luck-badge-pill');
+
+  // CSS defines candidate-visits-badge styling
+  assert.ok(css.includes('.candidate-visits-badge'), 'style.css must define .candidate-visits-badge');
+  assert.ok(css.includes('margin-left: auto'), 'Visits badge must align to right edge');
+});
+
+test('Player card AI recommendation displays only rank number badge with visual correspondence', () => {
+  const scriptPath = path.resolve(__dirname, '../../public/script.js');
+  const script = fs.readFileSync(scriptPath, 'utf8');
+  const cssPath = path.resolve(__dirname, '../../public/style.css');
+  const css = fs.readFileSync(cssPath, 'utf8');
+
+  // Script renders .card-ai-num-badge with rank number only
+  assert.ok(script.includes('card-ai-num-badge'), 'Script must render card-ai-num-badge');
+  assert.ok(script.includes('aiBadge.textContent = `#${rec.rank}`;'), 'Card badge content must be strictly the rank number (e.g. #1)');
+
+  // For trades, badge indicates trade reclamation with ↺
+  assert.ok(script.includes('tradeBadge.textContent = `#${tradeRec.rank} ↺`;'), 'Trade badge must display rank with trade symbol ↺');
+
+  // Bi-directional hover correspondence
+  assert.ok(script.includes('cardDiv.classList.add(`card-ai-rec-${rec.rank}`);'), 'Cards must have rank-targeted CSS class');
+  assert.ok(script.includes("highlightCandidateArrow(rec.rank, true)"), 'Cards must highlight corresponding map arrow on enter');
+  assert.ok(script.includes("highlightCandidateArrow(rec.rank, false)"), 'Cards must clear arrow highlight on leave');
+
+  // CSS defines .card-ai-num-badge and hover highlight
+  assert.ok(css.includes('.card-ai-num-badge'), 'style.css must define .card-ai-num-badge');
+  assert.ok(css.includes('.player-card.ai-highlighted'), 'style.css must define .player-card.ai-highlighted');
+});
+
 
 

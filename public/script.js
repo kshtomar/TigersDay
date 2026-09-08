@@ -713,6 +713,73 @@ function ensureArrowMarker(rank, color) {
   return markerId;
 }
 
+function getCardInfoForMove(moveIndex) {
+  if (typeof MOVE_SPACE === 'undefined' || moveIndex === null || moveIndex === undefined || moveIndex < 0) return null;
+  let offset = 0;
+  for (const [name, size] of MOVE_SPACE) {
+    if (moveIndex >= offset && moveIndex < offset + size) {
+      const subIdx = moveIndex - offset;
+      switch (name) {
+        case "Sepoy Mutiny":
+          return { faction: "mysore", cardName: "Sepoy Mutiny", cardIndex: 1, toNode: subIdx, isTrade: false };
+        case "French Alliance":
+          return { faction: "mysore", cardName: "French Alliance", cardIndex: 2, toNode: subIdx, isTrade: false };
+        case "Monsoon":
+          return { faction: "mysore", cardName: "Monsoon", cardIndex: 3, toNode: subIdx, isTrade: false };
+        case "Cavalry Raid":
+          return { faction: "mysore", cardName: "Cavalry Raid", cardIndex: 4, toNode: null, isTrade: false };
+        case "Sea Trade": {
+          const numCoasts = typeof COASTAL_INDICES !== 'undefined' ? COASTAL_INDICES.length : 5;
+          const nodeIdx = Math.floor(subIdx / numCoasts);
+          const coastIdx = (typeof COASTAL_INDICES !== 'undefined') ? COASTAL_INDICES[subIdx % numCoasts] : 0;
+          return { faction: "mysore", cardName: "Sea Trade", cardIndex: 5, fromNode: coastIdx, toNode: nodeIdx, isTrade: false };
+        }
+        case "Mysore Power":
+          return { faction: "mysore", cardName: "Iron Rockets", cardIndex: 0, toNode: null, isTrade: false, isPower: true };
+        case "Draw Iron Rockets":
+          return { faction: "mysore", cardName: "Iron Rockets", cardIndex: 0, tradeTargetCard: subIdx, isTrade: true };
+        case "Draw Sepoy Mutiny":
+          return { faction: "mysore", cardName: "Sepoy Mutiny", cardIndex: 1, tradeTargetCard: subIdx, isTrade: true };
+        case "Draw French Alliance":
+          return { faction: "mysore", cardName: "French Alliance", cardIndex: 2, tradeTargetCard: subIdx, isTrade: true };
+        case "Highlanders":
+          return { faction: "british", cardName: "Highlanders", cardIndex: 1, toNode: subIdx, isTrade: false };
+        case "Royal Navy": {
+          const numCoasts = typeof COASTAL_INDICES !== 'undefined' ? COASTAL_INDICES.length : 5;
+          const nodeIdx = Math.floor(subIdx / numCoasts);
+          const coastIdx = (typeof COASTAL_INDICES !== 'undefined') ? COASTAL_INDICES[subIdx % numCoasts] : 0;
+          return { faction: "british", cardName: "Royal Navy", cardIndex: 2, fromNode: nodeIdx, toNode: coastIdx, isTrade: false };
+        }
+        case "Divide and Rule": {
+          const src = typeof EDGE_SOURCES !== 'undefined' ? EDGE_SOURCES[subIdx] : null;
+          const dest = typeof EDGE_DESTS !== 'undefined' ? EDGE_DESTS[subIdx] : null;
+          return { faction: "british", cardName: "Divide and Rule", cardIndex: 3, fromNode: src, toNode: dest, isTrade: false };
+        }
+        case "Force March": {
+          const src = typeof EDGE_SOURCES !== 'undefined' ? EDGE_SOURCES[subIdx] : null;
+          const dest = typeof EDGE_DESTS !== 'undefined' ? EDGE_DESTS[subIdx] : null;
+          return { faction: "british", cardName: "Force March", cardIndex: 4, fromNode: src, toNode: dest, isTrade: false };
+        }
+        case "Princely States":
+          return { faction: "british", cardName: "Princely States", cardIndex: 5, toNode: subIdx, isTrade: false };
+        case "British Power":
+          return { faction: "british", cardName: "Wall Breach", cardIndex: 0, toNode: null, isTrade: false, isPower: true };
+        case "Draw Wall Breach":
+          return { faction: "british", cardName: "Wall Breach", cardIndex: 0, tradeTargetCard: subIdx, isTrade: true };
+        case "Draw Highlanders":
+          return { faction: "british", cardName: "Highlanders", cardIndex: 1, tradeTargetCard: subIdx, isTrade: true };
+        case "Draw Royal Navy":
+          return { faction: "british", cardName: "Royal Navy", cardIndex: 2, tradeTargetCard: subIdx, isTrade: true };
+        default:
+          return null;
+      }
+    }
+    offset += size;
+  }
+  return null;
+}
+window.getCardInfoForMove = getCardInfoForMove;
+
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx');
 const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 800, depsilon: 0.1 }); // Micro Dirichlet noise
@@ -1532,6 +1599,51 @@ function renderCardDeck(faction, availArray) {
       handleCardBodyClick(faction, index, card.name, isUsable);
     });
 
+    // 6. AI Candidate Move Number Badge (Clean number with matching color)
+    if (settings.showCandidateArrows && lastTopCandidateLines && lastTopCandidateLines.length > 0) {
+      const rec = lastTopCandidateLines.find(line => {
+        const info = getCardInfoForMove(line.firstMove);
+        return info && info.faction === faction && info.cardName === card.name;
+      });
+      if (rec) {
+        const rankColor = getRankColor(rec.rank);
+        const aiBadge = document.createElement('div');
+        aiBadge.className = `card-ai-num-badge card-ai-num-badge-${rec.rank}`;
+        aiBadge.setAttribute('data-rank', rec.rank);
+        aiBadge.textContent = `#${rec.rank}`;
+        aiBadge.title = `AI Choice #${rec.rank}: ${rec.lineNotation}`;
+        aiBadge.style.borderColor = rankColor;
+        aiBadge.style.color = rankColor;
+        cardDiv.appendChild(aiBadge);
+        cardDiv.classList.add(`card-ai-rec-${rec.rank}`);
+        cardDiv.style.borderColor = rankColor;
+
+        cardDiv.addEventListener('mouseenter', () => highlightCandidateArrow(rec.rank, true));
+        cardDiv.addEventListener('mouseleave', () => highlightCandidateArrow(rec.rank, false));
+      }
+
+      // Check if this card is a trade target recommended to be reclaimed
+      const tradeRec = lastTopCandidateLines.find(line => {
+        const info = getCardInfoForMove(line.firstMove);
+        return info && info.faction === faction && info.isTrade && info.tradeTargetCard === index;
+      });
+      if (tradeRec) {
+        const rankColor = getRankColor(tradeRec.rank);
+        const tradeBadge = document.createElement('div');
+        tradeBadge.className = `card-ai-trade-badge card-ai-trade-badge-${tradeRec.rank}`;
+        tradeBadge.setAttribute('data-rank', tradeRec.rank);
+        tradeBadge.textContent = `#${tradeRec.rank} ↺`;
+        tradeBadge.title = `AI Choice #${tradeRec.rank} Trade Target`;
+        tradeBadge.style.borderColor = rankColor;
+        tradeBadge.style.color = rankColor;
+        cardDiv.appendChild(tradeBadge);
+        cardDiv.classList.add(`card-ai-rec-${tradeRec.rank}`);
+
+        cardDiv.addEventListener('mouseenter', () => highlightCandidateArrow(tradeRec.rank, true));
+        cardDiv.addEventListener('mouseleave', () => highlightCandidateArrow(tradeRec.rank, false));
+      }
+    }
+
     container.appendChild(cardDiv);
   });
 }
@@ -1854,6 +1966,7 @@ function clearCandidateArrows() {
   if (linesContainer) linesContainer.innerHTML = '';
   const dock = document.getElementById('bottom-analysis-dock');
   if (dock && !settings.showEval) dock.classList.add('hidden');
+  if (typeof renderCards === 'function') renderCards();
 }
 window.clearCandidateArrows = clearCandidateArrows;
 
@@ -1870,6 +1983,8 @@ function highlightCandidateArrow(rank, active) {
   const arrows = document.querySelectorAll(`.candidate-arrow-${rank}`);
   const badges = document.querySelectorAll(`.candidate-rank-badge-${rank}`);
   const rings = document.querySelectorAll(`.candidate-target-ring-${rank}`);
+  const cardBadges = document.querySelectorAll(`.card-ai-num-badge-${rank}, .card-ai-trade-badge-${rank}`);
+  const cards = document.querySelectorAll(`.card-ai-rec-${rank}`);
 
   arrows.forEach(el => {
     if (active) {
@@ -1891,6 +2006,16 @@ function highlightCandidateArrow(rank, active) {
   rings.forEach(el => {
     if (active) el.classList.add('pulse-scale');
     else el.classList.remove('pulse-scale');
+  });
+
+  cardBadges.forEach(el => {
+    if (active) el.classList.add('pulse-scale');
+    else el.classList.remove('pulse-scale');
+  });
+
+  cards.forEach(el => {
+    if (active) el.classList.add('ai-highlighted');
+    else el.classList.remove('ai-highlighted');
   });
 }
 window.highlightCandidateArrow = highlightCandidateArrow;
@@ -2020,7 +2145,6 @@ async function startProgressiveEval(stateStr) {
     renderCandidateArrows(topLines);
 
     const section = document.getElementById('engine-analysis-section');
-    const badgeK = document.getElementById('engine-k-badge');
     const summary = document.getElementById('engine-lines-summary');
     const boardPill = document.getElementById('board-ai-pill');
     const boardPillText = document.getElementById('board-ai-pill-text');
@@ -2028,7 +2152,6 @@ async function startProgressiveEval(stateStr) {
 
     if (topLines.length > 0) {
       if (section) section.classList.remove('hidden');
-      if (badgeK) badgeK.textContent = `TOP ${topLines.length}`;
 
       const best = topLines[0];
       const bestEvalStr = (best.eval > 0 ? '+' : '') + best.eval.toFixed(2);
@@ -2070,15 +2193,12 @@ async function startProgressiveEval(stateStr) {
           lineDiv.onmouseenter = () => highlightCandidateArrow(item.rank, true);
           lineDiv.onmouseleave = () => highlightCandidateArrow(item.rank, false);
 
-          const luckBadge = item.reachedLuck ? `<span class="luck-badge-pill" title="Calculates up to a probabilistic battle/luck state">🎲 Luck State</span>` : '';
-
           lineDiv.innerHTML = `
             <div class="candidate-meta-row">
               <span class="candidate-rank-pill" style="border-color: ${rankColor}; color: ${rankColor}">#${item.rank}</span>
               <span class="engine-eval-square ${squareClass}">${evalStr}</span>
               <span class="candidate-winrate">${item.winrate || ''}</span>
-              <span class="candidate-visits">${item.visits} visits</span>
-              ${luckBadge}
+              <span class="candidate-visits-badge">${item.visits} visits</span>
             </div>
             <div class="candidate-line-text">
               <strong class="first-move-code" style="color: ${rankColor}">${item.firstMoveNotation}</strong>
@@ -2089,6 +2209,7 @@ async function startProgressiveEval(stateStr) {
         });
       }
     }
+    if (typeof renderCards === 'function') renderCards();
   } catch (err) {
     console.warn("Client eval error:", err);
   }
