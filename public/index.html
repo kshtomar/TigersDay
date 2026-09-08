@@ -660,11 +660,9 @@
     <div class="mobile-faction-tabs" id="mobile-faction-tabs">
         <button type="button" class="mobile-tab-btn active-tab" id="mobile-tab-british" onclick="switchMobileFactionTab('british')">
             <span class="mobile-tab-title">BRITISH</span>
-            <span class="mobile-tab-badge" id="mobile-british-count">6/6</span>
         </button>
         <button type="button" class="mobile-tab-btn" id="mobile-tab-mysore" onclick="switchMobileFactionTab('mysore')">
             <span class="mobile-tab-title">MYSORE</span>
-            <span class="mobile-tab-badge" id="mobile-mysore-count">6/6</span>
         </button>
         <button type="button" class="mobile-tab-btn" id="mobile-tab-moves" onclick="switchMobileFactionTab('moves')">
             <span class="mobile-tab-title">MOVES</span>
@@ -685,7 +683,6 @@
                 </div>
                 <div class="faction-title-wrap">
                     <h3>MYSORE</h3>
-                    <span id="mysore-hand-count" class="hand-count-badge" title="Active Playable Cards">6/6</span>
                 </div>
             </div>
         </div>
@@ -704,18 +701,6 @@
                 <div class="review-banner-text">
                     <span id="review-banner-title">Viewing Move #1 (Historical Snapshot)</span>
                     <span class="review-badge">READ ONLY</span>
-                </div>
-                <div id="review-banner-cards-hud" class="review-banner-cards-hud">
-                    <div class="hist-card-pill mysore-pill" id="hist-mysore-pill" title="Mysore Active Cards">
-                        <span class="hist-pill-icon">🐅</span>
-                        <span class="hist-pill-label">Mysore:</span>
-                        <span id="hist-mysore-cards-list" class="hist-pill-cards">6/6 Active</span>
-                    </div>
-                    <div class="hist-card-pill british-pill" id="hist-british-pill" title="British Active Cards">
-                        <span class="hist-pill-icon">🦁</span>
-                        <span class="hist-pill-label">British:</span>
-                        <span id="hist-british-cards-list" class="hist-pill-cards">6/6 Active</span>
-                    </div>
                 </div>
             </div>
             <button type="button" id="btn-return-live" class="btn-return-live" onclick="returnToLiveGame()">
@@ -849,7 +834,6 @@
                     </div>
                     <div class="faction-title-wrap">
                         <h3>BRITISH</h3>
-                        <span id="british-hand-count" class="hand-count-badge" title="Active Playable Cards">6/6</span>
                     </div>
                 </div>
             </div>

@@ -1509,18 +1509,6 @@ function renderAllCards() {
   if (!lastUiState) return;
   renderCardDeck('mysore', lastUiState.mysore_cards);
   renderCardDeck('british', lastUiState.british_cards);
-
-  const mAvail = lastUiState.mysore_cards.filter(Boolean).length;
-  const bAvail = lastUiState.british_cards.filter(Boolean).length;
-  const mBadge = document.getElementById('mysore-hand-count');
-  const bBadge = document.getElementById('british-hand-count');
-  if (mBadge) mBadge.textContent = `${mAvail}/6`;
-  if (bBadge) bBadge.textContent = `${bAvail}/6`;
-
-  const mMobileBadge = document.getElementById('mobile-mysore-count');
-  const bMobileBadge = document.getElementById('mobile-british-count');
-  if (mMobileBadge) mMobileBadge.textContent = `${mAvail}/6`;
-  if (bMobileBadge) bMobileBadge.textContent = `${bAvail}/6`;
 }
 
 function renderCardDeck(faction, availArray) {
@@ -1572,11 +1560,7 @@ function renderCardDeck(faction, availArray) {
 
     const headerRow = document.createElement('div');
     headerRow.className = 'card-header-row';
-    let statusPillHtml = '';
-    if (isViewingHistory) {
-      statusPillHtml = `<span class="card-replay-status ${isUsable ? 'status-active' : 'status-exhausted'}">${isUsable ? 'ACTIVE' : 'USED'}</span>`;
-    }
-    headerRow.innerHTML = `<span class="card-name">${card.name}</span>${statusPillHtml}`;
+    headerRow.innerHTML = `<span class="card-name">${card.name}</span>`;
     contentWrap.appendChild(headerRow);
 
     const desc = document.createElement('div');
@@ -2623,7 +2607,6 @@ function handleHistoricalRender(data, entry) {
 
   window.renderNodes();
   renderAllCards();
-  updateHistoricalCardsHUD(data, entry);
 
   // Update header in review mode
   const header = document.getElementById('turn-header');
@@ -2640,42 +2623,6 @@ function handleHistoricalRender(data, entry) {
   if (counter) counter.textContent = entry.step > 0 ? `HISTORY · MOVE #${entry.step}` : `HISTORY · START POSITION`;
   if (title) title.textContent = entry.step > 0 ? `${entry.actor.toUpperCase()}: ${entry.notation}` : `GAME START SETUP`;
   if (instruction) instruction.textContent = `Reviewing historical board & card state · Read Only`;
-}
-
-function updateHistoricalCardsHUD(data, entry) {
-  const mList = document.getElementById('hist-mysore-cards-list');
-  const bList = document.getElementById('hist-british-cards-list');
-  if (!data || !data.ui_state) return;
-
-  const mCards = data.ui_state.mysore_cards || [];
-  const bCards = data.ui_state.british_cards || [];
-
-  const mActiveNames = [];
-  const bActiveNames = [];
-
-  mCards.forEach((avail, idx) => {
-    if (avail && MYSORE_CARD_DATA[idx]) {
-      mActiveNames.push(MYSORE_CARD_DATA[idx].name);
-    }
-  });
-
-  bCards.forEach((avail, idx) => {
-    if (avail && BRITISH_CARD_DATA[idx]) {
-      bActiveNames.push(BRITISH_CARD_DATA[idx].name);
-    }
-  });
-
-  if (mList) {
-    const count = mActiveNames.length;
-    mList.innerHTML = `<span class="hist-card-count">${count}/6 Active</span>` +
-      (count > 0 ? `: <span class="hist-card-names">${mActiveNames.join(', ')}</span>` : ' (All Exhausted)');
-  }
-
-  if (bList) {
-    const count = bActiveNames.length;
-    bList.innerHTML = `<span class="hist-card-count">${count}/6 Active</span>` +
-      (count > 0 ? `: <span class="hist-card-names">${bActiveNames.join(', ')}</span>` : ' (All Exhausted)');
-  }
 }
 
 function returnToLiveGame() {

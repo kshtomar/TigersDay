@@ -101,7 +101,7 @@ test('TDReplay - loadFromFile interface and HTML action button bindings', () => 
   assert.ok(!scenariosCode.includes('|| require('), 'Must not use unguarded || require() in browser scripts');
 });
 
-test('TDReplay - Active Card Decks and Historical Inspection HUD synchronization', () => {
+test('TDReplay - Clean Card Presentation and Absence of Clutter Markers', () => {
   const fs = require('node:fs');
   const path = require('node:path');
 
@@ -109,27 +109,27 @@ test('TDReplay - Active Card Decks and Historical Inspection HUD synchronization
   const script = fs.readFileSync(path.resolve(__dirname, '../../public/script.js'), 'utf8');
   const css = fs.readFileSync(path.resolve(__dirname, '../../public/style.css'), 'utf8');
 
-  // 1. Verify HTML DOM elements for active card counts & review banner HUD
-  assert.ok(html.includes('id="mysore-hand-count"'), 'Must have mysore-hand-count badge in Mysore column');
-  assert.ok(html.includes('id="british-hand-count"'), 'Must have british-hand-count badge in British column');
-  assert.ok(html.includes('id="mobile-mysore-count"'), 'Must have mobile-mysore-count badge in mobile tabs');
-  assert.ok(html.includes('id="mobile-british-count"'), 'Must have mobile-british-count badge in mobile tabs');
-  assert.ok(html.includes('id="review-banner-cards-hud"'), 'Must have review-banner-cards-hud in historical review banner');
-  assert.ok(html.includes('id="hist-mysore-cards-list"'), 'Must have hist-mysore-cards-list container');
-  assert.ok(html.includes('id="hist-british-cards-list"'), 'Must have hist-british-cards-list container');
+  // 1. Verify HTML DOM does NOT contain hand count badges or review banner card lists
+  assert.ok(!html.includes('id="mysore-hand-count"'), 'Must not have mysore-hand-count badge in Mysore column');
+  assert.ok(!html.includes('id="british-hand-count"'), 'Must not have british-hand-count badge in British column');
+  assert.ok(!html.includes('id="mobile-mysore-count"'), 'Must not have mobile-mysore-count badge in mobile tabs');
+  assert.ok(!html.includes('id="mobile-british-count"'), 'Must not have mobile-british-count badge in mobile tabs');
+  assert.ok(!html.includes('id="review-banner-cards-hud"'), 'Must not have review-banner-cards-hud in review banner');
+  assert.ok(!html.includes('id="hist-mysore-cards-list"'), 'Must not have hist-mysore-cards-list text container');
+  assert.ok(!html.includes('id="hist-british-cards-list"'), 'Must not have hist-british-cards-list text container');
 
-  // 2. Verify script.js synchronizes lastUiState in handleHistoricalRender and updates cards HUD
+  // 2. Verify script.js synchronizes lastUiState but does NOT generate redundant status pills or textual HUDs
   assert.ok(script.includes('lastUiState = data.ui_state;'), 'handleHistoricalRender must update lastUiState');
-  assert.ok(script.includes('updateHistoricalCardsHUD('), 'handleHistoricalRender must invoke updateHistoricalCardsHUD');
-  assert.ok(script.includes('card-replay-status'), 'renderCardDeck must generate card-replay-status pill');
+  assert.ok(!script.includes('updateHistoricalCardsHUD'), 'Must not have updateHistoricalCardsHUD');
+  assert.ok(!script.includes('card-replay-status'), 'renderCardDeck must NOT generate card-replay-status pill');
+  assert.ok(script.includes('card-exhausted-stamp'), 'renderCardDeck must provide natural card-exhausted-stamp');
   assert.ok(script.includes('card-historical-action'), 'renderCardDeck must highlight cards played in that historical move');
 
-  // 3. Verify CSS rules for card replay HUD and active/exhausted indicators
-  assert.ok(css.includes('.review-banner-cards-hud'), 'CSS must define .review-banner-cards-hud layout');
-  assert.ok(css.includes('.hist-card-pill'), 'CSS must define .hist-card-pill styling');
-  assert.ok(css.includes('.card-replay-status.status-active'), 'CSS must style .card-replay-status.status-active');
-  assert.ok(css.includes('.card-replay-status.status-exhausted'), 'CSS must style .card-replay-status.status-exhausted');
+  // 3. Verify CSS does not retain cluttered status badge rules
+  assert.ok(!css.includes('.review-banner-cards-hud'), 'CSS must not define .review-banner-cards-hud');
+  assert.ok(!css.includes('.card-replay-status'), 'CSS must not define .card-replay-status');
+  assert.ok(!css.includes('.hand-count-badge'), 'CSS must not define .hand-count-badge');
+  assert.ok(css.includes('.card-exhausted-stamp'), 'CSS must style .card-exhausted-stamp');
   assert.ok(css.includes('.player-card.card-historical-action'), 'CSS must style .player-card.card-historical-action');
-  assert.ok(css.includes('.hand-count-badge'), 'CSS must style .hand-count-badge');
 });
 

@@ -248,7 +248,7 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 127. **`TDReplay - parseReplay validates structure and move boundaries`**: Verifies parser validation of `.tdr` replay files, structure headers, and move boundaries.
 128. **`TDReplay - exportReplay and exportTDR payload generation & normalization`**: Asserts `exportReplay` and `exportTDR` generate spec-compliant `.tdr` documents, handle integer arrays and move wrappers, normalize indices, and preserve match metadata.
 129. **`TDReplay - loadFromFile interface and HTML action button bindings`**: Validates `loadFromFile` async Promise and callback interface, and asserts `#btn-export-tdr`, `#btn-import-tdr`, and `#input-import-tdr` are wired correctly.
-130. **`TDReplay - Active Card Decks and Historical Inspection HUD synchronization`**: Verifies `#mysore-hand-count`, `#british-hand-count`, `#mobile-mysore-count`, `#mobile-british-count`, `#review-banner-cards-hud`, and asserts `handleHistoricalRender` updates `lastUiState` and marks played/active cards accurately during historical navigation.
+130. **`TDReplay - Clean Card Presentation and Absence of Clutter Markers`**: Verifies absence of redundant hand count badges, review banner card lists, and status pills, asserting that replay renders cards naturally using existing styling and EXHAUSTED stamps while keeping `lastUiState` synchronized.
 
 ---
 

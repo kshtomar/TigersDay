@@ -374,11 +374,9 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
     - Full gameplay integration across Human vs AI, P2P Multiplayer (opponent surrender vs self-surrender), and explicit Resign action clicks.
     - Automated test coverage in [`tests/js/sound.test.js`](./tests/js/sound.test.js) with zero external audio assets.
 
-  - **Replay Active Card Visibility & Historical Inspection HUD (`TDReplay`)**:
-    - Synchronizes `lastUiState` with historical snapshots during replay step-through, ensuring both player and opponent card decks accurately reflect active and exhausted card states.
-    - Historical review banner HUD (`#review-banner-cards-hud`) displaying compact active card pill tags (`#hist-mysore-cards-list`, `#hist-british-cards-list`) pinned above the board.
-    - Active hand count badges (`#mysore-hand-count`, `#british-hand-count`, `#mobile-mysore-count`, `#mobile-british-count`) reflecting real-time and historical card counts.
-    - Move highlight badges on cards (`PLAYED`, `POWER`, `TRADED`, `RECLAIMED`) and active/exhausted status pills.
+  - **Replay Active Card Visibility & Clean Presentation (`TDReplay`)**:
+    - Synchronizes `lastUiState` with historical snapshots during replay step-through, ensuring both player and opponent card decks accurately reflect active and exhausted card states naturally with existing card styling and EXHAUSTED stamps.
+    - Clean minimalist historical presentation: removed redundant ACTIVE/USED status pill badges, cluttered review banner card text lists, and card count badges (X/6) to maintain an uncluttered aesthetic.
     - Automated test coverage in [`tests/js/replay.test.js`](./tests/js/replay.test.js).
 
   - **Seamless 4-Column Console Attachment & Vertical Map Space Maximization**:
