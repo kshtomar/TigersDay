@@ -428,11 +428,18 @@ test('Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping', () => 
   assert.ok(css.includes('gap: 0;'), 'Must specify gap: 0; for flush card-to-map attachment');
   assert.ok(css.includes('gap: 0 !important;'), 'Must specify gap: 0 !important; in game-container on desktop');
 
-  // Verify border radius clipping on desktop for Mysore, Board, British, and Notation
+  // Verify clipping to top bar
+  assert.ok(css.includes('.app-header'), 'Must style .app-header');
+  assert.ok(css.includes('margin-bottom: 0 !important;'), 'Must eliminate margin below app-header to clip to components');
+  assert.ok(css.includes('margin-top: 0 !important;'), 'Must eliminate margin above game-container');
+  assert.ok(css.includes('border-bottom-left-radius: 0 !important;'), 'Must flatten bottom corners of app-header on desktop');
+
+  // Verify border radius clipping on desktop for Mysore, Board, British, Notation, and Bottom Dock
   assert.ok(css.includes('.mysore-column .player-card'), 'Must style Mysore player-cards');
   assert.ok(css.includes('.mysore-column .faction-column-header'), 'Must style Mysore header');
   assert.ok(css.includes('border-top-right-radius: 0 !important;'), 'Mysore cards/header must clip cleanly to board');
   assert.ok(css.includes('border-right: none !important;'), 'Mysore right border must be omitted for seamless seam');
+  assert.ok(css.includes('border-top-left-radius: 0 !important;'), 'Mysore header must clip cleanly to top bar');
 
   assert.ok(css.includes('.british-column .player-card'), 'Must style British player-cards');
   assert.ok(css.includes('.british-column .faction-column-header'), 'Must style British header');
@@ -440,13 +447,82 @@ test('Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping', () => 
 
   assert.ok(css.includes('.notation-panel'), 'Must style notation-panel');
   assert.ok(css.includes('border-top-left-radius: 0 !important;'), 'Notation panel must clip cleanly to British cards');
+  assert.ok(css.includes('border-top-right-radius: 0 !important;'), 'Notation panel must clip cleanly to top bar');
 
-  // Verify responsive auto-sizer maximizes vertical space and aligns board-section and all 4 column heights
+  assert.ok(css.includes('.bottom-analysis-dock'), 'Must style bottom-analysis-dock');
+  assert.ok(css.includes('border-top-left-radius: 0 !important;'), 'Bottom dock must clip seamlessly to middle game area');
+
+  // Verify responsive auto-sizer maximizes vertical space, accounts for bottom eval dock, and dynamically scales top bar
   assert.ok(script.includes('let proposedHeight = maxAvailHeight;'), 'Must prioritize vertical height for map');
   assert.ok(script.includes('boardSection.style.flex = `0 0 ${targetWidth}px`;'), 'Script must clamp boardSection flex to targetWidth');
-  assert.ok(script.includes('mysoreCol.style.height = `${totalConsoleHeight}px`;'), 'Mysore column height must match board card');
-  assert.ok(script.includes('britishCol.style.height = `${totalConsoleHeight}px`;'), 'British column height must match board card');
-  assert.ok(script.includes('notationPanel.style.height = `${totalConsoleHeight}px`;'), 'Notation panel height must match board card');
+  assert.ok(script.includes('mysoreCol.style.height = `${targetHeight}px`;'), 'Mysore column height must match map board height');
+  assert.ok(script.includes('britishCol.style.height = `${targetHeight}px`;'), 'British column height must match map board height');
+  assert.ok(script.includes('notationPanel.style.height = `${totalPlayAreaHeight}px`;'), 'Notation panel height must span full play area including bottom dock');
+  assert.ok(script.includes('turnHeader.style.width = `${totalConsoleWidth}px`;'), 'Top bar must dynamically scale to match total console width');
+  assert.ok(script.includes("document.getElementById('bottom-analysis-dock')"), 'Must account for bottom analysis dock in sizing');
+  assert.ok(script.includes('if (dock) observer.observe(dock);'), 'Observer must watch bottom-analysis-dock for dynamic resizing');
+});
+
+test('Responsive Auto-Sizer - Desktop Multi-Column Console & Bottom Eval Dock Sizing', () => {
+  // Simulates desktop calculation with and without bottom AI evaluation dock
+  function calculateDesktopConsole({
+    viewportWidth,
+    viewportHeight,
+    headerHeight = 36,
+    bodyPadding = 7,
+    mysoreWidth = 270,
+    britishWidth = 270,
+    notationWidth = 290,
+    isNotationVisible = true,
+    dockHeight = 0
+  }) {
+    const aspect = 760 / 880;
+    const reservedHeight = dockHeight > 0 ? (dockHeight + 4) : 0;
+    const viewportAvailHeight = viewportHeight - headerHeight - bodyPadding;
+    const maxAvailHeight = Math.max(180, viewportAvailHeight - reservedHeight);
+
+    const activeNotationWidth = isNotationVisible ? notationWidth : 0;
+    const maxBoardWidth = Math.max(100, viewportWidth - 12 - mysoreWidth - britishWidth - activeNotationWidth);
+
+    let proposedHeight = maxAvailHeight;
+    let proposedWidth = proposedHeight * aspect;
+
+    if (proposedWidth > maxBoardWidth) {
+      proposedWidth = maxBoardWidth;
+      proposedHeight = proposedWidth / aspect;
+    }
+
+    const targetWidth = Math.floor(proposedWidth);
+    const targetHeight = Math.floor(proposedHeight);
+    const totalConsoleWidth = mysoreWidth + targetWidth + britishWidth + activeNotationWidth;
+    const totalPlayAreaHeight = targetHeight + reservedHeight;
+
+    return {
+      targetWidth,
+      targetHeight,
+      totalConsoleWidth,
+      totalPlayAreaHeight,
+      totalConsoleHeight: headerHeight + totalPlayAreaHeight + bodyPadding
+    };
+  }
+
+  // Case 1: 1920x1080 Widescreen without AI Evaluation Dock
+  const wideWithoutDock = calculateDesktopConsole({ viewportWidth: 1920, viewportHeight: 1080, dockHeight: 0 });
+  assert.strictEqual(wideWithoutDock.targetHeight, 1080 - 36 - 7); // 1037px
+  assert.strictEqual(wideWithoutDock.totalPlayAreaHeight, 1037);
+  assert.ok(wideWithoutDock.totalConsoleHeight <= 1080, 'Total console fits within 1080 viewport');
+
+  // Case 2: 1920x1080 Widescreen with 40px AI Evaluation Dock
+  const wideWithDock = calculateDesktopConsole({ viewportWidth: 1920, viewportHeight: 1080, dockHeight: 40 });
+  assert.strictEqual(wideWithDock.targetHeight, 1080 - 36 - 7 - 44); // 993px
+  assert.strictEqual(wideWithDock.totalPlayAreaHeight, 993 + 44); // 1037px
+  assert.ok(wideWithDock.totalConsoleHeight <= 1080, 'Console with dock fits exactly within 1080 viewport without overflow');
+  assert.ok(wideWithDock.totalConsoleWidth < wideWithoutDock.totalConsoleWidth, 'Console width dynamically scales down when dock opens');
+
+  // Case 3: 1440x900 Laptop with 40px AI Evaluation Dock
+  const laptopWithDock = calculateDesktopConsole({ viewportWidth: 1440, viewportHeight: 900, dockHeight: 40 });
+  assert.ok(laptopWithDock.totalConsoleHeight <= 900, 'Laptop with dock fits within 900 viewport');
+  assert.ok(laptopWithDock.totalConsoleWidth <= 1440, 'Console width fits within laptop width');
 });
 
 

@@ -2004,6 +2004,9 @@ function toggleEngineLinesCollapse() {
   section.classList.toggle('collapsed');
   const isCollapsed = section.classList.contains('collapsed');
   localStorage.setItem('tiger_candidate_lines_collapsed', isCollapsed ? 'true' : 'false');
+  if (typeof adjustBoardDimensions === 'function') {
+    setTimeout(adjustBoardDimensions, 10);
+  }
 }
 window.toggleEngineLinesCollapse = toggleEngineLinesCollapse;
 
@@ -3978,6 +3981,7 @@ function adjustBoardDimensions() {
   const mysoreCol = document.getElementById('mysore-column');
   const britishCol = document.getElementById('british-column');
   const notationPanel = document.getElementById('notation-panel');
+  const turnHeader = document.getElementById('turn-header');
 
   let reservedHeight = 0;
   const debugConsole = document.getElementById('debug-move-console');
@@ -3989,6 +3993,21 @@ function adjustBoardDimensions() {
     reservedHeight += banner.offsetHeight + 4;
   }
 
+  // Account for the bottom AI evaluation dock (eval bar + candidate moves)
+  const dock = document.getElementById('bottom-analysis-dock');
+  let dockHeight = 0;
+  if (dock && !dock.classList.contains('hidden')) {
+    dockHeight = dock.offsetHeight;
+    if (dockHeight === 0) {
+      dockHeight = 36;
+      const engineSec = document.getElementById('engine-analysis-section');
+      if (engineSec && !engineSec.classList.contains('hidden')) {
+        dockHeight += engineSec.classList.contains('collapsed') ? 24 : 44;
+      }
+    }
+    reservedHeight += dockHeight + 4;
+  }
+
   // Detect horizontal desktop layout (Mysore and British cards attached to left & right of board)
   const isDesktopRow = window.innerWidth >= 1024;
   const isNotationVisible = isDesktopRow && notationPanel && window.getComputedStyle(notationPanel).display !== 'none';
@@ -3997,15 +4016,11 @@ function adjustBoardDimensions() {
   const aspect = 760 / 880;
 
   if (isDesktopRow) {
-    // 1. Total available height for the game console (fill available viewport height minus header and margins)
-    const header = document.getElementById('turn-header');
-    const headerHeight = header ? header.offsetHeight + 4 : 40;
-    const bodyPadding = 7;
+    // 1. Total available height for the game console (fill available viewport height minus header and padding)
+    const headerHeight = turnHeader ? turnHeader.offsetHeight : 36;
+    const bodyPadding = 7; // 3px top + 4px bottom padding on body
     const viewportAvailHeight = window.innerHeight - headerHeight - bodyPadding;
-    const containerHeight = (gameContainer && gameContainer.clientHeight > 0)
-      ? Math.max(gameContainer.clientHeight, viewportAvailHeight)
-      : viewportAvailHeight;
-    const maxAvailHeight = Math.max(200, containerHeight - reservedHeight);
+    const maxAvailHeight = Math.max(180, viewportAvailHeight - reservedHeight);
 
     // 2. Total available width for the entire game console
     const containerWidth = (gameContainer && gameContainer.clientWidth > 0)
@@ -4019,8 +4034,7 @@ function adjustBoardDimensions() {
     // Remaining width available for the map board
     const maxBoardWidth = Math.max(100, containerWidth - mysoreWidth - britishWidth - notationWidth);
 
-    // Priority: "The map should also take as much vertical space as possible."
-    // Try to fill 100% of the available vertical height
+    // Priority: The map should take as much vertical space as possible while fitting viewport
     let proposedHeight = maxAvailHeight;
     let proposedWidth = proposedHeight * aspect;
 
@@ -4039,19 +4053,32 @@ function adjustBoardDimensions() {
     boardSection.style.width = `${targetWidth}px`;
     boardSection.style.flex = `0 0 ${targetWidth}px`;
 
-    // Seamlessly match all side columns (Mysore, British, Notation) to the map height
-    const totalConsoleHeight = targetHeight + reservedHeight;
+    // Seamlessly match side columns (Mysore & British) to the map height
     if (mysoreCol) {
-      mysoreCol.style.height = `${totalConsoleHeight}px`;
-      mysoreCol.style.maxHeight = `${totalConsoleHeight}px`;
+      mysoreCol.style.height = `${targetHeight}px`;
+      mysoreCol.style.maxHeight = `${targetHeight}px`;
     }
     if (britishCol) {
-      britishCol.style.height = `${totalConsoleHeight}px`;
-      britishCol.style.maxHeight = `${totalConsoleHeight}px`;
+      britishCol.style.height = `${targetHeight}px`;
+      britishCol.style.maxHeight = `${targetHeight}px`;
     }
+
+    // Moves notation panel height spans the full play area (map + bottom dock) so the bottom is flush
+    const totalPlayAreaHeight = targetHeight + (dockHeight > 0 ? (dockHeight + 4) : 0);
     if (isNotationVisible && notationPanel) {
-      notationPanel.style.height = `${totalConsoleHeight}px`;
-      notationPanel.style.maxHeight = `${totalConsoleHeight}px`;
+      notationPanel.style.height = `${totalPlayAreaHeight}px`;
+      notationPanel.style.maxHeight = `${totalPlayAreaHeight}px`;
+    }
+
+    // Dynamically scale the top bar (#turn-header) and console to exactly match the total width of all 4 components
+    const totalConsoleWidth = mysoreWidth + targetWidth + britishWidth + notationWidth;
+    if (turnHeader) {
+      turnHeader.style.width = `${totalConsoleWidth}px`;
+      turnHeader.style.maxWidth = `${totalConsoleWidth}px`;
+    }
+    if (gameContainer) {
+      gameContainer.style.width = `${totalConsoleWidth}px`;
+      gameContainer.style.maxWidth = `${totalConsoleWidth}px`;
     }
   } else {
     // Mobile / vertical layout
@@ -4074,17 +4101,21 @@ function adjustBoardDimensions() {
     if (mysoreCol) { mysoreCol.style.height = ''; mysoreCol.style.maxHeight = ''; }
     if (britishCol) { britishCol.style.height = ''; britishCol.style.maxHeight = ''; }
     if (notationPanel) { notationPanel.style.height = ''; notationPanel.style.maxHeight = ''; }
+    if (turnHeader) { turnHeader.style.width = ''; turnHeader.style.maxWidth = ''; }
+    if (gameContainer) { gameContainer.style.width = ''; gameContainer.style.maxWidth = ''; }
   }
 }
 
 function initBoardResponsiveAutoSizer() {
   adjustBoardDimensions();
   const gameContainer = document.querySelector('.game-container');
+  const dock = document.getElementById('bottom-analysis-dock');
   if (window.ResizeObserver) {
     const observer = new ResizeObserver(() => {
       adjustBoardDimensions();
     });
     if (gameContainer) observer.observe(gameContainer);
+    if (dock) observer.observe(dock);
     observer.observe(document.body);
   }
   window.addEventListener('resize', adjustBoardDimensions);

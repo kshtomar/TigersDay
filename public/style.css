@@ -3438,25 +3438,30 @@ svg#board {
     .game-container {
         display: flex;
         flex-direction: row;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        gap: 10px;
-        height: calc(100dvh - 82px);
-        max-height: calc(100dvh - 82px);
+        gap: 0 !important;
+        height: calc(100dvh - 44px);
+        max-height: calc(100dvh - 44px);
     }
     .play-area {
-        flex: 1 1 auto;
-        height: 100%;
+        flex: 0 0 auto;
+        width: fit-content;
+        height: auto;
         max-height: 100%;
         min-height: 0;
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 0;
+        margin: 0;
+        padding: 0;
     }
     .game-middle-area {
-        flex: 1 1 auto;
-        height: 100%;
+        flex: 0 0 auto;
+        width: fit-content;
+        height: auto;
+        max-height: 100%;
         min-height: 0;
         min-width: 0;
         display: flex;
@@ -3464,6 +3469,8 @@ svg#board {
         align-items: center;
         justify-content: center;
         gap: 0;
+        margin: 0;
+        padding: 0;
     }
     .mysore-column {
         flex: 0 0 clamp(230px, 19vw, 260px);
@@ -3548,14 +3555,32 @@ svg#board {
     .mobile-faction-tabs {
         display: none !important;
     }
+}
 
-    /* Seamless 4-Column Console Attachment on Desktop (Mysore | Board | British | Moves Notation) */
+/* ──────────────────────────────────────────────────────────────────────────
+   SEAMLESS CONSOLE ATTACHMENT & CLIPPING (ALL DESKTOP SCREENS >= 1024px)
+   Clips Mysore Cards, Board, British Cards, and Moves Notation directly to
+   the dynamically-scaled top bar and attaches the bottom AI evaluation dock.
+   ────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+    .app-header {
+        margin-bottom: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+    .game-container {
+        margin-top: 0 !important;
+        gap: 0 !important;
+    }
     .mysore-column {
+        border-top-left-radius: 0 !important;
         border-top-right-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
         border-right: none !important;
     }
     .mysore-column .faction-column-header {
+        border-top: none !important;
+        border-top-left-radius: 0 !important;
         border-top-right-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
         border-right: none !important;
@@ -3568,6 +3593,7 @@ svg#board {
     }
     .board-card {
         border-radius: 0 !important;
+        border-top: none !important;
         border-left: none !important;
         border-right: none !important;
     }
@@ -3577,6 +3603,7 @@ svg#board {
         border-right: none !important;
     }
     .british-column .faction-column-header {
+        border-top: none !important;
         border-radius: 0 !important;
         border-left: none !important;
         border-right: none !important;
@@ -3588,15 +3615,27 @@ svg#board {
         border-right: none !important;
     }
     .notation-panel {
+        border-top: none !important;
         border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
         border-bottom-left-radius: 0 !important;
         border-left: 1.5px solid var(--border) !important;
         box-shadow: none !important;
     }
     .notation-panel-header {
+        border-top: none !important;
         border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
         height: 44px;
         box-sizing: border-box;
+    }
+    .bottom-analysis-dock {
+        margin-top: 0 !important;
+        border-top: 1px solid rgba(122, 92, 46, 0.45) !important;
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        border-bottom-left-radius: 4px !important;
     }
 }
 

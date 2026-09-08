@@ -33,7 +33,7 @@ This document provides a systematic architectural record of the **Tiger’s Day 
 Tiger's Day is an asymmetric strategic wargame combining historical simulation, deep reinforcement learning (AlphaZero + MCTS), 100% client-side WebAssembly ONNX inference, and WebRTC peer-to-peer multiplayer.
 
 ### Current System Health: **EXCELLENT (Production Ready)**
-- **Automated Verification:** 133 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
+- **Automated Verification:** 134 automated tests passing with 0 failures across Python 3.10/3.11/3.12 and Node.js 18/20/22 (documented in [`TESTS.md`](./TESTS.md)).
 - **Parity Guarantees:** 100% byte-for-byte mathematical parity between Python NumPy state transitions and JavaScript Uint8Array client transitions.
 - **Continuous Integration:** Multi-stage GitHub Actions CI pipeline executing bytecode compilation, Ruff linting, Node syntax verification, unit matrix tests, and end-to-end integration tests on every commit and PR.
 - **Model Efficiency:** Model compressed by ~72% via INT8 dynamic quantization ([`public/alphatiger.quant.onnx`](./public/alphatiger.quant.onnx), 431KB).
@@ -388,8 +388,16 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
     - Synchronized all 4 component heights (`mysoreCol`, `boardCard`, `britishCol`, `notationPanel`) dynamically to `totalConsoleHeight` with zero sizing feedback loops.
     - Automated test coverage in [`tests/js/ui.test.js`](./tests/js/ui.test.js).
 
+  - **Top Bar Dynamic Scaling, Console Clipping & Bottom AI Evaluation Dock Support**:
+    - Dynamically scales `#turn-header` width to match `totalConsoleWidth` (`mysoreWidth + targetWidth + britishWidth + notationWidth`) in real time, keeping the top bar perfectly aligned with the outer edges of the 4 console columns.
+    - Direct clipping between `#turn-header` and `.game-container` (`margin-bottom: 0 !important` and `margin-top: 0 !important`), eliminating gaps and flattening top corners of column headers for a single unified console aesthetic.
+    - Accounts for the bottom AI evaluation dock (`#bottom-analysis-dock`) in `adjustBoardDimensions()` by subtracting its height from `viewportAvailHeight`, ensuring zero vertical overflow or scrollbars when AI evaluation or candidate lines are active.
+    - Spans `#notation-panel` to `totalPlayAreaHeight` so its bottom aligns flush with `#bottom-analysis-dock`.
+    - Observes `#bottom-analysis-dock` via `ResizeObserver` for instant responsive adaptation on candidate move expansion, collapse, or evaluation toggling.
+    - Automated test coverage in [`tests/js/ui.test.js`](./tests/js/ui.test.js).
+
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 133 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 134 passing automated tests across Python and JavaScript runtimes.*
 
 
