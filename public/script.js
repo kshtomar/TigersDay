@@ -2399,7 +2399,7 @@ function recordMoveInHistory(stateBefore, moveIdx, nextState, finalState) {
     stateAfterStr: finalState ? finalState.toString() : stateBefore.toString(),
     hasLuck: !!luckEvent,
     luckDetail: luckEvent 
-      ? `🎲 ${luckEvent.faction === 'british' ? 'British' : 'Mysore'} discarded '${luckEvent.cardName}' (battle loss)` 
+      ? `${luckEvent.faction === 'british' ? 'British' : 'Mysore'} discarded '${luckEvent.cardName}' (battle loss)` 
       : null
   };
 
@@ -2440,8 +2440,8 @@ function renderNotationPanel() {
         const bActive = isViewingHistory && browsingHistoryIndex === i;
         const mActive = isViewingHistory && browsingHistoryIndex === (i + 1);
 
-        const bLuck = bEntry && bEntry.hasLuck ? ' <span class="luck-badge" title="Battle Random Discard">🎲</span>' : '';
-        const mLuck = mEntry && mEntry.hasLuck ? ' <span class="luck-badge" title="Battle Random Discard">🎲</span>' : '';
+        const bLuck = bEntry && bEntry.hasLuck ? ' <span class="luck-badge" title="Battle Casualty Discard">*</span>' : '';
+        const mLuck = mEntry && mEntry.hasLuck ? ' <span class="luck-badge" title="Battle Casualty Discard">*</span>' : '';
 
         html += `
           <div class="notation-row ${roundNum % 2 === 0 ? 'even-row' : 'odd-row'}">

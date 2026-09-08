@@ -470,6 +470,12 @@ test('HTML template removes out-of-place emoticons and TOP K box', () => {
   const boardPill = html.substring(html.indexOf('id="board-ai-pill"'), html.indexOf('id="board-ai-pill"') + 200);
   assert.ok(!boardPill.includes('💡'), 'Lightbulb emoji 💡 must be removed from board AI pill');
   assert.ok(html.includes('id="board-ai-pill"'), '#board-ai-pill must exist');
+
+  // Rules drawer: no out-of-place onboarding banner or emojis
+  const tutorialDrawer = html.substring(html.indexOf('id="tutorial-drawer"'), html.indexOf('id="settings-drawer"'));
+  assert.ok(!tutorialDrawer.includes('Looking for hands-on onboarding?'), 'Out-of-place onboarding banner must be removed from rules drawer');
+  assert.ok(!tutorialDrawer.includes('🎓'), 'Graduation cap emoji must not be in rules drawer');
+  assert.ok(!tutorialDrawer.includes('drawer-launch-tutorial-btn'), 'Drawer launch buttons must be removed');
 });
 
 test('Candidate card presentation renders visit count badge and excludes luck badge', () => {
