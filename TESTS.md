@@ -20,7 +20,7 @@ flowchart TD
         U1["Python Unit Tests (38 tests)<br/>Matrix: Python 3.10, 3.11, 3.12<br/>tests/unit/"]
         U2["Node.js Candidate Lines & Dock (17 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/candidate_lines.test.js"]
         U3["Node.js Engine & Analytics (11 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/engine.test.js"]
-        U4["Frontend & UI System Tests (21 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/ui.test.js"]
+        U4["Frontend & UI System Tests (22 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/ui.test.js"]
         U5["Multiplayer, Sound, Lore, Tutorial & Replay (21 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/{multiplayer,sound,lore,tutorial,replay}.test.js"]
         U6["Visual Regression Tests (4 tests)<br/>Matrix: Node 18, 20, 22<br/>tests/js/visual.test.js"]
     end
@@ -41,10 +41,10 @@ flowchart TD
 | Target | Command | Duration | Coverage |
 | :--- | :--- | :--- | :--- |
 | **Lint & Syntax** | `npm run lint && python3 -m compileall -q ai game api tests` | ~0.08s | All JS, SW, HTML scripts, Python packages |
-| **Node.js Test Battery** | `npm test` | ~0.10s | Candidate Lines, Engine, Multiplayer, Sound, Replay, Lore, Tutorial, UI & Visual Regression (74 tests) |
+| **Node.js Test Battery** | `npm test` | ~0.10s | Candidate Lines, Engine, Multiplayer, Sound, Replay, Lore, Tutorial, UI & Visual Regression (75 tests) |
 | **Python Unit Tests** | `python3 -m unittest discover -s tests/unit -v` | ~0.30s | State, rules, neural, MCTS, replay, buffer, scenarios, evolution (38 tests) |
 | **Python Integration** | `python3 -m unittest discover -s tests/integration -v` | ~0.25s | 50-ply parity, FastAPI endpoints, lobby relay, multi-turn loop (22 tests) |
-| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.65s | All 134 test cases across entire stack (100% passing) |
+| **Full Local Battery** | `npm test && python3 -m unittest discover -s tests -v` | ~0.65s | All 135 test cases across entire stack (100% passing) |
 
 ---
 

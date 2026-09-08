@@ -4022,17 +4022,15 @@ function adjustBoardDimensions() {
     const viewportAvailHeight = window.innerHeight - headerHeight - bodyPadding;
     const maxAvailHeight = Math.max(180, viewportAvailHeight - reservedHeight);
 
-    // 2. Total available width for the entire game console
-    const containerWidth = (gameContainer && gameContainer.clientWidth > 0)
-      ? gameContainer.clientWidth
-      : (window.innerWidth - 12);
+    // 2. Total available width for the entire game console (always derived from viewport to prevent ratcheting down)
+    const availScreenWidth = Math.max(320, (window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || 1024) - 16);
 
-    const mysoreWidth = (mysoreCol && window.getComputedStyle(mysoreCol).display !== 'none') ? mysoreCol.offsetWidth : 0;
-    const britishWidth = (britishCol && window.getComputedStyle(britishCol).display !== 'none') ? britishCol.offsetWidth : 0;
-    const notationWidth = isNotationVisible ? notationPanel.offsetWidth : 0;
+    const mysoreWidth = (mysoreCol && window.getComputedStyle(mysoreCol).display !== 'none') ? (mysoreCol.offsetWidth || 270) : 0;
+    const britishWidth = (britishCol && window.getComputedStyle(britishCol).display !== 'none') ? (britishCol.offsetWidth || 270) : 0;
+    const notationWidth = isNotationVisible ? (notationPanel.offsetWidth || 290) : 0;
 
     // Remaining width available for the map board
-    const maxBoardWidth = Math.max(100, containerWidth - mysoreWidth - britishWidth - notationWidth);
+    const maxBoardWidth = Math.max(100, availScreenWidth - mysoreWidth - britishWidth - notationWidth);
 
     // Priority: The map should take as much vertical space as possible while fitting viewport
     let proposedHeight = maxAvailHeight;

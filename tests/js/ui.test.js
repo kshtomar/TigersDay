@@ -452,6 +452,10 @@ test('Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping', () => 
   assert.ok(css.includes('.bottom-analysis-dock'), 'Must style bottom-analysis-dock');
   assert.ok(css.includes('border-top-left-radius: 0 !important;'), 'Bottom dock must clip seamlessly to middle game area');
 
+  // Verify top flush attachment with flex-start alignment to eliminate gap below #turn-header
+  assert.ok(css.includes('align-items: flex-start !important;'), 'Desktop layout must align game-container to flex-start to eliminate vertical gap');
+  assert.ok(css.includes('align-items: flex-start;'), 'Desktop Tier 1 / Tier 2 layouts must align to flex-start');
+
   // Verify responsive auto-sizer maximizes vertical space, accounts for bottom eval dock, and dynamically scales top bar
   assert.ok(script.includes('let proposedHeight = maxAvailHeight;'), 'Must prioritize vertical height for map');
   assert.ok(script.includes('boardSection.style.flex = `0 0 ${targetWidth}px`;'), 'Script must clamp boardSection flex to targetWidth');
@@ -461,6 +465,7 @@ test('Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping', () => 
   assert.ok(script.includes('turnHeader.style.width = `${totalConsoleWidth}px`;'), 'Top bar must dynamically scale to match total console width');
   assert.ok(script.includes("document.getElementById('bottom-analysis-dock')"), 'Must account for bottom analysis dock in sizing');
   assert.ok(script.includes('if (dock) observer.observe(dock);'), 'Observer must watch bottom-analysis-dock for dynamic resizing');
+  assert.ok(script.includes('availScreenWidth'), 'Must compute available screen width from viewport to prevent ratcheting');
 });
 
 test('Responsive Auto-Sizer - Desktop Multi-Column Console & Bottom Eval Dock Sizing', () => {
@@ -482,7 +487,8 @@ test('Responsive Auto-Sizer - Desktop Multi-Column Console & Bottom Eval Dock Si
     const maxAvailHeight = Math.max(180, viewportAvailHeight - reservedHeight);
 
     const activeNotationWidth = isNotationVisible ? notationWidth : 0;
-    const maxBoardWidth = Math.max(100, viewportWidth - 12 - mysoreWidth - britishWidth - activeNotationWidth);
+    const availScreenWidth = Math.max(320, viewportWidth - 16);
+    const maxBoardWidth = Math.max(100, availScreenWidth - mysoreWidth - britishWidth - activeNotationWidth);
 
     let proposedHeight = maxAvailHeight;
     let proposedWidth = proposedHeight * aspect;
@@ -523,6 +529,64 @@ test('Responsive Auto-Sizer - Desktop Multi-Column Console & Bottom Eval Dock Si
   const laptopWithDock = calculateDesktopConsole({ viewportWidth: 1440, viewportHeight: 900, dockHeight: 40 });
   assert.ok(laptopWithDock.totalConsoleHeight <= 900, 'Laptop with dock fits within 900 viewport');
   assert.ok(laptopWithDock.totalConsoleWidth <= 1440, 'Console width fits within laptop width');
+});
+
+test('Engine Toggle Cycles - Dimensions Recover Fully Without Ratchet Shrinking', () => {
+  function simulateAutoSizerCycle(viewportWidth, viewportHeight, dockHeight) {
+    const aspect = 760 / 880;
+    const headerHeight = 36;
+    const bodyPadding = 7;
+    const reservedHeight = dockHeight > 0 ? (dockHeight + 4) : 0;
+    const viewportAvailHeight = viewportHeight - headerHeight - bodyPadding;
+    const maxAvailHeight = Math.max(180, viewportAvailHeight - reservedHeight);
+
+    const mysoreWidth = 270;
+    const britishWidth = 270;
+    const notationWidth = 290;
+    const availScreenWidth = Math.max(320, viewportWidth - 16);
+    const maxBoardWidth = Math.max(100, availScreenWidth - mysoreWidth - britishWidth - notationWidth);
+
+    let proposedHeight = maxAvailHeight;
+    let proposedWidth = proposedHeight * aspect;
+    if (proposedWidth > maxBoardWidth) {
+      proposedWidth = maxBoardWidth;
+      proposedHeight = proposedWidth / aspect;
+    }
+
+    const targetWidth = Math.floor(proposedWidth);
+    const targetHeight = Math.floor(proposedHeight);
+    const totalConsoleWidth = mysoreWidth + targetWidth + britishWidth + notationWidth;
+
+    return { targetWidth, targetHeight, totalConsoleWidth };
+  }
+
+  // Test 1: 1920x1080 Widescreen (Height-limited layout)
+  const wideInitial = simulateAutoSizerCycle(1920, 1080, 0);
+  const wideEngineOn1 = simulateAutoSizerCycle(1920, 1080, 100);
+  assert.ok(wideEngineOn1.targetHeight < wideInitial.targetHeight, 'Height decreases to accommodate engine dock');
+
+  const wideEngineOff1 = simulateAutoSizerCycle(1920, 1080, 0);
+  assert.strictEqual(wideEngineOff1.targetHeight, wideInitial.targetHeight, 'Target height must fully recover to initial value');
+  assert.strictEqual(wideEngineOff1.targetWidth, wideInitial.targetWidth, 'Target width must fully recover to initial value');
+  assert.strictEqual(wideEngineOff1.totalConsoleWidth, wideInitial.totalConsoleWidth, 'Console width must fully recover without ratcheting down');
+
+  const wideEngineOn2 = simulateAutoSizerCycle(1920, 1080, 160);
+  assert.ok(wideEngineOn2.targetHeight < wideEngineOff1.targetHeight, 'Height decreases further for larger dock');
+
+  const wideEngineOff2 = simulateAutoSizerCycle(1920, 1080, 0);
+  assert.strictEqual(wideEngineOff2.targetHeight, wideInitial.targetHeight, 'Target height must recover fully after second toggle');
+  assert.strictEqual(wideEngineOff2.targetWidth, wideInitial.targetWidth, 'Target width must recover fully after second toggle');
+  assert.strictEqual(wideEngineOff2.totalConsoleWidth, wideInitial.totalConsoleWidth, 'Total width must not ratchet down across multiple toggles');
+
+  // Test 2: 1440x850 Laptop (Width-clamped layout with larger dock)
+  const laptopInitial = simulateAutoSizerCycle(1440, 850, 0);
+  const laptopEngineOn = simulateAutoSizerCycle(1440, 850, 160);
+  assert.ok(laptopEngineOn.targetHeight < laptopInitial.targetHeight, 'Height decreases when dock reduces available height below width clamp');
+
+  const laptopEngineOff = simulateAutoSizerCycle(1440, 850, 0);
+  assert.strictEqual(laptopEngineOff.targetHeight, laptopInitial.targetHeight, 'Target height on laptop recovers fully to initial value');
+  assert.strictEqual(laptopEngineOff.targetWidth, laptopInitial.targetWidth, 'Target width on laptop recovers fully to initial value');
+  assert.strictEqual(laptopEngineOff.totalConsoleWidth, laptopInitial.totalConsoleWidth, 'Total console width recovers fully on laptop');
 });
 
 

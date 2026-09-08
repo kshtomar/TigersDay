@@ -3289,10 +3289,10 @@ svg#board {
         width: 100%;
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         gap: 0 !important;
-        height: calc(100dvh - 44px);
+        height: auto;
         max-height: calc(100dvh - 44px);
         box-sizing: border-box;
     }
@@ -3318,7 +3318,7 @@ svg#board {
         min-width: 0;
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         gap: 0;
         margin: 0;
@@ -3438,10 +3438,10 @@ svg#board {
     .game-container {
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         gap: 0 !important;
-        height: calc(100dvh - 44px);
+        height: auto;
         max-height: calc(100dvh - 44px);
     }
     .play-area {
@@ -3466,7 +3466,7 @@ svg#board {
         min-width: 0;
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         gap: 0;
         margin: 0;
@@ -3571,6 +3571,41 @@ svg#board {
     .game-container {
         margin-top: 0 !important;
         gap: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        height: auto !important;
+        max-height: calc(100dvh - 44px) !important;
+    }
+    .play-area {
+        flex: 0 0 auto !important;
+        width: fit-content !important;
+        max-width: 100% !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .game-middle-area {
+        flex: 0 0 auto !important;
+        width: fit-content !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+    }
+    .board-section {
+        flex: 0 0 auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
     }
     .mysore-column {
         border-top-left-radius: 0 !important;

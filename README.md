@@ -7,7 +7,7 @@
 [![ONNX Runtime Web](https://img.shields.io/badge/ONNX_Runtime-WebAssembly-005CED.svg)](https://onnxruntime.ai/)
 [![WebRTC](https://img.shields.io/badge/WebRTC-PeerJS_P2P-orange.svg)](https://peerjs.com/)
 [![CI](https://github.com/kshtomar/TigersDay/actions/workflows/ci.yml/badge.svg)](https://github.com/kshtomar/TigersDay/actions)
-[![Tests](https://img.shields.io/badge/Tests-134%20Passing-brightgreen.svg)](./TESTS.md)
+[![Tests](https://img.shields.io/badge/Tests-135%20Passing-brightgreen.svg)](./TESTS.md)
 [![PWA](https://img.shields.io/badge/PWA-Offline%20Ready-blueviolet.svg)](./public/manifest.json)
 
 Welcome to **Tiger’s Day**, a strategic, asymmetric board wargame simulating the historical Anglo-Mysore Wars fought between **Tipu Sultan** (*The Tiger of Mysore*) and the British East India Company under commanders such as **Lord Cornwallis** and **General Harris**.
