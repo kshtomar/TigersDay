@@ -45,8 +45,8 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
     state, _ , _ = _resolve_luck_log(state, log_file)
     
     # Spin up two separate MCTS brains
-    mcts_mysore = MCTS(model_mysore, simulations=sims_mysore, depsilon=0)
-    mcts_british = MCTS(model_british, simulations=sims_british, depsilon=0)
+    mcts_mysore = MCTS(model_mysore, depsilon=0)
+    mcts_british = MCTS(model_british, depsilon=0)
 
     move_num = 0
     luck_branching_factors = []
@@ -66,8 +66,8 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
         
         # Both models evaluate with variable openings
         temperature = 1.0 if move_num < 6 else 0.0
-        move_m, _ = mcts_mysore.find_move(state, temperature=temperature)
-        move_b, _ = mcts_british.find_move(state, temperature=temperature)
+        move_m, _ = mcts_mysore.find_move(state, temperature)
+        move_b, _ = mcts_british.find_move(state, temperature)
         
         assert mcts_mysore.root is not None
         assert mcts_british.root is not None
