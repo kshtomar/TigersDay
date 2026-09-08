@@ -695,19 +695,6 @@
     <!-- CENTER COLUMN: MAP BOARD & STOCKFISH EVALUATION -->
     <section class="board-section" id="board-section">
         
-        <!-- HISTORICAL REVIEW BANNER (Active only when reviewing past states) -->
-        <div id="historical-review-banner" class="historical-review-banner hidden">
-            <div class="review-banner-left">
-                <div class="review-banner-text">
-                    <span id="review-banner-title">Viewing Move #1 (Historical Snapshot)</span>
-                    <span class="review-badge">READ ONLY</span>
-                </div>
-            </div>
-            <button type="button" id="btn-return-live" class="btn-return-live" onclick="returnToLiveGame()">
-                Return to Live Game
-            </button>
-        </div>
-
         <!-- MAIN INTERACTIVE SVG BOARD (Placed first to align top with Mysore and British) -->
         <div class="board-card" id="board-card">
             <!-- Floating Board AI Tactical HUD Pill -->
@@ -940,8 +927,8 @@
 
             <!-- Replay (.tdr) Import / Export Action Bar (6.11) -->
             <div class="notation-replay-bar">
-                <button type="button" id="btn-export-tdr" class="notation-action-btn replay-btn" title="Export game replay (.tdr)" onclick="handleExportTDR()">
-                    Export Replay (.tdr)
+                <button type="button" id="btn-export-tdr" class="notation-action-btn replay-btn" title="Export game replay" onclick="handleExportTDR()">
+                    Export Replay
                 </button>
                 <button type="button" id="btn-import-tdr" class="notation-action-btn replay-btn" title="Load .tdr or .json replay" onclick="document.getElementById('input-import-tdr').click()">
                     Load Replay

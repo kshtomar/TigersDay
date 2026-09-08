@@ -117,10 +117,12 @@ test('HTML Template - Header Turn Status & Action Buttons', () => {
 test('HTML Template - History Navigation & Review Controls', () => {
   const html = fs.readFileSync(HTML_PATH, 'utf8');
 
+  // Verify floating review banner is removed to prevent UI clutter
+  assert.ok(!html.includes('id="historical-review-banner"'), 'Must not have floating historical-review-banner');
+  assert.ok(!html.includes('id="review-banner-title"'), 'Must not have review-banner-title');
+  assert.ok(!html.includes('id="btn-return-live"'), 'Must not have floating btn-return-live');
+
   const historyControls = [
-    'id="historical-review-banner"',
-    'id="review-banner-title"',
-    'id="btn-return-live"',
     'id="btn-step-start"',
     'id="btn-step-prev"',
     'id="btn-step-next"',

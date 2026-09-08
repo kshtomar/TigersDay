@@ -2558,18 +2558,6 @@ function viewHistoricalStep(stepIndex) {
     gameData.moves = []; // Strictly lock interactions while reviewing
 
     handleHistoricalRender(gameData, entry);
-
-    const banner = document.getElementById('historical-review-banner');
-    const title = document.getElementById('review-banner-title');
-    if (banner && title) {
-      if (stepIndex === -1) {
-        title.textContent = 'Viewing Starting Position · Initial Setup (Turn 1)';
-      } else {
-        title.textContent = `Viewing Move #${entry.step} (${entry.notation}) · ${entry.actor === 'british' ? 'British' : 'Mysore'} Turn ${entry.turn}`;
-      }
-      banner.classList.remove('hidden');
-    }
-
     renderNotationPanel();
     adjustBoardDimensions();
   } catch (err) {
@@ -2635,9 +2623,6 @@ function returnToLiveGame() {
     currentGameState = liveGameState;
     liveGameState = null;
   }
-
-  const banner = document.getElementById('historical-review-banner');
-  if (banner) banner.classList.add('hidden');
 
   const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
   handleLocalGameUpdate(gameData);
@@ -3028,9 +3013,6 @@ function initGame() {
   isViewingHistory = false;
   browsingHistoryIndex = -1;
   liveGameState = null;
-
-  const banner = document.getElementById('historical-review-banner');
-  if (banner) banner.classList.add('hidden');
 
   currentGameState = new GameState();
   currentGameState.default_setup();
@@ -3935,11 +3917,6 @@ function adjustBoardDimensions() {
   if (debugConsole && !debugConsole.classList.contains('hidden') && boardSection.contains(debugConsole)) {
     reservedHeight += debugConsole.offsetHeight + 6;
   }
-  const banner = document.getElementById('historical-review-banner');
-  if (banner && !banner.classList.contains('hidden') && boardSection.contains(banner)) {
-    reservedHeight += banner.offsetHeight + 4;
-  }
-
   // Account for the bottom AI evaluation dock (eval bar + candidate moves)
   const dock = document.getElementById('bottom-analysis-dock');
   let dockHeight = 0;

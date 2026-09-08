@@ -109,14 +109,17 @@ test('TDReplay - Clean Card Presentation and Absence of Clutter Markers', () => 
   const script = fs.readFileSync(path.resolve(__dirname, '../../public/script.js'), 'utf8');
   const css = fs.readFileSync(path.resolve(__dirname, '../../public/style.css'), 'utf8');
 
-  // 1. Verify HTML DOM does NOT contain hand count badges or review banner card lists
+  // 1. Verify HTML DOM does NOT contain hand count badges, review banner card lists, or popup review banner
   assert.ok(!html.includes('id="mysore-hand-count"'), 'Must not have mysore-hand-count badge in Mysore column');
   assert.ok(!html.includes('id="british-hand-count"'), 'Must not have british-hand-count badge in British column');
   assert.ok(!html.includes('id="mobile-mysore-count"'), 'Must not have mobile-mysore-count badge in mobile tabs');
   assert.ok(!html.includes('id="mobile-british-count"'), 'Must not have mobile-british-count badge in mobile tabs');
-  assert.ok(!html.includes('id="review-banner-cards-hud"'), 'Must not have review-banner-cards-hud in review banner');
+  assert.ok(!html.includes('id="historical-review-banner"'), 'Must not have historical-review-banner in index.html');
+  assert.ok(!html.includes('id="review-banner-cards-hud"'), 'Must not have review-banner-cards-hud');
   assert.ok(!html.includes('id="hist-mysore-cards-list"'), 'Must not have hist-mysore-cards-list text container');
   assert.ok(!html.includes('id="hist-british-cards-list"'), 'Must not have hist-british-cards-list text container');
+  assert.ok(html.includes('Export Replay'), 'Must have Export Replay button text');
+  assert.ok(!html.includes('Export Replay (.tdr)'), 'Must not have (.tdr) suffix in Export Replay button text');
 
   // 2. Verify script.js synchronizes lastUiState but does NOT generate redundant status pills or textual HUDs
   assert.ok(script.includes('lastUiState = data.ui_state;'), 'handleHistoricalRender must update lastUiState');
@@ -125,7 +128,8 @@ test('TDReplay - Clean Card Presentation and Absence of Clutter Markers', () => 
   assert.ok(script.includes('card-exhausted-stamp'), 'renderCardDeck must provide natural card-exhausted-stamp');
   assert.ok(script.includes('card-historical-action'), 'renderCardDeck must highlight cards played in that historical move');
 
-  // 3. Verify CSS does not retain cluttered status badge rules
+  // 3. Verify CSS does not retain cluttered status badge rules or popup review banner
+  assert.ok(!css.includes('.historical-review-banner'), 'CSS must not define .historical-review-banner');
   assert.ok(!css.includes('.review-banner-cards-hud'), 'CSS must not define .review-banner-cards-hud');
   assert.ok(!css.includes('.card-replay-status'), 'CSS must not define .card-replay-status');
   assert.ok(!css.includes('.hand-count-badge'), 'CSS must not define .hand-count-badge');

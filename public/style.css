@@ -2719,58 +2719,6 @@ svg#board {
    11. HISTORICAL REVIEW BANNER & CHESS.COM NOTATION PANEL
    ========================================================================== */
 
-/* Historical Review Banner (Pinned above board during read-only inspection) */
-.historical-review-banner {
-    width: 100%;
-    max-width: 760px;
-    background: linear-gradient(135deg, #2b1406 0%, #150903 100%);
-    border: 1.5px solid var(--mysore-gold);
-    border-radius: 6px;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.85), 0 0 12px var(--gold-glow);
-    margin-bottom: 4px;
-    box-sizing: border-box;
-    animation: fadeIn 0.2s ease-out;
-}
-
-.review-banner-left {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-    flex: 1 1 auto;
-}
-
-.review-banner-text {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-heading);
-    font-size: 0.78rem;
-    color: #ffe090;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.review-icon {
-    font-size: 0.95rem;
-}
-
-.review-badge {
-    background: #c0281a;
-    color: #fff;
-    font-size: 0.58rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    padding: 1px 5px;
-    border-radius: 4px;
-}
-
 /* Historical Action Highlights */
 .player-card.card-historical-action {
     border: 2px solid #ffd700 !important;
@@ -2804,26 +2752,6 @@ svg#board {
 .card-historical-badge.card-reclaim-hist-badge {
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     border-color: #34d399;
-}
-
-.btn-return-live {
-    background: linear-gradient(135deg, #c0281a 0%, #8b180e 100%);
-    border: 1px solid #ff7766;
-    color: #fff;
-    font-family: var(--font-heading);
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 3px 9px;
-    border-radius: 4px;
-    cursor: pointer;
-    white-space: nowrap;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    transition: transform 0.12s ease, filter 0.12s ease;
-}
-
-.btn-return-live:hover {
-    transform: scale(1.04);
-    filter: brightness(1.15);
 }
 
 /* Right-Column Segmented Tab Switcher (Laptops & Tablets) */
