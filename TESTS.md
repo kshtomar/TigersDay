@@ -189,16 +189,17 @@ Located in [`tests/js/engine.test.js`](./tests/js/engine.test.js), these tests a
 
 ---
 
-## 6. JavaScript Frontend, UI & Responsive Tests (`tests/js/ui.test.js` — 21 Tests)
+## 6. JavaScript Frontend, UI & Responsive Tests (`tests/js/ui.test.js` & `tests/js/layout_integration.test.js` — 27 Tests)
 
-Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate DOM structure, responsive layouts, accessibility, SEO, and PWA invariants.
+Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js) and [`tests/js/layout_integration.test.js`](./tests/js/layout_integration.test.js), these tests validate DOM structure, responsive layouts, accessibility, SEO, PWA invariants, and multi-component layout stability.
 
+### 6.1 [`tests/js/ui.test.js`](./tests/js/ui.test.js) (22 Tests)
 89. **`HTML Template - Essential Viewport, PWA & Meta Tags`**: Asserts viewport meta tag, theme-color, manifest link, and descriptive game title exist.
 90. **`HTML Template - SVG Board Geometry & Rendering Layers`**: Confirms locked `0 0 760 880` SVG viewBox and essential z-index rendering layers.
 91. **`HTML Template - Responsive Containers & Layout Sections`**: Confirms layout structure separating `.play-area`, `.game-middle-area`, and `#notation-panel`.
 92. **`HTML Template - Interactive Controls, Settings & Drawers`**: Verifies existence of settings dialog, theme selector, unit style selector, and opponent mode selectors.
 93. **`HTML Template - Header Turn Status & Action Buttons`**: Verifies header turn indicator, historical review buttons, and faction turn status pills.
-94. **`HTML Template - History Navigation & Review Controls`**: Confirms algebraic move stepper controls (`⏮ First`, `◀ Prev`, `Next ▶`, `⏭ Live`).
+94. **`HTML Template - History Navigation & Review Controls`**: Confirms algebraic move stepper controls (`⏮ First`, `◀ Prev`, `Next ▶`, `⏭ Live`) and verifies absence of floating popup review banners (`#historical-review-banner`).
 95. **`Responsive Auto-Sizer Algorithm - Multi-Device Viewport Geometry Calculations`**: Validates board auto-sizing math across mobile, tablet, laptop, and ultra-wide aspect ratios.
 96. **`CSS Responsive Layout & Media Queries Coverage`**: Validates responsive media queries across mobile, tablet, and desktop breakpoints in `style.css`.
 97. **`Themes Engine - 10 Curated Palettes Completeness & Contrast`**: Verifies color token completeness and contrast definitions for all 10 themes.
@@ -214,41 +215,49 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 107. **`SEO & Search Indexing - robots.txt, sitemap.xml & Structured Data`**: Validates `robots.txt`, `sitemap.xml`, Open Graph preview SVG, and Schema.org JSON-LD structured data.
 108. **`Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping`**: Validates that `.game-middle-area` defines zero gap (`gap: 0`), `.board-section` conforms to `targetWidth` with zero margins and padding, Mysore cards clip flush to the left map border, British cards clip flush to the right map border, the top bar clips directly to all 4 columns with `margin-bottom: 0`, and the bottom dock attaches cleanly under the middle game area.
 109. **`Responsive Auto-Sizer - Desktop Multi-Column Console & Bottom Eval Dock Sizing`**: Verifies that on desktop viewports, available height accounts for the bottom AI evaluation dock (eval bar + candidate moves), scaling down the board and side columns proportionally while dynamically setting the top bar (`#turn-header`) width to match `totalConsoleWidth` and clipping flush with zero margin.
+110. **`Engine Toggle Cycles - Dimensions Recover Fully Without Ratchet Shrinking`**: Verifies that toggling the engine evaluation dock ON and OFF preserves and fully restores board and console dimensions without ratcheting down.
+
+### 6.2 [`tests/js/layout_integration.test.js`](./tests/js/layout_integration.test.js) (5 Tests)
+111. **`Integration: Real DOM Simulation of Engine Toggle Cycles Recovers Dimensions 100%`**: Executes 10 consecutive simulated engine ON/OFF toggle cycles against live DOM abstractions to verify that dimensions recover 100% without ratcheting down.
+112. **`Integration: Multi-Resolution Responsiveness & Zero Overflow Across Desktop Devices`**: Tests 7 desktop display resolutions (4K down to 1024x768 compact) to ensure zero vertical/horizontal overflow and full dimension recovery.
+113. **`Integration: CSS Zero-Gap Layout Contracts & Top Bar Alignment`**: Enforces style invariants for `align-items: flex-start !important;`, `gap: 0 !important;`, `margin-top: 0 !important;`, `margin-bottom: 0 !important;`, and corner radii seam flattening.
+114. **`Integration: script.js computes available width from viewport to prevent ratcheting`**: Verifies `availScreenWidth` is derived from viewport rather than restricted container width.
+115. **`Integration: HTML DOM element hierarchy satisfies four-column layout structure`**: Verifies exact DOM ordering (`turn-header` -> `play-area` [mysore -> board -> british -> bottom-dock] -> `notation-panel`).
 
 ---
 
 ## 7. JavaScript Multiplayer, Sound, Lore, Tutorial & Replay Tests (21 Tests)
 
 ### 7.1 [`tests/js/multiplayer.test.js`](./tests/js/multiplayer.test.js) (5 Tests)
-110. **`MultiplayerManager - Room Code Generation Invariants`**: Validates random 4-character alphanumeric room code generation with character set guards.
-111. **`MultiplayerManager - Protocol Message Handshake & State Dispatch`**: Tests protocol handshake, role assignment, and state dispatch over WebRTC data channels.
-112. **`MultiplayerManager - Move Packet Invariants & Payload Validation`**: Confirms validation of move index bounds (`0..958`) and state string length (`148`) in network packets.
-113. **`MultiplayerManager - Ping/Pong Heartbeat and Teardown State Machine`**: Tests keep-alive heartbeat ping/pong timer and graceful teardown on disconnection.
-114. **`MultiplayerManager - WebRTC to WebSocket Fallback & Matchmaking Queue (6.13)`**: Validates automatic fallback from WebRTC P2P to centralized WebSocket relay when symmetric NAT prevents direct peer connection.
+116. **`MultiplayerManager - Room Code Generation Invariants`**: Validates random 4-character alphanumeric room code generation with character set guards.
+117. **`MultiplayerManager - Protocol Message Handshake & State Dispatch`**: Tests protocol handshake, role assignment, and state dispatch over WebRTC data channels.
+118. **`MultiplayerManager - Move Packet Invariants & Payload Validation`**: Confirms validation of move index bounds (`0..958`) and state string length (`148`) in network packets.
+119. **`MultiplayerManager - Ping/Pong Heartbeat and Teardown State Machine`**: Tests keep-alive heartbeat ping/pong timer and graceful teardown on disconnection.
+120. **`MultiplayerManager - WebRTC to WebSocket Fallback & Matchmaking Queue (6.13)`**: Validates automatic fallback from WebRTC P2P to centralized WebSocket relay when symmetric NAT prevents direct peer connection.
 
 ### 7.2 [`tests/js/sound.test.js`](./tests/js/sound.test.js) (5 Tests)
-115. **`SoundEngine - Volume Range Clamping and NaN protection`**: Confirms volume setter clamps out-of-bounds inputs and protects against NaN or undefined.
-116. **`SoundEngine - Storage Persistence Invariants`**: Verifies sound volume and mute preferences persist to localStorage.
-117. **`SoundEngine - Headless Safe Audio Execution without AudioContext`**: Verifies sound calls execute safely without errors in headless environments lacking Web Audio API.
-118. **`SoundEngine - Headless Safe Audio Execution with Mock AudioContext`**: Simulates complete synthesizer audio graph execution using mock AudioContext.
-119. **`SoundEngine - Win, Defeat, and Resign API Availability and Function Signatures`**: Confirms `playWin()`, `playVictory()` (backward-compatible alias), `playDefeat()`, and `playResign()` are properly exported, accept faction/context parameters, and execute safely without throwing in headless environments.
+121. **`SoundEngine - Volume Range Clamping and NaN protection`**: Confirms volume setter clamps out-of-bounds inputs and protects against NaN or undefined.
+122. **`SoundEngine - Storage Persistence Invariants`**: Verifies sound volume and mute preferences persist to localStorage.
+123. **`SoundEngine - Headless Safe Audio Execution without AudioContext`**: Verifies sound calls execute safely without errors in headless environments lacking Web Audio API.
+124. **`SoundEngine - Headless Safe Audio Execution with Mock AudioContext`**: Simulates complete synthesizer audio graph execution using mock AudioContext.
+125. **`SoundEngine - Win, Defeat, and Resign API Availability and Function Signatures`**: Confirms `playWin()`, `playVictory()` (backward-compatible alias), `playDefeat()`, and `playResign()` are properly exported, accept faction/context parameters, and execute safely without throwing in headless environments.
 
 ### 7.3 [`tests/js/lore.test.js`](./tests/js/lore.test.js) (4 Tests)
-120. **`Historical Lore Codex - should define all 25 game territories with complete metadata`**: Verifies historical background, strategic value, and geographic metadata for all 25 territories.
-121. **`Historical Lore Codex - should accurately tag the 5 Key Victory Cities`**: Validates victory key tags on Bombay, Hyderabad, Madras, Seringapatam, and Coimbatore.
-122. **`Historical Lore Codex - should accurately designate coastal ports and maritime hubs`**: Validates coastal tags on all 10 maritime territories.
-123. **`Historical Lore Codex - should resolve territories case-insensitively and render rich HTML tooltips`**: Tests case-insensitive lookup and rich HTML tooltip generation.
+126. **`Historical Lore Codex - should define all 25 game territories with complete metadata`**: Verifies historical background, strategic value, and geographic metadata for all 25 territories.
+127. **`Historical Lore Codex - should accurately tag the 5 Key Victory Cities`**: Validates victory key tags on Bombay, Hyderabad, Madras, Seringapatam, and Coimbatore.
+128. **`Historical Lore Codex - should accurately designate coastal ports and maritime hubs`**: Validates coastal tags on all 10 maritime territories.
+129. **`Historical Lore Codex - should resolve territories case-insensitively and render rich HTML tooltips`**: Tests case-insensitive lookup and rich HTML tooltip generation.
 
 ### 7.4 [`tests/js/tutorial.test.js`](./tests/js/tutorial.test.js) (3 Tests)
-124. **`Guided Interactive Tutorial - should define 4 sequential lessons covering core mechanics`**: Verifies four curriculum lessons (Movement, Combat, Cards, Victory).
-125. **`Guided Interactive Tutorial - should step forward and backward correctly through tutorial flow`**: Validates forward/backward stepping through interactive lesson cards.
-126. **`Guided Interactive Tutorial - should validate targeted tutorial moves`**: Enforces target territory validation during interactive guided steps.
+130. **`Guided Interactive Tutorial - should define 4 sequential lessons covering core mechanics`**: Verifies four curriculum lessons (Movement, Combat, Cards, Victory).
+131. **`Guided Interactive Tutorial - should step forward and backward correctly through tutorial flow`**: Validates forward/backward stepping through interactive lesson cards.
+132. **`Guided Interactive Tutorial - should validate targeted tutorial moves`**: Enforces target territory validation during interactive guided steps.
 
 ### 7.5 [`tests/js/replay.test.js`](./tests/js/replay.test.js) (4 Tests)
-127. **`TDReplay - parseReplay validates structure and move boundaries`**: Verifies parser validation of `.tdr` replay files, structure headers, and move boundaries.
-128. **`TDReplay - exportReplay and exportTDR payload generation & normalization`**: Asserts `exportReplay` and `exportTDR` generate spec-compliant `.tdr` documents, handle integer arrays and move wrappers, normalize indices, and preserve match metadata.
-129. **`TDReplay - loadFromFile interface and HTML action button bindings`**: Validates `loadFromFile` async Promise and callback interface, and asserts `#btn-export-tdr`, `#btn-import-tdr`, and `#input-import-tdr` are wired correctly.
-130. **`TDReplay - Clean Card Presentation and Absence of Clutter Markers`**: Verifies absence of redundant hand count badges, review banner card lists, and status pills, asserting that replay renders cards naturally using existing styling and EXHAUSTED stamps while keeping `lastUiState` synchronized.
+133. **`TDReplay - parseReplay validates structure and move boundaries`**: Verifies parser validation of `.tdr` replay files, structure headers, and move boundaries.
+134. **`TDReplay - exportReplay and exportTDR payload generation & normalization`**: Asserts `exportReplay` and `exportTDR` generate spec-compliant `.tdr` documents, handle integer arrays and move wrappers, normalize indices, and preserve match metadata.
+135. **`TDReplay - loadFromFile interface and HTML action button bindings`**: Validates `loadFromFile` async Promise and callback interface, and asserts `#btn-export-tdr`, `#btn-import-tdr`, and `#input-import-tdr` are wired correctly.
+136. **`TDReplay - Clean Card Presentation and Absence of Clutter Markers`**: Verifies absence of redundant hand count badges, review banner card lists, status pills, and floating popup review banners, asserting that replay renders cards naturally using existing styling and EXHAUSTED stamps while keeping `lastUiState` synchronized and action button labels clean.
 
 ---
 
@@ -256,14 +265,14 @@ Located in [`tests/js/ui.test.js`](./tests/js/ui.test.js), these tests validate 
 
 Located in [`tests/js/visual.test.js`](./tests/js/visual.test.js), these tests assert visual accessibility, color contrast, and SVG boundary clearance.
 
-131. **`Visual Regression – 10 Themes & WCAG Color Contrast Standards`**: Computes relative luminance and asserts contrast ratio $\ge 4.0:1$ across all 10 theme palettes.
-132. **`Visual Regression – 5 Unit Token Styles Definition & Integrity`**: Asserts all 5 unit styles are defined with valid CSS classes and rendering assets.
-133. **`Visual Regression – SVG Board Node Coordinates & Edge Clearance`**: Asserts all 25 nodes and forts fall strictly within padded bounds $[20, 740] \times [20, 860]$ in the viewBox.
-134. **`Visual Regression – Multi-Viewport Scaling & Hitbox Preservations`**: Confirms minimum interactive touch radius $\ge 8$px across mobile, tablet, laptop, and desktop viewports.
+137. **`Visual Regression – 10 Themes & WCAG Color Contrast Standards`**: Computes relative luminance and asserts contrast ratio $\ge 4.0:1$ across all 10 theme palettes.
+138. **`Visual Regression – 5 Unit Token Styles Definition & Integrity`**: Asserts all 5 unit styles are defined with valid CSS classes and rendering assets.
+139. **`Visual Regression – SVG Board Node Coordinates & Edge Clearance`**: Asserts all 25 nodes and forts fall strictly within padded bounds $[20, 740] \times [20, 860]$ in the viewBox.
+140. **`Visual Regression – Multi-Viewport Scaling & Hitbox Preservations`**: Confirms minimum interactive touch radius $\ge 8$px across mobile, tablet, laptop, and desktop viewports.
 
 ---
 
-## 9. Complete 134-Test Suite Matrix
+## 9. Complete 140-Test Suite Matrix
 
 | # | Test Name | File | Suite Stage | Target Component | Status |
 | :-: | :--- | :--- | :--- | :--- | :-: |
@@ -273,131 +282,137 @@ Located in [`tests/js/visual.test.js`](./tests/js/visual.test.js), these tests a
 | **4** | `test_read_str_validation_territory_conflict` | `tests/unit/test_state.py` | Python Unit | Territory Collision Protection | Pass |
 | **5** | `test_repetition_detection` | `tests/unit/test_state.py` | Python Unit | Threefold Repetition | Pass |
 | **6** | `test_action_dispatch_table` | `tests/unit/test_updater.py` | Python Unit | 959 Action Dispatch Table | Pass |
-| **7** | `test_battle2_net_card_strength` | `tests/unit/test_updater.py` | Python Unit | Combat Strength Resolution | Pass |
-| **8** | `test_get_next_state_dispatch` | `tests/unit/test_updater.py` | Python Unit | Action Execution Dispatch | Pass |
-| **9** | `test_opening_book_loading_and_lookup` | `tests/unit/test_mcts.py` | Python Unit | Opening Book Parser | Pass |
-| **10** | `test_batched_search_with_virtual_loss` | `tests/unit/test_mcts.py` | Python Unit | Batched MCTS & Virtual Loss | Pass |
-| **11** | `test_time_budgeted_mcts_search` | `tests/unit/test_mcts.py` | Python Unit | MCTS Time Budget Limiter | Pass |
-| **12** | `test_transposition_table_caching` | `tests/unit/test_mcts.py` | Python Unit | Zobrist Hash Transposition Cache | Pass |
-| **13** | `test_dummy_model_fallback` | `tests/unit/test_neural.py` | Python Unit | Neural Network Fallback Model | Pass |
-| **14** | `test_factorized_decomposition_logic` | `tests/unit/test_neural.py` | Python Unit | Policy Factorization Decomposition | Pass |
-| **15** | `test_load_ai_model_graceful_fallback` | `tests/unit/test_neural.py` | Python Unit | Checkpoint Fallback Loader | Pass |
-| **16** | `test_model_predict_interface` | `tests/unit/test_neural.py` | Python Unit | Neural Prediction Interface | Pass |
-| **17** | `test_tensor_dimensions_and_value_bounds` | `tests/unit/test_neural.py` | Python Unit | Forward Tensor Shapes & Bounds | Pass |
-| **18** | `test_build_move_tree_aggregation` | `tests/unit/test_replay.py` | Python Unit | Replay Move Tree Aggregation | Pass |
-| **19** | `test_interpret_game_log` | `tests/unit/test_replay.py` | Python Unit | Replay Log Algebraic Notation | Pass |
-| **20** | `test_move_notation_coastal_operations` | `tests/unit/test_replay.py` | Python Unit | Coastal Operations Notation | Pass |
-| **21** | `test_move_notation_combat_strength_and_trading` | `tests/unit/test_replay.py` | Python Unit | Combat Power & Trading Notation | Pass |
-| **22** | `test_move_notation_standard_troop_movement` | `tests/unit/test_replay.py` | Python Unit | Standard Troop Movement Notation | Pass |
+| **7** | `test_get_next_state_dispatch` | `tests/unit/test_updater.py` | Python Unit | State Transition Updates | Pass |
+| **8** | `test_battle2_net_card_strength` | `tests/unit/test_updater.py` | Python Unit | Combat Resolution Math | Pass |
+| **9** | `test_opening_book_loading_and_lookup` | `tests/unit/test_mcts.py` | Python Unit | Opening Book Indexing | Pass |
+| **10** | `test_time_budgeted_mcts_search` | `tests/unit/test_mcts.py` | Python Unit | Time-Bounded Tree Search | Pass |
+| **11** | `test_batched_search_with_virtual_loss` | `tests/unit/test_mcts.py` | Python Unit | Multiprocess Search Batching | Pass |
+| **12** | `test_transposition_table_caching` | `tests/unit/test_mcts.py` | Python Unit | 64-Bit Zobrist Hash Deduplication | Pass |
+| **13** | `test_dummy_model_fallback` | `tests/unit/test_neural.py` | Python Unit | Headless Dummy Inference | Pass |
+| **14** | `test_factorized_decomposition_logic` | `tests/unit/test_neural.py` | Python Unit | Additive Coastal Policy Head | Pass |
+| **15** | `test_load_ai_model_graceful_fallback` | `tests/unit/test_neural.py` | Python Unit | Missing Weights Recovery | Pass |
+| **16** | `test_model_predict_interface` | `tests/unit/test_neural.py` | Python Unit | Policy/Value Output Contract | Pass |
+| **17** | `test_tensor_dimensions_and_value_bounds` | `tests/unit/test_neural.py` | Python Unit | Tensor Shape & Bound Checks | Pass |
+| **18** | `test_build_move_tree_aggregation` | `tests/unit/test_replay.py` | Python Unit | Replay Tree Aggregation | Pass |
+| **19** | `test_interpret_game_log` | `tests/unit/test_replay.py` | Python Unit | Move Log String Formatter | Pass |
+| **20** | `test_move_notation_coastal_operations` | `tests/unit/test_replay.py` | Python Unit | Coastal Landing Notation | Pass |
+| **21** | `test_move_notation_combat_strength_and_trading` | `tests/unit/test_replay.py` | Python Unit | Card Combat & Trading Notation | Pass |
+| **22** | `test_move_notation_standard_troop_movement` | `tests/unit/test_replay.py` | Python Unit | Troop Movement & Siege Notation | Pass |
 | **23** | `test_move_notation_tactical_cards` | `tests/unit/test_replay.py` | Python Unit | Tactical Card Operation Notation | Pass |
-| **24** | `test_tdr_export_and_import_roundtrip` | `tests/unit/test_replay.py` | Python Unit | TDR Replay Binary Serialization | Pass |
-| **25** | `test_buffer_push_and_sample` | `tests/unit/test_replay_buffer.py` | Python Unit | Experience Replay Push & Sample | Pass |
-| **26** | `test_buffer_circular_overwrite` | `tests/unit/test_replay_buffer.py` | Python Unit | Buffer FIFO Circular Eviction | Pass |
-| **27** | `test_buffer_serialization` | `tests/unit/test_replay_buffer.py` | Python Unit | Replay Buffer NPZ Serialization | Pass |
-| **28** | `test_card_trade_rules_enforcement` | `tests/unit/test_rules_edgecases.py` | Python Unit | Card Trading Value Rules | Pass |
-| **29** | `test_combat_tie_resolution_defender_holds` | `tests/unit/test_rules_edgecases.py` | Python Unit | Combat Tie Defender Advantage | Pass |
-| **30** | `test_instant_british_victory_condition` | `tests/unit/test_rules_edgecases.py` | Python Unit | 5 Key Cities British Victory | Pass |
-| **31** | `test_multi_battle_phase_resolution` | `tests/unit/test_rules_edgecases.py` | Python Unit | Simultaneous Battle Resolution | Pass |
-| **32** | `test_mysore_attrition_victory_condition` | `tests/unit/test_rules_edgecases.py` | Python Unit | Turn 4 Attrition Mysore Victory | Pass |
-| **33** | `test_territory_operation_constraints` | `tests/unit/test_rules_edgecases.py` | Python Unit | Tactical Operation Constraints | Pass |
-| **34** | `test_list_scenarios` | `tests/unit/test_scenarios.py` | Python Unit | Scenario Metadata Lookup | Pass |
-| **35** | `test_scenario_initializations` | `tests/unit/test_scenarios.py` | Python Unit | 1st, 2nd, 4th War Scenarios | Pass |
-| **36** | `test_choose_heuristic_move` | `tests/unit/test_evolve_book.py` | Python Unit | Tournament Policy Move Picker | Pass |
-| **37** | `test_run_tournament_game` | `tests/unit/test_evolve_book.py` | Python Unit | Automated Arena Game Rollout | Pass |
-| **38** | `test_evolve_opening_book_pipeline` | `tests/unit/test_evolve_book.py` | Python Unit | Opening Book Evolution Engine | Pass |
-| **39** | `test_default_state_string_parity` | `tests/integration/test_parity.py` | Integration | Cross-Engine Setup Parity | Pass |
-| **40** | `test_move_77_transition_parity` | `tests/integration/test_parity.py` | Integration | Cross-Engine Move Parity | Pass |
-| **41** | `test_50_ply_randomized_parity_battery` | `tests/integration/test_parity.py` | Integration | Continuous 50-Ply Parity Loop | Pass |
-| **42** | `test_api_init` | `tests/integration/test_api.py` | Integration | GET /api/init Endpoint | Pass |
-| **43** | `test_api_load_state_valid` | `tests/integration/test_api.py` | Integration | POST /api/load-state Valid | Pass |
-| **44** | `test_api_load_state_invalid_length` | `tests/integration/test_api.py` | Integration | POST /api/load-state 422 | Pass |
-| **45** | `test_api_play_move_valid` | `tests/integration/test_api.py` | Integration | POST /api/play-move Valid | Pass |
-| **46** | `test_api_play_move_illegal` | `tests/integration/test_api.py` | Integration | POST /api/play-move 400 | Pass |
-| **47** | `test_api_get_notation` | `tests/integration/test_api.py` | Integration | POST /api/get-notation | Pass |
-| **48** | `test_api_play_ai` | `tests/integration/test_api.py` | Integration | POST /api/play-ai MCTS | Pass |
-| **49** | `test_api_eval_step` | `tests/integration/test_api.py` | Integration | POST /api/eval-step Eval Bar | Pass |
-| **50** | `test_api_lobby_rooms` | `tests/integration/test_api.py` | Integration | GET /api/lobby/rooms Relay | Pass |
-| **51** | `test_api_leaderboard_and_match_recording` | `tests/integration/test_api.py` | Integration | POST /api/match/record & ELO | Pass |
-| **52** | `test_api_metrics` | `tests/integration/test_api.py` | Integration | GET /api/metrics Latency & Cache | Pass |
-| **53** | `test_multistep_gameplay_flow` | `tests/integration/test_gameplay.py` | Integration | Game Impulse & Luck Branch | Pass |
-| **54** | `test_multistep_consecutive_turns` | `tests/integration/test_gameplay.py` | Integration | 5-Turn Sequential Play | Pass |
-| **55** | `test_undo_state_restoration` | `tests/integration/test_gameplay.py` | Integration | Undo Rollback Integrity | Pass |
-| **56** | `test_asgi_websocket_lobby_lifecycle` | `tests/integration/test_lobby.py` | Integration | ASGI WebSocket /ws/lobby Handshake | Pass |
-| **57** | `test_dead_socket_eviction` | `tests/integration/test_lobby.py` | Integration | Dead Socket Purge & Reconnect | Pass |
-| **58** | `test_elo_sorting_in_queue` | `tests/integration/test_lobby.py` | Integration | ELO Proximity Matchmaking Queue | Pass |
-| **59** | `test_queue_pairing_and_role_assignment` | `tests/integration/test_lobby.py` | Integration | Host/Guest & Faction Assignment | Pass |
-| **60** | `test_room_spectator_broadcast_and_relay` | `tests/integration/test_lobby.py` | Integration | Peer & Spectator Packet Relay | Pass |
-| **61** | `decodeMoveGeometry decodes edge moves and captures` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Territory Origin/Dest & Attacks | Pass |
-| **62** | `MCTS getTopCandidateLines respects K limits and traces notation` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Top-K Limits & PV Notation | Pass |
-| **63** | `MCTS getTopCandidateLines handles empty or unsearched tree safely` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Empty Tree Safe Return | Pass |
-| **64** | `MCTS getTopCandidateLines traces multi-ply variation lines` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Multi-Ply Line Exploration | Pass |
-| **65** | `MCTS getTopCandidateLines stops at luck states and adds luck indicator` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Stochastic Frontier Boundary | Pass |
-| **66** | `HTML template includes candidate moves layer and UI settings controls` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | SVG Layer & Settings Controls | Pass |
-| **67** | `CSS includes styling rules for candidate lines and tactical arrows` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Candidate Cards & Arrow Styles | Pass |
-| **68** | `Client script defines top-k settings and default values` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Script Settings & Color Logic | Pass |
-| **69** | `MCTS getTopCandidateLines supports arbitrary positive integer K` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Arbitrary K & Move Clamping | Pass |
-| **70** | `DOM Architecture places eval bar & candidate lines in bottom-analysis-dock` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Bottom Analysis Dock Hierarchy | Pass |
-| **71** | `MCTS getTopCandidateLines boundary values, string inputs, and monotonicity` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Monotonicity & Boundary Inputs | Pass |
-| **72** | `Settings input attributes and client script parsing invariants` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Settings Input Constraints | Pass |
-| **73** | `CSS layout rules guarantee horizontal scrolling rail & responsive layout` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Horizontal Rail & Display Contents | Pass |
-| **74** | `getCardInfoForMove decodes card plays, trades, powers, rejects army/pass` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Tactical Card Action Resolution | Pass |
-| **75** | `HTML template removes out-of-place emoticons and TOP K box` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Iconography & Header Cleanliness | Pass |
-| **76** | `Candidate card presentation renders visit count badge and excludes luck badge` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Visit Count Badge Presentation | Pass |
-| **77** | `Player card AI recommendation displays only rank number badge with correspondence` | `tests/js/candidate_lines.test.js` | JS MCTS/Dock | Card Number Badges & Map Pulse | Pass |
-| **78** | `GameState default setup invariants` | `tests/js/engine.test.js` | JS Unit | Client GameState Invariants | Pass |
-| **79** | `GameState serialization roundtrip` | `tests/js/engine.test.js` | JS Unit | Client Serialization | Pass |
-| **80** | `Action space and dispatch table length is 959` | `tests/js/engine.test.js` | JS Unit | Action Space Dimension | Pass |
-| **81** | `Repetition check works as expected` | `tests/js/engine.test.js` | JS Unit | Client Repetition Logic | Pass |
-| **82** | `Opening book JSON exists and has entries` | `tests/js/engine.test.js` | JS Unit | Static Opening Book Asset | Pass |
-| **83** | `GameState read_str input validation throws appropriately` | `tests/js/engine.test.js` | JS Unit | Client Input Validation | Pass |
-| **84** | `TDEngine getNextState executes legal moves accurately` | `tests/js/engine.test.js` | JS Unit | Client Transition Engine | Pass |
-| **85** | `TDSound audio engine API and controls` | `tests/js/engine.test.js` | JS Unit | Web Audio Sound Engine | Pass |
-| **86** | `TDThemes and UNIT_STYLES module configuration` | `tests/js/engine.test.js` | JS Unit | Themes & Styles Modularization | Pass |
-| **87** | `TDAnalytics move classification and territory influence` | `tests/js/engine.test.js` | JS Unit | Tactical Badges & Influence | Pass |
-| **88** | `TDScenarios historical campaign scenarios initialization` | `tests/js/engine.test.js` | JS Unit | Client Campaign Scenarios | Pass |
-| **89** | `HTML Template - Essential Viewport, PWA & Meta Tags` | `tests/js/ui.test.js` | JS Frontend | Responsive Viewport & Meta | Pass |
-| **90** | `HTML Template - SVG Board Geometry & Rendering Layers` | `tests/js/ui.test.js` | JS Frontend | Board SVG ViewBox & Stacking | Pass |
-| **91** | `HTML Template - Responsive Containers & Layout Sections` | `tests/js/ui.test.js` | JS Frontend | Grid Layout Containers | Pass |
-| **92** | `HTML Template - Interactive Controls, Settings & Drawers` | `tests/js/ui.test.js` | JS Frontend | Settings & Control Elements | Pass |
-| **93** | `HTML Template - Header Turn Status & Action Buttons` | `tests/js/ui.test.js` | JS Frontend | Turn Status & Quick Actions | Pass |
-| **94** | `HTML Template - History Navigation & Review Controls` | `tests/js/ui.test.js` | JS Frontend | Historical Stepping Bar | Pass |
-| **95** | `Responsive Auto-Sizer Algorithm - Viewport Geometry` | `tests/js/ui.test.js` | JS Frontend | Multi-Device Aspect Ratio | Pass |
-| **96** | `CSS Responsive Layout & Media Queries Coverage` | `tests/js/ui.test.js` | JS Frontend | 5 Media Query Breakpoints | Pass |
-| **97** | `Themes Engine - 10 Curated Palettes Completeness & Contrast` | `tests/js/ui.test.js` | JS Frontend | 10 Theme Palette Tokens | Pass |
-| **98** | `Unit Token Styles - 5 Distinct Aesthetics Completeness` | `tests/js/ui.test.js` | JS Frontend | 5 Unit Token Styles | Pass |
-| **99** | `Map Geometry - 25 Nodes Position & Spatial Boundaries` | `tests/js/ui.test.js` | JS Frontend | 25 Node Spatial Placement | Pass |
-| **100** | `Node Accessibility & Keyboard Navigation Invariants` | `tests/js/ui.test.js` | JS Frontend | WCAG Tabindex, ARIA & Keys | Pass |
-| **101** | `Global Keyboard Hotkeys Logic Invariants` | `tests/js/ui.test.js` | JS Frontend | Desktop Hotkeys (Esc, Z, R, P) | Pass |
-| **102** | `Toast Notifications & Floating Alerts System` | `tests/js/ui.test.js` | JS Frontend | Non-blocking Toast Alerts | Pass |
-| **103** | `PWA Manifest Specification Compliance` | `tests/js/ui.test.js` | JS Frontend | PWA Manifest Spec | Pass |
+| **24** | `test_tdr_export_and_import_roundtrip` | `tests/unit/test_replay.py` | Python Unit | TDR Format Roundtrip | Pass |
+| **25** | `test_buffer_push_and_sample` | `tests/unit/test_replay_buffer.py` | Python Unit | Replay Buffer Sampling | Pass |
+| **26** | `test_buffer_circular_overwrite` | `tests/unit/test_replay_buffer.py` | Python Unit | Circular FIFO Overwrite | Pass |
+| **27** | `test_buffer_serialization` | `tests/unit/test_replay_buffer.py` | Python Unit | NPZ Lossless Buffer Storage | Pass |
+| **28** | `test_card_trade_rules_enforcement` | `tests/unit/test_rules_edgecases.py` | Python Unit | Tiered Card Trading Rules | Pass |
+| **29** | `test_combat_tie_resolution_defender_holds` | `tests/unit/test_rules_edgecases.py` | Python Unit | Combat Tie Resolution | Pass |
+| **30** | `test_instant_british_victory_condition` | `tests/unit/test_rules_edgecases.py` | Python Unit | 5-Key Victory Check | Pass |
+| **31** | `test_multi_battle_phase_resolution` | `tests/unit/test_rules_edgecases.py` | Python Unit | Sequential Multi-Siege Math | Pass |
+| **32** | `test_mysore_attrition_victory_condition` | `tests/unit/test_rules_edgecases.py` | Python Unit | Turn 4 Attrition Defense | Pass |
+| **33** | `test_territory_operation_constraints` | `tests/unit/test_rules_edgecases.py` | Python Unit | Tactical Card Target Guards | Pass |
+| **34** | `test_list_scenarios` | `tests/unit/test_scenarios.py` | Python Unit | Historical Scenario Metadata | Pass |
+| **35** | `test_scenario_initializations` | `tests/unit/test_scenarios.py` | Python Unit | Scenario Vector Correctness | Pass |
+| **36** | `test_choose_heuristic_move` | `tests/unit/test_evolve_book.py` | Python Unit | Heuristic Rollout Policy | Pass |
+| **37** | `test_run_tournament_game` | `tests/unit/test_evolve_book.py` | Python Unit | Tournament Match Lifecycle | Pass |
+| **38** | `test_evolve_opening_book_pipeline` | `tests/unit/test_evolve_book.py` | Python Unit | Opening Book Evolution | Pass |
+| **39** | `test_default_state_string_parity` | `tests/integration/test_parity.py` | Integration | Python-JS State String Parity | Pass |
+| **40** | `test_move_77_transition_parity` | `tests/integration/test_parity.py` | Integration | Move 77 State Mutation Parity | Pass |
+| **41** | `test_50_ply_randomized_parity_battery` | `tests/integration/test_parity.py` | Integration | 50-Ply Randomized Dual Run | Pass |
+| **42** | `test_api_init` | `tests/integration/test_api.py` | REST API | Initial State Payload | Pass |
+| **43** | `test_api_load_state_valid` | `tests/integration/test_api.py` | REST API | Bitstring Parsing Validation | Pass |
+| **44** | `test_api_load_state_invalid_length` | `tests/integration/test_api.py` | REST API | Invalid Length Error Handler | Pass |
+| **45** | `test_api_play_move_valid` | `tests/integration/test_api.py` | REST API | Legal Move Execution | Pass |
+| **46** | `test_api_play_move_illegal` | `tests/integration/test_api.py` | REST API | Illegal Action Rejection | Pass |
+| **47** | `test_api_get_notation` | `tests/integration/test_api.py` | REST API | Algebraic String Conversion | Pass |
+| **48** | `test_api_play_ai` | `tests/integration/test_api.py` | REST API | Server-Side MCTS Rollout | Pass |
+| **49** | `test_multistep_gameplay_flow` | `tests/integration/test_gameplay.py` | Integration | Multi-Turn Sequence Machine | Pass |
+| **50** | `test_multistep_consecutive_turns` | `tests/integration/test_gameplay.py` | Integration | Consecutive Turn Advances | Pass |
+| **51** | `test_undo_state_restoration` | `tests/integration/test_gameplay.py` | Integration | Lossless Undo via Bitstring | Pass |
+| **52** | `test_asgi_websocket_lobby_lifecycle` | `tests/integration/test_lobby.py` | ASGI / WS | Full WebSocket Lifecycle | Pass |
+| **53** | `test_queue_pairing_and_role_assignment` | `tests/integration/test_lobby.py` | ASGI / WS | Matchmaking Queue Pairing | Pass |
+| **54** | `test_elo_sorting_in_queue` | `tests/integration/test_lobby.py` | ASGI / WS | ELO Proximity Sorting | Pass |
+| **55** | `test_dead_socket_eviction` | `tests/integration/test_lobby.py` | ASGI / WS | Disconnected Socket Purge | Pass |
+| **56** | `test_room_spectator_broadcast_and_relay` | `tests/integration/test_lobby.py` | ASGI / WS | Spectator Packet Relay | Pass |
+| **57** | `test_eval_step_endpoint` | `tests/integration/test_api.py` | REST API | AI Evaluation Step Scoring | Pass |
+| **58** | `test_eval_step_invalid_state` | `tests/integration/test_api.py` | REST API | Malformed Eval Bitstring Guard | Pass |
+| **59** | `test_eval_step_transposition_caching` | `tests/integration/test_api.py` | REST API | Zobrist Eval Hash Caching | Pass |
+| **60** | `test_eval_step_batch_monotonicity` | `tests/integration/test_api.py` | REST API | Evaluation Convergence Math | Pass |
+| **61** | `decodeMoveGeometry decodes edge moves and captures` | `tests/js/mcts.test.js` | JS MCTS | SVG Geometry Move Decoding | Pass |
+| **62** | `MCTS getTopCandidateLines respects K limits and traces notation` | `tests/js/mcts.test.js` | JS MCTS | Multi-PV Top-K Limiting | Pass |
+| **63** | `MCTS getTopCandidateLines handles empty or unsearched tree safely` | `tests/js/mcts.test.js` | JS MCTS | Empty MCTS Tree Guard | Pass |
+| **64** | `MCTS getTopCandidateLines traces multi-ply variation lines` | `tests/js/mcts.test.js` | JS MCTS | Multi-Ply PV Variation Line | Pass |
+| **65** | `MCTS getTopCandidateLines stops at luck states and adds luck indicator` | `tests/js/mcts.test.js` | JS MCTS | Stochastic Phase Line Boundary | Pass |
+| **66** | `HTML template includes candidate moves layer and UI settings controls` | `tests/js/mcts.test.js` | JS Frontend | Candidate DOM & Settings Input | Pass |
+| **67** | `CSS includes styling rules for candidate lines and tactical arrows` | `tests/js/mcts.test.js` | JS Frontend | Arrow Markers & Candidate Styles | Pass |
+| **68** | `Client script defines top-k settings and default values` | `tests/js/mcts.test.js` | JS Frontend | Client Settings Variables | Pass |
+| **69** | `MCTS getTopCandidateLines supports arbitrary positive integer K` | `tests/js/mcts.test.js` | JS MCTS | Arbitrary Positive Integer K | Pass |
+| **70** | `DOM Architecture places eval bar & candidate lines in bottom-analysis-dock` | `tests/js/mcts.test.js` | JS Frontend | Dedicated Bottom Dock Contract | Pass |
+| **71** | `MCTS getTopCandidateLines boundary values, string inputs, and monotonicity` | `tests/js/mcts.test.js` | JS MCTS | Robust Parsing & Monotonicity | Pass |
+| **72** | `Settings input attributes and client script parsing invariants` | `tests/js/mcts.test.js` | JS Frontend | Settings Input Schema & Sanitization | Pass |
+| **73** | `CSS layout rules guarantee horizontal scrolling rail and responsive display` | `tests/js/mcts.test.js` | JS Frontend | Horizontal Rail Flexbox Invariants | Pass |
+| **74** | `getCardInfoForMove decodes card plays, trades, powers, and rejects army/pass` | `tests/js/mcts.test.js` | JS Frontend | Move Action Parser & Card Decoder | Pass |
+| **75** | `HTML template removes out-of-place emoticons and TOP K box` | `tests/js/mcts.test.js` | JS Frontend | Professional Visual Presentation | Pass |
+| **76** | `Candidate card presentation renders visit count badge and excludes luck badge` | `tests/js/mcts.test.js` | JS Frontend | Compact Candidate Card Cleanliness | Pass |
+| **77** | `Player card AI recommendation displays only rank number badge` | `tests/js/mcts.test.js` | JS Frontend | Subtle Hand Card Recommendation | Pass |
+| **78** | `GameState default setup invariants` | `tests/js/engine.test.js` | JS Engine | Bit 94 & Initial Setup Match | Pass |
+| **79** | `GameState serialization roundtrip` | `tests/js/engine.test.js` | JS Engine | Lossless JS Bitstring Serializer | Pass |
+| **80** | `Action space and dispatch table length is 959` | `tests/js/engine.test.js` | JS Engine | 959 Legal Actions Dispatch | Pass |
+| **81** | `Repetition check works as expected` | `tests/js/engine.test.js` | JS Engine | Threefold Repetition Detector | Pass |
+| **82** | `Opening book JSON exists and has entries` | `tests/js/engine.test.js` | JS Engine | JSON Opening Book Assets | Pass |
+| **83** | `GameState read_str input validation throws appropriately` | `tests/js/engine.test.js` | JS Engine | Bitstring Validation Exceptions | Pass |
+| **84** | `TDEngine getNextState executes legal moves accurately` | `tests/js/engine.test.js` | JS Engine | State Mutation Parity | Pass |
+| **85** | `TDSound audio engine API and controls` | `tests/js/engine.test.js` | JS Engine | Audio Context Initialization | Pass |
+| **86** | `TDThemes and UNIT_STYLES module configuration` | `tests/js/engine.test.js` | JS Engine | 10 Themes & 5 Unit Styles | Pass |
+| **87** | `TDAnalytics move classification and territory influence` | `tests/js/engine.test.js` | JS Engine | Tactical Badges & Territory Maps | Pass |
+| **88** | `TDScenarios historical campaign scenarios initialization` | `tests/js/engine.test.js` | JS Engine | 3 Historical Scenario States | Pass |
+| **89** | `HTML Template - Essential Viewport, PWA & Meta Tags` | `tests/js/ui.test.js` | JS Frontend | HTML Head Meta Specifications | Pass |
+| **90** | `HTML Template - SVG Board Geometry & Rendering Layers` | `tests/js/ui.test.js` | JS Frontend | SVG 760:880 Locked Aspect Ratio | Pass |
+| **91** | `HTML Template - Responsive Containers & Layout Sections` | `tests/js/ui.test.js` | JS Frontend | 4-Column Layout Architecture | Pass |
+| **92** | `HTML Template - Interactive Controls, Settings & Drawers` | `tests/js/ui.test.js` | JS Frontend | Dialogs & Controls Markup | Pass |
+| **93** | `HTML Template - Header Turn Status & Action Buttons` | `tests/js/ui.test.js` | JS Frontend | Dynamic Header Turn Elements | Pass |
+| **94** | `HTML Template - History Navigation & Review Controls` | `tests/js/ui.test.js` | JS Frontend | Move History Navigation Bar | Pass |
+| **95** | `Responsive Auto-Sizer Algorithm - Multi-Device Calculations` | `tests/js/ui.test.js` | JS Frontend | Responsive Mathematics Model | Pass |
+| **96** | `CSS Responsive Layout & Media Queries Coverage` | `tests/js/ui.test.js` | JS Frontend | Breakpoints & Media Query Styles | Pass |
+| **97** | `Themes Engine - 10 Curated Palettes Completeness & Contrast` | `tests/js/ui.test.js` | JS Frontend | Theme Design Tokens Integrity | Pass |
+| **98** | `Unit Token Styles - 5 Distinct Aesthetics Completeness` | `tests/js/ui.test.js` | JS Frontend | Unit Styles CSS Definitions | Pass |
+| **99** | `Map Geometry - 25 Nodes Position & Spatial Boundaries` | `tests/js/ui.test.js` | JS Frontend | 25 Node Coordinates Integrity | Pass |
+| **100** | `Node Accessibility & Keyboard Navigation Invariants` | `tests/js/ui.test.js` | JS Frontend | ARIA & Keyboard Accessibility | Pass |
+| **101** | `Global Keyboard Hotkeys Logic Invariants` | `tests/js/ui.test.js` | JS Frontend | Shortcut Keys & Form Protections | Pass |
+| **102** | `Toast Notifications & Floating Alerts System` | `tests/js/ui.test.js` | JS Frontend | Non-Blocking Toast HUD | Pass |
+| **103** | `PWA Manifest Specification Compliance` | `tests/js/ui.test.js` | JS Frontend | Web App Manifest Schema | Pass |
 | **104** | `PWA Service Worker Offline Cache Rules` | `tests/js/ui.test.js` | JS Frontend | Cache-First Service Worker | Pass |
-| **105** | `Sound Engine Master Controls & Clamping` | `tests/js/ui.test.js` | JS Frontend | Volume Clamping & Mute | Pass |
-| **106** | `Mobile Tab Switching & Responsive Layout Controllers` | `tests/js/ui.test.js` | JS Frontend | Mobile Faction Switcher | Pass |
-| **107** | `SEO & Search Indexing - robots.txt, sitemap.xml & Schema` | `tests/js/ui.test.js` | JS Frontend | Search Crawler & Metadata | Pass |
-| **108** | `Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping` | `tests/js/ui.test.js` | JS Frontend | Card-to-Map Gapless Seams | Pass |
-| **109** | `Responsive Auto-Sizer - Desktop Multi-Column Console & Bottom Eval Dock` | `tests/js/ui.test.js` | JS Frontend | Dynamic Sizing & Eval Dock | Pass |
-| **110** | `MultiplayerManager - Room Code Generation Invariants` | `tests/js/multiplayer.test.js` | JS Multiplayer | 4-Character Room Codes | Pass |
-| **111** | `MultiplayerManager - Protocol Message Handshake & State Dispatch` | `tests/js/multiplayer.test.js` | JS Multiplayer | WebRTC Handshake & Dispatch | Pass |
-| **112** | `MultiplayerManager - Move Packet Invariants & Payload Validation` | `tests/js/multiplayer.test.js` | JS Multiplayer | Move Packet Payload Bounds | Pass |
-| **113** | `MultiplayerManager - Ping/Pong Heartbeat and Teardown` | `tests/js/multiplayer.test.js` | JS Multiplayer | Keep-Alive & Teardown | Pass |
-| **114** | `MultiplayerManager - WebRTC to WebSocket Fallback & Matchmaking Queue` | `tests/js/multiplayer.test.js` | JS Multiplayer | WebSocket Relay Fallback | Pass |
-| **115** | `SoundEngine - Volume Range Clamping and NaN protection` | `tests/js/sound.test.js` | JS Audio | Volume Clamping & NaN Guard | Pass |
-| **116** | `SoundEngine - Storage Persistence Invariants` | `tests/js/sound.test.js` | JS Audio | LocalStorage Volume Settings | Pass |
-| **117** | `SoundEngine - Headless Safe Audio Execution without AudioContext` | `tests/js/sound.test.js` | JS Audio | Headless Web Audio Safety | Pass |
-| **118** | `SoundEngine - Headless Safe Audio Execution with Mock AudioContext` | `tests/js/sound.test.js` | JS Audio | Audio Graph Synthesis | Pass |
-| **119** | `SoundEngine - Win, Defeat, and Resign API Availability` | `tests/js/sound.test.js` | JS Audio | Win, Defeat & Resign APIs | Pass |
-| **120** | `Lore Codex - define all 25 game territories with metadata` | `tests/js/lore.test.js` | JS Lore | 25 Territory Historical Lore | Pass |
-| **121** | `Lore Codex - accurately tag the 5 Key Victory Cities` | `tests/js/lore.test.js` | JS Lore | Key Victory City Designations | Pass |
-| **122** | `Lore Codex - accurately designate coastal ports & maritime hubs` | `tests/js/lore.test.js` | JS Lore | Coastal Port Classifications | Pass |
-| **123** | `Lore Codex - resolve territories case-insensitively & render tooltips` | `tests/js/lore.test.js` | JS Lore | Case-Insensitive Tooltips | Pass |
-| **124** | `Tutorial - define 4 sequential lessons covering core mechanics` | `tests/js/tutorial.test.js` | JS Tutorial | 4 Guided Lessons Curriculum | Pass |
-| **125** | `Tutorial - step forward and backward correctly through tutorial flow` | `tests/js/tutorial.test.js` | JS Tutorial | Lesson Card Flow Navigation | Pass |
-| **126** | `Tutorial - validate targeted tutorial moves` | `tests/js/tutorial.test.js` | JS Tutorial | Targeted Move Validation | Pass |
-| **127** | `TDReplay - parseReplay validates structure and move boundaries` | `tests/js/replay.test.js` | JS Replay | TDR Replay Parsing | Pass |
-| **128** | `TDReplay - exportReplay and exportTDR payload generation & normalization` | `tests/js/replay.test.js` | JS Replay | TDR Serialization & Format | Pass |
-| **129** | `TDReplay - loadFromFile interface and HTML action button bindings` | `tests/js/replay.test.js` | JS Replay | Async Loading & Button Wiring | Pass |
-| **130** | `TDReplay - Active Card Decks & Historical Inspection HUD` | `tests/js/replay.test.js` | JS Replay | Active Card Visibility & Replay HUD | Pass |
-| **131** | `Visual Regression – 10 Themes Contrast` | `tests/js/visual.test.js` | Visual | WCAG 2.1 AA/AAA Luminance | Pass |
-| **132** | `Visual Regression – 5 Unit Token Styles` | `tests/js/visual.test.js` | Visual | 5 Unit Aesthetics Integrity | Pass |
-| **133** | `Visual Regression – SVG Board Node Bounds` | `tests/js/visual.test.js` | Visual | SVG Bounds & Fort Clearance | Pass |
-| **134** | `Visual Regression – Multi-Viewport Scaling` | `tests/js/visual.test.js` | Visual | 4 Viewports & Tap Hitboxes | Pass |
+| **105** | `Sound Engine Master Controls & Clamping` | `tests/js/ui.test.js` | JS Frontend | Audio Volume Bounds & Storage | Pass |
+| **106** | `Mobile Tab Switching & Responsive Layout Controllers` | `tests/js/ui.test.js` | JS Frontend | Mobile Responsive Controllers | Pass |
+| **107** | `SEO & Search Indexing - robots.txt, sitemap.xml & Structured Data` | `tests/js/ui.test.js` | JS Frontend | SEO Crawlability & Schema.org | Pass |
+| **108** | `Desktop Layout - Flush Card-to-Map Attachment & Seamless Clipping` | `tests/js/ui.test.js` | JS Frontend | Zero-Gap 4-Column Console Alignment | Pass |
+| **109** | `Responsive Auto-Sizer - Desktop Console & Bottom Eval Dock Sizing` | `tests/js/ui.test.js` | JS Frontend | Viewport Auto-Sizer with Bottom Dock | Pass |
+| **110** | `Engine Toggle Cycles - Dimensions Recover Fully Without Ratchet` | `tests/js/ui.test.js` | JS Frontend | Engine Toggle Layout Resilience | Pass |
+| **111** | `Integration: Real DOM Simulation of Engine Toggle Cycles 100%` | `tests/js/layout_integration.test.js` | JS Integration | Real DOM 10-Cycle Toggle Test | Pass |
+| **112** | `Integration: Multi-Resolution Responsiveness & Zero Overflow` | `tests/js/layout_integration.test.js` | JS Integration | 7 Display Resolutions Validation | Pass |
+| **113** | `Integration: CSS Zero-Gap Layout Contracts & Top Bar Alignment` | `tests/js/layout_integration.test.js` | JS Integration | Zero-Gap CSS Contract Verifier | Pass |
+| **114** | `Integration: script.js computes available width from viewport` | `tests/js/layout_integration.test.js` | JS Integration | Viewport Width Derivation Guard | Pass |
+| **115** | `Integration: HTML DOM element hierarchy satisfies 4 columns` | `tests/js/layout_integration.test.js` | JS Integration | DOM Hierarchy Architecture | Pass |
+| **116** | `MultiplayerManager - Room Code Generation Invariants` | `tests/js/multiplayer.test.js` | JS Multiplayer | 4-Character Alphanumeric Codes | Pass |
+| **117** | `MultiplayerManager - Protocol Message Handshake & State Dispatch` | `tests/js/multiplayer.test.js` | JS Multiplayer | WebRTC Handshake & Dispatch | Pass |
+| **118** | `MultiplayerManager - Move Packet Invariants & Payload Validation` | `tests/js/multiplayer.test.js` | JS Multiplayer | Move Packet Payload Bounds | Pass |
+| **119** | `MultiplayerManager - Ping/Pong Heartbeat and Teardown` | `tests/js/multiplayer.test.js` | JS Multiplayer | Keep-Alive & Teardown | Pass |
+| **120** | `MultiplayerManager - WebRTC to WebSocket Fallback & Matchmaking Queue` | `tests/js/multiplayer.test.js` | JS Multiplayer | WebSocket Relay Fallback | Pass |
+| **121** | `SoundEngine - Volume Range Clamping and NaN protection` | `tests/js/sound.test.js` | JS Audio | Volume Clamping & NaN Guard | Pass |
+| **122** | `SoundEngine - Storage Persistence Invariants` | `tests/js/sound.test.js` | JS Audio | LocalStorage Volume Settings | Pass |
+| **123** | `SoundEngine - Headless Safe Audio Execution without AudioContext` | `tests/js/sound.test.js` | JS Audio | Headless Web Audio Safety | Pass |
+| **124** | `SoundEngine - Headless Safe Audio Execution with Mock AudioContext` | `tests/js/sound.test.js` | JS Audio | Audio Graph Synthesis | Pass |
+| **125** | `SoundEngine - Win, Defeat, and Resign API Availability` | `tests/js/sound.test.js` | JS Audio | Win, Defeat & Resign APIs | Pass |
+| **126** | `Lore Codex - define all 25 game territories with metadata` | `tests/js/lore.test.js` | JS Lore | 25 Territory Historical Lore | Pass |
+| **127** | `Lore Codex - accurately tag the 5 Key Victory Cities` | `tests/js/lore.test.js` | JS Lore | Key Victory City Designations | Pass |
+| **128** | `Lore Codex - accurately designate coastal ports & maritime hubs` | `tests/js/lore.test.js` | JS Lore | Coastal Port Classifications | Pass |
+| **129** | `Lore Codex - resolve territories case-insensitively & render tooltips` | `tests/js/lore.test.js` | JS Lore | Case-Insensitive Tooltips | Pass |
+| **130** | `Tutorial - define 4 sequential lessons covering core mechanics` | `tests/js/tutorial.test.js` | JS Tutorial | 4 Guided Lessons Curriculum | Pass |
+| **131** | `Tutorial - step forward and backward correctly through tutorial flow` | `tests/js/tutorial.test.js` | JS Tutorial | Lesson Card Flow Navigation | Pass |
+| **132** | `Tutorial - validate targeted tutorial moves` | `tests/js/tutorial.test.js` | JS Tutorial | Targeted Move Validation | Pass |
+| **133** | `TDReplay - parseReplay validates structure and move boundaries` | `tests/js/replay.test.js` | JS Replay | TDR Replay Parsing | Pass |
+| **134** | `TDReplay - exportReplay and exportTDR payload generation & normalization` | `tests/js/replay.test.js` | JS Replay | TDR Serialization & Format | Pass |
+| **135** | `TDReplay - loadFromFile interface and HTML action button bindings` | `tests/js/replay.test.js` | JS Replay | Async Loading & Button Wiring | Pass |
+| **136** | `TDReplay - Clean Card Presentation and Absence of Clutter Markers` | `tests/js/replay.test.js` | JS Replay | Clean Card Styling & Zero Clutter | Pass |
+| **137** | `Visual Regression – 10 Themes Contrast` | `tests/js/visual.test.js` | Visual | WCAG 2.1 AA/AAA Luminance | Pass |
+| **138** | `Visual Regression – 5 Unit Token Styles` | `tests/js/visual.test.js` | Visual | 5 Unit Aesthetics Integrity | Pass |
+| **139** | `Visual Regression – SVG Board Node Bounds` | `tests/js/visual.test.js` | Visual | SVG Bounds & Fort Clearance | Pass |
+| **140** | `Visual Regression – Multi-Viewport Scaling` | `tests/js/visual.test.js` | Visual | 4 Viewports & Tap Hitboxes | Pass |

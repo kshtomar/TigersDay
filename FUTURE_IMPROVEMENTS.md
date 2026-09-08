@@ -313,7 +313,7 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
 * **Status:** Completed
 * **Deliverables:**
   - Full `.tdr` / JSON export and import pipeline with format validation, flexible array/wrapper normalization, and replay stepping.
-  - Frontend UI buttons ("Export Replay (.tdr)" via `#btn-export-tdr` and "Load Replay" via `#btn-import-tdr` + `#input-import-tdr`) embedded in the moves notation panel.
+  - Frontend UI buttons ("Export Replay" via `#btn-export-tdr` and "Load Replay" via `#btn-import-tdr` + `#input-import-tdr`) embedded in the moves notation panel.
   - Automatic review mode initialization on replay load, executing transitions in sequence and jumping to historical step review with move stepping controls.
   - Unit tests in [`tests/unit/test_replay.py`](./tests/unit/test_replay.py) and [`tests/js/replay.test.js`](./tests/js/replay.test.js).
 
@@ -374,10 +374,12 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
     - Full gameplay integration across Human vs AI, P2P Multiplayer (opponent surrender vs self-surrender), and explicit Resign action clicks.
     - Automated test coverage in [`tests/js/sound.test.js`](./tests/js/sound.test.js) with zero external audio assets.
 
-  - **Replay Active Card Visibility & Clean Presentation (`TDReplay`)**:
+  - **Replay Active Card Visibility & Clean Minimalist Presentation (`TDReplay`)**:
     - Synchronizes `lastUiState` with historical snapshots during replay step-through, ensuring both player and opponent card decks accurately reflect active and exhausted card states naturally with existing card styling and EXHAUSTED stamps.
-    - Clean minimalist historical presentation: removed redundant ACTIVE/USED status pill badges, cluttered review banner card text lists, and card count badges (X/6) to maintain an uncluttered aesthetic.
-    - Automated test coverage in [`tests/js/replay.test.js`](./tests/js/replay.test.js).
+    - Clean minimalist historical presentation: removed redundant ACTIVE/USED status pill badges, cluttered review banner card text lists, and card count badges (X/6).
+    - Removed floating review popup banner (`#historical-review-banner`) and redundant return buttons in favor of integrated `#turn-header` status and stepping navigation bar controls (`#btn-step-live`).
+    - Cleaned action buttons in the notation bar by removing technical file extension suffixes (`Export Replay` instead of `Export Replay (.tdr)`).
+    - Automated test coverage in [`tests/js/replay.test.js`](./tests/js/replay.test.js) and [`tests/js/ui.test.js`](./tests/js/ui.test.js).
 
   - **Seamless 4-Column Console Attachment & Vertical Map Space Maximization**:
     - Eliminated horizontal gaps across all 4 desktop console elements (`gap: 0` on `.game-middle-area` and `.game-container`), anchoring Mysore cards flush to the left map border, British cards flush to the right map border, and Moves Notation panel directly clipped to the right edge of British cards.
@@ -396,6 +398,6 @@ Total automated test suite coverage expanded to **119 automated tests** (59 Java
 
 ---
 
-*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 134 passing automated tests across Python and JavaScript runtimes.*
+*Last Updated: 2026-09-07 — All P0–P6 engineering milestones completed, verified with 140 passing automated tests across Python and JavaScript runtimes.*
 
 
