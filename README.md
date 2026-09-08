@@ -7,7 +7,7 @@
 [![ONNX Runtime Web](https://img.shields.io/badge/ONNX_Runtime-WebAssembly-005CED.svg)](https://onnxruntime.ai/)
 [![WebRTC](https://img.shields.io/badge/WebRTC-PeerJS_P2P-orange.svg)](https://peerjs.com/)
 [![CI](https://github.com/kshtomar/TigersDay/actions/workflows/ci.yml/badge.svg)](https://github.com/kshtomar/TigersDay/actions)
-[![Tests](https://img.shields.io/badge/Tests-64%20Passing-brightgreen.svg)](./TESTS.md)
+[![Tests](https://img.shields.io/badge/Tests-128%20Passing-brightgreen.svg)](./TESTS.md)
 [![PWA](https://img.shields.io/badge/PWA-Offline%20Ready-blueviolet.svg)](./public/manifest.json)
 
 Welcome to **Tiger’s Day**, a strategic, asymmetric board wargame simulating the historical Anglo-Mysore Wars fought between **Tipu Sultan** (*The Tiger of Mysore*) and the British East India Company under commanders such as **Lord Cornwallis** and **General Harris**.
@@ -367,6 +367,22 @@ Players can customize how armies, forts, and strongholds render on the map:
 * **2-Column Master Dashboard:** Replacing narrow side drawers with a centered modal dialog featuring a wide, zero-scroll layout.
 * **Complete Configuration at a Glance:** Directly adjust themes, board unit styles, match opponent mode (Pass & Play, WebAssembly AI, P2P Multiplayer, AI Spectator), Stockfish-style evaluation bar, MCTS simulation depth slider (250 – 1,000,000 rollouts), and binary state save/load strings.
 
+### Bottom Map & Decks AI Analysis Dock (`#bottom-analysis-dock`)
+* **Unified Analysis Dock:** The Stockfish-style winrate evaluation progress bar and multi-PV candidate move lines are integrated into a single glassmorphic dock situated directly beneath the Mysore deck, board map, and British deck.
+* **Proportional Board & Cards Scaling:** Dynamic flexbox sizing smoothly scales the board SVG and player card decks proportionally to fit within the viewport without generating window scrollbars or encroaching into the notation sidebar.
+* **Horizontal Scrolling Rail:** Candidate move cards are arranged in a horizontal scrolling rail, preserving a minimal vertical footprint and keeping the full map visible at all times.
+
+### Top-K AI Candidate Moves & Variation Lines
+* **Configurable Positive Integer $K$:** Configure any positive integer $k \ge 1$ in Settings; dynamic golden-ratio color assignment and runtime SVG marker generation support arbitrary $k > 5$, while positions with fewer legal moves than $k$ gracefully render all valid lines without placeholder errors.
+* **Principal Variation (PV) Forward Simulation:** Traces candidate variations up to 10 plies deep using algebraic notation.
+* **Stochastic Luck State Frontiers:** Forward search halts when encountering luck state boundaries (probabilistic battles or card draws), clearly marking variations with `[🎲 Battle: <Territory>]` or `[🎲 Luck Roll]`.
+* **Visit Count Badges:** Candidate cards prominently display MCTS visit counts via dedicated `.candidate-visits-badge` pills (`210 visits`).
+
+### Player Deck Card AI Number Badges & Visual Spatial Correspondence
+* **Clean Number-Only Badges:** When tactical cards are recommended by the AI, the corresponding cards in the player's deck display a high-contrast rank number badge (`#1`, `#2`, etc.) positioned at `top: 4px; right: 36px` beside the wax seal without cluttering card art or descriptions. For card trade-in moves, `#rank ↺` designates the target card to reclaim.
+* **Bi-Directional Spatial Correspondence:** Hovering a card in hand pulses the corresponding tactical arrow and destination territory ring on the board map; hovering candidate cards in the dock pulses both the card in hand and the map elements.
+* **Clean Minimalist Command Iconography:** Purged distracting modern emoticons (`🧠`, `📜`, `💡`, `🎲`) and redundant `[TOP K]` boxes from headers, HUD pills, and notation sidebars for an authentic 18th-century military command aesthetic.
+
 ### Animated Siege Clash & Net Strength Tag
 * **Dynamic Combat Marker:** When a battle is triggered, an animated crossed-swords shield appears along the combat vector between the attacking army and defending fort.
 * **Live Net Strength Display:** Displays real-time net strength (`+N` in British red or `-N` in Mysore green) taking into account adjacent armies, adjacent forts, and committed card values.
@@ -707,13 +723,13 @@ Translates an array of historical move indices into algebraic notation.
 The repository features a four-stage automated testing hierarchy guaranteeing absolute byte-for-byte parity, zero regressions, and full device responsiveness:
 
 ```bash
-# 1. Execute full JavaScript engine, UI & Visual Regression test battery (33 tests)
+# 1. Execute full JavaScript engine, UI, Candidate Lines & Visual Regression battery (68 tests)
 $ npm test
 
-# 2. Execute Python unit test battery (17 tests)
+# 2. Execute Python unit test battery (38 tests)
 $ python3 -m unittest discover -s tests/unit -v
 
-# 3. Execute Python integration & API test battery (14 tests)
+# 3. Execute Python integration & API test battery (22 tests)
 $ python3 -m unittest discover -s tests/integration -v
 
 # 4. Run static syntax and linter checks
@@ -722,7 +738,7 @@ $ python3 -m compileall -q ai game api tests
 ```
 
 * **Continuous Integration:** Automated on every commit and pull request via [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) across a matrix of Python 3.10, 3.11, 3.12 and Node.js 18, 20, 22.
-* **Test Catalog:** For a detailed breakdown of all 64 individual test cases, engineering rationales, and pipeline locations, consult [`TESTS.md`](./TESTS.md).
+* **Test Catalog:** For a detailed breakdown of all 128 individual test cases, engineering rationales, and pipeline locations, consult [`TESTS.md`](./TESTS.md).
 
 ---
 
