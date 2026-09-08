@@ -6,7 +6,8 @@
 (function(global) {
   'use strict';
 
-  const { GameState, NODE_TO_IDX } = global.TDGameState || require('./state.js');
+  const GameState = global.GameState || (global.TDGameState && global.TDGameState.GameState) || (typeof require !== 'undefined' ? require('./state.js').GameState : null);
+  const NODE_TO_IDX = global.NODE_TO_IDX || (global.TDGameState && global.TDGameState.NODE_TO_IDX) || (typeof require !== 'undefined' ? require('./state.js').NODE_TO_IDX : null);
 
   const SCENARIOS = [
     {

@@ -666,8 +666,10 @@
   // 6. GAME WINNER EVALUATION
   // =========================================================================
   function getStateWinner(state) {
-    const fresh = state.fresh_armies;
-    const tired = state.tired_armies;
+    const s = state || (typeof currentGameState !== 'undefined' ? currentGameState : null);
+    if (!s || !s.fresh_armies || !s.tired_armies) return 0;
+    const fresh = s.fresh_armies;
+    const tired = s.tired_armies;
 
     let keyArmiesCount = 0;
     for (let i = 0; i < 5; i++) { // First 5 nodes are Keys

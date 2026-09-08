@@ -3349,7 +3349,9 @@ function handleExportTDR() {
   }
 
   const moves = gameHistory.map(h => h.moveIdx);
-  const winnerVal = typeof getStateWinner === 'function' ? getStateWinner() : 0;
+  const currentS = typeof currentGameState !== 'undefined' ? currentGameState : null;
+  const getWinnerFn = typeof getStateWinner === 'function' ? getStateWinner : (window.TDEngine && window.TDEngine.getStateWinner);
+  const winnerVal = (getWinnerFn && currentS) ? getWinnerFn(currentS) : 0;
   const winnerStr = winnerVal === 1 ? "british" : (winnerVal === -1 ? "mysore" : "draw");
   const filename = `tigers_day_match_${Date.now()}.tdr`;
 

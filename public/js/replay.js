@@ -55,8 +55,12 @@
           a.download = filename;
           document.body.appendChild(a);
           a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+          setTimeout(() => {
+            try {
+              if (a.parentNode) a.parentNode.removeChild(a);
+              URL.revokeObjectURL(url);
+            } catch (e) {}
+          }, 1000);
         } catch (domErr) {
           console.warn("Could not trigger automated download via DOM Blob:", domErr);
         }

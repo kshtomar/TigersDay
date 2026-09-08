@@ -490,6 +490,7 @@
   } else {
     global.GameState = GameState;
     global.TDConstants = TDConstants;
+    global.TDGameState = Object.assign({ GameState, TDConstants }, TDConstants);
     Object.assign(global, TDConstants);
   }
 })(typeof window !== 'undefined' ? window : this);

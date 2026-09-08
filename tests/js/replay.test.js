@@ -91,4 +91,12 @@ test('TDReplay - loadFromFile interface and HTML action button bindings', () => 
   assert.ok(html.includes("document.getElementById('input-import-tdr').click()"), 'btn-import-tdr must trigger hidden file input');
   assert.ok(html.includes('id="input-import-tdr"'), 'Must have hidden input-import-tdr');
   assert.ok(html.includes('onchange="handleImportTDR(event)"'), 'input-import-tdr must trigger handleImportTDR');
+
+  // Verify engine getStateWinner safely handles undefined (preventing export crash)
+  const { TDEngine } = require('../../public/js/engine.js');
+  assert.strictEqual(TDEngine.getStateWinner(undefined), 0);
+
+  // Verify scenarios.js has no unguarded browser require calls
+  const scenariosCode = fs.readFileSync(path.resolve(__dirname, '../../public/js/scenarios.js'), 'utf8');
+  assert.ok(!scenariosCode.includes('|| require('), 'Must not use unguarded || require() in browser scripts');
 });
