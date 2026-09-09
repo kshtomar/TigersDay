@@ -56,8 +56,9 @@ class GameState:
         self.to_move = 0
 
     def copy(self):
-        """Crucial for MCTS: Creates a fast, deep copy of the state."""
-        new_state = GameState()
+        """Crucial for MCTS: Creates a fast, deep copy of the state.
+        Bypasses __init__ to avoid redundant vector allocation and field writes."""
+        new_state = object.__new__(GameState)
         new_state.vector = np.copy(self.vector)
         new_state._attacker = self._attacker
         new_state._defender = self._defender
@@ -183,13 +184,7 @@ class GameState:
         self.mluck = 0
     
     def __str__(self):
-        save = ""
-        for i in range(GAME_VECTOR_LENGTH):
-            if self.vector[i]:
-                save += "1"
-            else:
-                save += "0"
-        return save
+        return ''.join('1' if self.vector[i] else '0' for i in range(GAME_VECTOR_LENGTH))
 
     def to_str(self):
         return str(self)

@@ -152,7 +152,7 @@ def get_overall_british_wr(games):
         elif "0-1" in game:
             total_games += 1
 
-    return british_wins / total_games
+    return british_wins / total_games if total_games > 0 else 0.5
 
 def beta_wr(british_wins, games, overall_wr, prior_strength=10):
     alpha = overall_wr * prior_strength

@@ -9,6 +9,7 @@ Provides:
 import asyncio
 import json
 import random
+import secrets
 import time
 from typing import Dict, List, Optional, Set
 from fastapi import WebSocket, WebSocketDisconnect
@@ -76,7 +77,7 @@ class MatchmakingLobby:
                 # Find closest ELO
                 self.queue.sort(key=lambda p: abs(p.elo - player.elo))
                 opponent = self.queue.pop(0)
-                room_id = f"TIGER-{random.randint(1000, 9999)}"
+                room_id = f"TIGER-{secrets.token_hex(4).upper()}"
                 room = MatchRoom(room_id, host_handle=opponent.handle)
                 room.guest_handle = player.handle
                 self.rooms[room_id] = room

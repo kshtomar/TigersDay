@@ -5,6 +5,7 @@ Provides Prometheus / JSON performance metrics and DoS mitigation for Tiger's Da
 
 import time
 import asyncio
+from collections import deque
 from typing import Dict, List, Tuple
 import numpy as np
 
@@ -52,7 +53,7 @@ class MetricsCollector:
         self.mcts_sims_total = 0
         self.cache_hits = 0
         self.cache_misses = 0
-        self.latencies: List[float] = [] # Rolling latency buffer
+        self.latencies: deque = deque(maxlen=1000)  # Rolling latency buffer with O(1) eviction
         self.max_latency_samples = 1000
 
     def record_request(self, latency_ms: float, is_error: bool = False):
@@ -60,8 +61,6 @@ class MetricsCollector:
         if is_error:
             self.total_errors += 1
         self.latencies.append(latency_ms)
-        if len(self.latencies) > self.max_latency_samples:
-            self.latencies.pop(0)
 
     def record_mcts_sims(self, count: int):
         self.mcts_sims_total += count

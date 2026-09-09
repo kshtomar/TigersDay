@@ -3,7 +3,7 @@
  * Enables complete offline play with WebAssembly and local assets.
  */
 
-const CACHE_NAME = 'tigersday-v2.15';
+const CACHE_NAME = 'tigersday-v2.16';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -24,7 +24,8 @@ const ASSETS_TO_CACHE = [
   './js/multiplayer.js',
   './js/analytics.js',
   './js/sound.js',
-  './opening_book.json'
+  './opening_book.json',
+  './alphatiger.quant.onnx'
 ];
 
 self.addEventListener('install', (event) => {

@@ -44,10 +44,9 @@ def play_single_game(model: AlphaTiger, simulations: int = 100, temperature: flo
         if not legal_mask.any():
             break
             
-        policy = mcts.find_move(state, simulations=simulations, temperature=temperature)
+        move, policy = mcts.find_move(state, simulations=simulations, temperature=temperature)
         history.append((state.vector.copy(), policy.copy(), state.to_move))
         
-        move = np.random.choice(len(policy), p=policy) if temperature > 0 else np.argmax(policy)
         next_state = Updater.get_next_state(state, move)
         
         # Resolve non-deterministic luck outcomes
@@ -114,7 +113,7 @@ class DistributedTrainer:
         self.optimizer.zero_grad()
         
         with torch.cuda.amp.autocast(enabled=self.use_amp):
-            pred_policies, pred_values = self.model(states)
+            pred_values, pred_policies = self.model(states)
             value_loss = F.mse_loss(pred_values, target_values)
             policy_loss = -torch.mean(torch.sum(target_policies * F.log_softmax(pred_policies, dim=-1), dim=-1))
             total_loss = value_loss + policy_loss
