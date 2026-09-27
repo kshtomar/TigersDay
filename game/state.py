@@ -32,9 +32,6 @@ class GameState:
         self.mluck = 0
         self.mysore_cards[:] = True
         self.british_cards[:] = True
-        self.turn = 1
-        self.to_move = 0
-        self.card_strength = 0
 
     def default_setup(self):
         self.set_node_fresh_army(NODE_TO_IDX["Bombay"])
@@ -56,9 +53,8 @@ class GameState:
         self.to_move = 0
 
     def copy(self):
-        """Crucial for MCTS: Creates a fast, deep copy of the state.
-        Bypasses __init__ to avoid redundant vector allocation and field writes."""
-        new_state = object.__new__(GameState)
+        """Crucial for MCTS: Creates a fast, deep copy of the state."""
+        new_state = GameState()
         new_state.vector = np.copy(self.vector)
         new_state._attacker = self._attacker
         new_state._defender = self._defender
@@ -184,44 +180,40 @@ class GameState:
         self.mluck = 0
     
     def __str__(self):
-        return ''.join('1' if self.vector[i] else '0' for i in range(GAME_VECTOR_LENGTH))
-
-    def to_str(self):
-        return str(self)
+        save = ""
+        for i in range(GAME_VECTOR_LENGTH):
+            if self.vector[i]:
+                save += "1"
+            else:
+                save += "0"
+        return save
 
     def read_str(self, bit_str):
         """ This function is utilized by the frontend and requires certain checks """
 
         if len(bit_str) != GAME_VECTOR_LENGTH:
             raise ValueError(f"Invalid input length! Expected {GAME_VECTOR_LENGTH} bits. ")
+        new_state = self.copy() # creates a copy of itself just in case there is an error
         try:
-            vec = np.array([bool(int(b)) for b in bit_str], dtype=bool)
+            new_state.vector = np.array([bool(int(b)) for b in bit_str], dtype=bool)
         except ValueError:
             raise ValueError("Invalid input! Please provide a string consisting purely of 1s and 0s.")
-        for node_idx in range(NODES):
-            start = self.IDX_NODES_OFFSET + node_idx * 3
-            if np.sum(vec[start : start + 3]) > 1:
-                name = INDEX_MAP[node_idx] if node_idx in INDEX_MAP else f"Territory {node_idx}"
-                raise ValueError(f"Invalid Binary: Multiple units assigned to territory {name}")
+        try:
+            for i in range(12, 136):
+                if all(new_state.vector[i : i+3]):
+                    t_idx = (i - 12) // 3
+                    name = INDEX_MAP[t_idx] if t_idx in INDEX_MAP else f"Bit {i}"
+                    raise ValueError(f"Invalid Binary: Triple consecutive 1s detected starting at {name}")
+        except ValueError:
+            raise ValueError(f"Invalid Binary: Triple consecutive 1s detected starting at {name}")
 
-        self.vector = vec
-        self._attacker = int(np.argmax(self.vector[self.IDX_ATTACKER])) if self.vector[self.IDX_ATTACKER].any() else NO_UNIT
-        self._defender = int(np.argmax(self.vector[self.IDX_DEFENDER])) if self.vector[self.IDX_DEFENDER].any() else NO_UNIT
-        self._card_strength = int(np.argmax(self.vector[self.IDX_COMBAT_STRENGTH]))
-        self._to_move = int(np.argmax(self.vector[self.IDX_WHO_TO_MOVE]))
-        self._turn = int(np.argmax(self.vector[self.IDX_TURN])) + 1
+        new_state._attacker = int(np.argmax(new_state.vector[new_state.IDX_ATTACKER])) if new_state.vector[new_state.IDX_ATTACKER].any() else NO_UNIT
+        new_state._defender = int(np.argmax(new_state.vector[new_state.IDX_DEFENDER])) if new_state.vector[new_state.IDX_DEFENDER].any() else NO_UNIT
+        new_state._card_strength = int(np.argmax(new_state.vector[new_state.IDX_COMBAT_STRENGTH]))
+        new_state._to_move = int(np.argmax(new_state.vector[new_state.IDX_WHO_TO_MOVE]))
+        new_state._turn = int(np.argmax(new_state.vector[new_state.IDX_TURN])) + 1
 
-        return self
-
-    def zobrist_hash(self) -> int:
-        """
-        Computes 64-bit Zobrist Hash of the 148-bit game state vector.
-        Fast XOR reduction over all active bits.
-        """
-        active_indices = np.where(self.vector == 1)[0]
-        if len(active_indices) == 0:
-            return 0
-        return int(np.bitwise_xor.reduce(ZOBRIST_KEYS[active_indices]))
+        return new_state
 
 def main():
     default = GameState()

@@ -10,14 +10,7 @@ import torch
 
 from ai.mcts import MCTS
 from ai.neural import AlphaTiger, load_checkpoint, save_checkpoint
-from ai.train import (
-    CurriculumStage,
-    TrainerConfig,
-    ReplayBuffer,
-    self_play_game,
-    train_step,
-    setup_training_run,
-)
+from ai.train import * # type: ignore
 
 def train(
     curriculum: List[CurriculumStage],
@@ -49,11 +42,7 @@ def train(
 
         games_played = 0
         
-        # Maintain CPU copy for worker processes to prevent CUDA multiprocessing IPC faults
-        cpu_model = AlphaTiger(use_factorization=getattr(model, 'use_factorization', True)).to("cpu")
-        cpu_model.load_state_dict(model.state_dict())
-        cpu_model.eval()
-        cpu_model.share_memory()
+        model.share_memory() 
         num_workers = 8
         
         ctx = mp.get_context("spawn")
@@ -62,12 +51,11 @@ def train(
             batch_size = min(num_workers, stage.iterations - games_played)
             
             model.eval()
-            cpu_model.load_state_dict(model.state_dict())
             
             with ProcessPoolExecutor(max_workers=batch_size, mp_context=ctx) as executor:
                 futures = []
                 for _ in range(batch_size):
-                    mcts_worker = MCTS(cpu_model)
+                    mcts_worker = MCTS(model)
                     futures.append(
                         executor.submit(
                             self_play_game,

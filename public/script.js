@@ -84,579 +84,25 @@ const EDGES = [
   ['Travancore', 'Ceylon']
 ];
 
-// ==========================================================================
-// BESPOKE ILLUSTRATED CARD ARTWORK (12 Unique Vector SVGs)
-// ==========================================================================
-const CARD_ART = {
-  // Mysore Sultanate Cards
-  'Iron Rockets': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_rockets" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0%" stop-color="#140801"/><stop offset="100%" stop-color="#3d1505"/>
-      </linearGradient>
-      <linearGradient id="art_fire_rockets" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#fff885"/><stop offset="40%" stop-color="#f97316"/><stop offset="100%" stop-color="#dc2626"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_rockets)"/>
-    <circle cx="15" cy="14" r="0.9" fill="#fde047" opacity="0.8"/>
-    <circle cx="48" cy="12" r="0.7" fill="#fde047" opacity="0.6"/>
-    <circle cx="20" cy="28" r="0.8" fill="#fde047" opacity="0.7"/>
-    <circle cx="18" cy="46" r="6" fill="#523a2a" opacity="0.45"/>
-    <circle cx="26" cy="38" r="5" fill="#6b4c38" opacity="0.45"/>
-    <polygon points="26,38 15,49 23,45 13,58 27,47 31,41" fill="url(#art_fire_rockets)"/>
-    <line x1="12" y1="58" x2="48" y2="16" stroke="#d97706" stroke-width="1.8" stroke-linecap="round"/>
-    <g transform="translate(36,18) rotate(-43)">
-      <rect x="-4.5" y="-13" width="9" height="23" rx="2" fill="#475569" stroke="#1e293b" stroke-width="1"/>
-      <line x1="-4.5" y1="-8" x2="4.5" y2="-8" stroke="#f59e0b" stroke-width="1.2"/>
-      <line x1="-4.5" y1="-2" x2="4.5" y2="-2" stroke="#f59e0b" stroke-width="1.2"/>
-      <line x1="-4.5" y1="4" x2="4.5" y2="4" stroke="#f59e0b" stroke-width="1.2"/>
-      <polygon points="0,-19 -4.5,-13 4.5,-13" fill="#b91c1c" stroke="#7f1d1d" stroke-width="0.8"/>
-    </g>
-  </svg>`,
-
-  'Sepoy Mutiny': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_mutiny" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0%" stop-color="#210808"/><stop offset="100%" stop-color="#4a1212"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_mutiny)"/>
-    <path d="M12,10 Q28,14 44,10 L44,24 Q28,28 12,24 Z" fill="#d97706" opacity="0.35"/>
-    <ellipse cx="20" cy="48" rx="4" ry="2.5" fill="none" stroke="#94a3b8" stroke-width="1.5" transform="rotate(-25,20,48)"/>
-    <ellipse cx="44" cy="48" rx="4" ry="2.5" fill="none" stroke="#94a3b8" stroke-width="1.5" transform="rotate(25,44,48)"/>
-    <path d="M28,47 L36,49" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
-    <path d="M15,50 Q28,34 46,15 Q36,26 21,38" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
-    <circle cx="14" cy="51" r="3.5" fill="#eab308" stroke="#713f12" stroke-width="0.8"/>
-    <line x1="12" y1="52" x2="20" y2="44" stroke="#713f12" stroke-width="2.5"/>
-    <path d="M49,50 Q36,34 18,15 Q28,26 43,38" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
-    <circle cx="50" cy="51" r="3.5" fill="#eab308" stroke="#713f12" stroke-width="0.8"/>
-    <line x1="52" y1="52" x2="44" y2="44" stroke="#713f12" stroke-width="2.5"/>
-    <polygon points="32,27 34,31 38,32 34,33 32,37 30,33 26,32 30,31" fill="#fde047"/>
-  </svg>`,
-
-  'French Alliance': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_french" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#0c2340"/><stop offset="50%" stop-color="#142820"/><stop offset="100%" stop-color="#064e3b"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_french)"/>
-    <g transform="translate(24,20) scale(0.65)">
-      <path d="M0,-16 C3,-10 6,-4 0,8 C-6,-4 -3,-10 0,-16 Z" fill="#eab308" stroke="#ca8a04" stroke-width="0.8"/>
-      <path d="M-2,2 C-8,-6 -14,-4 -12,2 C-10,8 -3,6 -1,8 Z" fill="#eab308" stroke="#ca8a04" stroke-width="0.8"/>
-      <path d="M2,2 C8,-6 14,-4 12,2 C10,8 3,6 1,8 Z" fill="#eab308" stroke="#ca8a04" stroke-width="0.8"/>
-      <rect x="-8" y="7" width="16" height="3" rx="1" fill="#ca8a04"/>
-    </g>
-    <path d="M42,12 A10,10 0 1,0 48,28 A8,8 0 1,1 42,12 Z" fill="#34d399" stroke="#10b981" stroke-width="0.8"/>
-    <g transform="translate(10,34)">
-      <path d="M12,18 L38,8 L40,12 L14,22 Z" fill="#713f12" stroke="#451a03" stroke-width="1"/>
-      <circle cx="20" cy="20" r="8" fill="#1c1917" stroke="#ca8a04" stroke-width="1.8"/>
-      <circle cx="20" cy="20" r="2.5" fill="#ca8a04"/>
-      <circle cx="36" cy="22" r="3.2" fill="#292524" stroke="#44403c" stroke-width="0.8"/>
-      <circle cx="42" cy="23" r="3.2" fill="#292524" stroke="#44403c" stroke-width="0.8"/>
-    </g>
-  </svg>`,
-
-  'Monsoon': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_monsoon" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#0f172a"/><stop offset="60%" stop-color="#1e293b"/><stop offset="100%" stop-color="#0e3040"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_monsoon)"/>
-    <polygon points="0,64 16,42 34,50 48,36 64,64" fill="#09141d"/>
-    <path d="M10,24 Q16,14 26,17 Q34,10 44,15 Q52,12 56,22 Q60,28 54,32 L12,32 Q6,28 10,24 Z" fill="#334155" stroke="#475569" stroke-width="1"/>
-    <polygon points="34,18 25,32 31,32 23,48 37,33 30,33 38,18" fill="#38bdf8" stroke="#e0f2fe" stroke-width="0.8"/>
-    <line x1="14" y1="36" x2="10" y2="52" stroke="#7dd3fc" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.75"/>
-    <line x1="22" y1="38" x2="18" y2="54" stroke="#7dd3fc" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.6"/>
-    <line x1="42" y1="38" x2="38" y2="56" stroke="#7dd3fc" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.8"/>
-    <line x1="52" y1="36" x2="48" y2="52" stroke="#7dd3fc" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.65"/>
-  </svg>`,
-
-  'Cavalry Raid': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_cavalry" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0%" stop-color="#1f1006"/><stop offset="100%" stop-color="#422006"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_cavalry)"/>
-    <path d="M0,64 Q24,46 48,56 Q56,52 64,64 Z" fill="#78350f" opacity="0.4"/>
-    <line x1="8" y1="58" x2="52" y2="12" stroke="#ca8a04" stroke-width="2" stroke-linecap="round"/>
-    <polygon points="56,8 50,11 53,14" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8"/>
-    <path d="M46,14 L26,8 L32,18 L24,24 L42,18 Z" fill="#d97706" stroke="#b45309" stroke-width="0.8"/>
-    <path d="M38,13 L36,17 M32,11 L30,15" stroke="#1c1917" stroke-width="1.2"/>
-    <path d="M12,54 C16,40 22,30 30,28 C34,27 38,30 36,36 C34,40 38,44 38,48 C30,48 24,56 18,60 Z" fill="#292524" stroke="#ca8a04" stroke-width="0.8"/>
-    <circle cx="32" cy="33" r="1.5" fill="#facc15"/>
-    <line x1="30" y1="36" x2="22" y2="46" stroke="#eab308" stroke-width="1"/>
-  </svg>`,
-
-  'Sea Trade': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_seatrade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#0284c7"/><stop offset="60%" stop-color="#075985"/><stop offset="100%" stop-color="#082f49"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_seatrade)"/>
-    <circle cx="50" cy="18" r="8" fill="#fde047" opacity="0.85"/>
-    <path d="M0,46 Q16,40 32,46 Q48,52 64,46 L64,64 L0,64 Z" fill="#0369a1"/>
-    <path d="M0,52 Q16,48 32,53 Q48,58 64,52 L64,64 L0,64 Z" fill="#082f49"/>
-    <path d="M14,46 Q28,52 46,45 L50,42 L16,42 Z" fill="#78350f" stroke="#451a03" stroke-width="1"/>
-    <line x1="28" y1="42" x2="28" y2="14" stroke="#451a03" stroke-width="1.8"/>
-    <polygon points="28,14 12,38 29,36" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.8"/>
-    <line x1="40" y1="42" x2="40" y2="20" stroke="#451a03" stroke-width="1.5"/>
-    <polygon points="40,20 28,38 41,37" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8"/>
-    <rect x="2" y="48" width="12" height="9" rx="1.5" fill="#ca8a04" stroke="#713f12" stroke-width="0.8"/>
-    <line x1="2" y1="52" x2="14" y2="52" stroke="#713f12" stroke-width="0.8"/>
-  </svg>`,
-
-  // British East India Co. Cards
-  'Wall Breach': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_breach" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#450a0a"/><stop offset="70%" stop-color="#1c1917"/><stop offset="100%" stop-color="#0c0a09"/>
-      </linearGradient>
-      <linearGradient id="art_blast" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#f97316"/><stop offset="100%" stop-color="#dc2626"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_breach)"/>
-    <rect x="4" y="24" width="22" height="40" fill="#57534e" stroke="#292524" stroke-width="1"/>
-    <rect x="4" y="18" width="6" height="7" fill="#57534e" stroke="#292524" stroke-width="0.8"/>
-    <rect x="14" y="18" width="6" height="7" fill="#57534e" stroke="#292524" stroke-width="0.8"/>
-    <line x1="4" y1="32" x2="26" y2="32" stroke="#292524" stroke-width="0.8"/>
-    <line x1="4" y1="42" x2="26" y2="42" stroke="#292524" stroke-width="0.8"/>
-    <line x1="4" y1="52" x2="26" y2="52" stroke="#292524" stroke-width="0.8"/>
-    <polygon points="26,24 38,36 32,48 42,64 26,64" fill="#44403c"/>
-    <polygon points="34,28 39,20 44,27 52,18 49,29 58,32 49,38 54,48 43,44 38,52 35,42 26,42 32,36" fill="url(#art_blast)"/>
-    <rect x="42" y="12" width="4.5" height="3.5" rx="0.5" fill="#78716c" transform="rotate(25,42,12)"/>
-    <rect x="52" y="22" width="4" height="4" rx="0.5" fill="#78716c" transform="rotate(-35,52,22)"/>
-    <rect x="46" y="48" width="5" height="3" rx="0.5" fill="#78716c" transform="rotate(15,46,48)"/>
-  </svg>`,
-
-  'Highlanders': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_highland" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#14281d"/><stop offset="50%" stop-color="#0f172a"/><stop offset="100%" stop-color="#311018"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_highland)"/>
-    <g opacity="0.3">
-      <rect x="0" y="20" width="64" height="8" fill="#15803d"/>
-      <rect x="0" y="38" width="64" height="8" fill="#15803d"/>
-      <rect x="20" y="0" width="8" height="64" fill="#b91c1c"/>
-      <rect x="40" y="0" width="8" height="64" fill="#b91c1c"/>
-    </g>
-    <line x1="12" y1="52" x2="52" y2="12" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round"/>
-    <line x1="8" y1="56" x2="14" y2="50" stroke="#ca8a04" stroke-width="4"/>
-    <circle cx="8" cy="56" r="3" fill="#ca8a04"/>
-    <line x1="52" y1="52" x2="12" y2="12" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round"/>
-    <line x1="56" y1="56" x2="50" y2="50" stroke="#ca8a04" stroke-width="4"/>
-    <circle cx="56" cy="56" r="3" fill="#ca8a04"/>
-    <path d="M22,34 Q32,24 42,34 L40,38 Q32,32 24,38 Z" fill="#0f172a" stroke="#ca8a04" stroke-width="1"/>
-    <path d="M24,34 Q20,24 22,14 Q24,18 26,32 Z" fill="#dc2626" stroke="#b91c1c" stroke-width="0.8"/>
-    <circle cx="32" cy="33" r="3" fill="#ca8a04"/>
-  </svg>`,
-
-  'Royal Navy': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_navy" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#0f172a"/><stop offset="50%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#0b2038"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_navy)"/>
-    <path d="M0,48 Q16,42 32,48 Q48,54 64,48 L64,64 L0,64 Z" fill="#0369a1"/>
-    <path d="M0,54 Q16,50 32,55 Q48,60 64,54 L64,64 L0,64 Z" fill="#0f172a"/>
-    <path d="M12,48 Q28,54 52,46 L54,42 L16,42 Z" fill="#1c1917" stroke="#ca8a04" stroke-width="1"/>
-    <line x1="16" y1="45" x2="52" y2="45" stroke="#ca8a04" stroke-width="1.8"/>
-    <line x1="22" y1="42" x2="22" y2="14" stroke="#451a03" stroke-width="1.6"/>
-    <line x1="34" y1="42" x2="34" y2="10" stroke="#451a03" stroke-width="1.8"/>
-    <line x1="46" y1="42" x2="46" y2="16" stroke="#451a03" stroke-width="1.6"/>
-    <path d="M16,20 Q22,17 28,20 L27,28 Q22,26 17,28 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>
-    <path d="M26,16 Q34,13 42,16 L41,26 Q34,23 27,26 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="0.8"/>
-    <path d="M40,22 Q46,19 52,22 L51,30 Q46,28 41,30 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>
-    <polygon points="12,38 6,36 12,42" fill="#ef4444"/>
-  </svg>`,
-
-  'Divide and Rule': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_divide" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#2a1810"/><stop offset="100%" stop-color="#140a06"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_divide)"/>
-    <rect x="14" y="12" width="36" height="42" rx="2" fill="#e8d9b0" stroke="#7a5c2e" stroke-width="1"/>
-    <line x1="18" y1="18" x2="46" y2="18" stroke="#5a3e18" stroke-width="1.2"/>
-    <line x1="18" y1="23" x2="42" y2="23" stroke="#5a3e18" stroke-width="1"/>
-    <line x1="18" y1="28" x2="44" y2="28" stroke="#5a3e18" stroke-width="1"/>
-    <line x1="18" y1="33" x2="38" y2="33" stroke="#5a3e18" stroke-width="1"/>
-    <circle cx="24" cy="42" r="5" fill="#dc2626" stroke="#991b1b" stroke-width="0.8"/>
-    <polygon points="22,46 20,52 24,49 28,52 26,46" fill="#b91c1c"/>
-    <path d="M48,16 Q44,28 32,46" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <polygon points="48,16 42,24 46,26" fill="#f8fafc"/>
-    <g transform="translate(36,28) scale(0.6)">
-      <line x1="0" y1="0" x2="16" y2="0" stroke="#ca8a04" stroke-width="1.5"/>
-      <line x1="8" y1="-4" x2="8" y2="10" stroke="#ca8a04" stroke-width="1.5"/>
-      <polygon points="0,0 -3,6 3,6" fill="#ca8a04"/>
-      <polygon points="16,0 13,6 19,6" fill="#ca8a04"/>
-    </g>
-  </svg>`,
-
-  'Force March': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_march" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#1c1917"/><stop offset="100%" stop-color="#3d2a1c"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_march)"/>
-    <polygon points="0,64 24,36 40,36 64,64" fill="#574330"/>
-    <rect x="8" y="32" width="10" height="14" rx="2" fill="#d6d3d1" stroke="#44403c" stroke-width="1"/>
-    <text x="13" y="42" text-anchor="middle" font-size="6" font-family="Cinzel,serif" font-weight="bold" fill="#1c1917">IV</text>
-    <path d="M26,30 L32,32 L34,44 L38,44 L40,48 L28,48 L28,40 Z" fill="#292524" stroke="#ca8a04" stroke-width="0.8"/>
-    <path d="M36,26 L42,28 L44,40 L54,42 L52,48 L38,48 L38,36 Z" fill="#1c1917" stroke="#ca8a04" stroke-width="1"/>
-    <path d="M22,46 Q26,44 30,48" stroke="#ca8a04" stroke-width="1.5" fill="none" opacity="0.7"/>
-    <path d="M34,48 Q40,45 46,49" stroke="#ca8a04" stroke-width="1.5" fill="none" opacity="0.8"/>
-    <g transform="translate(50,14) scale(0.4)" opacity="0.8">
-      <circle r="12" fill="none" stroke="#ca8a04" stroke-width="1.5"/>
-      <polygon points="0,-12 3,0 0,-3 -3,0" fill="#f59e0b"/>
-      <polygon points="0,12 3,0 0,3 -3,0" fill="#f59e0b"/>
-    </g>
-  </svg>`,
-
-  'Princely States': `<svg viewBox="0 0 64 64" class="card-art-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="art_sky_princely" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#3b1d05"/><stop offset="50%" stop-color="#6b3a0a"/><stop offset="100%" stop-color="#1f0f03"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" fill="url(#art_sky_princely)"/>
-    <path d="M12,48 Q32,16 52,48" stroke="#eab308" stroke-width="2" fill="none"/>
-    <g transform="translate(32,24)">
-      <path d="M-14,8 L-16,-4 L-8,2 L0,-8 L8,2 L16,-4 L14,8 Z" fill="#eab308" stroke="#a16207" stroke-width="1"/>
-      <circle cx="-16" cy="-4" r="1.5" fill="#ef4444"/>
-      <circle cx="0" cy="-8" r="2" fill="#3b82f6"/>
-      <circle cx="16" cy="-4" r="1.5" fill="#ef4444"/>
-      <circle cx="-8" cy="4" r="1.2" fill="#10b981"/>
-      <circle cx="0" cy="4" r="1.5" fill="#eab308"/>
-      <circle cx="8" cy="4" r="1.2" fill="#10b981"/>
-    </g>
-    <rect x="18" y="38" width="28" height="12" rx="2" fill="#991b1b" stroke="#ca8a04" stroke-width="1.2"/>
-    <line x1="6" y1="44" x2="58" y2="44" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round"/>
-    <line x1="22" y1="50" x2="22" y2="56" stroke="#ca8a04" stroke-width="1.5"/>
-    <line x1="42" y1="50" x2="42" y2="56" stroke="#ca8a04" stroke-width="1.5"/>
-  </svg>`
-};
-
 const BRITISH_CARD_DATA = [
-  { name: 'Wall Breach',      strength: 3, desc: 'Powerful' },
-  { name: 'Highlanders',      strength: 2, desc: 'Deploy a Fresh Army on Coast' },
-  { name: 'Royal Navy',       strength: 2, desc: 'Move an Army to any Coast' },
-  { name: 'Divide and Rule',  strength: 1, desc: 'Move a Fort not in a Key' },
-  { name: 'Force March',      strength: 1, desc: 'Move a Tired Army' },
-  { name: 'Princely States',  strength: 1, desc: 'Deploy a Tired Army in a Key' },
+  { name: 'Wall Breach',      strength: 3, icon: '💥', desc: 'Powerful' },
+  { name: 'Highlanders',      strength: 2, icon: '🎖️', desc: 'Deploy a Fresh Army on Coast' },
+  { name: 'Royal Navy',       strength: 2, icon: '⚓', desc: 'Move an Army to any Coast' },
+  { name: 'Divide and Rule',  strength: 1, icon: '🤝', desc: 'Move a Fort not in a Key' },
+  { name: 'Force March',      strength: 1, icon: '🥾', desc: 'Move a Tired Army' },
+  { name: 'Princely States',  strength: 1, icon: '🏰', desc: 'Deploy a Tired Army in a Key' },
 ];
 
 const MYSORE_CARD_DATA = [
-  { name: 'Iron Rockets',     strength: 3, desc: 'Powerful' },
-  { name: 'Sepoy Mutiny',     strength: 2, desc: 'Remove an Army not in a Key' },
-  { name: 'French Alliance',  strength: 2, desc: 'Deploy a Fort adjacent to another Fort' },
-  { name: 'Monsoon',          strength: 1, desc: 'Flip a Fresh Army to Tired' },
-  { name: 'Cavalry Raid',     strength: 1, desc: 'British discard' },
-  { name: 'Sea Trade',        strength: 1, desc: 'Move a Fort from Coast to any' },
+  { name: 'Iron Rockets',     strength: 3, icon: '🚀', desc: 'Powerful' },
+  { name: 'Sepoy Mutiny',     strength: 2, icon: '⚔️', desc: 'Remove an Army not in a Key' },
+  { name: 'French Alliance',  strength: 2, icon: '🇫🇷', desc: 'Deploy a Fort adjacent to another Fort' },
+  { name: 'Monsoon',          strength: 1, icon: '🌧️', desc: 'Flip a Fresh Army to Tired' },
+  { name: 'Cavalry Raid',     strength: 1, icon: '🏇', desc: 'British discard' },
+  { name: 'Sea Trade',        strength: 1, icon: '🪙', desc: 'Move a Fort from Coast to any' },
 ];
 
 const CARD_VALUE = [3, 2, 2, 1, 1, 1];
-
-// ==========================================================================
-// 10 BESPOKE THEMES ENGINE
-// ==========================================================================
-const THEMES = {
-  'deccan-imperial': {
-    name: 'Deccan Imperial',
-    subtitle: 'Antique Gold & Brass',
-    seaGrad: ['#8ec4dc', '#5a9ab8'],
-    landGrad: ['#e2d09a', '#c8b474'],
-    coastStroke: '#68696b',
-    seaText: '#2a5a7a',
-    compass: '#6a4c1e',
-    cartoucheBg: '#e8d8a8',
-    cartoucheBorder: '#7a5c2e',
-    cartoucheText: '#2c1a08',
-    seaRoute: '#0e7490',
-    roadRoute: '#5c3a10',
-    labelFill: '#160d05',
-    labelHalo: 'rgba(255, 248, 224, 0.95)'
-  },
-  'midnight-tiger': {
-    name: 'Midnight Tiger',
-    subtitle: 'Obsidian & Neon Amber',
-    seaGrad: ['#070d18', '#03070d'],
-    landGrad: ['#1e2638', '#121824'],
-    coastStroke: '#f59e0b',
-    seaText: '#38bdf8',
-    compass: '#f59e0b',
-    cartoucheBg: '#111827',
-    cartoucheBorder: '#f59e0b',
-    cartoucheText: '#fbbf24',
-    seaRoute: '#38bdf8',
-    roadRoute: '#f59e0b',
-    labelFill: '#ffffff',
-    labelHalo: 'rgba(0, 0, 0, 0.95)'
-  },
-  'royal-velvet': {
-    name: 'Royal Velvet',
-    subtitle: 'Sapphire & Gold Leaf',
-    seaGrad: ['#0c1938', '#060e22'],
-    landGrad: ['#243356', '#16223d'],
-    coastStroke: '#eab308',
-    seaText: '#93c5fd',
-    compass: '#eab308',
-    cartoucheBg: '#0f172a',
-    cartoucheBorder: '#eab308',
-    cartoucheText: '#fef08a',
-    seaRoute: '#38bdf8',
-    roadRoute: '#eab308',
-    labelFill: '#ffffff',
-    labelHalo: 'rgba(5, 11, 26, 0.95)'
-  },
-  'emerald-sultan': {
-    name: 'Emerald Sultan',
-    subtitle: "Jade & Sultan's Silk",
-    seaGrad: ['#052620', '#021411'],
-    landGrad: ['#194a3a', '#0f3328'],
-    coastStroke: '#34d399',
-    seaText: '#6ee7b7',
-    compass: '#10b981',
-    cartoucheBg: '#064e3b',
-    cartoucheBorder: '#34d399',
-    cartoucheText: '#fde047',
-    seaRoute: '#34d399',
-    roadRoute: '#10b981',
-    labelFill: '#ffffff',
-    labelHalo: 'rgba(2, 24, 18, 0.95)'
-  },
-  'emerald-mysore': {
-    name: 'Emerald Sultan',
-    subtitle: "Jade & Sultan's Silk",
-    seaGrad: ['#052620', '#021411'],
-    landGrad: ['#194a3a', '#0f3328'],
-    coastStroke: '#34d399',
-    seaText: '#6ee7b7',
-    compass: '#10b981',
-    cartoucheBg: '#064e3b',
-    cartoucheBorder: '#34d399',
-    cartoucheText: '#fde047',
-    seaRoute: '#34d399',
-    roadRoute: '#10b981',
-    labelFill: '#ffffff',
-    labelHalo: 'rgba(2, 24, 18, 0.95)'
-  },
-  'monsoon-mist': {
-    name: 'Monsoon Mist',
-    subtitle: 'Storm Slate & Teal',
-    seaGrad: ['#182d38', '#0f1e26'],
-    landGrad: ['#334652', '#22313b'],
-    coastStroke: '#38bdf8',
-    seaText: '#7dd3fc',
-    compass: '#38bdf8',
-    cartoucheBg: '#1e293b',
-    cartoucheBorder: '#38bdf8',
-    cartoucheText: '#f0f9ff',
-    seaRoute: '#38bdf8',
-    roadRoute: '#0ea5e9',
-    labelFill: '#ffffff',
-    labelHalo: 'rgba(7, 23, 30, 0.95)'
-  },
-  'desert-rajput': {
-    name: 'Desert Rajput',
-    subtitle: 'Sandstone & Terracotta',
-    seaGrad: ['#0284c7', '#0369a1'],
-    landGrad: ['#e4b878', '#ca934e'],
-    coastStroke: '#854d0e',
-    seaText: '#e0f2fe',
-    compass: '#9a3412',
-    cartoucheBg: '#78350f',
-    cartoucheBorder: '#d97706',
-    cartoucheText: '#fffbeb',
-    seaRoute: '#38bdf8',
-    roadRoute: '#c2410c',
-    labelFill: '#1c0d05',
-    labelHalo: 'rgba(255, 247, 237, 0.95)'
-  },
-  'cyber-warroom': {
-    name: 'Cyber War-Room',
-    subtitle: 'Tactical Cyan HUD',
-    seaGrad: ['#020617', '#01030a'],
-    landGrad: ['#0f172a', '#020617'],
-    coastStroke: '#06b6d4',
-    seaText: '#22d3ee',
-    compass: '#06b6d4',
-    cartoucheBg: '#020617',
-    cartoucheBorder: '#06b6d4',
-    cartoucheText: '#67e8f9',
-    seaRoute: '#22d3ee',
-    roadRoute: '#059669',
-    labelFill: '#67e8f9',
-    labelHalo: 'rgba(0, 0, 0, 0.95)'
-  },
-  'sepia-archive': {
-    name: 'Sepia Archive',
-    subtitle: '18th C. Engraving',
-    seaGrad: ['#e8dfcb', '#d8ccb2'],
-    landGrad: ['#f5eee0', '#e6dac0'],
-    coastStroke: '#4a3820',
-    seaText: '#5a452a',
-    compass: '#4a3820',
-    cartoucheBg: '#efe6d2',
-    cartoucheBorder: '#4a3820',
-    cartoucheText: '#2b1d0c',
-    seaRoute: '#0284c7',
-    roadRoute: '#4a341b',
-    labelFill: '#180f07',
-    labelHalo: 'rgba(255, 248, 235, 0.95)'
-  },
-  'crimson-crown': {
-    name: 'Crimson Crown',
-    subtitle: 'Regimental Ruby & Silver',
-    seaGrad: ['#101428', '#080b18'],
-    landGrad: ['#381a24', '#240e16'],
-    coastStroke: '#f43f5e',
-    seaText: '#fca5a5',
-    compass: '#f43f5e',
-    cartoucheBg: '#1e1b4b',
-    cartoucheBorder: '#f43f5e',
-    cartoucheText: '#ffffff',
-    seaRoute: '#38bdf8',
-    roadRoute: '#f43f5e',
-    labelFill: '#ffffff',
-    labelHalo: 'rgba(18, 2, 8, 0.95)'
-  },
-  'ivory-onyx': {
-    name: 'Ivory & Onyx',
-    subtitle: 'Minimalist Pearl Luxury',
-    seaGrad: ['#e2e8f0', '#cbd5e1'],
-    landGrad: ['#ffffff', '#f1f5f9'],
-    coastStroke: '#0f172a',
-    seaText: '#334155',
-    compass: '#0f172a',
-    cartoucheBg: '#09090b',
-    cartoucheBorder: '#d4af37',
-    cartoucheText: '#f8fafc',
-    seaRoute: '#2563eb',
-    roadRoute: '#475569',
-    labelFill: '#09090b',
-    labelHalo: 'rgba(255, 255, 255, 0.95)'
-  }
-};
-
-function applyTheme(themeId, save = true) {
-  if (themeId === 'emerald-mysore') themeId = 'emerald-sultan';
-  if (!THEMES[themeId]) themeId = 'deccan-imperial';
-  document.documentElement.setAttribute('data-theme', themeId);
-  document.body.setAttribute('data-theme', themeId);
-
-  const t = THEMES[themeId];
-  const seaGrad = document.getElementById('seaGrad');
-  if (seaGrad) {
-    const stops = seaGrad.getElementsByTagName('stop');
-    if (stops[0]) stops[0].setAttribute('stop-color', t.seaGrad[0]);
-    if (stops[1]) stops[1].setAttribute('stop-color', t.seaGrad[1]);
-  }
-
-  const landGrad = document.getElementById('landGrad');
-  if (landGrad) {
-    const stops = landGrad.getElementsByTagName('stop');
-    if (stops[0]) stops[0].setAttribute('stop-color', t.landGrad[0]);
-    if (stops[1]) stops[1].setAttribute('stop-color', t.landGrad[1]);
-  }
-
-  const india = document.getElementById('india');
-  if (india) india.setAttribute('stroke', t.coastStroke);
-  const ceylon = document.getElementById('ceylon-land');
-  if (ceylon) ceylon.setAttribute('stroke', t.coastStroke);
-
-  document.querySelectorAll('.sea-label').forEach(el => el.setAttribute('fill', t.seaText));
-  document.querySelectorAll('.compass-part').forEach(el => {
-    if (el.tagName && el.tagName.toLowerCase() === 'polygon') el.setAttribute('fill', t.compass);
-    else el.setAttribute('stroke', t.compass);
-  });
-  const compassText = document.querySelector('.compass-text');
-  if (compassText) compassText.setAttribute('fill', t.compass);
-
-  const cartBg = document.getElementById('cartouche-bg');
-  if (cartBg) {
-    cartBg.setAttribute('fill', t.cartoucheBg);
-    cartBg.setAttribute('stroke', t.cartoucheBorder);
-  }
-  const cartBorder = document.getElementById('cartouche-border');
-  if (cartBorder) cartBorder.setAttribute('stroke', t.cartoucheBorder);
-  const cartTitle = document.getElementById('cartouche-title');
-  if (cartTitle) cartTitle.setAttribute('fill', t.cartoucheText);
-  const cartSub = document.getElementById('cartouche-sub');
-  if (cartSub) cartSub.setAttribute('fill', t.cartoucheText);
-
-  // Update theme buttons in settings
-  document.querySelectorAll('.theme-option-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.theme === themeId);
-  });
-
-  // Re-render map edges & node labels with theme colors
-  if (typeof renderEdges === 'function') renderEdges();
-  if (typeof window.renderNodes === 'function') window.renderNodes();
-
-  if (save) {
-    try {
-      localStorage.setItem('tiger_day_theme', themeId);
-    } catch (e) {}
-  }
-}
-window.handleThemeSelect = applyTheme;
-
-function initTheme() {
-  let saved = 'deccan-imperial';
-  try {
-    saved = localStorage.getItem('tiger_day_theme') || 'deccan-imperial';
-  } catch (e) {}
-  applyTheme(saved, false);
-}
-
-// Unit Token Styles (5 Distinct Visual Systems)
-const VALID_TOKEN_STYLES = ['tactical', 'classic', 'regimental', 'minimalist', 'vintage'];
-const TOKEN_STYLE_TITLES = {
-  tactical: 'TACTICAL TOKENS',
-  classic: 'CLASSIC SQUARES',
-  regimental: 'REGIMENTAL CRESTS',
-  minimalist: 'MINIMALIST',
-  vintage: 'ANTIQUE MINIATURES'
-};
-
-function setTokenStyle(style, save = true) {
-  if (!VALID_TOKEN_STYLES.includes(style)) style = 'tactical';
-  try {
-    if (save) localStorage.setItem('tiger_day_token_style', style);
-  } catch (e) {}
-
-  document.querySelectorAll('.unit-style-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.id === `btn-token-${style}`);
-  });
-  const pill = document.getElementById('unit-style-status-pill');
-  if (pill) {
-    pill.textContent = TOKEN_STYLE_TITLES[style] || 'TACTICAL TOKENS';
-  }
-
-  if (typeof window.renderNodes === 'function') {
-    window.renderNodes();
-  }
-}
-window.setTokenStyle = setTokenStyle;
-
-function initTokenStyle() {
-  let style = 'tactical';
-  try {
-    style = localStorage.getItem('tiger_day_token_style') || 'tactical';
-  } catch (e) {}
-  setTokenStyle(style, false);
-}
 
 // ==========================================================================
 // 2. RUNTIME STATE MACHINE & ENGINES
@@ -675,110 +121,8 @@ let currentEvalLoopState = null;
 
 let settings = {
   showEval: false,
-  showDebugMoves: false,
-  showInfluence: localStorage.getItem('tiger_day_show_influence') === 'true',
-  topKCandidates: parseInt(localStorage.getItem('tiger_top_k_candidates') || '3', 10),
-  showCandidateArrows: localStorage.getItem('tiger_show_candidate_arrows') !== 'false'
+  showDebugMoves: false
 };
-let lastEvalScore = null;
-let lastTopCandidateLines = [];
-const RANK_COLORS = ['#f59e0b', '#38bdf8', '#f43f5e', '#10b981', '#a855f7', '#ec4899', '#06b6d4', '#84cc16', '#eab308', '#6366f1'];
-
-function getRankColor(rank) {
-  if (rank <= RANK_COLORS.length) {
-    return RANK_COLORS[rank - 1];
-  }
-  const hue = Math.round(((rank - 1) * 137.508) % 360);
-  return `hsl(${hue}, 85%, 55%)`;
-}
-
-function ensureArrowMarker(rank, color) {
-  const markerId = `ai-arrow-${rank}`;
-  let marker = document.getElementById(markerId);
-  if (!marker) {
-    const defs = document.querySelector('svg#board defs');
-    if (defs) {
-      marker = document.createElementNS(SVG_NS, 'marker');
-      marker.setAttribute('id', markerId);
-      marker.setAttribute('viewBox', '0 0 10 10');
-      marker.setAttribute('refX', '7');
-      marker.setAttribute('refY', '5');
-      marker.setAttribute('markerWidth', '6');
-      marker.setAttribute('markerHeight', '6');
-      marker.setAttribute('orient', 'auto-start-reverse');
-      marker.innerHTML = `<path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="${color}" />`;
-      defs.appendChild(marker);
-    }
-  }
-  return markerId;
-}
-
-function getCardInfoForMove(moveIndex) {
-  if (typeof MOVE_SPACE === 'undefined' || moveIndex === null || moveIndex === undefined || moveIndex < 0) return null;
-  let offset = 0;
-  for (const [name, size] of MOVE_SPACE) {
-    if (moveIndex >= offset && moveIndex < offset + size) {
-      const subIdx = moveIndex - offset;
-      switch (name) {
-        case "Sepoy Mutiny":
-          return { faction: "mysore", cardName: "Sepoy Mutiny", cardIndex: 1, toNode: subIdx, isTrade: false };
-        case "French Alliance":
-          return { faction: "mysore", cardName: "French Alliance", cardIndex: 2, toNode: subIdx, isTrade: false };
-        case "Monsoon":
-          return { faction: "mysore", cardName: "Monsoon", cardIndex: 3, toNode: subIdx, isTrade: false };
-        case "Cavalry Raid":
-          return { faction: "mysore", cardName: "Cavalry Raid", cardIndex: 4, toNode: null, isTrade: false };
-        case "Sea Trade": {
-          const numCoasts = typeof COASTAL_INDICES !== 'undefined' ? COASTAL_INDICES.length : 5;
-          const nodeIdx = Math.floor(subIdx / numCoasts);
-          const coastIdx = (typeof COASTAL_INDICES !== 'undefined') ? COASTAL_INDICES[subIdx % numCoasts] : 0;
-          return { faction: "mysore", cardName: "Sea Trade", cardIndex: 5, fromNode: coastIdx, toNode: nodeIdx, isTrade: false };
-        }
-        case "Mysore Power":
-          return { faction: "mysore", cardName: "Iron Rockets", cardIndex: 0, toNode: null, isTrade: false, isPower: true };
-        case "Draw Iron Rockets":
-          return { faction: "mysore", cardName: "Iron Rockets", cardIndex: 0, tradeTargetCard: subIdx, isTrade: true };
-        case "Draw Sepoy Mutiny":
-          return { faction: "mysore", cardName: "Sepoy Mutiny", cardIndex: 1, tradeTargetCard: subIdx, isTrade: true };
-        case "Draw French Alliance":
-          return { faction: "mysore", cardName: "French Alliance", cardIndex: 2, tradeTargetCard: subIdx, isTrade: true };
-        case "Highlanders":
-          return { faction: "british", cardName: "Highlanders", cardIndex: 1, toNode: subIdx, isTrade: false };
-        case "Royal Navy": {
-          const numCoasts = typeof COASTAL_INDICES !== 'undefined' ? COASTAL_INDICES.length : 5;
-          const nodeIdx = Math.floor(subIdx / numCoasts);
-          const coastIdx = (typeof COASTAL_INDICES !== 'undefined') ? COASTAL_INDICES[subIdx % numCoasts] : 0;
-          return { faction: "british", cardName: "Royal Navy", cardIndex: 2, fromNode: nodeIdx, toNode: coastIdx, isTrade: false };
-        }
-        case "Divide and Rule": {
-          const src = typeof EDGE_SOURCES !== 'undefined' ? EDGE_SOURCES[subIdx] : null;
-          const dest = typeof EDGE_DESTS !== 'undefined' ? EDGE_DESTS[subIdx] : null;
-          return { faction: "british", cardName: "Divide and Rule", cardIndex: 3, fromNode: src, toNode: dest, isTrade: false };
-        }
-        case "Force March": {
-          const src = typeof EDGE_SOURCES !== 'undefined' ? EDGE_SOURCES[subIdx] : null;
-          const dest = typeof EDGE_DESTS !== 'undefined' ? EDGE_DESTS[subIdx] : null;
-          return { faction: "british", cardName: "Force March", cardIndex: 4, fromNode: src, toNode: dest, isTrade: false };
-        }
-        case "Princely States":
-          return { faction: "british", cardName: "Princely States", cardIndex: 5, toNode: subIdx, isTrade: false };
-        case "British Power":
-          return { faction: "british", cardName: "Wall Breach", cardIndex: 0, toNode: null, isTrade: false, isPower: true };
-        case "Draw Wall Breach":
-          return { faction: "british", cardName: "Wall Breach", cardIndex: 0, tradeTargetCard: subIdx, isTrade: true };
-        case "Draw Highlanders":
-          return { faction: "british", cardName: "Highlanders", cardIndex: 1, tradeTargetCard: subIdx, isTrade: true };
-        case "Draw Royal Navy":
-          return { faction: "british", cardName: "Royal Navy", cardIndex: 2, tradeTargetCard: subIdx, isTrade: true };
-        default:
-          return null;
-      }
-    }
-    offset += size;
-  }
-  return null;
-}
-window.getCardInfoForMove = getCardInfoForMove;
 
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx');
@@ -815,10 +159,6 @@ function renderEdges() {
   const layer = document.getElementById('edge-layer');
   if (!layer) return;
   layer.innerHTML = '';
-
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'deccan-imperial';
-  const t = THEMES[currentTheme] || THEMES['deccan-imperial'];
-
   for (const edge of EDGES) {
     const [aName, bName, opts = {}] = edge;
     const a = NODES[aName], b = NODES[bName];
@@ -827,21 +167,10 @@ function renderEdges() {
     const path = document.createElementNS(SVG_NS, 'path');
     path.setAttribute('d', `M ${a.x},${a.y} Q ${cx},${cy} ${b.x},${b.y}`);
     path.setAttribute('fill', 'none');
-
-    const isMaritime = opts.curve || (a.coast && b.coast && (aName === 'Ceylon' || bName === 'Ceylon' || aName === 'Goa' || bName === 'Goa'));
-    if (isMaritime) {
-      path.setAttribute('class', 'maritime-edge');
-      path.setAttribute('stroke', t.seaRoute || '#0e7490');
-      path.setAttribute('stroke-width', '2.2');
-      path.setAttribute('stroke-dasharray', '6,4');
-      path.setAttribute('opacity', '0.92');
-    } else {
-      path.setAttribute('class', 'road-edge');
-      path.setAttribute('stroke', t.roadRoute || '#5c3a10');
-      path.setAttribute('stroke-width', '2');
-      path.setAttribute('stroke-linecap', 'round');
-      path.setAttribute('opacity', '0.75');
-    }
+    path.setAttribute('stroke', '#6a4c1e');
+    path.setAttribute('stroke-width', '1.8');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('opacity', '0.7');
     layer.appendChild(path);
   }
 }
@@ -850,11 +179,6 @@ window.renderNodes = function renderNodes() {
   const layer = document.getElementById('node-layer');
   if (!layer) return;
   layer.innerHTML = '';
-
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'deccan-imperial';
-  const t = THEMES[currentTheme] || THEMES['deccan-imperial'];
-  const tokenStyle = localStorage.getItem('tiger_day_token_style') || 'tactical';
-  const isClassic = tokenStyle === 'classic';
 
   for (const [name, data] of Object.entries(window.NODES)) {
     const { x, y, owner, key, coast } = data;
@@ -872,21 +196,10 @@ window.renderNodes = function renderNodes() {
     g.dataset.key = String(key);
     g.dataset.coast = String(coast);
 
-    g.setAttribute('tabindex', '0');
-    g.setAttribute('role', 'button');
-    g.setAttribute('aria-label', `${name}${key ? ' (Key Fort)' : ''}: ${owner === 'mysore' ? 'Mysore' : owner === 'british' ? 'British' : 'Neutral'}, ${armyType} army`);
-
     // Event listeners
     g.addEventListener('click', (e) => {
       e.stopPropagation();
       handleNodeClick(name);
-    });
-    g.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        e.stopPropagation();
-        handleNodeClick(name);
-      }
     });
     g.addEventListener('mousemove', (e) => tooltipShow(e, name, data));
     g.addEventListener('mouseleave', tooltipHide);
@@ -894,7 +207,7 @@ window.renderNodes = function renderNodes() {
     // Selection ring
     const ring = document.createElementNS(SVG_NS, 'circle');
     ring.setAttribute('class', 'sel-ring');
-    ring.setAttribute('r', key ? '26' : '20');
+    ring.setAttribute('r', key ? '24' : '18');
     ring.setAttribute('fill', 'none');
     ring.setAttribute('stroke', '#d4a030');
     ring.setAttribute('stroke-width', '2.5');
@@ -904,364 +217,103 @@ window.renderNodes = function renderNodes() {
     // Glowing target pulse ring
     const targetRing = document.createElementNS(SVG_NS, 'circle');
     targetRing.setAttribute('class', 'target-glow-ring');
-    targetRing.setAttribute('r', key ? '24' : '19');
+    targetRing.setAttribute('r', '20');
     targetRing.setAttribute('fill', 'none');
     targetRing.setAttribute('stroke', '#ffdd44');
     targetRing.setAttribute('stroke-width', '3');
     targetRing.setAttribute('opacity', '0');
     g.appendChild(targetRing);
 
-    // BASE TERRITORY SHAPE
-    if (isClassic) {
-      // Classic Original Setup: Square for Key, Circle for Regular
-      if (key) {
-        const sq = document.createElementNS(SVG_NS, 'rect');
-        sq.setAttribute('class', 'key-city-base');
-        sq.setAttribute('x', '-18');
-        sq.setAttribute('y', '-18');
-        sq.setAttribute('width', '36');
-        sq.setAttribute('height', '36');
-        sq.setAttribute('fill', '#1c1814');
-        sq.setAttribute('stroke', '#e0c896');
-        sq.setAttribute('stroke-width', '1.6');
-        sq.setAttribute('filter', 'url(#landshadow)');
-        g.appendChild(sq);
-      } else {
-        const circ = document.createElementNS(SVG_NS, 'circle');
-        circ.setAttribute('r', '10');
-        circ.setAttribute('fill', '#2a2420');
-        circ.setAttribute('stroke', coast ? '#38bdf8' : '#b0a080');
-        circ.setAttribute('stroke-width', '1.4');
-        g.appendChild(circ);
-      }
+    // Territory shape
+    if (key) {
+      const sq = document.createElementNS(SVG_NS, 'rect');
+      sq.setAttribute('x', '-18');
+      sq.setAttribute('y', '-18');
+      sq.setAttribute('width', '36');
+      sq.setAttribute('height', '36');
+      sq.setAttribute('fill', '#1c1814');
+      sq.setAttribute('stroke', '#e0c896');
+      sq.setAttribute('stroke-width', '1.6');
+      g.appendChild(sq);
     } else {
-      // Tactical Setup: 8-point Star Fort Bastion for Key, Coastal badge for Ports
-      if (key) {
-        const star = document.createElementNS(SVG_NS, 'polygon');
-        star.setAttribute('class', 'key-city-base');
-        star.setAttribute('points', '0,-22 6,-14 16,-16 14,-6 22,0 14,6 16,16 6,14 0,22 -6,14 -16,16 -14,6 -22,0 -14,-6 -16,-16 -6,-14');
-        star.setAttribute('fill', '#1c150c');
-        star.setAttribute('stroke', '#eab308');
-        star.setAttribute('stroke-width', '1.8');
-        star.setAttribute('filter', 'url(#landshadow)');
-        g.appendChild(star);
-
-        const starInner = document.createElementNS(SVG_NS, 'circle');
-        starInner.setAttribute('r', '11');
-        starInner.setAttribute('fill', 'none');
-        starInner.setAttribute('stroke', '#ca8a04');
-        starInner.setAttribute('stroke-width', '0.8');
-        starInner.setAttribute('stroke-dasharray', '2,2');
-        g.appendChild(starInner);
-      } else if (coast) {
-        const circ = document.createElementNS(SVG_NS, 'circle');
-        circ.setAttribute('r', '11');
-        circ.setAttribute('fill', '#261e16');
-        circ.setAttribute('stroke', '#bfa577');
-        circ.setAttribute('stroke-width', '1.5');
-        g.appendChild(circ);
-
-        const anchorG = document.createElementNS(SVG_NS, 'g');
-        anchorG.setAttribute('class', 'coastal-anchor-badge');
-        anchorG.setAttribute('transform', 'translate(10, -10) scale(0.6)');
-        anchorG.innerHTML = `
-          <circle r="6" fill="#141a24" stroke="#38bdf8" stroke-width="1"/>
-          <circle cx="0" cy="-2.5" r="1.5" fill="none" stroke="#38bdf8" stroke-width="0.8"/>
-          <line x1="0" y1="-1" x2="0" y2="3.5" stroke="#38bdf8" stroke-width="1"/>
-          <path d="M-3,1.5 Q0,4 3,1.5" fill="none" stroke="#38bdf8" stroke-width="1"/>
-        `;
-        g.appendChild(anchorG);
-      } else {
-        const circ = document.createElementNS(SVG_NS, 'circle');
-        circ.setAttribute('r', '9');
-        circ.setAttribute('fill', '#2a221a');
-        circ.setAttribute('stroke', '#a38865');
-        circ.setAttribute('stroke-width', '1.3');
-        g.appendChild(circ);
-      }
+      const circ = document.createElementNS(SVG_NS, 'circle');
+      circ.setAttribute('r', '10');
+      circ.setAttribute('fill', '#2a2420');
+      circ.setAttribute('stroke', '#b0a080');
+      circ.setAttribute('stroke-width', '1.4');
+      g.appendChild(circ);
     }
 
-    // UNIT TOKENS OVERLAY (5 Distinct Board Unit Styles)
+    // Unit overlay
     if (armyType === 'fort') {
-      if (tokenStyle === 'classic') {
-        // Classic Green Diamond Fort
-        const p = document.createElementNS(SVG_NS, 'polygon');
-        p.setAttribute('class', 'unit-token fort-token');
-        p.setAttribute('points', '0,-22 22,0 0,22 -22,0');
-        p.setAttribute('fill', '#2e7a2e');
-        p.setAttribute('stroke', '#8fe08f');
-        p.setAttribute('stroke-width', '1.3');
-        p.setAttribute('filter', 'url(#nshadow)');
-        g.appendChild(p);
-      } else if (tokenStyle === 'regimental') {
-        // Regimental Triple-Tower Fortress Bastion with Crenellations
-        const fortG = document.createElementNS(SVG_NS, 'g');
-        fortG.setAttribute('class', 'unit-token fort-token');
-        fortG.setAttribute('filter', 'url(#nshadow)');
-        fortG.innerHTML = `
-          <rect x="-18" y="-5" width="36" height="20" rx="1" fill="#1a3b1e" stroke="#ca8a04" stroke-width="1.4"/>
-          <rect x="-19" y="-14" width="9" height="10" rx="0.5" fill="#143018" stroke="#86efac" stroke-width="1"/>
-          <rect x="-4.5" y="-18" width="9" height="14" rx="0.5" fill="#1e4623" stroke="#facc15" stroke-width="1.2"/>
-          <rect x="10" y="-14" width="9" height="10" rx="0.5" fill="#143018" stroke="#86efac" stroke-width="1"/>
-          <line x1="-19" y1="-10" x2="-10" y2="-10" stroke="#ca8a04" stroke-width="0.7"/>
-          <line x1="10" y1="-10" x2="19" y2="-10" stroke="#ca8a04" stroke-width="0.7"/>
-          <path d="M-4,15 L-4,5 Q0,0 4,5 L4,15 Z" fill="#0b170e" stroke="#fde047" stroke-width="0.9"/>
-          <line x1="0" y1="-18" x2="0" y2="-26" stroke="#ca8a04" stroke-width="1.3"/>
-          <polygon points="0,-26 8,-22 0,-18" fill="#eab308"/>
-        `;
-        g.appendChild(fortG);
-      } else if (tokenStyle === 'minimalist') {
-        // Minimalist Geometric Bastion with Gold Fortress Cross
-        const fortG = document.createElementNS(SVG_NS, 'g');
-        fortG.setAttribute('class', 'unit-token fort-token');
-        fortG.setAttribute('filter', 'url(#nshadow)');
-        fortG.innerHTML = `
-          <rect x="-17" y="-17" width="34" height="34" rx="3" fill="#143819" stroke="#ca8a04" stroke-width="1.8"/>
-          <rect x="-13" y="-13" width="26" height="26" rx="2" fill="#0a210e" stroke="#86efac" stroke-width="0.8"/>
-          <rect x="-12" y="-4" width="24" height="8" rx="1" fill="#facc15"/>
-          <rect x="-4" y="-12" width="8" height="24" rx="1" fill="#facc15"/>
-          <circle r="2.5" fill="#143819"/>
-        `;
-        g.appendChild(fortG);
-      } else if (tokenStyle === 'vintage') {
-        // 3D Isometric Antique Miniature Bastion
-        const fortG = document.createElementNS(SVG_NS, 'g');
-        fortG.setAttribute('class', 'unit-token fort-token');
-        fortG.setAttribute('filter', 'url(#nshadow)');
-        fortG.innerHTML = `
-          <polygon points="0,-19 17,-9 17,9 0,19 -17,9 -17,-9" fill="#133519" stroke="#86efac" stroke-width="1.2"/>
-          <polygon points="0,-19 17,-9 0,1 -17,-9" fill="#2d6a36"/>
-          <polygon points="0,1 17,-9 17,9 0,19" fill="#0d2612"/>
-          <polygon points="0,1 -17,-9 -17,9 0,19" fill="#1e4e27"/>
-          <circle cx="0" cy="-4" r="5" fill="#eab308" stroke="#713f12" stroke-width="0.8"/>
-          <polygon points="0,-8 2,-3 6,-3 3,0 4,4 0,2 -4,4 -3,0 -6,-3 -2,-3" fill="#ffffff" opacity="0.9"/>
-        `;
-        g.appendChild(fortG);
-      } else {
-        // Tactical Stone Citadel Keep with Battlements (Default)
-        const fortG = document.createElementNS(SVG_NS, 'g');
-        fortG.setAttribute('class', 'unit-token fort-token');
-        fortG.setAttribute('filter', 'url(#nshadow)');
-        fortG.innerHTML = `
-          <polygon points="-16,-9 16,-9 18,15 -18,15" fill="#1f4d22" stroke="#8fe08f" stroke-width="1.3"/>
-          <line x1="-16" y1="-1" x2="16" y2="-1" stroke="#143617" stroke-width="0.8"/>
-          <line x1="-17" y1="7" x2="17" y2="7" stroke="#143617" stroke-width="0.8"/>
-          <rect x="-16" y="-13" width="7" height="4.5" fill="#163e19" stroke="#8fe08f" stroke-width="0.8"/>
-          <rect x="-3.5" y="-13" width="7" height="4.5" fill="#163e19" stroke="#8fe08f" stroke-width="0.8"/>
-          <rect x="9" y="-13" width="7" height="4.5" fill="#163e19" stroke="#8fe08f" stroke-width="0.8"/>
-          <path d="M-5,15 L-5,7 Q0,2 5,7 L5,15 Z" fill="#0b1e0d" stroke="#8fe08f" stroke-width="0.8"/>
-          <path d="M-8,-13 Q0,-22 8,-13 Z" fill="#eab308" stroke="#ca8a04" stroke-width="0.8"/>
-          <line x1="0" y1="-22" x2="0" y2="-27" stroke="#eab308" stroke-width="1.2"/>
-          <polygon points="0,-27 6,-25 0,-23" fill="#22c55e"/>
-        `;
-        g.appendChild(fortG);
-      }
+      const p = document.createElementNS(SVG_NS, 'polygon');
+      p.setAttribute('points', '0,-22 22,0 0,22 -22,0');
+      p.setAttribute('fill', '#2e7a2e');
+      p.setAttribute('stroke', '#8fe08f');
+      p.setAttribute('stroke-width', '1.2');
+      p.setAttribute('filter', 'url(#nshadow)');
+      g.appendChild(p);
     } else if (armyType === 'active' || armyType === 'tired') {
       const isTired = armyType === 'tired';
+      const opacity = isTired ? '0.55' : '1';
 
-      if (tokenStyle === 'classic') {
-        // Classic Wargame Geometric Blocks
-        if (owner === 'british') {
-          const p = document.createElementNS(SVG_NS, 'rect');
-          p.setAttribute('class', `unit-token army-token british-army ${isTired ? 'tired' : 'fresh'}`);
-          p.setAttribute('x', '-18');
-          p.setAttribute('y', '-18');
-          p.setAttribute('width', '36');
-          p.setAttribute('height', '36');
-          p.setAttribute('fill', '#c0281a');
-          p.setAttribute('stroke', '#ff9999');
-          p.setAttribute('stroke-width', '1.3');
-          p.setAttribute('opacity', isTired ? '0.6' : '1');
-          p.setAttribute('filter', 'url(#nshadow)');
-          g.appendChild(p);
+      if (owner === 'british') {
+        const p = document.createElementNS(SVG_NS, 'rect');
+        p.setAttribute('x', '-18');
+        p.setAttribute('y', '-18');
+        p.setAttribute('width', '36');
+        p.setAttribute('height', '36');
+        p.setAttribute('fill', '#c0281a');
+        p.setAttribute('stroke', '#ff9999');
+        p.setAttribute('stroke-width', '1.2');
+        p.setAttribute('opacity', opacity);
+        p.setAttribute('filter', 'url(#nshadow)');
+        g.appendChild(p);
+      } else if (owner === 'mysore') {
+        const p = document.createElementNS(SVG_NS, 'polygon');
+        p.setAttribute('points', '0,-24 24,0 0,24 -24,0');
+        p.setAttribute('fill', '#2e7a2e');
+        p.setAttribute('stroke', '#8fe08f');
+        p.setAttribute('stroke-width', '1.2');
+        p.setAttribute('opacity', opacity);
+        p.setAttribute('filter', 'url(#nshadow)');
+        g.appendChild(p);
+      }
 
-          if (isTired) {
-            const slash = document.createElementNS(SVG_NS, 'line');
-            slash.setAttribute('x1', '-13');
-            slash.setAttribute('y1', '-13');
-            slash.setAttribute('x2', '13');
-            slash.setAttribute('y2', '13');
-            slash.setAttribute('stroke', '#ff9999');
-            slash.setAttribute('stroke-width', '2.5');
-            slash.setAttribute('stroke-linecap', 'round');
-            g.appendChild(slash);
-          }
-        } else if (owner === 'mysore') {
-          const p = document.createElementNS(SVG_NS, 'polygon');
-          p.setAttribute('class', `unit-token army-token mysore-army ${isTired ? 'tired' : 'fresh'}`);
-          p.setAttribute('points', '0,-24 24,0 0,24 -24,0');
-          p.setAttribute('fill', '#2e7a2e');
-          p.setAttribute('stroke', '#8fe08f');
-          p.setAttribute('stroke-width', '1.3');
-          p.setAttribute('opacity', isTired ? '0.6' : '1');
-          p.setAttribute('filter', 'url(#nshadow)');
-          g.appendChild(p);
-
-          if (isTired) {
-            const slash = document.createElementNS(SVG_NS, 'line');
-            slash.setAttribute('x1', '-13');
-            slash.setAttribute('y1', '-13');
-            slash.setAttribute('x2', '13');
-            slash.setAttribute('y2', '13');
-            slash.setAttribute('stroke', '#8fe08f');
-            slash.setAttribute('stroke-width', '2.5');
-            slash.setAttribute('stroke-linecap', 'round');
-            g.appendChild(slash);
-          }
-        }
-      } else if (tokenStyle === 'regimental') {
-        // Regimental Crest Shields with Crossed Blades & Crown
-        if (owner === 'british') {
-          const armyG = document.createElementNS(SVG_NS, 'g');
-          armyG.setAttribute('class', `unit-token army-token british-army ${isTired ? 'tired' : 'fresh'}`);
-          armyG.setAttribute('filter', 'url(#nshadow)');
-          if (isTired) armyG.setAttribute('opacity', '0.75');
-
-          armyG.innerHTML = `
-            <path d="M-15,-17 L15,-17 L15,4 Q15,19 0,23 Q-15,19 -15,4 Z" fill="#991b1b" stroke="#facc15" stroke-width="1.8"/>
-            <path d="M-12,-14 L12,-14 L12,2 Q12,15 0,19 Q-12,15 -12,2 Z" fill="#b91c1c" stroke="#fecaca" stroke-width="0.7"/>
-            <line x1="-9" y1="9" x2="9" y2="-9" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round"/>
-            <line x1="9" y1="9" x2="-9" y2="-9" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round"/>
-            <polygon points="-7,-6 -9,3 9,3 7,-6 4,-1 0,-8 -4,-1" fill="#facc15" stroke="#78350f" stroke-width="0.6"/>
-            ${isTired ? `<line x1="-13" y1="-13" x2="13" y2="13" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.95"/>` : ''}
-          `;
-          g.appendChild(armyG);
-        } else if (owner === 'mysore') {
-          const armyG = document.createElementNS(SVG_NS, 'g');
-          armyG.setAttribute('class', `unit-token army-token mysore-army ${isTired ? 'tired' : 'fresh'}`);
-          armyG.setAttribute('filter', 'url(#nshadow)');
-          if (isTired) armyG.setAttribute('opacity', '0.75');
-
-          armyG.innerHTML = `
-            <path d="M-15,-17 L15,-17 L15,4 Q15,19 0,23 Q-15,19 -15,4 Z" fill="#064e3b" stroke="#facc15" stroke-width="1.8"/>
-            <path d="M-12,-14 L12,-14 L12,2 Q12,15 0,19 Q-12,15 -12,2 Z" fill="#047857" stroke="#a7f3d0" stroke-width="0.7"/>
-            <path d="M-5,-7 A6,6 0 1,0 5,5 A4.8,4.8 0 1,1 -5,-7 Z" fill="#fde047"/>
-            <path d="M-8,10 Q0,5 8,-6 L6,-7 Q-1,2 -9,8 Z" fill="#fde047"/>
-            <path d="M8,10 Q0,5 -8,-6 L-6,-7 Q1,2 9,8 Z" fill="#fde047"/>
-            ${isTired ? `<line x1="-13" y1="-13" x2="13" y2="13" stroke="#fde047" stroke-width="3" stroke-linecap="round" opacity="0.95"/>` : ''}
-          `;
-          g.appendChild(armyG);
-        }
-      } else if (tokenStyle === 'minimalist') {
-        // Minimalist Clean Circular Counters with High-Contrast Glyphs
-        if (owner === 'british') {
-          const armyG = document.createElementNS(SVG_NS, 'g');
-          armyG.setAttribute('class', `unit-token army-token british-army ${isTired ? 'tired' : 'fresh'}`);
-          armyG.setAttribute('filter', 'url(#nshadow)');
-          armyG.innerHTML = `
-            <circle r="17" fill="#dc2626" stroke="#ffffff" stroke-width="${isTired ? '1.5' : '2.2'}" ${isTired ? 'stroke-dasharray="3,2" opacity="0.7"' : ''}/>
-            <circle r="13" fill="#991b1b" stroke="rgba(255,255,255,0.4)" stroke-width="0.8"/>
-            <text x="0" y="5.5" text-anchor="middle" font-family="Cinzel,serif" font-size="14" font-weight="900" fill="#ffffff">★</text>
-          `;
-          g.appendChild(armyG);
-        } else if (owner === 'mysore') {
-          const armyG = document.createElementNS(SVG_NS, 'g');
-          armyG.setAttribute('class', `unit-token army-token mysore-army ${isTired ? 'tired' : 'fresh'}`);
-          armyG.setAttribute('filter', 'url(#nshadow)');
-          armyG.innerHTML = `
-            <circle r="17" fill="#15803d" stroke="#facc15" stroke-width="${isTired ? '1.5' : '2.2'}" ${isTired ? 'stroke-dasharray="3,2" opacity="0.7"' : ''}/>
-            <circle r="13" fill="#064e3b" stroke="rgba(250,204,21,0.4)" stroke-width="0.8"/>
-            <text x="0" y="5.5" text-anchor="middle" font-family="Cinzel,serif" font-size="14" font-weight="900" fill="#fde047">☽</text>
-          `;
-          g.appendChild(armyG);
-        }
-      } else if (tokenStyle === 'vintage') {
-        // Antique 3D Sculpted Figurines
-        if (owner === 'british') {
-          const armyG = document.createElementNS(SVG_NS, 'g');
-          armyG.setAttribute('class', `unit-token army-token british-army ${isTired ? 'tired' : 'fresh'}`);
-          armyG.setAttribute('filter', 'url(#nshadow)');
-          armyG.innerHTML = `
-            <circle r="17" fill="#2b1410" stroke="#ca8a04" stroke-width="1.8"/>
-            <circle r="14.5" fill="#78350f" stroke="#e5a93c" stroke-width="0.8"/>
-            <rect x="-8" y="-12" width="16" height="11" rx="1.5" fill="#ca8a04" stroke="#451a03" stroke-width="0.8"/>
-            <polygon points="0,-16 -3,-12 3,-12" fill="#ef4444"/>
-            <circle cx="0" cy="5" r="5" fill="#d97706"/>
-            ${isTired ? `<line x1="-12" y1="-12" x2="12" y2="12" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>` : ''}
-          `;
-          g.appendChild(armyG);
-        } else if (owner === 'mysore') {
-          const armyG = document.createElementNS(SVG_NS, 'g');
-          armyG.setAttribute('class', `unit-token army-token mysore-army ${isTired ? 'tired' : 'fresh'}`);
-          armyG.setAttribute('filter', 'url(#nshadow)');
-          armyG.innerHTML = `
-            <circle r="17" fill="#0d2814" stroke="#ca8a04" stroke-width="1.8"/>
-            <circle r="14.5" fill="#1e3a1f" stroke="#e5a93c" stroke-width="0.8"/>
-            <path d="M-8,-4 Q0,-14 8,-4 Q10,6 0,6 Q-10,6 -8,-4 Z" fill="#ca8a04" stroke="#713f12" stroke-width="0.8"/>
-            <polygon points="0,-14 2,-9 -2,-9" fill="#22c55e"/>
-            <circle cx="0" cy="5" r="4.5" fill="#d97706"/>
-            ${isTired ? `<line x1="-12" y1="-12" x2="12" y2="12" stroke="#fde047" stroke-width="2.5" stroke-linecap="round"/>` : ''}
-          `;
-          g.appendChild(armyG);
-        }
-      } else {
-        // Tactical Regimental Brass & Emerald Medals (Default)
-        if (owner === 'british') {
-          const armyG = document.createElementNS(SVG_NS, 'g');
-          armyG.setAttribute('class', `unit-token army-token british-army ${isTired ? 'tired' : 'fresh'}`);
-          armyG.setAttribute('filter', 'url(#nshadow)');
-          if (isTired) armyG.setAttribute('opacity', '0.75');
-
-          armyG.innerHTML = `
-            <circle r="17" fill="#1c120e" stroke="#e5a93c" stroke-width="1.8"/>
-            <circle r="14.5" fill="#c0281a" stroke="#ff9999" stroke-width="0.8"/>
-            <polygon points="0,-12 3,-4 11,-4 5,2 8,10 0,5 -8,10 -5,2 -11,-4 -3,-4" fill="#facc15" opacity="0.95"/>
-            <line x1="-9" y1="9" x2="9" y2="-9" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
-            <line x1="9" y1="9" x2="-9" y2="-9" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/>
-            <circle r="3" fill="#881337"/>
-            ${isTired ? `
-              <g transform="translate(0, 9)">
-                <rect x="-14" y="0" width="28" height="9" rx="2" fill="#450a0a" stroke="#ca8a04" stroke-width="0.9"/>
-                <text x="0" y="7" text-anchor="middle" font-family="Cinzel,serif" font-size="6.5" font-weight="900" fill="#fef08a" letter-spacing="0.5">TIRED</text>
-              </g>
-            ` : ''}
-          `;
-          g.appendChild(armyG);
-        } else if (owner === 'mysore') {
-          const armyG = document.createElementNS(SVG_NS, 'g');
-          armyG.setAttribute('class', `unit-token army-token mysore-army ${isTired ? 'tired' : 'fresh'}`);
-          armyG.setAttribute('filter', 'url(#nshadow)');
-          if (isTired) armyG.setAttribute('opacity', '0.75');
-
-          armyG.innerHTML = `
-            <circle r="17" fill="#0d2613" stroke="#facc15" stroke-width="1.8"/>
-            <circle r="14.5" fill="#15803d" stroke="#86efac" stroke-width="0.8"/>
-            <path d="M-6,-6 A7,7 0 1,0 6,6 A5.5,5.5 0 1,1 -6,-6 Z" fill="#fde047"/>
-            <line x1="-7" y1="7" x2="7" y2="-7" stroke="#fde047" stroke-width="1.2" stroke-linecap="round"/>
-            <circle r="2.5" fill="#ca8a04"/>
-            ${isTired ? `
-              <g transform="translate(0, 9)">
-                <rect x="-14" y="0" width="28" height="9" rx="2" fill="#022c22" stroke="#ca8a04" stroke-width="0.9"/>
-                <text x="0" y="7" text-anchor="middle" font-family="Cinzel,serif" font-size="6.5" font-weight="900" fill="#a7f3d0" letter-spacing="0.5">TIRED</text>
-              </g>
-            ` : ''}
-          `;
-          g.appendChild(armyG);
-        }
+      if (isTired) {
+        const slash = document.createElementNS(SVG_NS, 'line');
+        slash.setAttribute('x1', '-13');
+        slash.setAttribute('y1', '-13');
+        slash.setAttribute('x2', '13');
+        slash.setAttribute('y2', '13');
+        slash.setAttribute('stroke', 'rgba(255,255,255,0.9)');
+        slash.setAttribute('stroke-width', '3');
+        slash.setAttribute('stroke-linecap', 'round');
+        g.appendChild(slash);
       }
     }
 
-    // High-Contrast Theme-Adaptive Labels
+    // Labels
     const makeLabel = (isHalo) => {
-      const textEl = document.createElementNS(SVG_NS, 'text');
-      textEl.setAttribute('dy', String(ldy));
-      textEl.setAttribute('dx', String(ldx));
-      textEl.setAttribute('text-anchor', anchor);
-      textEl.setAttribute('font-family', key ? 'Cinzel,serif' : 'Cormorant Garamond,serif');
-      textEl.setAttribute('font-size', key ? '21' : '19');
-      textEl.setAttribute('font-weight', '700');
-      if (key) textEl.setAttribute('letter-spacing', '.06em');
+      const t = document.createElementNS(SVG_NS, 'text');
+      t.setAttribute('dy', String(ldy));
+      t.setAttribute('dx', String(ldx));
+      t.setAttribute('text-anchor', anchor);
+      t.setAttribute('font-family', key ? 'Cinzel,serif' : 'Cormorant Garamond,serif');
+      t.setAttribute('font-size', key ? '21' : '19');
+      t.setAttribute('font-weight', '700');
+      if (key) t.setAttribute('letter-spacing', '.06em');
       if (isHalo) {
-        textEl.setAttribute('stroke', t.labelHalo || 'rgba(255,248,220,0.95)');
-        textEl.setAttribute('stroke-width', '4.5');
-        textEl.setAttribute('stroke-linejoin', 'round');
-        textEl.setAttribute('fill', 'none');
-        textEl.setAttribute('paint-order', 'stroke');
+        t.setAttribute('stroke', 'rgba(228,213,155,0.92)');
+        t.setAttribute('stroke-width', '4');
+        t.setAttribute('stroke-linejoin', 'round');
+        t.setAttribute('fill', 'none');
+        t.setAttribute('paint-order', 'stroke');
       } else {
-        textEl.setAttribute('fill', t.labelFill || '#1a1208');
+        t.setAttribute('fill', '#1a1208');
       }
-      textEl.textContent = name;
-      return textEl;
+      t.textContent = name;
+      return t;
     };
     g.appendChild(makeLabel(true));
     g.appendChild(makeLabel(false));
@@ -1270,9 +322,6 @@ window.renderNodes = function renderNodes() {
   }
 
   refreshMapHighlights();
-  if (typeof updateInfluenceOverlay === 'function') {
-    updateInfluenceOverlay();
-  }
 };
 
 // ==========================================================================
@@ -1380,8 +429,10 @@ function getValidTwoStepDestinations(cardName, sourceName) {
   return dests;
 }
 
+// ==========================================================================
+// 5. DIRECT POINT-AND-CLICK MAP INTERACTIONS
+// ==========================================================================
 function handleNodeClick(nodeName) {
-  if (isViewingHistory) return;
   if (isTurnBlockedForLocalPlayer()) {
     showToast("It is not your turn.", 'error');
     return;
@@ -1480,35 +531,17 @@ function handleNodeClick(nodeName) {
 // ==========================================================================
 // 6. CARD INTERACTIONS
 // ==========================================================================
-let mobileActiveFaction = 'british';
-
-function switchMobileFactionTab(faction) {
-  mobileActiveFaction = faction;
-  const mysoreTab = document.getElementById('mobile-tab-mysore');
-  const britishTab = document.getElementById('mobile-tab-british');
-  const mysoreCol = document.getElementById('mysore-column');
-  const britishCol = document.getElementById('british-column');
-
-  if (mysoreTab && britishTab) {
-    if (faction === 'mysore') {
-      mysoreTab.classList.add('active-tab');
-      britishTab.classList.remove('active-tab');
-      if (mysoreCol) mysoreCol.classList.remove('mobile-hidden');
-      if (britishCol) britishCol.classList.add('mobile-hidden');
-    } else {
-      britishTab.classList.add('active-tab');
-      mysoreTab.classList.remove('active-tab');
-      if (britishCol) britishCol.classList.remove('mobile-hidden');
-      if (mysoreCol) mysoreCol.classList.add('mobile-hidden');
-    }
-  }
-}
-window.switchMobileFactionTab = switchMobileFactionTab;
-
 function renderAllCards() {
   if (!lastUiState) return;
   renderCardDeck('mysore', lastUiState.mysore_cards);
   renderCardDeck('british', lastUiState.british_cards);
+
+  const mAvail = lastUiState.mysore_cards.filter(Boolean).length;
+  const bAvail = lastUiState.british_cards.filter(Boolean).length;
+  const mBadge = document.getElementById('mysore-hand-count');
+  const bBadge = document.getElementById('british-hand-count');
+  if (mBadge) mBadge.textContent = `${mAvail}/6`;
+  if (bBadge) bBadge.textContent = `${bAvail}/6`;
 }
 
 function renderCardDeck(faction, availArray) {
@@ -1537,131 +570,42 @@ function renderCardDeck(faction, availArray) {
 
     cardDiv.className = classNames.join(' ');
 
-    // 1. 3D Wax Seal
+    // Seal
     const seal = document.createElement('div');
     seal.className = 'card-strength-seal';
-    seal.textContent = `+${card.strength}`;
-    seal.title = `Commit +${card.strength} Combat Strength to Battle`;
+    seal.textContent = card.strength;
+    seal.title = `Commit +${card.strength} Combat Strength`;
     seal.addEventListener('click', (e) => {
       e.stopPropagation();
       handleCardStrengthClick(faction, index, card.name);
     });
     cardDiv.appendChild(seal);
 
-    // 2. Left Illustrated Vector Art Box
-    const artBox = document.createElement('div');
-    artBox.className = 'card-art-box';
-    artBox.innerHTML = CARD_ART[card.name] || '';
-    cardDiv.appendChild(artBox);
-
-    // 3. Right Content & Tactical Details Wrap
-    const contentWrap = document.createElement('div');
-    contentWrap.className = 'card-content-wrap';
-
+    // Header
     const headerRow = document.createElement('div');
     headerRow.className = 'card-header-row';
-    headerRow.innerHTML = `<span class="card-name">${card.name}</span>`;
-    contentWrap.appendChild(headerRow);
+    headerRow.innerHTML = `
+      <span class="card-icon">${card.icon}</span>
+      <span class="card-name">${card.name}</span>
+    `;
+    cardDiv.appendChild(headerRow);
 
+    // Desc
     const desc = document.createElement('div');
     desc.className = 'card-desc';
     desc.textContent = card.desc;
-    contentWrap.appendChild(desc);
-
-    cardDiv.appendChild(contentWrap);
-
-    // 4. Historical Exhausted Stamp Overlay
-    const stamp = document.createElement('div');
-    stamp.className = 'card-exhausted-stamp';
-    stamp.textContent = 'EXHAUSTED';
-    cardDiv.appendChild(stamp);
-
-    // 5. Reclaim Trade Target Badge
-    const reclaim = document.createElement('div');
-    reclaim.className = 'card-reclaim-badge';
-    reclaim.textContent = 'RECLAIM';
-    cardDiv.appendChild(reclaim);
-
-    // 6. Historical Inspection Move Highlight Badge
-    if (isViewingHistory && browsingHistoryIndex >= 0 && browsingHistoryIndex < gameHistory.length) {
-      const histEntry = gameHistory[browsingHistoryIndex];
-      if (histEntry) {
-        const cardInfo = getCardInfoForMove(histEntry.moveIdx);
-        if (cardInfo && cardInfo.faction === faction && cardInfo.cardName === card.name) {
-          cardDiv.classList.add('card-historical-action');
-          const actionBadge = document.createElement('div');
-          actionBadge.className = 'card-historical-badge';
-          actionBadge.textContent = cardInfo.isTrade ? 'TRADED' : (cardInfo.isPower ? 'POWER' : 'PLAYED');
-          actionBadge.title = `Card ${cardInfo.isTrade ? 'traded' : 'played'} on Move #${histEntry.step}`;
-          cardDiv.appendChild(actionBadge);
-        }
-        if (cardInfo && cardInfo.faction === faction && cardInfo.isTrade && cardInfo.tradeTargetCard === index) {
-          cardDiv.classList.add('card-historical-reclaimed');
-          const reclaimBadge = document.createElement('div');
-          reclaimBadge.className = 'card-historical-badge card-reclaim-hist-badge';
-          reclaimBadge.textContent = 'RECLAIMED';
-          reclaimBadge.title = `Card reclaimed from discard on Move #${histEntry.step}`;
-          cardDiv.appendChild(reclaimBadge);
-        }
-      }
-    }
+    cardDiv.appendChild(desc);
 
     cardDiv.addEventListener('click', (e) => {
       e.stopPropagation();
       handleCardBodyClick(faction, index, card.name, isUsable);
     });
 
-    // 7. AI Candidate Move Number Badge (Suppressed in historical inspection)
-    if (!isViewingHistory && settings.showCandidateArrows && lastTopCandidateLines && lastTopCandidateLines.length > 0) {
-      const rec = lastTopCandidateLines.find(line => {
-        const info = getCardInfoForMove(line.firstMove);
-        return info && info.faction === faction && info.cardName === card.name;
-      });
-      if (rec) {
-        const rankColor = getRankColor(rec.rank);
-        const aiBadge = document.createElement('div');
-        aiBadge.className = `card-ai-num-badge card-ai-num-badge-${rec.rank}`;
-        aiBadge.setAttribute('data-rank', rec.rank);
-        aiBadge.textContent = `#${rec.rank}`;
-        aiBadge.title = `AI Choice #${rec.rank}: ${rec.lineNotation}`;
-        aiBadge.style.borderColor = rankColor;
-        aiBadge.style.color = rankColor;
-        cardDiv.appendChild(aiBadge);
-        cardDiv.classList.add(`card-ai-rec-${rec.rank}`);
-        cardDiv.style.borderColor = rankColor;
-
-        cardDiv.addEventListener('mouseenter', () => highlightCandidateArrow(rec.rank, true));
-        cardDiv.addEventListener('mouseleave', () => highlightCandidateArrow(rec.rank, false));
-      }
-
-      // Check if this card is a trade target recommended to be reclaimed
-      const tradeRec = lastTopCandidateLines.find(line => {
-        const info = getCardInfoForMove(line.firstMove);
-        return info && info.faction === faction && info.isTrade && info.tradeTargetCard === index;
-      });
-      if (tradeRec) {
-        const rankColor = getRankColor(tradeRec.rank);
-        const tradeBadge = document.createElement('div');
-        tradeBadge.className = `card-ai-trade-badge card-ai-trade-badge-${tradeRec.rank}`;
-        tradeBadge.setAttribute('data-rank', tradeRec.rank);
-        tradeBadge.textContent = `#${tradeRec.rank} ↺`;
-        tradeBadge.title = `AI Choice #${tradeRec.rank} Trade Target`;
-        tradeBadge.style.borderColor = rankColor;
-        tradeBadge.style.color = rankColor;
-        cardDiv.appendChild(tradeBadge);
-        cardDiv.classList.add(`card-ai-rec-${tradeRec.rank}`);
-
-        cardDiv.addEventListener('mouseenter', () => highlightCandidateArrow(tradeRec.rank, true));
-        cardDiv.addEventListener('mouseleave', () => highlightCandidateArrow(tradeRec.rank, false));
-      }
-    }
-
     container.appendChild(cardDiv);
   });
 }
 
 function handleCardStrengthClick(faction, index, cardName) {
-  if (isViewingHistory) return;
   if (isTurnBlockedForLocalPlayer()) {
     showToast("It is not your turn.", 'error');
     return;
@@ -1679,7 +623,6 @@ function handleCardStrengthClick(faction, index, cardName) {
 }
 
 function handleCardBodyClick(faction, index, cardName, isUsable) {
-  if (isViewingHistory) return;
   if (isTurnBlockedForLocalPlayer()) {
     showToast("It is not your turn.", 'error');
     return;
@@ -1769,14 +712,6 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
   showToast(`Activated ${cardName}. Select a map target or card to trade.`, 'info');
 }
 
-function updateTurnHeaderInstruction() {
-  // Turn instruction banner is retired in streamlined UI
-}
-
-function renderDebugMoveList() {
-  // Debug move console is retired in streamlined UI
-}
-
 // ==========================================================================
 // 7. HEADER INSTRUCTIONS & ACTION BUTTONS
 // ==========================================================================
@@ -1784,48 +719,82 @@ function updateTurnHeader(uiState, winner) {
   const header = document.getElementById('turn-header');
   const counter = document.getElementById('turn-counter');
   const title = document.getElementById('turn-phase-title');
+  const icon = document.getElementById('turn-faction-icon');
+  const battleBar = document.getElementById('battle-status-bar');
 
   if (!header || !uiState) return;
 
   if (winner === 1) {
-    header.className = 'app-header british-phase victory-state';
-    if (counter) counter.textContent = 'GAME OVER';
-    if (title) title.textContent = 'BRITISH VICTORY';
+    header.className = 'turn-header british-phase victory-state';
+    counter.textContent = 'GAME OVER';
+    title.textContent = 'BRITISH VICTORY! ALL KEY CITIES OCCUPIED';
+    icon.textContent = '👑';
     showToast('The British East India Company has achieved total dominion!', 'success');
     return;
   } else if (winner === -1) {
-    header.className = 'app-header mysore-phase victory-state';
-    if (counter) counter.textContent = 'GAME OVER';
-    if (title) title.textContent = 'MYSORE VICTORY';
+    header.className = 'turn-header mysore-phase victory-state';
+    counter.textContent = 'GAME OVER';
+    title.textContent = 'MYSORE VICTORY! SULTANATE HAS WITHSTOOD SIEGE';
+    icon.textContent = '🐅';
     showToast('The Sultanate of Mysore has repelled the British invasion!', 'success');
     return;
   }
 
   const whoToMove = uiState.who_to_move || 'British Move';
-  if (counter) counter.textContent = `TURN ${uiState.turn} OF 4`;
+  counter.textContent = `TURN ${uiState.turn} OF 4`;
 
   if (whoToMove === 'British Move') {
-    header.className = 'app-header british-phase';
-    if (title) title.textContent = 'BRITISH: MOVE ARMY';
-    if (window.innerWidth <= 860 && mobileActiveFaction !== 'british') {
-      switchMobileFactionTab('british');
-    }
+    header.className = 'turn-header british-phase';
+    title.textContent = 'BRITISH PHASE: MOVE AN ARMY';
+    icon.textContent = '🦁';
   } else if (whoToMove === 'Mysore Card') {
-    header.className = 'app-header mysore-phase';
-    if (title) title.textContent = 'MYSORE: PLAY CARD';
-    if (window.innerWidth <= 860 && mobileActiveFaction !== 'mysore') {
-      switchMobileFactionTab('mysore');
-    }
+    header.className = 'turn-header mysore-phase';
+    title.textContent = 'MYSORE PHASE: PLAY A CARD';
+    icon.textContent = '🐅';
   } else if (whoToMove === 'British Card') {
-    header.className = 'app-header british-phase';
-    if (title) title.textContent = 'BRITISH: PLAY CARD';
-    if (window.innerWidth <= 860 && mobileActiveFaction !== 'british') {
-      switchMobileFactionTab('british');
-    }
+    header.className = 'turn-header british-phase';
+    title.textContent = 'BRITISH PHASE: PLAY A CARD';
+    icon.textContent = '🦁';
   }
 
+  if (battleBar) {
+  battleBar.classList.add('hidden'); // Hide top banner completely
+  }
+
+  // Render marker directly on map midpoint
   renderBattleMarker(uiState);
+
   updateActionButtons();
+  updateTurnHeaderInstruction();
+}
+
+function updateTurnHeaderInstruction() {
+  const instructionEl = document.getElementById('turn-instruction');
+  if (!instructionEl || !lastUiState) return;
+
+  if (activeSelection) {
+    if (!activeSelection.isTwoStep) {
+      // Unified instruction for one-step map targets OR trading
+      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Click a pulsing territory on the map, or an exhausted card to reclaim.`;
+    } else if (activeSelection.step === 1) {
+      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Select origin territory.`;
+    } else if (activeSelection.step === 2) {
+      instructionEl.innerHTML = `🎯 <strong>${activeSelection.cardName}:</strong> Move ${activeSelection.sourceNode} → Select glowing destination.`;
+    }
+    return;
+  }
+
+  if (selectedUnit) {
+    instructionEl.innerHTML = `📍 <strong>${selectedUnit} selected:</strong> Click a glowing destination node to march, or click Rest.`;
+    return;
+  }
+
+  const whoToMove = lastUiState.who_to_move || '';
+  if (whoToMove === 'British Move') {
+    instructionEl.textContent = 'Click an Army on the map to select, then click a pulsing destination.';
+  } else if (whoToMove.includes('Card')) {
+    instructionEl.textContent = 'Click a card in your hand to activate ability or commit battle strength.';
+  }
 }
 
 function updateActionButtons() {
@@ -1885,6 +854,47 @@ function handleHeaderPassClick() {
   }
 }
 
+function handleHeaderResignClick() {
+  if (!currentGameState || getStateWinner(currentGameState) !== 0) return;
+
+  const confirmMsg = 'Are you sure you want to resign? This will concede the match.';
+  if (!confirm(confirmMsg)) return;
+
+  // Determine which side is resigning
+  const uiState = lastUiState;
+  let resigningSide = humanPlayerSide || 'british';
+
+  // In P2P multiplayer, notify opponent
+  if (matchMode === 'p2p_multiplayer') {
+    multiplayerManager.sendResign(resigningSide);
+  }
+
+  // Declare the opponent the winner
+  const winnerVal = resigningSide === 'british' ? -1 : 1;
+  const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
+  showToast(`${resigningSide.toUpperCase()} has resigned. ${winnerName} wins!`, 'success');
+
+  // Update the turn header to show victory state
+  const header = document.getElementById('turn-header');
+  const counter = document.getElementById('turn-counter');
+  const title = document.getElementById('turn-phase-title');
+  const icon = document.getElementById('turn-phase-icon');
+
+  if (header && counter && title && icon) {
+    header.className = winnerVal === 1
+      ? 'turn-header british-phase victory-state'
+      : 'turn-header mysore-phase victory-state';
+    counter.textContent = 'GAME OVER';
+    title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
+    icon.textContent = winnerVal === 1 ? '🦁' : '🐅';
+  }
+
+  // Disable further interaction
+  currentMoves = [];
+  updateActionButtons();
+  clearAllInteractionState();
+}
+
 function handleHeaderCancelClick() {
   clearAllInteractionState();
 }
@@ -1923,177 +933,14 @@ function handleSimsSliderInput(sliderPos) {
 // ==========================================================================
 function handleEvalToggle(enabled) {
   settings.showEval = enabled;
-  const dock = document.getElementById('bottom-analysis-dock');
   const panel = document.getElementById('eval-panel');
   if (enabled) {
-    if (dock) dock.classList.remove('hidden');
-    if (panel) panel.classList.remove('hidden');
+    panel.classList.remove('hidden');
     if (currentBitString) startProgressiveEval(currentBitString);
   } else {
-    if (dock) dock.classList.add('hidden');
-    if (panel) panel.classList.add('hidden');
-    clearCandidateArrows();
-    const linesContainer = document.getElementById('engine-lines-container');
-    if (linesContainer) linesContainer.innerHTML = '';
-  }
-  if (typeof adjustBoardDimensions === 'function') {
-    setTimeout(adjustBoardDimensions, 10);
+    panel.classList.add('hidden');
   }
 }
-
-function handleTopKCandidatesChange(val) {
-  settings.topKCandidates = Math.max(1, parseInt(val, 10) || 1);
-  localStorage.setItem('tiger_top_k_candidates', settings.topKCandidates);
-  const input = document.getElementById('top-k-candidates-select');
-  if (input && String(input.value) !== String(settings.topKCandidates)) {
-    input.value = settings.topKCandidates;
-  }
-  if (currentBitString && settings.showEval) {
-    startProgressiveEval(currentBitString);
-  }
-}
-window.handleTopKCandidatesChange = handleTopKCandidatesChange;
-
-function handleShowCandidateArrowsToggle(checked) {
-  settings.showCandidateArrows = Boolean(checked);
-  localStorage.setItem('tiger_show_candidate_arrows', settings.showCandidateArrows ? 'true' : 'false');
-  if (settings.showCandidateArrows && lastTopCandidateLines.length > 0) {
-    renderCandidateArrows(lastTopCandidateLines);
-  } else {
-    clearCandidateArrows();
-  }
-}
-window.handleShowCandidateArrowsToggle = handleShowCandidateArrowsToggle;
-
-function clearCandidateArrows() {
-  const layer = document.getElementById('candidate-moves-layer');
-  if (layer) layer.innerHTML = '';
-  const boardPill = document.getElementById('board-ai-pill');
-  if (boardPill) boardPill.classList.add('hidden');
-  const section = document.getElementById('engine-analysis-section');
-  if (section) section.classList.add('hidden');
-  const summary = document.getElementById('engine-lines-summary');
-  if (summary) summary.textContent = '';
-  const linesContainer = document.getElementById('engine-lines-container');
-  if (linesContainer) linesContainer.innerHTML = '';
-  const dock = document.getElementById('bottom-analysis-dock');
-  if (dock && !settings.showEval) dock.classList.add('hidden');
-  if (typeof renderCards === 'function') renderCards();
-}
-window.clearCandidateArrows = clearCandidateArrows;
-
-function toggleEngineLinesCollapse() {
-  const section = document.getElementById('engine-analysis-section');
-  if (!section) return;
-  section.classList.toggle('collapsed');
-  const isCollapsed = section.classList.contains('collapsed');
-  localStorage.setItem('tiger_candidate_lines_collapsed', isCollapsed ? 'true' : 'false');
-  if (typeof adjustBoardDimensions === 'function') {
-    setTimeout(adjustBoardDimensions, 10);
-  }
-}
-window.toggleEngineLinesCollapse = toggleEngineLinesCollapse;
-
-function highlightCandidateArrow(rank, active) {
-  const arrows = document.querySelectorAll(`.candidate-arrow-${rank}`);
-  const badges = document.querySelectorAll(`.candidate-rank-badge-${rank}`);
-  const rings = document.querySelectorAll(`.candidate-target-ring-${rank}`);
-  const cardBadges = document.querySelectorAll(`.card-ai-num-badge-${rank}, .card-ai-trade-badge-${rank}`);
-  const cards = document.querySelectorAll(`.card-ai-rec-${rank}`);
-
-  arrows.forEach(el => {
-    if (active) {
-      el.classList.add('highlighted');
-      el.setAttribute('stroke-width', '5');
-      el.setAttribute('opacity', '1.0');
-    } else {
-      el.classList.remove('highlighted');
-      el.setAttribute('stroke-width', rank === 1 ? '3.5' : '2.5');
-      el.setAttribute('opacity', '0.9');
-    }
-  });
-
-  badges.forEach(el => {
-    if (active) el.classList.add('pulse-scale');
-    else el.classList.remove('pulse-scale');
-  });
-
-  rings.forEach(el => {
-    if (active) el.classList.add('pulse-scale');
-    else el.classList.remove('pulse-scale');
-  });
-
-  cardBadges.forEach(el => {
-    if (active) el.classList.add('pulse-scale');
-    else el.classList.remove('pulse-scale');
-  });
-
-  cards.forEach(el => {
-    if (active) el.classList.add('ai-highlighted');
-    else el.classList.remove('ai-highlighted');
-  });
-}
-window.highlightCandidateArrow = highlightCandidateArrow;
-
-function renderCandidateArrows(topLines) {
-  const layer = document.getElementById('candidate-moves-layer');
-  if (!layer) return;
-  layer.innerHTML = '';
-
-  if (!settings.showCandidateArrows || !settings.showEval || !topLines || topLines.length === 0) {
-    return;
-  }
-
-  topLines.forEach(item => {
-    const rank = item.rank || 1;
-    const color = getRankColor(rank);
-    ensureArrowMarker(rank, color);
-
-    if (item.fromName && item.toName && item.fromName !== item.toName && NODES[item.fromName] && NODES[item.toName]) {
-      const a = NODES[item.fromName];
-      const b = NODES[item.toName];
-
-      // Stagger curves slightly by rank to prevent overlapping paths
-      const curveOffset = 0.15 + (rank - 1) * 0.08;
-      const { cx, cy } = splineControlPoint(a.x, a.y, b.x, b.y, curveOffset);
-
-      const path = document.createElementNS(SVG_NS, 'path');
-      path.setAttribute('d', `M ${a.x},${a.y} Q ${cx},${cy} ${b.x},${b.y}`);
-      path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', color);
-      path.setAttribute('stroke-width', rank === 1 ? '3.5' : '2.5');
-      path.setAttribute('stroke-dasharray', item.isAttack ? 'none' : '6,3');
-      path.setAttribute('marker-end', `url(#ai-arrow-${rank})`);
-      path.setAttribute('class', `candidate-arrow candidate-arrow-${rank}`);
-      path.setAttribute('data-rank', rank);
-      path.setAttribute('opacity', '0.9');
-      layer.appendChild(path);
-
-      // Rank badge pill at curve apex
-      const badgeG = document.createElementNS(SVG_NS, 'g');
-      badgeG.setAttribute('class', `candidate-rank-badge candidate-rank-badge-${rank}`);
-      badgeG.setAttribute('transform', `translate(${cx}, ${cy})`);
-      badgeG.innerHTML = `
-        <circle r="9" fill="#18202a" stroke="${color}" stroke-width="2"/>
-        <text text-anchor="middle" dy="3.5" font-family="Cinzel, serif" font-weight="bold" font-size="10" fill="${color}">${rank}</text>
-      `;
-      layer.appendChild(badgeG);
-    } else if (item.toName && NODES[item.toName]) {
-      // In-place or territory action
-      const node = NODES[item.toName];
-      const ringG = document.createElementNS(SVG_NS, 'g');
-      ringG.setAttribute('transform', `translate(${node.x}, ${node.y})`);
-      ringG.setAttribute('class', `candidate-target-ring candidate-target-ring-${rank}`);
-      ringG.innerHTML = `
-        <circle r="19" fill="none" stroke="${color}" stroke-width="2.2" stroke-dasharray="4,3"/>
-        <circle cx="15" cy="-15" r="8" fill="#18202a" stroke="${color}" stroke-width="1.8"/>
-        <text x="15" y="-12" text-anchor="middle" font-family="Cinzel, serif" font-weight="bold" font-size="9" fill="${color}">${rank}</text>
-      `;
-      layer.appendChild(ringG);
-    }
-  });
-}
-window.renderCandidateArrows = renderCandidateArrows;
 
 function setEvalBar(score, totalSims) {
   const bar = document.getElementById('eval-bar-mysore');
@@ -2108,8 +955,7 @@ function setEvalBar(score, totalSims) {
 
   const sign = score > 0 ? '+' : '';
   scoreLabel.textContent = `${sign}${score.toFixed(2)}`;
-  const provider = (typeof mctsEngine !== 'undefined' && mctsEngine.activeProvider) ? mctsEngine.activeProvider.toUpperCase() : 'WASM';
-  if (simsLabel) simsLabel.textContent = `Engine: ${totalSims} sims (${provider})`;
+  if (simsLabel) simsLabel.textContent = `Engine: ${totalSims} sims (Wasm)`;
 
   if (winrateLabel) {
     if (score > 0.05) winrateLabel.textContent = `British Win (${(100 - mysorePercentage).toFixed(0)}%)`;
@@ -2119,12 +965,7 @@ function setEvalBar(score, totalSims) {
 }
 
 async function startProgressiveEval(stateStr) {
-  if (!settings.showEval || !currentGameState) {
-    clearCandidateArrows();
-    const linesContainer = document.getElementById('engine-lines-container');
-    if (linesContainer) linesContainer.innerHTML = '';
-    return;
-  }
+  if (!settings.showEval || !currentGameState) return;
   currentEvalLoopState = stateStr;
 
   const linesContainer = document.getElementById('engine-lines-container');
@@ -2135,104 +976,59 @@ async function startProgressiveEval(stateStr) {
 
     setEvalBar(rootNode.eval, mctsEngine.simulations);
 
-    if (lastEvalScore !== null && window.TDAnalytics) {
-      const badge = TDAnalytics.classifyMove(lastEvalScore, rootNode.eval, false, false);
-      const badgeContainer = document.getElementById('eval-badge-container');
-      if (badgeContainer && badge) {
-        badgeContainer.innerHTML = `<span class="eval-badge ${badge.cssClass}">${badge.glyph} ${badge.label}</span>`;
-      }
-    }
-    lastEvalScore = rootNode.eval;
-
-    const dock = document.getElementById('bottom-analysis-dock');
-    if (dock && settings.showEval) {
-      dock.classList.remove('hidden');
-    }
-    const panel = document.getElementById('eval-panel');
-    if (panel && settings.showEval) {
-      panel.classList.remove('hidden');
-    }
-
-    const k = Math.max(1, parseInt(settings.topKCandidates, 10) || 3);
-    const topLines = mctsEngine.getTopCandidateLines(k);
-    lastTopCandidateLines = topLines;
-
-    renderCandidateArrows(topLines);
-
-    const section = document.getElementById('engine-analysis-section');
-    const summary = document.getElementById('engine-lines-summary');
-    const boardPill = document.getElementById('board-ai-pill');
-    const boardPillText = document.getElementById('board-ai-pill-text');
-    const boardPillEval = document.getElementById('board-ai-pill-eval');
-
-    if (topLines.length > 0) {
-      if (section) section.classList.remove('hidden');
-
-      const best = topLines[0];
-      const bestEvalStr = (best.eval > 0 ? '+' : '') + best.eval.toFixed(2);
-      if (summary) {
-        summary.textContent = `1. ${best.firstMoveNotation} (${bestEvalStr})`;
-      }
-
-      if (boardPill && settings.showCandidateArrows) {
-        boardPill.classList.remove('hidden');
-        if (boardPillText) boardPillText.textContent = `AI: ${best.firstMoveNotation}`;
-        if (boardPillEval) {
-          boardPillEval.textContent = bestEvalStr;
-          boardPillEval.style.color = best.eval > 0.05 ? '#fca5a5' : (best.eval < -0.05 ? '#86efac' : '#93c5fd');
-        }
-      } else if (boardPill) {
-        boardPill.classList.add('hidden');
-      }
-    } else {
-      if (section) section.classList.add('hidden');
-      if (boardPill) boardPill.classList.add('hidden');
-    }
-
-    if (linesContainer) {
+    const topLines = mctsEngine.getTopCandidateLines(3);
+    if (linesContainer && topLines.length > 0) {
       linesContainer.innerHTML = '';
-      if (topLines.length > 0) {
-        topLines.forEach(item => {
-          const evalVal = item.eval;
-          let evalStr = evalVal.toFixed(2);
-          if (evalVal > 0) evalStr = '+' + evalStr;
-          const squareClass = evalVal > 0.05 ? 'british-favored' : (evalVal < -0.05 ? 'mysore-favored' : 'neutral');
-          const rankColor = getRankColor(item.rank);
+      topLines.forEach(item => {
+        const evalVal = item.eval;
+        let evalStr = evalVal.toFixed(2);
+        if (evalVal > 0) evalStr = '+' + evalStr;
+        const squareClass = evalVal > 0.05 ? 'british-favored' : (evalVal < -0.05 ? 'mysore-favored' : 'neutral');
 
-          const lineDiv = document.createElement('div');
-          lineDiv.className = `engine-line engine-candidate-card rank-${item.rank}`;
-          lineDiv.setAttribute('data-rank', item.rank);
-          lineDiv.style.borderLeftColor = rankColor;
-          lineDiv.title = `Line: ${item.lineNotation}. Click to highlight arrow on map.`;
-          lineDiv.onclick = () => highlightCandidateArrow(item.rank, true);
-          lineDiv.onmouseenter = () => highlightCandidateArrow(item.rank, true);
-          lineDiv.onmouseleave = () => highlightCandidateArrow(item.rank, false);
-
-          lineDiv.innerHTML = `
-            <div class="candidate-meta-row">
-              <span class="candidate-rank-pill" style="border-color: ${rankColor}; color: ${rankColor}">#${item.rank}</span>
-              <span class="engine-eval-square ${squareClass}">${evalStr}</span>
-              <span class="candidate-winrate">${item.winrate || ''}</span>
-              <span class="candidate-visits-badge">${item.visits} visits</span>
-            </div>
-            <div class="candidate-line-text">
-              <strong class="first-move-code" style="color: ${rankColor}">${item.firstMoveNotation}</strong>
-              <span class="full-pv-sequence">${item.lineNotation}</span>
-            </div>
-          `;
-          linesContainer.appendChild(lineDiv);
-        });
-      }
+        const lineDiv = document.createElement('div');
+        lineDiv.className = 'engine-line';
+        lineDiv.innerHTML = `
+          <span class="engine-eval-square ${squareClass}">${evalStr}</span>
+          <span class="engine-move">${item.moveName} (${item.visits}v)</span>
+        `;
+        linesContainer.appendChild(lineDiv);
+      });
     }
-    if (typeof renderCards === 'function') renderCards();
   } catch (err) {
     console.warn("Client eval error:", err);
   }
 }
 
 // ==========================================================================
-// 9. DRAWER MENUS
+// 9. DEBUG MOVE CONSOLE & DRAWER MENUS
 // ==========================================================================
+function handleDebugToggle(enabled) {
+  settings.showDebugMoves = enabled;
+  const consoleEl = document.getElementById('debug-move-console');
+  if (enabled) {
+    consoleEl.classList.remove('hidden');
+    renderDebugMoveList();
+  } else {
+    consoleEl.classList.add('hidden');
+  }
+}
+
+function renderDebugMoveList() {
+  if (!settings.showDebugMoves) return;
+  const list = document.getElementById('move-list');
+  const badge = document.getElementById('move-count-badge');
+  if (!list) return;
+
+  badge.textContent = currentMoves.length;
+  list.innerHTML = currentMoves.map(m => `
+    <div class="move-entry" onclick="window.applyMove(${m.idx})">
+      <span style="color:#bfa577; min-width:30px;">[${m.idx}]</span>
+      <strong style="color:var(--parchment); min-width:130px;">${m.type}</strong>
+      <span>${m.desc}</span>
+    </div>
+  `).join('');
+}
+
 function toggleTutorialMenu() {
   const tutorialDrawer = document.getElementById('tutorial-drawer');
   const settingsDrawer = document.getElementById('settings-drawer');
@@ -2246,14 +1042,6 @@ function toggleSettingsMenu() {
   if (tutorialDrawer) tutorialDrawer.classList.add('hidden');
   if (settingsDrawer) settingsDrawer.classList.toggle('hidden');
 }
-window.toggleSettingsMenu = toggleSettingsMenu;
-
-function handleSettingsBackdropClick(e) {
-  if (e.target && (e.target.id === 'settings-drawer' || e.target.classList.contains('settings-modal-backdrop'))) {
-    toggleSettingsMenu();
-  }
-}
-window.handleSettingsBackdropClick = handleSettingsBackdropClick;
 
 document.addEventListener('click', (e) => {
   const tutorialDrawer = document.getElementById('tutorial-drawer');
@@ -2329,23 +1117,7 @@ function isCurrentSideAi(uiState) {
   return false;
 }
 
-// ==========================================================================
-// 8. CHESS.COM STYLE NOTATION, REPLAY HISTORY & GAME REVIEW ENGINE
-// ==========================================================================
-let gameHistory = [];
-let isViewingHistory = false;
-let browsingHistoryIndex = -1;
-let liveGameState = null;
-
-const MYSORE_CARD_NAMES = [
-  "Iron Rockets", "Sepoy Mutiny", "French Alliance", "Monsoon", "Cavalry Raid", "Sea Trade"
-];
-const BRITISH_CARD_NAMES = [
-  "Wall Breach", "Highlanders", "Royal Navy", "Divide and Rule", "Force March", "Princely States"
-];
-
 function isTurnBlockedForLocalPlayer() {
-  if (isViewingHistory) return true;
   if (!lastUiState) return true;
   const whoToMove = (lastUiState.who_to_move || '').toLowerCase();
   if (matchMode === 'p2p_multiplayer') {
@@ -2358,476 +1130,6 @@ function isTurnBlockedForLocalPlayer() {
     return true;
   }
   return false;
-}
-
-function recordMoveInHistory(stateBefore, moveIdx, nextState, finalState) {
-  if (!stateBefore) return;
-
-  const actor = stateBefore.to_move === 0 ? 'british' : 'mysore';
-  const turn = stateBefore.turn;
-  let notation = TDEngine.notate(stateBefore, moveIdx);
-
-  // Clean move description from currentMoves if found
-  let moveDesc = "";
-  const matched = currentMoves.find(m => m.idx === moveIdx);
-  if (matched) {
-    moveDesc = `${matched.type}${matched.desc ? ': ' + matched.desc : ''}`;
-  } else {
-    moveDesc = notation;
-  }
-
-  // Detect if random battle card discard occurred (stochastic luck edge case)
-  let luckEvent = null;
-  if (nextState && finalState) {
-    // Check if British had a card randomly discarded
-    for (let i = 0; i < 6; i++) {
-      if (nextState.british_cards[i] && !finalState.british_cards[i]) {
-        luckEvent = {
-          faction: 'british',
-          cardName: BRITISH_CARD_NAMES[i] || `Card #${i+1}`
-        };
-        break;
-      }
-    }
-    // Check if Mysore had a card randomly discarded
-    if (!luckEvent) {
-      for (let i = 0; i < 6; i++) {
-        if (nextState.mysore_cards[i] && !finalState.mysore_cards[i]) {
-          luckEvent = {
-            faction: 'mysore',
-            cardName: MYSORE_CARD_NAMES[i] || `Card #${i+1}`
-          };
-          break;
-        }
-      }
-    }
-  }
-
-  const historyEntry = {
-    step: gameHistory.length + 1,
-    turn: turn,
-    actor: actor,
-    moveIdx: moveIdx,
-    notation: notation,
-    desc: `${actor === 'british' ? 'British' : 'Mysore'}: ${moveDesc}`,
-    stateBeforeStr: stateBefore.toString(),
-    stateAfterStr: finalState ? finalState.toString() : stateBefore.toString(),
-    hasLuck: !!luckEvent,
-    luckDetail: luckEvent 
-      ? `${luckEvent.faction === 'british' ? 'British' : 'Mysore'} discarded '${luckEvent.cardName}' (battle loss)` 
-      : null
-  };
-
-  gameHistory.push(historyEntry);
-}
-
-function renderNotationPanel() {
-  const moveCount = gameHistory.length;
-
-  // 1. Update badges
-  const notBadge = document.getElementById('notation-move-badge');
-  const rightColBadge = document.getElementById('right-col-moves-badge');
-  const mobileBadge = document.getElementById('mobile-moves-count');
-  if (notBadge) notBadge.textContent = moveCount;
-  if (rightColBadge) rightColBadge.textContent = moveCount;
-  if (mobileBadge) mobileBadge.textContent = moveCount;
-
-  // 2. Update phase indicator
-  const phaseLabel = document.getElementById('notation-phase-name');
-  if (phaseLabel && lastUiState) {
-    const who = (lastUiState.who_to_move || 'British').toUpperCase();
-    phaseLabel.textContent = `Turn ${lastUiState.turn || 1} · ${who} PHASE`;
-  }
-
-  // 3. Populate 2-Column Move Notation Table (Chess.com Style)
-  const list = document.getElementById('moves-history-list');
-  if (list) {
-    if (moveCount === 0) {
-      list.innerHTML = `<div class="notation-empty-msg">No moves played yet</div>`;
-    } else {
-      let html = '';
-      // Group impulses by round pairs (1. British Move | Mysore Move)
-      let roundNum = 1;
-      for (let i = 0; i < moveCount; i += 2) {
-        const bEntry = gameHistory[i];
-        const mEntry = i + 1 < moveCount ? gameHistory[i + 1] : null;
-
-        const bActive = isViewingHistory && browsingHistoryIndex === i;
-        const mActive = isViewingHistory && browsingHistoryIndex === (i + 1);
-
-        const bLuck = bEntry && bEntry.hasLuck ? ' <span class="luck-badge" title="Battle Casualty Discard">*</span>' : '';
-        const mLuck = mEntry && mEntry.hasLuck ? ' <span class="luck-badge" title="Battle Casualty Discard">*</span>' : '';
-
-        html += `
-          <div class="notation-row ${roundNum % 2 === 0 ? 'even-row' : 'odd-row'}">
-            <span class="col-num">${roundNum}.</span>
-            <span class="col-faction notation-cell ${bActive ? 'active-step' : ''}" onclick="viewHistoricalStep(${i})" title="${bEntry ? bEntry.desc : ''}">
-              ${bEntry ? bEntry.notation + bLuck : '—'}
-            </span>
-            <span class="col-faction notation-cell ${mActive ? 'active-step' : ''} ${!mEntry ? 'empty-cell' : ''}" ${mEntry ? `onclick="viewHistoricalStep(${i + 1})" title="${mEntry.desc}"` : ''}>
-              ${mEntry ? mEntry.notation + mLuck : '...'}
-            </span>
-          </div>
-        `;
-        roundNum++;
-      }
-      list.innerHTML = html;
-
-      // Auto-scroll to active or bottom row
-      const activeCell = list.querySelector('.active-step');
-      if (activeCell) {
-        activeCell.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      } else {
-        list.scrollTop = list.scrollHeight;
-      }
-    }
-  }
-
-  // 5. Update Stepping Buttons State
-  const btnStart = document.getElementById('btn-step-start');
-  const btnPrev = document.getElementById('btn-step-prev');
-  const btnNext = document.getElementById('btn-step-next');
-  const btnLive = document.getElementById('btn-step-live');
-
-  if (moveCount === 0) {
-    if (btnStart) btnStart.disabled = true;
-    if (btnPrev) btnPrev.disabled = true;
-    if (btnNext) btnNext.disabled = true;
-    if (btnLive) {
-      btnLive.disabled = true;
-      btnLive.classList.remove('live-active');
-    }
-  } else if (!isViewingHistory) {
-    if (btnStart) btnStart.disabled = false;
-    if (btnPrev) btnPrev.disabled = false;
-    if (btnNext) btnNext.disabled = true;
-    if (btnLive) {
-      btnLive.disabled = false;
-      btnLive.classList.remove('live-active');
-    }
-  } else {
-    if (btnStart) btnStart.disabled = browsingHistoryIndex <= -1;
-    if (btnPrev) btnPrev.disabled = browsingHistoryIndex <= -1;
-    if (btnNext) btnNext.disabled = false;
-    if (btnLive) {
-      btnLive.disabled = false;
-      btnLive.classList.add('live-active');
-    }
-  }
-}
-
-// ──────────────────────────────────────────────────────────────────────────
-// HISTORICAL STATE INSPECTION (READ-ONLY)
-// ──────────────────────────────────────────────────────────────────────────
-function viewHistoricalStep(stepIndex) {
-  if (gameHistory.length === 0) return;
-  if (stepIndex < -1 || stepIndex >= gameHistory.length) return;
-
-  if (!isViewingHistory) {
-    liveGameState = currentGameState.copy();
-  }
-
-  isViewingHistory = true;
-  browsingHistoryIndex = stepIndex;
-
-  try {
-    let histState;
-    let entry;
-    if (stepIndex === -1) {
-      histState = new GameState().read_str(gameHistory[0].stateBeforeStr);
-      entry = {
-        step: 0,
-        turn: 1,
-        actor: 'british',
-        moveIdx: -1,
-        notation: 'Start',
-        desc: 'Initial starting board position',
-        stateBeforeStr: gameHistory[0].stateBeforeStr,
-        stateAfterStr: gameHistory[0].stateBeforeStr,
-        hasLuck: false,
-        luckDetail: null
-      };
-    } else {
-      entry = gameHistory[stepIndex];
-      histState = new GameState().read_str(entry.stateAfterStr);
-    }
-
-    currentGameState = histState;
-
-    const gameData = TDEngine.generateGameData(histState, matchMode, humanPlayerSide);
-    gameData.moves = []; // Strictly lock interactions while reviewing
-
-    handleHistoricalRender(gameData, entry);
-    renderNotationPanel();
-    adjustBoardDimensions();
-  } catch (err) {
-    console.error("Failed to render historical state:", err);
-    showToast("Error inspecting historical state.", "error");
-  }
-}
-
-function handleHistoricalRender(data, entry) {
-  lastUiState = data.ui_state;
-  clearAllInteractionState();
-  currentMoves = []; // Disallow moves in historical review mode
-  if (typeof clearCandidateArrows === 'function') clearCandidateArrows();
-
-  if (data.ui_state && data.ui_state.nodes) {
-    data.ui_state.nodes.forEach(nodeData => {
-      const node = window.NODES[nodeData.name];
-      if (!node) return;
-
-      if (nodeData.armyType === 'fresh') {
-        node.armyType = 'active';
-        node.owner = 'british';
-      } else if (nodeData.armyType === 'tired') {
-        node.armyType = 'tired';
-        node.owner = 'british';
-      } else if (nodeData.armyType === 'fort') {
-        node.armyType = 'fort';
-        node.owner = 'mysore';
-      } else {
-        node.armyType = 'empty';
-        node.owner = 'empty';
-      }
-    });
-  }
-
-  window.renderNodes();
-  renderAllCards();
-
-  // Update header in review mode
-  const header = document.getElementById('turn-header');
-  const counter = document.getElementById('turn-counter');
-  const title = document.getElementById('turn-phase-title');
-  const icon = document.getElementById('turn-phase-icon');
-  const instruction = document.getElementById('turn-instruction');
-
-  if (header) {
-    header.className = entry.actor === 'british'
-      ? 'app-header british-phase historical-mode'
-      : 'app-header mysore-phase historical-mode';
-  }
-  if (counter) counter.textContent = entry.step > 0 ? `HISTORY · MOVE #${entry.step}` : `HISTORY · START POSITION`;
-  if (title) title.textContent = entry.step > 0 ? `${entry.actor.toUpperCase()}: ${entry.notation}` : `GAME START SETUP`;
-  if (instruction) instruction.textContent = `Reviewing historical board & card state · Read Only`;
-}
-
-function returnToLiveGame() {
-  if (!isViewingHistory) return;
-
-  isViewingHistory = false;
-  browsingHistoryIndex = -1;
-
-  if (liveGameState) {
-    currentGameState = liveGameState;
-    liveGameState = null;
-  }
-
-  const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
-  handleLocalGameUpdate(gameData);
-  renderNotationPanel();
-  adjustBoardDimensions();
-  showToast("Returned to live game.", "info");
-}
-
-function stepHistoryPrev() {
-  if (gameHistory.length === 0) return;
-  if (!isViewingHistory) {
-    viewHistoricalStep(gameHistory.length - 1);
-  } else if (browsingHistoryIndex > 0) {
-    viewHistoricalStep(browsingHistoryIndex - 1);
-  } else if (browsingHistoryIndex === 0) {
-    viewHistoricalStep(-1);
-  }
-}
-
-function stepHistoryNext() {
-  if (!isViewingHistory) return;
-  if (browsingHistoryIndex < gameHistory.length - 1) {
-    viewHistoricalStep(browsingHistoryIndex + 1);
-  } else {
-    returnToLiveGame();
-  }
-}
-
-// ──────────────────────────────────────────────────────────────────────────
-// OFFER DRAW & RESIGN ACTIONS
-// ──────────────────────────────────────────────────────────────────────────
-function handleOfferDraw() {
-  if (isViewingHistory) {
-    showToast("Return to live game before offering a draw.", "info");
-    return;
-  }
-  if (!currentGameState || getStateWinner(currentGameState) !== 0) {
-    showToast("Game is already finished.", "info");
-    return;
-  }
-
-  if (matchMode === 'human_vs_ai') {
-    // Evaluate if position is reasonably balanced for AI to accept
-    let freshArmies = 0, forts = 0;
-    for (let i = 0; i < currentGameState.fresh_armies.length; i++) {
-      if (currentGameState.fresh_armies[i] || currentGameState.tired_armies[i]) freshArmies++;
-      if (currentGameState.forts[i]) forts++;
-    }
-
-    if (forts >= 3 && freshArmies >= 3) {
-      declareDraw("AI accepted your draw offer! Peaceful armistice concluded.");
-    } else {
-      showToast("AI declined the draw offer. The campaign continues!", "info");
-    }
-  } else if (matchMode === 'p2p_multiplayer') {
-    multiplayerManager.sendOfferDraw(humanPlayerSide);
-    showToast("Draw offer sent to opponent...", "info");
-  } else {
-    const confirmDraw = confirm("Offer a Draw? If both players agree, the match will conclude in a draw.");
-    if (confirmDraw) {
-      declareDraw("Game drawn by mutual agreement.");
-    }
-  }
-}
-
-function declareDraw(reason) {
-  showToast(reason, "info");
-  const header = document.getElementById('turn-header');
-  const counter = document.getElementById('turn-counter');
-  const title = document.getElementById('turn-phase-title');
-
-  if (header) header.className = 'app-header game-over-phase victory-state';
-  if (counter) counter.textContent = 'MATCH DRAW';
-  if (title) title.textContent = 'DRAW AGREED';
-
-  gameHistory.push({
-    step: gameHistory.length + 1,
-    turn: currentGameState ? currentGameState.turn : 1,
-    actor: 'system',
-    moveIdx: -1,
-    notation: '½–½',
-    desc: reason,
-    stateBeforeStr: currentGameState ? currentGameState.toString() : '',
-    stateAfterStr: currentGameState ? currentGameState.toString() : '',
-    hasLuck: false,
-    luckDetail: null
-  });
-
-  currentMoves = [];
-  updateActionButtons();
-  clearAllInteractionState();
-  renderNotationPanel();
-}
-
-function handleResignClick() {
-  if (isViewingHistory) return;
-  if (!currentGameState || getStateWinner(currentGameState) !== 0) {
-    showToast("Game is already finished.", "info");
-    return;
-  }
-
-  const resigningSide = (matchMode === 'human_vs_ai' || matchMode === 'p2p_multiplayer') 
-    ? humanPlayerSide 
-    : (currentGameState.to_move === 0 ? 'british' : 'mysore');
-
-  const confirmResign = confirm(`Are you sure you want to resign as ${resigningSide.toUpperCase()}?`);
-  if (!confirmResign) return;
-
-  if (matchMode === 'p2p_multiplayer') {
-    multiplayerManager.sendResign(resigningSide);
-  }
-
-  const winnerVal = resigningSide === 'british' ? -1 : 1;
-  const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
-  if (window.TDSound) {
-    TDSound.playResign();
-  }
-  showToast(`${resigningSide.toUpperCase()} resigned. ${winnerName} wins!`, 'info');
-
-  const header = document.getElementById('turn-header');
-  const counter = document.getElementById('turn-counter');
-  const title = document.getElementById('turn-phase-title');
-
-  if (header) {
-    header.className = winnerVal === 1
-      ? 'app-header british-phase victory-state'
-      : 'app-header mysore-phase victory-state';
-  }
-  if (counter) counter.textContent = 'GAME OVER';
-  if (title) title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
-
-  gameHistory.push({
-    step: gameHistory.length + 1,
-    turn: currentGameState ? currentGameState.turn : 1,
-    actor: resigningSide,
-    moveIdx: -1,
-    notation: resigningSide === 'british' ? '0–1' : '1–0',
-    desc: `${resigningSide.toUpperCase()} resigned. ${winnerName} Victory.`,
-    stateBeforeStr: currentGameState ? currentGameState.toString() : '',
-    stateAfterStr: currentGameState ? currentGameState.toString() : '',
-    hasLuck: false,
-    luckDetail: null
-  });
-
-  currentMoves = [];
-  updateActionButtons();
-  clearAllInteractionState();
-  renderNotationPanel();
-}
-
-// ──────────────────────────────────────────────────────────────────────────
-// TAB SWITCHING HELPERS
-// ──────────────────────────────────────────────────────────────────────────
-function switchNotationTab(tab) {
-  const movesContent = document.getElementById('notation-tab-moves-content');
-  if (movesContent) movesContent.classList.remove('hidden');
-}
-
-function switchRightColumnView(view) {
-  const handTabBtn = document.getElementById('right-col-tab-hand');
-  const movesTabBtn = document.getElementById('right-col-tab-moves');
-  const handContainer = document.getElementById('british-hand-container');
-  const notationPanel = document.getElementById('notation-panel');
-
-  if (view === 'hand') {
-    if (handTabBtn) handTabBtn.classList.add('active');
-    if (movesTabBtn) movesTabBtn.classList.remove('active');
-    if (handContainer) handContainer.classList.remove('hidden');
-    if (notationPanel) notationPanel.classList.remove('active-in-right-col');
-  } else {
-    if (movesTabBtn) movesTabBtn.classList.add('active');
-    if (handTabBtn) handTabBtn.classList.remove('active');
-    if (handContainer) handContainer.classList.add('hidden');
-    if (notationPanel) notationPanel.classList.add('active-in-right-col');
-  }
-}
-
-function switchMobileFactionTab(tab) {
-  const bTab = document.getElementById('mobile-tab-british');
-  const mTab = document.getElementById('mobile-tab-mysore');
-  const movesTab = document.getElementById('mobile-tab-moves');
-  const bCol = document.getElementById('british-column');
-  const mCol = document.getElementById('mysore-column');
-  const notPanel = document.getElementById('notation-panel');
-
-  if (bTab) bTab.classList.remove('active-tab');
-  if (mTab) mTab.classList.remove('active-tab');
-  if (movesTab) movesTab.classList.remove('active-tab');
-
-  if (tab === 'british') {
-    if (bTab) bTab.classList.add('active-tab');
-    if (bCol) bCol.classList.remove('mobile-hidden');
-    if (mCol) mCol.classList.add('mobile-hidden');
-    if (notPanel) notPanel.classList.remove('mobile-active');
-  } else if (tab === 'mysore') {
-    if (mTab) mTab.classList.add('active-tab');
-    if (mCol) mCol.classList.remove('mobile-hidden');
-    if (bCol) bCol.classList.add('mobile-hidden');
-    if (notPanel) notPanel.classList.remove('mobile-active');
-  } else if (tab === 'moves') {
-    if (movesTab) movesTab.classList.add('active-tab');
-    if (bCol) bCol.classList.add('mobile-hidden');
-    if (mCol) mCol.classList.add('mobile-hidden');
-    if (notPanel) notPanel.classList.add('mobile-active');
-  }
 }
 
 function handleLocalGameUpdate(data) {
@@ -2874,105 +1176,19 @@ function handleLocalGameUpdate(data) {
   }
 }
 
-let aiEngineMode = localStorage.getItem('tiger_day_ai_engine') || 'wasm'; // 'wasm' | 'server'
-
-function playMoveSound(moveIdx, nextState, finalState, trajectory) {
-  if (!window.TDSound) return;
-  const winner = getStateWinner(finalState || nextState);
-  if (winner !== 0) {
-    const isMysore = winner === -1;
-    if (matchMode === 'human_vs_ai' || matchMode === 'p2p_multiplayer') {
-      const isHumanWinner = (winner === 1 && humanPlayerSide === 'british') ||
-                            (winner === -1 && humanPlayerSide === 'mysore');
-      if (isHumanWinner) {
-        TDSound.playWin(isMysore);
-      } else {
-        TDSound.playDefeat();
-      }
-    } else {
-      TDSound.playWin(isMysore);
-    }
-    return;
-  }
-  const action = (TDEngine.ACTION_DISPATCH && TDEngine.ACTION_DISPATCH[moveIdx]) || null;
-  if (action) {
-    const name = action.name;
-    if (name === 'P') {
-      TDSound.playCardPlay();
-      return;
-    }
-    if (['FA', 'SM', 'MS', 'CR'].includes(name) || (nextState && (nextState.attacker !== 0 || nextState.defender !== 0))) {
-      TDSound.playSiegeClash();
-      return;
-    }
-    if (trajectory && trajectory.some(t => t && t.type && String(t.type).toLowerCase().includes('discard'))) {
-      TDSound.playLuckDiscard();
-      return;
-    }
-    if (['M', 'DR', 'FM', 'ST', 'RN'].includes(name)) {
-      TDSound.playMarch();
-      return;
-    }
-  }
-  TDSound.playClick();
-}
-
 async function triggerAiMove() {
   if (!currentGameState || getStateWinner(currentGameState) !== 0) return;
-
-  let bestMove = null;
-
-  if (aiEngineMode === 'server') {
-    updateConnectionPill('waiting', '⬤ AI THINKING (SERVER)…');
-    try {
-      const resp = await fetch('/api/play-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          state_str: currentGameState.toString(),
-          simulations: mctsEngine.simulations || 800
-        })
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        if (typeof data.move === 'number') {
-          bestMove = data.move;
-        }
-      } else {
-        throw new Error(`Server returned ${resp.status}`);
-      }
-    } catch (err) {
-      console.warn("Server AI unreachable, falling back to client-side WASM:", err);
-      showToast("Server AI unavailable, falling back to local WASM.", "warning");
-      bestMove = null;
-    }
-  }
-
-  if (bestMove === null) {
-    updateConnectionPill('waiting', '⬤ AI THINKING (WASM)…');
-    try {
-      const res = await mctsEngine.findMove(currentGameState, 0.0);
-      bestMove = res.bestMove;
-    } catch (err) {
-      console.error("AI execution error:", err);
-      updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
-      return;
-    }
-  }
+  updateConnectionPill('waiting', '⬤ AI THINKING (WASM)…');
 
   try {
-    const stateBefore = currentGameState.copy();
-    const nextState = TDEngine.getNextState(currentGameState, bestMove);
-    const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(nextState);
-    currentGameState = finalState;
-
-    recordMoveInHistory(stateBefore, bestMove, nextState, finalState);
-    playMoveSound(bestMove, nextState, finalState, trajectory);
+    const { bestMove } = await mctsEngine.findMove(currentGameState, 0.0);
+    
+    currentGameState = TDEngine.getNextState(currentGameState, bestMove);
+    currentGameState = TDEngine.resolveLuck(currentGameState);
 
     const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
     updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
     handleLocalGameUpdate(gameData);
-    renderNotationPanel();
   } catch (err) {
     console.error("AI execution error:", err);
     updateConnectionPill('connected', '⬤ CLIENT READY (OFFLINE)');
@@ -2981,16 +1197,11 @@ async function triggerAiMove() {
 
 window.applyMove = function(moveIdx) {
   if (!currentGameState) return;
-  if (isViewingHistory) return;
 
   try {
-    const stateBefore = currentGameState.copy();
-    const nextState = TDEngine.getNextState(currentGameState, moveIdx);
-    const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(nextState);
+    currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
+    const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(currentGameState);
     currentGameState = finalState;
-
-    recordMoveInHistory(stateBefore, moveIdx, nextState, finalState);
-    playMoveSound(moveIdx, nextState, finalState, trajectory);
 
     if (matchMode === 'p2p_multiplayer') {
       multiplayerManager.sendMove(moveIdx, trajectory, currentGameState.toString());
@@ -2998,7 +1209,6 @@ window.applyMove = function(moveIdx) {
 
     const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
     handleLocalGameUpdate(gameData);
-    renderNotationPanel();
   } catch (err) {
     console.error("Error applying move:", err);
     showToast("Failed to apply move.", 'error');
@@ -3009,11 +1219,6 @@ function initGame() {
   renderEdges();
   window.renderNodes();
 
-  gameHistory = [];
-  isViewingHistory = false;
-  browsingHistoryIndex = -1;
-  liveGameState = null;
-
   currentGameState = new GameState();
   currentGameState.default_setup();
   currentGameState = TDEngine.resolveLuck(currentGameState);
@@ -3022,7 +1227,7 @@ function initGame() {
 
   const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
   handleLocalGameUpdate(gameData);
-  renderNotationPanel();
+  updateConnectionPill('connected', '⬤ CLIENT READY (100% OFFLINE)');
 }
 
 // ==========================================================================
@@ -3032,8 +1237,6 @@ function handleGameModeChange(newMode) {
   matchMode = newMode;
   const p2pPanel = document.getElementById('multiplayer-panel');
   const humanSideRow = document.getElementById('human-side-row');
-  const infoMode = document.getElementById('info-mode-label');
-  if (infoMode) infoMode.textContent = `Mode: ${newMode.replace(/_/g, ' ').toUpperCase()}`;
 
   if (newMode === 'p2p_multiplayer') {
     if (p2pPanel) p2pPanel.classList.remove('hidden');
@@ -3084,24 +1287,19 @@ function setupMultiplayerCallbacks() {
   multiplayerManager.onMoveReceived = (moveIdx, luckTrajectory, stateStr) => {
     showToast("Opponent moved!", 'info');
     if (currentGameState) {
-      const stateBefore = currentGameState.copy();
-      let nextState = null;
       if (stateStr) {
         try {
           currentGameState = new GameState().read_str(stateStr);
         } catch (e) {
-          nextState = TDEngine.getNextState(currentGameState, moveIdx);
-          currentGameState = TDEngine.applyLuckTrajectory(nextState, luckTrajectory);
+          currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
+          currentGameState = TDEngine.applyLuckTrajectory(currentGameState, luckTrajectory);
         }
       } else {
-        nextState = TDEngine.getNextState(currentGameState, moveIdx);
-        currentGameState = TDEngine.applyLuckTrajectory(nextState, luckTrajectory);
+        currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
+        currentGameState = TDEngine.applyLuckTrajectory(currentGameState, luckTrajectory);
       }
-      recordMoveInHistory(stateBefore, moveIdx, nextState, currentGameState);
-      playMoveSound(moveIdx, nextState, currentGameState, luckTrajectory);
       const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
       handleLocalGameUpdate(gameData);
-      renderNotationPanel();
     }
   };
 
@@ -3111,7 +1309,6 @@ function setupMultiplayerCallbacks() {
         currentGameState = new GameState().read_str(stateStr);
         const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
         handleLocalGameUpdate(gameData);
-        renderNotationPanel();
       } catch (e) {
         console.warn("State sync parse error:", e);
       }
@@ -3126,46 +1323,25 @@ function setupMultiplayerCallbacks() {
   multiplayerManager.onResignReceived = (resigningSide) => {
     const winnerVal = resigningSide === 'british' ? -1 : 1;
     const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
-    if (window.TDSound) {
-      TDSound.playWin(winnerVal === -1);
-    }
     showToast(`Opponent (${resigningSide.toUpperCase()}) resigned! ${winnerName} wins!`, 'success');
 
     const header = document.getElementById('turn-header');
     const counter = document.getElementById('turn-counter');
     const title = document.getElementById('turn-phase-title');
+    const icon = document.getElementById('turn-phase-icon');
 
-    if (header) {
+    if (header && counter && title && icon) {
       header.className = winnerVal === 1
-        ? 'app-header british-phase victory-state'
-        : 'app-header mysore-phase victory-state';
+        ? 'turn-header british-phase victory-state'
+        : 'turn-header mysore-phase victory-state';
+      counter.textContent = 'GAME OVER';
+      title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
+      icon.textContent = winnerVal === 1 ? '🦁' : '🐅';
     }
-    if (counter) counter.textContent = 'GAME OVER';
-    if (title) title.textContent = `${resigningSide.toUpperCase()} RESIGNED — ${winnerName} VICTORY`;
 
     currentMoves = [];
     updateActionButtons();
     clearAllInteractionState();
-    renderNotationPanel();
-  };
-
-  multiplayerManager.onDrawOfferReceived = (offeringSide) => {
-    const accept = confirm(`Opponent (${offeringSide.toUpperCase()}) offered a draw. Accept peace treaty?`);
-    if (accept) {
-      multiplayerManager.sendAcceptDraw();
-      declareDraw("Draw agreed mutually with opponent!");
-    } else {
-      multiplayerManager.sendDeclineDraw();
-      showToast("You declined the draw offer.", "info");
-    }
-  };
-
-  multiplayerManager.onDrawAcceptedReceived = () => {
-    declareDraw("Opponent accepted your draw offer! Match drawn.");
-  };
-
-  multiplayerManager.onDrawDeclinedReceived = () => {
-    showToast("Opponent declined your draw offer.", "info");
   };
 
   multiplayerManager.onError = (err) => {
@@ -3255,221 +1431,6 @@ function resetGamePrompt() {
 }
 
 // ==========================================================================
-// GUIDED TUTORIAL, LORE CODEX, LOBBY & REPLAY HANDLERS (P6 Initiatives)
-// ==========================================================================
-
-function startGuidedTutorial() {
-  if (window.TDTutorial) {
-    window.TDTutorial.start(0);
-    showToast("Interactive Tutorial started! Follow the guided objectives.", "info");
-  }
-}
-
-function openLoreCodex() {
-  if (window.TDLore) {
-    window.TDLore.showLoreModal();
-  }
-}
-
-function openLobbyModal() {
-  const modal = document.getElementById('lobby-browser-modal');
-  if (modal) {
-    modal.classList.add('visible');
-    refreshLobbyRooms();
-  }
-}
-
-function closeLobbyModal(e) {
-  if (e && e.target && !e.target.classList.contains('lobby-modal-backdrop') && !e.target.classList.contains('lobby-modal-close')) {
-    return;
-  }
-  const modal = document.getElementById('lobby-browser-modal');
-  if (modal) {
-    modal.classList.remove('visible');
-  }
-}
-
-async function refreshLobbyRooms() {
-  const tbody = document.getElementById('lobby-rooms-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #a89f91; padding: 12px;">Fetching active rooms...</td></tr>`;
-
-  try {
-    const rooms = await multiplayerManager.fetchPublicRooms();
-    if (!rooms || rooms.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #a89f91; padding: 16px;">No public rooms active. Click "Host Room" or "Find Match" to start!</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = rooms.map(r => `
-      <tr>
-        <td><strong style="color: #fef08a;">${r.room_id}</strong></td>
-        <td>${r.clients_count || 1} / 2 ${r.spectators_count ? `(+${r.spectators_count} 👁)` : ''}</td>
-        <td><span style="color: ${r.clients_count >= 2 ? '#f87171' : '#34d399'}; font-size: 0.76rem; font-weight: 700;">${r.clients_count >= 2 ? 'In Progress' : 'Waiting'}</span></td>
-        <td>
-          ${r.clients_count < 2
-            ? `<button class="primary-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="joinLobbyRoom('${r.room_id}')">Join</button>`
-            : `<button class="secondary-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="spectateLobbyRoom('${r.room_id}')">Spectate</button>`
-          }
-        </td>
-      </tr>
-    `).join('');
-  } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #f87171; padding: 12px;">Failed to connect to lobby server.</td></tr>`;
-  }
-}
-
-async function handleQuickMatchQueue() {
-  const btn = document.getElementById('btn-quick-match');
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = 'Searching...';
-  }
-
-  setupMultiplayerCallbacks();
-  try {
-    showToast("Searching for ranked matchmaking opponent...", "info");
-    await multiplayerManager.joinMatchmakingQueue(1500, null);
-    closeLobbyModal();
-    showToast("Match found! Entering battle...", "success");
-  } catch (err) {
-    showToast("Matchmaking failed or timed out.", "error");
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = 'Find Match';
-    }
-  }
-}
-
-async function joinLobbyRoom(code) {
-  setupMultiplayerCallbacks();
-  closeLobbyModal();
-  try {
-    await multiplayerManager.joinGame(code);
-    showToast(`Joining room ${code}...`, 'info');
-  } catch (err) {
-    showToast("Failed to join room.", 'error');
-  }
-}
-
-async function spectateLobbyRoom(code) {
-  setupMultiplayerCallbacks();
-  closeLobbyModal();
-  try {
-    await multiplayerManager.connectWebSocketRelay(code, true);
-    showToast(`Spectating match in ${code}`, 'info');
-  } catch (err) {
-    showToast("Failed to spectate room.", 'error');
-  }
-}
-
-function handleExportTDR() {
-  if (!gameHistory || gameHistory.length === 0) {
-    showToast("No moves to export yet. Play some moves first!", "warning");
-    return;
-  }
-  if (!window.TDReplay) {
-    showToast("Replay module not loaded.", "error");
-    return;
-  }
-
-  const moves = gameHistory.map(h => h.moveIdx);
-  const currentS = typeof currentGameState !== 'undefined' ? currentGameState : null;
-  const getWinnerFn = typeof getStateWinner === 'function' ? getStateWinner : (window.TDEngine && window.TDEngine.getStateWinner);
-  const winnerVal = (getWinnerFn && currentS) ? getWinnerFn(currentS) : 0;
-  const winnerStr = winnerVal === 1 ? "british" : (winnerVal === -1 ? "mysore" : "draw");
-  const filename = `tigers_day_match_${Date.now()}.tdr`;
-
-  const options = {
-    british: (humanPlayerSide === 'british' && matchMode === 'human_vs_ai') ? 'Human (British)' : (matchMode === 'human_vs_ai' ? 'AlphaTiger AI' : 'British Commander'),
-    mysore: (humanPlayerSide === 'mysore' && matchMode === 'human_vs_ai') ? 'Human (Mysore)' : (matchMode === 'human_vs_ai' ? 'AlphaTiger AI' : 'Mysore Commander'),
-    winner: winnerStr,
-    algebraic: gameHistory.map(h => h.notation).join(' '),
-    filename: filename,
-    scenario: typeof currentScenario !== 'undefined' ? currentScenario : 'standard',
-    metadata: {
-      match_mode: matchMode,
-      total_moves: gameHistory.length,
-      exported_at: new Date().toISOString()
-    }
-  };
-
-  try {
-    window.TDReplay.exportTDR(moves, options);
-    showToast(`Replay exported: ${filename}`, "success");
-  } catch (err) {
-    console.error("Export error:", err);
-    showToast(`Export failed: ${err.message}`, "error");
-  }
-}
-
-function handleImportTDR(event) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) return;
-
-  if (!window.TDReplay) {
-    showToast("Replay module not loaded.", "error");
-    event.target.value = '';
-    return;
-  }
-
-  window.TDReplay.loadFromFile(file, (err, replay) => {
-    event.target.value = ''; // Reset file input so same file can be reloaded
-    if (err || !replay || !Array.isArray(replay.moves)) {
-      showToast(`Failed to parse replay: ${err ? err.message : 'Invalid structure'}`, "error");
-      return;
-    }
-
-    if (replay.moves.length === 0) {
-      showToast("Replay file contains no moves.", "warning");
-      return;
-    }
-
-    // Switch to local review mode so AI does not make conflicting moves
-    matchMode = 'local_pass_and_play';
-    players = { british: 'human', mysore: 'human' };
-    const infoMode = document.getElementById('info-mode-label');
-    if (infoMode) infoMode.textContent = 'Mode: REPLAY REVIEW';
-
-    // Reset game state to start
-    initGame();
-
-    // Replay each move in sequence to populate history
-    let appliedCount = 0;
-    for (let i = 0; i < replay.moves.length; i++) {
-      const m = replay.moves[i];
-      const moveIdx = typeof m === 'number' ? m : (m && typeof m.moveIdx === 'number' ? m.moveIdx : -1);
-      if (moveIdx >= 0 && moveIdx < 959) {
-        try {
-          const stateBefore = currentGameState.copy();
-          const nextState = TDEngine.getNextState(currentGameState, moveIdx);
-          const { finalState, trajectory } = TDEngine.resolveLuckWithTrajectory(nextState);
-          currentGameState = finalState;
-          recordMoveInHistory(stateBefore, moveIdx, nextState, finalState);
-          appliedCount++;
-        } catch (moveErr) {
-          console.warn(`Move #${i + 1} (${moveIdx}) could not be applied:`, moveErr);
-          break;
-        }
-      }
-    }
-
-    // Update board display and notation table
-    const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
-    handleLocalGameUpdate(gameData);
-    renderNotationPanel();
-
-    showToast(`Replay loaded: ${appliedCount} moves`, "success");
-
-    // Open historical review at the final position
-    if (gameHistory.length > 0) {
-      viewHistoricalStep(gameHistory.length - 1);
-    }
-  });
-}
-
-// ==========================================================================
 // 13. FLOATING TOOLTIPS & TOAST NOTIFICATIONS
 // ==========================================================================
 const tooltip = document.getElementById('tooltip');
@@ -3481,33 +1442,10 @@ function tooltipShow(e, name, data) {
   const armyLabel = { active: '⚔ Fresh Army', tired: '😴 Tired Army', fort: '🏰 Fort', empty: 'Empty' };
 
   let extra = '';
-  if (data.key) extra += ' · ⬛ Key City';
-  if (data.coast) extra += ' · 🌊 Port';
+  if (data.key) extra += ' · ⬛ Key';
+  if (data.coast) extra += ' · 🌊 Coast';
 
-  let loreSnippet = '';
-  if (window.TDLore) {
-    const lore = window.TDLore.getLore(name);
-    if (lore) {
-      loreSnippet = `
-        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(212,163,89,0.3); font-size: 0.72rem; color: #ded6c9;">
-          <div style="color: #fef08a; font-style: italic; margin-bottom: 2px;">${lore.title}</div>
-          <div style="color: #a7f3d0; margin-bottom: 3px;"><strong>Intel:</strong> ${lore.tactical}</div>
-          <div style="color: #a89f91; font-size: 0.68rem;">Adjacency: ${lore.connections.join(', ')}</div>
-        </div>
-      `;
-    }
-  }
-
-  tooltip.innerHTML = `
-    <div style="font-family: inherit;">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
-        <b style="font-size: 0.88rem; color: #fff;">${name}</b>
-        <span style="font-size: 0.7rem; color: #d4a359;">${extra}</span>
-      </div>
-      <div style="color: #e5a93c; font-size: 0.76rem; margin-top: 2px;">${owner} · ${armyLabel[armyType] || ''}</div>
-      ${loreSnippet}
-    </div>
-  `;
+  tooltip.innerHTML = `<b>${name}</b><span style="color:#6a4c1e;">${owner} · ${armyLabel[armyType] || ''}${extra}</span>`;
   tooltip.classList.add('show');
   tooltip.style.left = (e.clientX + 14) + 'px';
   tooltip.style.top = (e.clientY + 14) + 'px';
@@ -3532,97 +1470,69 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
-function getNodeByNameOrIndex(val) {
-  if (val === undefined || val === null || val === 'None' || val === -1) return null;
-  if (typeof val === 'string' && window.NODES && window.NODES[val]) return window.NODES[val];
-  const idx = typeof val === 'number' ? val : parseInt(val, 10);
-  if (!isNaN(idx)) {
-    const indexMap = (window.TDConstants && window.TDConstants.INDEX_MAP) || {
-      0: "Bombay", 1: "Hyderabad", 2: "Madras", 3: "Seringapatam", 4: "Coimbatore",
-      5: "Satara", 6: "Raichur", 7: "Masulipatam", 8: "Goa", 9: "Darwar",
-      10: "Anantapur", 11: "Chitaldoorg", 12: "Mangalore", 13: "Bangalore", 14: "Vellore",
-      15: "Mahé", 16: "Pondicherry", 17: "Erode", 18: "Trichy", 19: "Alwaye",
-      20: "Dindigul", 21: "Ramnad", 22: "Travancore", 23: "Ceylon", 24: "Poona"
-    };
-    const name = indexMap[idx];
-    if (name && window.NODES && window.NODES[name]) return window.NODES[name];
-  }
-  return null;
-}
-
 function renderBattleMarker(uiState) {
   const layer = document.getElementById('battle-layer');
   if (!layer) return;
   layer.innerHTML = '';
 
-  if (!uiState) return;
+  if (!uiState || uiState.attacker === 'None' || uiState.defender === 'None') return;
 
-  const defNode = getNodeByNameOrIndex(uiState.defender);
-  const attNode = getNodeByNameOrIndex(uiState.attacker);
+  const attNode = window.NODES[uiState.attacker];
+  const defNode = window.NODES[uiState.defender];
+  if (!attNode || !defNode) return;
 
-  if (!defNode && !attNode) return;
+  const mx = (attNode.x + defNode.x) / 2;
+  const my = (attNode.y + defNode.y) / 2;
 
-  // Position between attacker & defender, or directly over the defending fort
-  let mx, my;
-  if (attNode && defNode) {
-    mx = (attNode.x + defNode.x) / 2;
-    my = (attNode.y + defNode.y) / 2;
-  } else if (defNode) {
-    mx = defNode.x;
-    my = defNode.y;
-  } else {
-    mx = attNode.x;
-    my = attNode.y;
-  }
-
-  if (isNaN(mx) || isNaN(my)) return;
-
-  const netVal = uiState.net_strength || 0;
-  const sign = netVal > 0 ? `+${netVal}` : `${netVal}`;
+  const netVal = Math.abs(uiState.net_strength);
+  const textStr = `${netVal}`;
 
   const styles = getComputedStyle(document.body);
-  const britishRed = styles.getPropertyValue('--british-red').trim() || '#c0281a';
-  const mysoreGreen = styles.getPropertyValue('--mysore-green').trim() || '#2e7a2e';
+  const britishRed = styles.getPropertyValue('--british-red').trim();
+  const mysoreGreen = styles.getPropertyValue('--mysore-green').trim();
+
   const battleColor = netVal > 0 ? britishRed : mysoreGreen;
 
-  // Outer group handles map translation coordinates (immune to CSS transform keyframes)
-  const posGroup = document.createElementNS(SVG_NS, 'g');
-  posGroup.setAttribute('transform', `translate(${mx},${my})`);
-  posGroup.setAttribute('id', 'active-battle-marker');
+  const g = document.createElementNS(SVG_NS, 'g');
+  g.setAttribute('transform', `translate(${mx},${my})`);
+  g.setAttribute('class', 'battle-map-marker'); 
 
-  // Inner group handles pulse/scale animation and drop-shadow
-  const animGroup = document.createElementNS(SVG_NS, 'g');
-  animGroup.setAttribute('class', 'battle-map-marker');
-  animGroup.setAttribute('filter', 'url(#nshadow)');
+  const icon = document.createElementNS(SVG_NS, 'text');
+  icon.setAttribute('text-anchor', 'middle');
+  icon.setAttribute('dominant-baseline', 'central'); // Precise vertical centering
+  icon.setAttribute('font-size', '42'); // Larger icon as the text is centered *on* it
+  // Apply minor drop shadow filter defined in svg defs for overall pop
+  icon.setAttribute('filter', 'url(#nshadow)'); 
+  icon.textContent = '⚔️';
+  g.appendChild(icon);
 
-  animGroup.innerHTML = `
-    <!-- Crossed Steel Swords -->
-    <line x1="-24" y1="-24" x2="24" y2="24" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round"/>
-    <line x1="24" y1="-24" x2="-24" y2="24" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round"/>
-    <circle cx="-24" cy="-24" r="3.2" fill="#ca8a04"/>
-    <circle cx="24" cy="-24" r="3.2" fill="#ca8a04"/>
-    <!-- Battle Shield -->
-    <path d="M-18,-16 L18,-16 L20,6 Q18,22 0,28 Q-18,22 -20,6 Z" fill="#14100c" stroke="#eab308" stroke-width="1.8"/>
-    <!-- Shield Header -->
-    <text x="0" y="-8" text-anchor="middle" font-family="Cinzel,serif" font-size="7" font-weight="700" fill="#eab308" letter-spacing="1">SIEGE</text>
-    <!-- Net Combat Value -->
-    <text x="0" y="9" text-anchor="middle" font-family="Cinzel,serif" font-size="16" font-weight="900" fill="${battleColor}">${sign}</text>
-    <text x="0" y="19" text-anchor="middle" font-family="Cinzel,serif" font-size="5.5" font-weight="600" fill="#a89470">NET</text>
-  `;
+  const makeText = (isHalo) => {
+    const t = document.createElementNS(SVG_NS, 'text');
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('dominant-baseline', 'central'); // Align with icon center
+    t.setAttribute('font-family', 'Cinzel, serif'); // Keeping historic font
+    t.setAttribute('font-size', '28');
+    t.setAttribute('font-weight', '700');
 
-  posGroup.appendChild(animGroup);
-  layer.appendChild(posGroup);
+    if (isHalo) {
+      t.setAttribute('stroke', '#1a1208'); 
+      t.setAttribute('stroke-width', '3');
+      t.setAttribute('fill', 'none');
+    } else {
+      t.setAttribute('fill', battleColor); 
+    }
+    t.textContent = textStr;
+    return t;
+  };
+
+  // Add halo first (bottom), then filled text (top)
+  g.appendChild(makeText(true)); 
+  g.appendChild(makeText(false)); 
+
+  layer.appendChild(g);
 }
 
 function syncUIStateOnLoad() {
-  // 0. Initialize Selected Visual Theme & Unit Token Style
-  if (typeof initTheme === 'function') {
-    initTheme();
-  }
-  if (typeof initTokenStyle === 'function') {
-    initTokenStyle();
-  }
-
   // 1. Sync MCTS Simulations
   const simsSlider = document.getElementById('mcts-sims-slider');
   if (simsSlider && typeof handleSimsSliderInput === 'function') {
@@ -3652,401 +1562,10 @@ function syncUIStateOnLoad() {
   if (modeSelect && typeof handleGameModeChange === 'function') {
     handleGameModeChange(modeSelect.value);
   }
-
-  // 6. Sync AI Inference Engine Mode
-  const aiSelect = document.getElementById('ai-engine-select');
-  if (aiSelect) {
-    aiSelect.value = aiEngineMode;
-  }
-
-  // 7. Sync Sound Settings
-  const soundToggle = document.getElementById('sound-toggle-checkbox');
-  const savedSound = localStorage.getItem('tiger_day_sound_enabled');
-  if (soundToggle) {
-    soundToggle.checked = savedSound !== 'false';
-    if (window.TDSound) TDSound.setMuted(!soundToggle.checked);
-  }
-  const soundSlider = document.getElementById('sound-volume-slider');
-  const soundLabel = document.getElementById('sound-volume-label');
-  const savedVol = localStorage.getItem('tiger_day_sound_volume') || '50';
-  if (soundSlider) {
-    soundSlider.value = savedVol;
-    if (soundLabel) soundLabel.textContent = `${savedVol}%`;
-    if (window.TDSound) TDSound.setVolume(Number(savedVol) / 100);
-  }
-
-  // 8. Sync Influence Toggle
-  const influenceToggle = document.getElementById('influence-toggle-checkbox');
-  if (influenceToggle) {
-    influenceToggle.checked = settings.showInfluence;
-  }
-
-  // 9. Sync Top-K Candidates Selector
-  const topKSelect = document.getElementById('top-k-candidates-select');
-  if (topKSelect) {
-    topKSelect.value = String(settings.topKCandidates || 3);
-  }
-
-  // 10. Sync Candidate Arrows Checkbox
-  const arrowsCheckbox = document.getElementById('show-candidate-arrows-checkbox');
-  if (arrowsCheckbox) {
-    arrowsCheckbox.checked = settings.showCandidateArrows !== false;
-  }
-
-  // 11. Sync Candidate Lines Collapsed State
-  const isCollapsed = localStorage.getItem('tiger_candidate_lines_collapsed') === 'true';
-  const section = document.getElementById('engine-analysis-section');
-  if (section && isCollapsed) {
-    section.classList.add('collapsed');
-  }
-}
-
-// ──────────────────────────────────────────────────────────────────────────
-// SOUND & ENGINE SETTINGS HANDLERS
-// ──────────────────────────────────────────────────────────────────────────
-window.handleAiEngineChange = async function(mode) {
-  aiEngineMode = mode;
-  localStorage.setItem('tiger_day_ai_engine', mode);
-  if (mode === 'webgpu' && typeof mctsEngine !== 'undefined') {
-    showToast('Initializing WebGPU Execution Provider...', 'info');
-    await mctsEngine.initModel('webgpu');
-    showToast(`Inference Engine: ${mctsEngine.activeProvider.toUpperCase()}`, 'info');
-  } else if (mode === 'wasm' && typeof mctsEngine !== 'undefined') {
-    await mctsEngine.initModel('wasm');
-    showToast('Inference Engine: Client-Side WASM', 'info');
-  } else {
-    showToast('Inference Engine: Server API (FastAPI)', 'info');
-  }
-};
-
-window.handleScenarioChange = function(scenarioKey) {
-  if (!window.TDScenarios) return;
-  const scState = TDScenarios.createScenarioState(scenarioKey);
-  if (scState) {
-    currentGameState = scState;
-    currentBitString = scState.to_str();
-    historyStack = [];
-    historyIndex = -1;
-    saveStateToHistory(currentGameState, null, 'Campaign Scenario Initialized');
-    if (typeof window.renderNodes === 'function') window.renderNodes();
-    if (typeof renderAllCards === 'function') renderAllCards();
-    if (typeof updateTurnHeader === 'function') updateTurnHeader();
-    const sc = TDScenarios.CAMPAIGN_SCENARIOS[scenarioKey];
-    if (sc) {
-      showToast(`Campaign Loaded: ${sc.name} (${sc.year})`, 'info');
-      const sub = document.getElementById('cartouche-sub');
-      if (sub) sub.textContent = `${sc.year} · ${sc.name}`;
-    }
-  }
-};
-
-window.handleInfluenceToggle = function(enabled) {
-  settings.showInfluence = !!enabled;
-  localStorage.setItem('tiger_day_show_influence', enabled ? 'true' : 'false');
-  updateInfluenceOverlay();
-};
-
-function updateInfluenceOverlay() {
-  const nodeLayer = document.getElementById('node-layer');
-  if (!nodeLayer) return;
-
-  const oldRings = nodeLayer.querySelectorAll('.influence-aura');
-  oldRings.forEach(r => r.remove());
-
-  if (!settings.showInfluence || !currentGameState || !window.TDAnalytics) return;
-
-  const nodeNames = Object.keys(window.NODES);
-  const adjacencies = [];
-  if (typeof EDGES !== 'undefined' && Array.isArray(EDGES)) {
-    for (const edge of EDGES) {
-      const u = nodeNames.indexOf(edge[0]);
-      const v = nodeNames.indexOf(edge[1]);
-      if (u !== -1 && v !== -1) {
-        adjacencies.push([u, v]);
-      }
-    }
-  }
-
-  const influence = TDAnalytics.computeTerritoryInfluence(currentGameState, adjacencies);
-
-  nodeNames.forEach((name, idx) => {
-    const group = document.getElementById(`node-group-${name.replace(/[^a-zA-Z0-9]/g, '_')}`);
-    if (!group) return;
-
-    const inf = influence[idx];
-    if (Math.abs(inf) < 0.1) return;
-
-    const aura = document.createElementNS(SVG_NS, 'circle');
-    aura.setAttribute('class', 'influence-aura');
-    aura.setAttribute('r', '24');
-    aura.setAttribute('pointer-events', 'none');
-
-    if (inf > 0.25) {
-      aura.classList.add('influence-aura-british');
-      aura.setAttribute('stroke-opacity', String(Math.min(1.0, inf)));
-    } else if (inf < -0.25) {
-      aura.classList.add('influence-aura-mysore');
-      aura.setAttribute('stroke-opacity', String(Math.min(1.0, Math.abs(inf))));
-    } else {
-      aura.classList.add('influence-aura-contested');
-    }
-
-    group.insertBefore(aura, group.firstChild);
-  });
-}
-
-window.handleSoundToggle = function(enabled) {
-  if (window.TDSound) {
-    TDSound.setMuted(!enabled);
-  }
-  localStorage.setItem('tiger_day_sound_enabled', enabled ? 'true' : 'false');
-};
-
-window.handleSoundVolumeInput = function(val) {
-  const vol = Number(val) / 100;
-  if (window.TDSound) {
-    TDSound.setVolume(vol);
-  }
-  const label = document.getElementById('sound-volume-label');
-  if (label) label.textContent = `${val}%`;
-  localStorage.setItem('tiger_day_sound_volume', String(val));
-};
-
-// ──────────────────────────────────────────────────────────────────────────
-// UNDO MOVE & KEYBOARD ACCESSIBILITY
-// ──────────────────────────────────────────────────────────────────────────
-function undoMove() {
-  if (matchMode === 'p2p_multiplayer') {
-    showToast("Cannot undo in multiplayer mode.", "warning");
-    return;
-  }
-  if (isViewingHistory) {
-    returnToLiveGame();
-    return;
-  }
-  if (!gameHistory || gameHistory.length === 0) {
-    showToast("No moves to undo.", "info");
-    return;
-  }
-  let stepsToUndo = 1;
-  if (matchMode === 'human_vs_ai' && gameHistory.length >= 2) {
-    stepsToUndo = 2;
-  }
-  let targetStateStr = null;
-  while (stepsToUndo > 0 && gameHistory.length > 0) {
-    const popped = gameHistory.pop();
-    targetStateStr = popped.stateBeforeStr;
-    stepsToUndo--;
-  }
-  if (targetStateStr) {
-    currentGameState = new GameState();
-    currentGameState.read_str(targetStateStr);
-    const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
-    handleLocalGameUpdate(gameData);
-    renderNotationPanel();
-    showToast("Move undone.", "info");
-  }
-}
-window.undoMove = undoMove;
-
-window.addEventListener('keydown', (e) => {
-  const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-
-  if (e.key === 'Escape') {
-    const settingsDrawer = document.getElementById('settings-drawer');
-    if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
-      settingsDrawer.classList.add('hidden');
-    }
-    const tutorialDrawer = document.getElementById('tutorial-drawer');
-    if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-      tutorialDrawer.classList.add('hidden');
-    }
-    selectedNode = null;
-    clearTargetCircles();
-    clearMovementLines();
-    if (isViewingHistory) returnToLiveGame();
-  } else if (e.key === 'ArrowLeft') {
-    stepHistoryPrev();
-  } else if (e.key === 'ArrowRight') {
-    stepHistoryNext();
-  } else if (e.key === 'z' || e.key === 'Z') {
-    undoMove();
-  } else if (e.key === 'r' || e.key === 'R') {
-    if (currentMoves) {
-      const restMove = currentMoves.find(m => m.type === 'Rest' || m.desc === 'Rest');
-      if (restMove) window.applyMove(restMove.idx);
-    }
-  } else if (e.key === 'p' || e.key === 'P') {
-    if (currentMoves) {
-      const passMove = currentMoves.find(m => m.type === 'Pass' || m.desc === 'Pass');
-      if (passMove) window.applyMove(passMove.idx);
-    }
-  }
-});
-
-// Register PWA Service Worker for 100% offline capability
-if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('PWA ServiceWorker registered:', reg.scope))
-      .catch(err => console.warn('PWA ServiceWorker registration error:', err));
-  });
-}
-
-// ==========================================================================
-// 10. DYNAMIC ZERO-LETTERBOX BOARD AUTO-SIZER
-// Strictly locks the map to 760:880 aspect ratio within available section space.
-// Completely eliminates letterboxing and empty blue boxes on all screen sizes.
-// ==========================================================================
-function adjustBoardDimensions() {
-  const boardSection = document.getElementById('board-section');
-  const boardCard = document.getElementById('board-card');
-  const gameContainer = document.querySelector('.game-container');
-  const gameMiddleArea = document.getElementById('game-middle-area');
-  const playArea = document.getElementById('play-area');
-  if (!boardSection || !boardCard) return;
-
-  const mysoreCol = document.getElementById('mysore-column');
-  const britishCol = document.getElementById('british-column');
-  const notationPanel = document.getElementById('notation-panel');
-  const turnHeader = document.getElementById('turn-header');
-
-  let reservedHeight = 0;
-  const debugConsole = document.getElementById('debug-move-console');
-  if (debugConsole && !debugConsole.classList.contains('hidden') && boardSection.contains(debugConsole)) {
-    reservedHeight += debugConsole.offsetHeight + 6;
-  }
-  // Account for the bottom AI evaluation dock (eval bar + candidate moves)
-  const dock = document.getElementById('bottom-analysis-dock');
-  let dockHeight = 0;
-  if (dock && !dock.classList.contains('hidden')) {
-    dockHeight = dock.offsetHeight;
-    if (dockHeight === 0) {
-      dockHeight = 36;
-      const engineSec = document.getElementById('engine-analysis-section');
-      if (engineSec && !engineSec.classList.contains('hidden')) {
-        dockHeight += engineSec.classList.contains('collapsed') ? 24 : 44;
-      }
-    }
-    reservedHeight += dockHeight + 4;
-  }
-
-  // Detect horizontal desktop layout (Mysore and British cards attached to left & right of board)
-  const isDesktopRow = window.innerWidth >= 1024;
-  const isNotationVisible = isDesktopRow && notationPanel && window.getComputedStyle(notationPanel).display !== 'none';
-
-  let targetWidth, targetHeight;
-  const aspect = 760 / 880;
-
-  if (isDesktopRow) {
-    // 1. Total available height for the game console (fill available viewport height minus header and padding)
-    const headerHeight = turnHeader ? turnHeader.offsetHeight : 36;
-    const bodyPadding = 7; // 3px top + 4px bottom padding on body
-    const viewportAvailHeight = window.innerHeight - headerHeight - bodyPadding;
-    const maxAvailHeight = Math.max(180, viewportAvailHeight - reservedHeight);
-
-    // 2. Total available width for the entire game console (always derived from viewport to prevent ratcheting down)
-    const availScreenWidth = Math.max(320, (window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || 1024) - 16);
-
-    const mysoreWidth = (mysoreCol && window.getComputedStyle(mysoreCol).display !== 'none') ? (mysoreCol.offsetWidth || 270) : 0;
-    const britishWidth = (britishCol && window.getComputedStyle(britishCol).display !== 'none') ? (britishCol.offsetWidth || 270) : 0;
-    const notationWidth = isNotationVisible ? (notationPanel.offsetWidth || 290) : 0;
-
-    // Remaining width available for the map board
-    const maxBoardWidth = Math.max(100, availScreenWidth - mysoreWidth - britishWidth - notationWidth);
-
-    // Priority: The map should take as much vertical space as possible while fitting viewport
-    let proposedHeight = maxAvailHeight;
-    let proposedWidth = proposedHeight * aspect;
-
-    // If the map at full vertical height exceeds the available width, scale down to fit width
-    if (proposedWidth > maxBoardWidth) {
-      proposedWidth = maxBoardWidth;
-      proposedHeight = proposedWidth / aspect;
-    }
-
-    targetWidth = Math.floor(proposedWidth);
-    targetHeight = Math.floor(proposedHeight);
-
-    boardCard.style.width = `${targetWidth}px`;
-    boardCard.style.height = `${targetHeight}px`;
-
-    boardSection.style.width = `${targetWidth}px`;
-    boardSection.style.flex = `0 0 ${targetWidth}px`;
-
-    // Seamlessly match side columns (Mysore & British) to the map height
-    if (mysoreCol) {
-      mysoreCol.style.height = `${targetHeight}px`;
-      mysoreCol.style.maxHeight = `${targetHeight}px`;
-    }
-    if (britishCol) {
-      britishCol.style.height = `${targetHeight}px`;
-      britishCol.style.maxHeight = `${targetHeight}px`;
-    }
-
-    // Moves notation panel height spans the full play area (map + bottom dock) so the bottom is flush
-    const totalPlayAreaHeight = targetHeight + (dockHeight > 0 ? (dockHeight + 4) : 0);
-    if (isNotationVisible && notationPanel) {
-      notationPanel.style.height = `${totalPlayAreaHeight}px`;
-      notationPanel.style.maxHeight = `${totalPlayAreaHeight}px`;
-    }
-
-    // Dynamically scale the top bar (#turn-header) and console to exactly match the total width of all 4 components
-    const totalConsoleWidth = mysoreWidth + targetWidth + britishWidth + notationWidth;
-    if (turnHeader) {
-      turnHeader.style.width = `${totalConsoleWidth}px`;
-      turnHeader.style.maxWidth = `${totalConsoleWidth}px`;
-    }
-    if (gameContainer) {
-      gameContainer.style.width = `${totalConsoleWidth}px`;
-      gameContainer.style.maxWidth = `${totalConsoleWidth}px`;
-    }
-  } else {
-    // Mobile / vertical layout
-    const availWidth = boardSection.clientWidth || (gameMiddleArea ? gameMiddleArea.clientWidth : window.innerWidth);
-    const availHeight = Math.max(100, (boardSection.clientHeight || 500) - reservedHeight);
-    if (availWidth / availHeight > aspect) {
-      targetHeight = availHeight;
-      targetWidth = targetHeight * aspect;
-    } else {
-      targetWidth = availWidth;
-      targetHeight = targetWidth / aspect;
-    }
-    targetWidth = Math.floor(targetWidth);
-    targetHeight = Math.floor(targetHeight);
-
-    boardCard.style.width = `${targetWidth}px`;
-    boardCard.style.height = `${targetHeight}px`;
-    boardSection.style.width = '';
-    boardSection.style.flex = '';
-    if (mysoreCol) { mysoreCol.style.height = ''; mysoreCol.style.maxHeight = ''; }
-    if (britishCol) { britishCol.style.height = ''; britishCol.style.maxHeight = ''; }
-    if (notationPanel) { notationPanel.style.height = ''; notationPanel.style.maxHeight = ''; }
-    if (turnHeader) { turnHeader.style.width = ''; turnHeader.style.maxWidth = ''; }
-    if (gameContainer) { gameContainer.style.width = ''; gameContainer.style.maxWidth = ''; }
-  }
-}
-
-function initBoardResponsiveAutoSizer() {
-  adjustBoardDimensions();
-  const gameContainer = document.querySelector('.game-container');
-  const dock = document.getElementById('bottom-analysis-dock');
-  if (window.ResizeObserver) {
-    const observer = new ResizeObserver(() => {
-      adjustBoardDimensions();
-    });
-    if (gameContainer) observer.observe(gameContainer);
-    if (dock) observer.observe(dock);
-    observer.observe(document.body);
-  }
-  window.addEventListener('resize', adjustBoardDimensions);
-  window.addEventListener('orientationchange', adjustBoardDimensions);
 }
 
 // Start game client on load
 document.addEventListener('DOMContentLoaded', () => {
   syncUIStateOnLoad();
   initGame(); 
-  initBoardResponsiveAutoSizer();
 });

@@ -45,8 +45,8 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
     state, _ , _ = _resolve_luck_log(state, log_file)
     
     # Spin up two separate MCTS brains
-    mcts_mysore = MCTS(model_mysore, depsilon=0)
-    mcts_british = MCTS(model_british, depsilon=0)
+    mcts_mysore = MCTS(model_mysore, simulations=sims_mysore, depsilon=0)
+    mcts_british = MCTS(model_british, simulations=sims_british, depsilon=0)
 
     move_num = 0
     luck_branching_factors = []

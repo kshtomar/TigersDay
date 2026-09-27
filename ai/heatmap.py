@@ -1,7 +1,7 @@
 import argparse
 import torch
 import matplotlib.pyplot as plt
-import seaborn as sns  # type: ignore[import-untyped]
+import seaborn as sns
 from game.constants import *
 from ai.neural import AlphaTiger, load_dynamic_model
 
