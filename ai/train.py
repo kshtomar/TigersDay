@@ -252,14 +252,14 @@ def train(
 
             # ── Logging ──────────────────────────────────────────────────────
             prefix = (
-                f"[{stage.name}] iter {i+1:>4}/{stage.iterations} | buf {len(buffer):>6}"
-                f" | moves {game_length} | samples {len(samples)}"
-                f" | winner {'british' if winner == 1 else 'mysore'}"
+                f"[{stage.name}] iter {i+1:>4}/{stage.iterations} | buf {len(buffer):>5}"
+                f" | moves {game_length:>3} | samples {len(samples):>3}"
+                f" | winner {('british' if winner == 1 else 'mysore'):<7}"
             )
             if steps:
                 print(
-                    f"{prefix} | loss {total_loss/steps:.4f} "
-                    f"(val {val_loss/steps:.4f}  pol {pol_loss/steps:.4f})"
+                    f"{prefix} | loss {total_loss/steps:6.4f} "
+                    f"(val {val_loss/steps:6.4f} pol {pol_loss/steps:6.4f})"
                 )
             else:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")

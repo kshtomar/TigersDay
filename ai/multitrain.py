@@ -77,8 +77,8 @@ def train(
                     batch_samples.extend(samples)
                     global_iter += 1
                     print(
-                        f"[{stage.name}] game {global_iter} | moves {game_length}"
-                        f" | samples {len(samples)} | winner {'british' if winner == 1 else 'mysore'}"
+                        f"[{stage.name}] game {global_iter:>5} | moves {game_length:>3}"
+                        f" | samples {len(samples):>3} | winner {('british' if winner == 1 else 'mysore'):<7}"
                     )
             
             games_played += batch_size
@@ -98,15 +98,15 @@ def train(
                     pol_loss   += pl
                     steps      += 1
 
-            prefix = f"[{stage.name}] iter {games_played:>4}/{stage.iterations} | buf {len(buffer):>6}"
+            prefix = f"[{stage.name}] iter {games_played:>4}/{stage.iterations} | buf {len(buffer):>5}"
             if steps:
                 if len(batch_samples) == 0:
                     print("DEBUG: Batch ended with zero samples! Check your GameState initialization.")
                 else:
                     print(
-                        f"{prefix} | loss {total_loss/steps:.4f} "
-                        f"(val {val_loss/steps:.4f}  pol {pol_loss/steps:.4f})"
-                        f" | batch samples {len(batch_samples)}"
+                        f"{prefix} | loss {total_loss/steps:6.4f} "
+                        f"(val {val_loss/steps:6.4f} pol {pol_loss/steps:6.4f})"
+                        f" | batch samples {len(batch_samples):>4}"
                     )
             else:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")
