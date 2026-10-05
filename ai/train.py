@@ -312,7 +312,7 @@ def stage_early_game() -> GameState:
     state = GameState()
     state.default_setup()
     state.set_node_empty(random.randrange(NODES))
-    state = perturb_state(state, 9)
+    state = perturb_state(state, 3)
     return state
 
 def stage_mid_game() -> GameState:
@@ -327,7 +327,7 @@ def stage_mid_game() -> GameState:
     for _ in range(random.randrange(4)):
         state.set_node_fort(random.randrange(NODES))
     state.turn = 2
-    state = perturb_state(state, 9)
+    state = perturb_state(state, 3)
     return state
 
 def stage_late_game() -> GameState:
@@ -340,18 +340,18 @@ def stage_late_game() -> GameState:
     for _ in range(random.randrange(6)):
         state.set_node_fort(random.randrange(NODES))
     state.turn = 3
-    state = perturb_state(state, 6)
+    state = perturb_state(state, 3)
     return state
 
 def stage_end_game() -> GameState:
     """A reasonable position before the ending of the game."""
     state = GameState()
-    for _ in range(random.randrange(8)):
+    for _ in range(random.randrange(6)):
         state.set_node_fort(random.randrange(NODES))
     for _ in range(random.randrange(6,8)):
         state.set_node_fresh_army(random.randrange(NODES))
     state.turn = 4
-    state = perturb_state(state, 6)
+    state = perturb_state(state, 3)
     return state
 
 def perturb_state(state, depth):
