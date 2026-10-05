@@ -318,14 +318,15 @@ def stage_early_game() -> GameState:
 def stage_mid_game() -> GameState:
     """A reasonable position midway through the game."""
     state = GameState()
-    for _ in range(random.randrange(6,8)):
+    for _ in range(random.randrange(5,7)):
         state.set_node_fresh_army(random.randrange(NODES))
     state.set_node_fort(NODE_TO_IDX["Seringapatam"])
     state.set_node_fort(NODE_TO_IDX["Coimbatore"])
     state.set_node_fort(NODE_TO_IDX["Erode"])
     state.set_node_fort(NODE_TO_IDX["Mahé"])
-    for _ in range(random.randrange(4)):
+    for _ in range(random.randrange(2,5)):
         state.set_node_fort(random.randrange(NODES))
+    state.set_node_fresh_army(random.randrange(NODES))
     state.turn = 2
     state = perturb_state(state, 3)
     return state
@@ -333,12 +334,13 @@ def stage_mid_game() -> GameState:
 def stage_late_game() -> GameState:
     """A reasonable position late in the game."""
     state = GameState()
-    for _ in range(random.randrange(6,8)):
+    for _ in range(random.randrange(4,7)):
         state.set_node_fresh_army(random.randrange(NODES))
     state.set_node_fort(NODE_TO_IDX["Seringapatam"])
     state.set_node_fort(NODE_TO_IDX["Coimbatore"])
-    for _ in range(random.randrange(6)):
+    for _ in range(random.randrange(2,5)):
         state.set_node_fort(random.randrange(NODES))
+    state.set_node_fresh_army(random.randrange(NODES))
     state.turn = 3
     state = perturb_state(state, 3)
     return state
