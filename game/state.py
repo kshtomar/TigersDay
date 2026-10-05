@@ -25,9 +25,9 @@ class GameState:
         # store as integer behind the scenes, one hot for the AI, -1 is blank
         self._attacker = NO_UNIT
         self._defender = NO_UNIT
-        self._card_strength = 0
-        self._to_move = 0
-        self._turn = 1
+        self.card_strength = 0
+        self.to_move = 0
+        self.turn = 1
         self.bluck = 0
         self.mluck = 0
         self.mysore_cards[:] = True
