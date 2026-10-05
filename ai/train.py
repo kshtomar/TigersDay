@@ -53,6 +53,9 @@ class TrainerConfig:
     # How many gradient steps to take after each self-play game.
     train_steps_per_iter: int = 1
 
+    # Preserve default PCR behavior, use 1.0 to disable it.
+    pcr: float = 0.25
+
     # ── Checkpointing ─────────────────────────────────────────────────────────
     checkpoint_dir: str = "checkpoints"
     save_every: int = 100                   # save a checkpoint every N global iters
@@ -90,7 +93,8 @@ def self_play_game(
     state_factory: Callable[[], GameState],
     temperature: float,
     temperature_cutoff: int,
-    simulations: int):
+    simulations: int,
+    pcr: float = 0.25):
     """
     Play one game via MCTS self-play from `state_factory()`.
 
@@ -100,6 +104,8 @@ def self_play_game(
     Only decision states are recorded — luck resolutions have no
     learnable policy, so they are skipped.
     """
+    if not 0 <= pcr <= 1:
+        raise ValueError("pcr must be between 0 and 1")
     state = state_factory()
     state, _ = _resolve_luck(state)
 
@@ -114,7 +120,7 @@ def self_play_game(
         temp = temperature if move_num < temperature_cutoff else 0.0
 
         # Playout cap randomization
-        if random.random() < 0.25:
+        if random.random() < pcr:
             move, policy = mcts.find_move(state, simulations, temp)
             pweight = 1.0
         else:
@@ -217,7 +223,8 @@ def train(
                 stage.state_factory,
                 stage.temperature,
                 stage.temperature_cutoff,
-                stage.simulations
+                stage.simulations,
+                pcr=config.pcr
             )
             buffer.add(samples) # type: ignore 
             global_iter += 1
@@ -334,7 +341,12 @@ def setup_training_run(description: str):
     parser.add_argument("--sims", type=int, default=None, help="Override MCTS simulations for all stages")
     parser.add_argument("--iters", type=int, default=None, help="Override games per stage for all stages")
     parser.add_argument("--cycle", action="store_true", help="Run 10 cycles of the 5 main stages instead")
+    parser.add_argument("--pcr",
+                        type=float, default=0.25,
+                        help="Fraction of full searches between 0 and 1 (default: 0.25; 1 disables PCR)")
     args = parser.parse_args()
+    if not 0 <= args.pcr <= 1:
+        parser.error("pcr must be between 0 and 1")
 
     if args.cycle:
         curriculum = []
@@ -364,7 +376,7 @@ def setup_training_run(description: str):
         for stage in curriculum:
             stage.iterations = args.iters
 
-    config = TrainerConfig()
+    config = TrainerConfig(pcr=args.pcr)
 
     return args, curriculum, config
 

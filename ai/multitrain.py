@@ -64,6 +64,7 @@ def train(
                             stage.temperature,
                             stage.temperature_cutoff,
                             stage.simulations,
+                            pcr=config.pcr,
                         )
                     )
                 
