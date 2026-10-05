@@ -29,6 +29,7 @@ def train(
         model.parameters(), lr=config.lr, weight_decay=config.weight_decay
     )
     buffer    = ReplayBuffer(config.buffer_size)
+    training_budget = TrainingBudget(config.train_ratio)
 
     global_iter = 0
     if resume_path and os.path.exists(resume_path):
@@ -87,8 +88,12 @@ def train(
             steps = 0
 
             model.train()
-            if len(buffer) >= config.min_buffer_size:
-                total_train_steps = config.train_steps_per_iter * batch_size
+            training_batch_size = min(config.batch_size, len(buffer))
+            total_train_steps = training_budget.steps_for(
+                len(batch_samples), training_batch_size,
+                ready=len(buffer) >= config.min_buffer_size and training_batch_size > 0
+            )
+            if total_train_steps:
                 
                 for _ in range(total_train_steps):
                     batch = buffer.sample(config.batch_size)
@@ -100,16 +105,15 @@ def train(
 
             prefix = f"[{stage.name}] iter {games_played:>4}/{stage.iterations} | buf {len(buffer):>5}"
             if steps:
-                if len(batch_samples) == 0:
-                    print("DEBUG: Batch ended with zero samples! Check your GameState initialization.")
-                else:
-                    print(
-                        f"{prefix} | loss {total_loss/steps:6.4f} "
-                        f"(val {val_loss/steps:6.4f} pol {pol_loss/steps:6.4f})"
-                        f" | batch samples {len(batch_samples):>4}"
-                    )
-            else:
+                print(
+                    f"{prefix} | loss {total_loss/steps:6.4f} "
+                    f"(val {val_loss/steps:6.4f} pol {pol_loss/steps:6.4f})"
+                    f" | batch samples {len(batch_samples):>4}"
+                )
+            elif len(buffer) < config.min_buffer_size:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")
+            else:
+                print(f"{prefix} | train credit {training_budget.credit:.0f}/{training_batch_size}")
 
             # ── Checkpoint ───────────────────────────────────────────────────
             if global_iter % config.save_every == 0 or games_played == stage.iterations:

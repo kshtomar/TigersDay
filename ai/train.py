@@ -39,19 +39,19 @@ class CurriculumStage:
 @dataclass
 class TrainerConfig:
     # ── Replay buffer ──────────────────────────────────────────────────────────
-    buffer_size: int = 50_000
+    buffer_size: int = 10_000
     batch_size: int = 256
     # Don't start gradient updates until the buffer holds this many samples.
     # Prevents the network from over-fitting tiny early batches.
-    min_buffer_size: int = 1_000
+    min_buffer_size: int = 500
 
     # ── Optimizer ─────────────────────────────────────────────────────────────
     lr: float = 1e-3
     weight_decay: float = 1e-4
 
     # ── Training ──────────────────────────────────────────────────────────────
-    # How many gradient steps to take after each self-play game.
-    train_steps_per_iter: int = 1
+    # Training sample presentations per new full-search position, after warmup.
+    train_ratio: float = 8.0
 
     # Preserve default PCR behavior, use 1.0 to disable it.
     pcr: float = 0.25
@@ -76,6 +76,23 @@ class ReplayBuffer:
 
     def __len__(self) -> int:
         return len(self.buffer)
+
+
+class TrainingBudget:
+    """Accumulate training credit from fresh data; keep partial batches across games."""
+    def __init__(self, ratio):
+        if not np.isfinite(ratio) or ratio < 0:
+            raise ValueError("train_ratio must be finite and nonnegative")
+        self.ratio = ratio
+        self.credit = 0.0
+
+    def steps_for(self, new_samples, batch_size, *, ready):
+        if not ready:
+            return 0
+        self.credit += self.ratio * new_samples
+        steps = int(self.credit // batch_size)
+        self.credit -= steps * batch_size
+        return steps
 
 
 def _resolve_luck(state: GameState) -> tuple[GameState, list[int]]:
@@ -208,6 +225,7 @@ def train(
         model.parameters(), lr=config.lr, weight_decay=config.weight_decay
     )
     buffer    = ReplayBuffer(config.buffer_size)
+    training_budget = TrainingBudget(config.train_ratio)
 
     global_iter = 0
     if resume_path and os.path.exists(resume_path):
@@ -241,8 +259,13 @@ def train(
             steps = 0
 
             model.train()
-            if len(buffer) >= config.min_buffer_size:
-                for _ in range(config.train_steps_per_iter):
+            training_batch_size = min(config.batch_size, len(buffer))
+            train_steps = training_budget.steps_for(
+                len(samples), training_batch_size,
+                ready=len(buffer) >= config.min_buffer_size and training_batch_size > 0
+            )
+            if train_steps:
+                for _ in range(train_steps):
                     batch = buffer.sample(config.batch_size)
                     tl, vl, pl = train_step(model, optimizer, batch, device)
                     total_loss += tl
@@ -261,8 +284,10 @@ def train(
                     f"{prefix} | loss {total_loss/steps:6.4f} "
                     f"(val {val_loss/steps:6.4f} pol {pol_loss/steps:6.4f})"
                 )
-            else:
+            elif len(buffer) < config.min_buffer_size:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")
+            else:
+                print(f"{prefix} | train credit {training_budget.credit:.0f}/{training_batch_size}")
 
             # ── Checkpoint ───────────────────────────────────────────────────
             if global_iter % config.save_every == 0:
@@ -350,10 +375,14 @@ def setup_training_run(description: str):
     parser.add_argument("--cycle", action="store_true", help="Run 10 cycles of the 5 main stages instead")
     parser.add_argument("--device", choices=["cpu", "mps", "cuda"], default=None,
                         help="Training device (automatically selected when omitted)")
+    parser.add_argument("--train-ratio", type=float, default=8.0,
+                        help="Training sample presentations per new full-search sample (default: 8)")
     parser.add_argument("--pcr",
                         type=float, default=0.25,
                         help="Fraction of full searches between 0 and 1 (default: 0.25; 1 disables PCR)")
     args = parser.parse_args()
+    if not np.isfinite(args.train_ratio) or args.train_ratio < 0:
+        parser.error("train-ratio must be finite and nonnegative")
     if not 0 <= args.pcr <= 1:
         parser.error("pcr must be between 0 and 1")
 
@@ -385,7 +414,7 @@ def setup_training_run(description: str):
         for stage in curriculum:
             stage.iterations = args.iters
 
-    config = TrainerConfig(pcr=args.pcr, device=args.device)
+    config = TrainerConfig(pcr=args.pcr, device=args.device, train_ratio=args.train_ratio)
 
     return args, curriculum, config
 
