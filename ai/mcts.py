@@ -174,19 +174,27 @@ class MCTS:
         self.root = current_node
         self.root.parent = None
 
-    def find_move(self, state, simulations, temperature = 0.0):
+    def find_move(self, state, simulations, temperature=0.0):
         root = self.search(state, simulations)
         counts = np.zeros(MOVE_VECTOR_LENGTH, dtype=np.float32)
-        for m, child in root.children.items():
-            counts[m] = child.visit_count
+        for move, child in root.children.items():
+            counts[move] = child.visit_count
 
-        if temperature == 0.0 or counts.sum() == 0:
+        # fallback if no visits
+        if counts.sum() == 0:
             move = int(np.argmax(counts))
             policy = np.zeros(MOVE_VECTOR_LENGTH, dtype=np.float32)
             policy[move] = 1.0
             return move, policy
 
-        counts **= 1.0 / temperature
+        # always train on full policy distribution
         policy = counts / counts.sum()
-        move = int(np.random.choice(MOVE_VECTOR_LENGTH, p=policy))
+
+        if temperature == 0.0:
+            return int(np.argmax(counts)), policy
+
+        # temperature affects move choice
+        counts **= 1.0 / temperature
+        tpolicy = counts / counts.sum()
+        move = int(np.random.choice(MOVE_VECTOR_LENGTH, p=tpolicy))
         return move, policy
