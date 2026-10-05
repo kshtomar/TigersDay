@@ -56,6 +56,9 @@ class TrainerConfig:
     # Preserve default PCR behavior, use 1.0 to disable it.
     pcr: float = 0.25
 
+    # None selects an available accelerator, falling back to CPU.
+    device: Optional[str] = None
+
     # ── Checkpointing ─────────────────────────────────────────────────────────
     checkpoint_dir: str = "checkpoints"
     save_every: int = 100                   # save a checkpoint every N global iters
@@ -98,8 +101,9 @@ def self_play_game(
     """
     Play one game via MCTS self-play from `state_factory()`.
 
-    Returns full-search samples: (state_vector, policy_target, legal_mask, weight, outcome).
-    where outcome is -1 for Mysore win and +1 for British win absolutely.
+    Returns (samples, decision_count, winner). Each full-search sample contains
+    (state_vector, policy_target, legal_mask, weight, outcome), where outcome
+    is -1 for a Mysore win and +1 for a British win.
 
     Only full-search decision states are recorded for policy and value training.
     Fast searches advance the game without root noise or training samples.
@@ -137,7 +141,8 @@ def self_play_game(
         move_num += 1
 
     winner = Updater.get_state_winner(state)
-    return [(sv, pt, lm, pw, np.float32(winner)) for sv, pt, lm, pw in history]
+    samples = [(sv, pt, lm, pw, np.float32(winner)) for sv, pt, lm, pw in history]
+    return samples, move_num, winner
 
 
 def train_step(
@@ -178,6 +183,8 @@ def train(
     curriculum: List[CurriculumStage],
     config: TrainerConfig = TrainerConfig(),
     resume_path: Optional[str] = None,
+    *,
+    device: Optional[str] = None,
 ) -> AlphaTiger:
     """
     Run the full curriculum.
@@ -186,13 +193,16 @@ def train(
         curriculum:   Ordered list of CurriculumStage objects.
         config:       Hyper-parameters and I/O settings.
         resume_path:  Optional path to a checkpoint to resume from.
+        device:       Override config.device; otherwise select automatically.
 
     Returns:
         The trained AlphaTiger model.
     """
     os.makedirs(config.checkpoint_dir, exist_ok=True)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+    device = torch.device(device or config.device or (
+        "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+    ))
     model     = AlphaTiger().to(device)
     optimizer = optim.Adam(
         model.parameters(), lr=config.lr, weight_decay=config.weight_decay
@@ -215,7 +225,7 @@ def train(
             mcts = MCTS(model)
             # ── Self-play ────────────────────────────────────────────────────
             model.eval()
-            samples = self_play_game(
+            samples, game_length, winner = self_play_game(
                 mcts,
                 stage.state_factory,
                 stage.temperature,
@@ -241,16 +251,16 @@ def train(
                     steps      += 1
 
             # ── Logging ──────────────────────────────────────────────────────
-            prefix = f"[{stage.name}] iter {i+1:>4}/{stage.iterations} | buf {len(buffer):>6}"
+            prefix = (
+                f"[{stage.name}] iter {i+1:>4}/{stage.iterations} | buf {len(buffer):>6}"
+                f" | moves {game_length} | samples {len(samples)}"
+                f" | winner {'british' if winner == 1 else 'mysore'}"
+            )
             if steps:
-                if len(samples) == 0:
-                    print("No full-search training samples this game.")
-                else:
-                    print(
-                        f"{prefix} | loss {total_loss/steps:.4f} "
-                        f"(val {val_loss/steps:.4f}  pol {pol_loss/steps:.4f})"
-                        f" | training samples {len(samples)} | winner {'british' if samples[0][-1] == 1 else 'mysore'}"
-                    )
+                print(
+                    f"{prefix} | loss {total_loss/steps:.4f} "
+                    f"(val {val_loss/steps:.4f}  pol {pol_loss/steps:.4f})"
+                )
             else:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")
 
@@ -338,6 +348,8 @@ def setup_training_run(description: str):
     parser.add_argument("--sims", type=int, default=None, help="Override MCTS simulations for all stages")
     parser.add_argument("--iters", type=int, default=None, help="Override games per stage for all stages")
     parser.add_argument("--cycle", action="store_true", help="Run 10 cycles of the 5 main stages instead")
+    parser.add_argument("--device", choices=["cpu", "mps", "cuda"], default=None,
+                        help="Training device (automatically selected when omitted)")
     parser.add_argument("--pcr",
                         type=float, default=0.25,
                         help="Fraction of full searches between 0 and 1 (default: 0.25; 1 disables PCR)")
@@ -373,7 +385,7 @@ def setup_training_run(description: str):
         for stage in curriculum:
             stage.iterations = args.iters
 
-    config = TrainerConfig(pcr=args.pcr)
+    config = TrainerConfig(pcr=args.pcr, device=args.device)
 
     return args, curriculum, config
 

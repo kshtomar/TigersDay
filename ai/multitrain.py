@@ -21,7 +21,9 @@ def train(
     
     os.makedirs(config.checkpoint_dir, exist_ok=True)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if config.device == "mps":
+        raise ValueError("The multiprocessing trainer cannot share an MPS model; use ai.train for MPS.")
+    device = torch.device(config.device or ("cuda" if torch.cuda.is_available() else "cpu"))
     model     = AlphaTiger().to(device)
     optimizer = torch.optim.Adam(
         model.parameters(), lr=config.lr, weight_decay=config.weight_decay
@@ -70,10 +72,14 @@ def train(
                 
                 batch_samples = [] 
                 for future in futures:
-                    samples = future.result()
+                    samples, game_length, winner = future.result()
                     buffer.add(samples)
                     batch_samples.extend(samples)
                     global_iter += 1
+                    print(
+                        f"[{stage.name}] game {global_iter} | moves {game_length}"
+                        f" | samples {len(samples)} | winner {'british' if winner == 1 else 'mysore'}"
+                    )
             
             games_played += batch_size
 
@@ -100,7 +106,7 @@ def train(
                     print(
                         f"{prefix} | loss {total_loss/steps:.4f} "
                         f"(val {val_loss/steps:.4f}  pol {pol_loss/steps:.4f})"
-                        f" | batch samples {len(batch_samples)} | winner {'british' if batch_samples[0][-1] == 1 else 'mysore'}"
+                        f" | batch samples {len(batch_samples)}"
                     )
             else:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")
