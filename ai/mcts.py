@@ -47,9 +47,11 @@ class Node:
     
     # mask and normalize before this
     def expand_decision(self, action_priors):
-        for move, prior in enumerate(action_priors):
-            if prior > 0.0 and move not in self.children:
-                self.children[move] = Node(None, self, move, prior)
+        # filter nonzero moves in numpy for efficiency
+        for move in np.flatnonzero(action_priors > 0):
+            move = int(move)
+            if move not in self.children:
+                self.children[move] = Node(None, self, move, action_priors[move])
                 # lazy evaluation, leave game state unexplored
 
     def expand_luck(self):
@@ -128,18 +130,20 @@ class MCTS:
 
     def select_child(self, node, noise_dict=None):
         best_score, best_child = -np.inf, None
+        # calculate once for every child
+        puct = 1.25 + np.log((node.visit_count + self.ipuct) / self.ipuct)
+        visits_sqrt = np.sqrt(node.visit_count)
+        mysore = node.state.to_move == 1
+        parent_eval = node.eval
         for move, child in node.children.items():
-            exploitation = -child.eval if node.state.to_move == 1 else child.eval
-            # flip evaluation for mysore turn
-
+            value = child.value_sum / child.visit_count if child.visit_count else parent_eval
+            # flip evaluation for mysore
+            exploitation = -value if mysore else value
             prior = child.prior
             if noise_dict is not None and move in noise_dict:
                 prior = (1-self.depsilon) * prior + self.depsilon * noise_dict[move]
             # blend dirichlet noise at select time
-
-            puct = 1.25 + np.log((node.visit_count + self.ipuct) / self.ipuct)
-            # dynamic puct with base 1.25 and ipuct specified
-            exploration = puct * prior * (np.sqrt(node.visit_count) / (1 + child.visit_count))
+            exploration = puct * prior * (visits_sqrt / (1 + child.visit_count))
             score = exploitation + exploration
             if score > best_score:
                 best_score = score
