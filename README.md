@@ -34,7 +34,7 @@ The complete board state is serialized into a compact **148-bit binary vector**:
 * **Board Nodes (75 bits):** 25 territories $\times$ 3 one-hot states (*Fresh Army, Tired Army, Fort, Empty*).
 * **Turn Counter (4 bits):** One-hot encoding of Turns 1–4.
 * **Impulse Indicator (3 bits):** *British Move*, *Mysore Card*, or *British Card*.
-* **Combat State (33 bits):** Attacker location, Defender location, and Mysore committed battle strength (0–3).
+* **Combat State (54 bits):** Attacker location, Defender location, and Mysore committed battle strength (0–3).
 
 ### Client-Side ONNX WebAssembly Inference
 * The trained PyTorch model (`AlphaTiger`) is exported to **ONNX** format (`alphatiger.onnx`).
@@ -69,7 +69,7 @@ TigersDay/
 │
 ├── game/                    # Core Python Game Logic & Rules
 │   ├── constants.py         # 25-node map geometry, edges, card values, move spaces
-│   ├── engine.py            # Legal move masking & move space dict (953 actions)
+│   ├── engine.py            # Legal move masking & move space dict (959 actions)
 │   ├── state.py             # 148D GameState vector management
 │   ├── updater.py           # Battle resolution & state transition logic
 │   └── replay.py            # Algebraic notation & game replay parser
