@@ -70,7 +70,13 @@ class MCTS:
         self.depsilon = depsilon
         self.root = None
 
-    def search(self, root_state, simulations):
+    def search(self, root_state, simulations, *, depsilon=None):
+
+        # override depsilon for this search
+        depsilon = self.depsilon if depsilon is None else depsilon
+        if not 0 <= depsilon <= 1:
+            raise ValueError("depsilon must be between 0 and 1")
+        
         # only call search on decision nodes
 
         if self.root is None:
@@ -88,11 +94,11 @@ class MCTS:
                     node = random.choice(list(node.children.values()))
                 else:
                     # generate noise on simulation 1
-                    if node is self.root and noise_dict is None:
+                    if node is self.root and noise_dict is None and depsilon > 0:
                         legal_moves = list(self.root.children.keys())
                         noise = np.random.dirichlet([self.dalpha] * len(legal_moves))
                         noise_dict = {move: n for move, n in zip(legal_moves, noise)}
-                    node = self.select_child(node, noise_dict if node is self.root else None)
+                    node = self.select_child(node, noise_dict if node is self.root else None, depsilon=depsilon)
 
             # lazy evaluation, actually do it
             if node.state is None:
@@ -128,7 +134,8 @@ class MCTS:
             node.value_sum += value
             node = node.parent
 
-    def select_child(self, node, noise_dict=None):
+    def select_child(self, node, noise_dict=None, *, depsilon=None):
+        depsilon = self.depsilon if depsilon is None else depsilon
         best_score, best_child = -np.inf, None
         # calculate once for every child
         puct = 1.25 + np.log((node.visit_count + self.ipuct) / self.ipuct)
@@ -141,7 +148,7 @@ class MCTS:
             exploitation = -value if mysore else value
             prior = child.prior
             if noise_dict is not None and move in noise_dict:
-                prior = (1-self.depsilon) * prior + self.depsilon * noise_dict[move]
+                prior = (1-depsilon) * prior + depsilon * noise_dict[move]
             # blend dirichlet noise at select time
             exploration = puct * prior * (visits_sqrt / (1 + child.visit_count))
             score = exploitation + exploration
@@ -174,8 +181,8 @@ class MCTS:
         self.root = current_node
         self.root.parent = None
 
-    def find_move(self, state, simulations, temperature=0.0):
-        root = self.search(state, simulations)
+    def find_move(self, state, simulations, temperature=0.0, *, depsilon=None):
+        root = self.search(state, simulations, depsilon=depsilon)
         counts = np.zeros(MOVE_VECTOR_LENGTH, dtype=np.float32)
         for move, child in root.children.items():
             counts[move] = child.visit_count

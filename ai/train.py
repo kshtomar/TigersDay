@@ -98,11 +98,11 @@ def self_play_game(
     """
     Play one game via MCTS self-play from `state_factory()`.
 
-    Returns a list of training samples:  (state_vector, policy_target, outcome)
+    Returns full-search samples: (state_vector, policy_target, legal_mask, weight, outcome).
     where outcome is -1 for Mysore win and +1 for British win absolutely.
 
-    Only decision states are recorded — luck resolutions have no
-    learnable policy, so they are skipped.
+    Only full-search decision states are recorded for policy and value training.
+    Fast searches advance the game without root noise or training samples.
     """
     if not 0 <= pcr <= 1:
         raise ValueError("pcr must be between 0 and 1")
@@ -122,15 +122,12 @@ def self_play_game(
         # Playout cap randomization
         if random.random() < pcr:
             move, policy = mcts.find_move(state, simulations, temp)
-            pweight = 1.0
+            # Train only on full searches
+            legal_mask = Engine.get_legal_moves(state)
+            history.append((state.vector.copy(), policy, legal_mask, np.float32(1.0)))
         else:
-            move, policy = mcts.find_move(state, simulations // 10, temp)
-            pweight = 0.0
-
-        legal_mask = Engine.get_legal_moves(state)
-
-        # Record this decision point
-        history.append((state.vector.copy(), policy, legal_mask, np.float32(pweight)))
+            # No dirichlet noise on fast searches
+            move, _ = mcts.find_move(state, simulations // 10, temp, depsilon=0.0)
 
         # Sample a move and advance the state
         state = Updater.get_next_state(state, move)
@@ -247,12 +244,12 @@ def train(
             prefix = f"[{stage.name}] iter {i+1:>4}/{stage.iterations} | buf {len(buffer):>6}"
             if steps:
                 if len(samples) == 0:
-                    print("DEBUG: Game ended with zero samples! Check your GameState initialization.")
+                    print("No full-search training samples this game.")
                 else:
                     print(
                         f"{prefix} | loss {total_loss/steps:.4f} "
                         f"(val {val_loss/steps:.4f}  pol {pol_loss/steps:.4f})"
-                        f" | game len {len(samples)} | winner {'british' if samples[0][-1] == 1 else 'mysore'}"
+                        f" | training samples {len(samples)} | winner {'british' if samples[0][-1] == 1 else 'mysore'}"
                     )
             else:
                 print(f"{prefix} | warming up ({len(buffer)}/{config.min_buffer_size})")
