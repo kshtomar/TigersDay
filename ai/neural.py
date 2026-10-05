@@ -132,14 +132,14 @@ if TORCH_AVAILABLE:
             self.policy_fc2 = nn.Linear(hidden_size, final_policy_size)
 
         def forward(self, x):
-            x = F.relu(self.fc1(x))
-            x = F.relu(self.fc2(x))
-            x = F.relu(self.fc3(x))
+            x = F.silu(self.fc1(x))
+            x = F.silu(self.fc2(x))
+            x = F.silu(self.fc3(x))
 
-            value = F.relu(self.value_fc1(x))
+            value = F.silu(self.value_fc1(x))
             value = torch.tanh(self.value_fc2(value))
 
-            policy = F.relu(self.policy_fc1(x))
+            policy = F.silu(self.policy_fc1(x))
             raw_logits = self.policy_fc2(policy)
             
             if not self.use_factorization:
