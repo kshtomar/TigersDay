@@ -331,10 +331,7 @@ if __name__ == "__main__":
                 print(f"❌ Failed to load AI model from {ckpt_path}: {e}")
                 raise e
         else:
-            print(f"⚠️  Checkpoint '{ckpt_path}' not found. AI will play with uninitialised weights.")
-            model = AlphaTiger().to(device)
-            model.eval()
-            return model
+            raise FileNotFoundError(f"Requested AI checkpoint not found: {ckpt_path}")
 
     # Determine which checkpoint to use for each side
     path_british = args.ckpt_british if args.ckpt_british else args.ckpt
