@@ -1491,7 +1491,7 @@ function renderBattleMarker(uiState) {
   const britishRed = styles.getPropertyValue('--british-red').trim();
   const mysoreGreen = styles.getPropertyValue('--mysore-green').trim();
 
-  const battleColor = netVal > 0 ? britishRed : mysoreGreen;
+  const battleColor = uiState.net_strength > 0 ? britishRed : mysoreGreen;
 
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('transform', `translate(${mx},${my})`);
