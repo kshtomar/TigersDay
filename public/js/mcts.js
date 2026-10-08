@@ -151,7 +151,7 @@
   class MCTS {
     constructor(model, options = {}) {
       this.model = model;
-      this.simulations = options.simulations || 200;
+      this.simulations = options.simulations || 400;
       this.ipuct = options.ipuct || 800;
       this.dalpha = options.dalpha || 0.5;
       this.depsilon = options.depsilon || 0.25;

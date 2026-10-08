@@ -126,7 +126,7 @@ let settings = {
 
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx');
-const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 800, depsilon: 0.1 }); // Micro Dirichlet noise
+const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 400, depsilon: 0.1 }); // Micro Dirichlet noise
 const multiplayerManager = new TDMultiplayer.MultiplayerManager();
 
 // Preload ONNX model in background
@@ -899,12 +899,12 @@ function handleHeaderCancelClick() {
   clearAllInteractionState();
 }
 
-// Logarithmic MCTS Simulations Slider (250 – 1,000,000)
-const SIMS_MIN = Math.log10(250);   // ~2.398
+// Logarithmic MCTS Simulations Slider (400 – 1,000,000)
+const SIMS_MIN = Math.log10(400);
 const SIMS_MAX = Math.log10(1000000); // 6.0
 
 function simsSliderToValue(sliderPos) {
-  // sliderPos is 0–100, map logarithmically to 250–1,000,000
+  // sliderPos is 0–100, map logarithmically to 400–1,000,000
   const logVal = SIMS_MIN + (sliderPos / 100) * (SIMS_MAX - SIMS_MIN);
   const raw = Math.round(Math.pow(10, logVal));
   // Snap to clean values

@@ -36,7 +36,7 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 ai_model_british = load_ai_model()
 ai_model_mysore = ai_model_british
-DEFAULT_MCTS_SIMS = 250  # Tuned for fast sub-second serverless response
+DEFAULT_MCTS_SIMS = 400  # Tuned for fast sub-second serverless response
 
 
 # ---------------------------------------------------------------------------
