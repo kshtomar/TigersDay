@@ -130,3 +130,9 @@ If you want to train or evaluate new AI models:
    python -m ai.export_to_onnx
    ```
    Copy the exported `alphatiger.onnx` into `public/alphatiger.onnx` for browser gameplay.
+
+### Model Versions
+
+Models named `alphatigerv`
+`v7` version number for later models
+`beta` used for pretrain only models

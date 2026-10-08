@@ -5,6 +5,7 @@ import torch
 import numpy as np
 import argparse
 import sys
+from statistics import NormalDist
 
 import game.engine as Engine
 import game.updater as Updater
@@ -145,6 +146,22 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
 
     return winner
 
+
+def elo_summary(wins: int, games: int, confidence: float = 0.95) -> str:
+    """Return the observed Elo difference and Wilson confidence interval."""
+    p = wins / games
+    z = NormalDist().inv_cdf(1 - (1 - confidence) / 2)
+    denom = 1 + z * z / games
+    center = (p + z * z / (2 * games)) / denom
+    margin = z * math.sqrt(p * (1 - p) / games + z * z / (4 * games * games)) / denom
+    low, high = center - margin, center + margin
+
+    def elo(rate: float) -> float:
+        return 400 * math.log10(rate / (1 - rate))
+
+    point = f"{elo(p):+.0f}" if 0 < p < 1 else "N/A"
+    return f"{point} Elo ({elo(low):+.0f} to {elo(high):+.0f}; {confidence:.0%} CI)"
+
 def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_per_side: int, log_path: str):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
@@ -207,6 +224,9 @@ def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_pe
     print("-" * 50)
     print(f"{'Player 1':<12} | {matrix[0]['Mysore']:<13} | {matrix[0]['British']:<14}")
     print(f"{'Player 2':<12} | {matrix[1]['Mysore']:<13} | {matrix[1]['British']:<14}")
+
+    player1_wins = matrix[0]['Mysore'] + matrix[0]['British']
+    print(f"Player 1 Advantage: {elo_summary(player1_wins, games_per_side * 2)}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Unified AlphaTiger Arena and Visualizer.")
