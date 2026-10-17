@@ -136,3 +136,4 @@ If you want to train or evaluate new AI models:
 Models named `alphatigerv`
 `v7` version number for later models
 `beta` used for pretrain only models
+ONNX for inference, PT for training
