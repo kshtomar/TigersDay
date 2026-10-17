@@ -1,0 +1,79 @@
+{
+  "alphatigerv8": {
+    "activation": "relu",
+    "factorized": false,
+    "parameters": 498496,
+    "training": "curriculum",
+    "estimated_elo": 1000
+  },
+  "alphatigerv10beta": {
+    "activation": "relu",
+    "factorized": false,
+    "parameters": 498496,
+    "training": "curriculum",
+    "estimated_elo": 800
+  },
+  "alphatigerv10": {
+    "activation": "relu",
+    "factorized": false,
+    "parameters": 498496,
+    "training": "cycles",
+    "estimated_elo": 400
+  },
+  "alphatigerv11beta": {
+    "activation": "relu",
+    "factorized": false,
+    "parameters": 498496,
+    "training": "curriculum",
+    "estimated_elo": 1100
+  },
+  "alphatigerv11": {
+    "activation": "relu",
+    "factorized": false,
+    "parameters": 498496,
+    "training": "cycles",
+    "estimated_elo": 1100
+  },
+  "alphatigerv12beta": {
+    "activation": "relu",
+    "factorized": false,
+    "parameters": 498496,
+    "training": "curriculum",
+    "estimated_elo": 1200
+  },
+  "alphatigerv12": {
+    "activation": "relu",
+    "factorized": false,
+    "parameters": 498496,
+    "training": "cycles",
+    "estimated_elo": 1300
+  },
+  "alphatigerv13beta": {
+    "activation": "relu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "curriculum",
+    "estimated_elo": 1400
+  },
+  "alphatigerv13": {
+    "activation": "relu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "cycles",
+    "estimated_elo": 1300
+  },
+  "alphatigerv14beta": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "curriculum",
+    "estimated_elo": 1200
+  },
+  "alphatigerv14": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "distill",
+    "estimated_elo": 1400
+  }
+}

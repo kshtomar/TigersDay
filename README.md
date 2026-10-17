@@ -137,3 +137,9 @@ Models named `alphatigerv`
 `v7` version number for later models
 `beta` used for pretrain only models
 ONNX for inference, PT for training
+
+## Elo Ratings
+
+Pairwise tournament to sample matchups
+Joint Bradley-Terry maximum likelihood estimation
+Anchor with alphatiger v8 at 1000 Elo
