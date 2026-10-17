@@ -16,14 +16,14 @@ from ai.mcts import MCTS
 from ai.neural import AlphaTiger, load_checkpoint, load_dynamic_model
 from ai.train import *
 
-def _resolve_luck_log(state: GameState, log_file):
+def _resolve_luck_log(state: GameState, log_file, chance=random):
     """Resolves luck and writes what happened to the log file."""
     luck_trajectory = []
     luck_branches = []
     while state.is_luck:    
         outcomes = Updater.get_luck_outcomes(state)
         luck_branches.append(len(outcomes))
-        idx = random.randrange(len(outcomes))
+        idx = chance.randrange(len(outcomes))
         state = outcomes[idx]
         luck_trajectory.append(idx)
         log_file.write(f"🎲 Luck resolved! Outcome index: {idx} of {len(outcomes)}\n")
@@ -31,7 +31,7 @@ def _resolve_luck_log(state: GameState, log_file):
     return state, luck_trajectory, luck_branches
 
 
-def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int, log_file) -> int:
+def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int, log_file, seed: int = None) -> int:
     """
     Plays a single match using pre-loaded models and logs the output.
     Returns: -1 if Mysore wins, 1 if British wins.
@@ -40,10 +40,11 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
         log_file.write(str(text) + "\n")
     
     replay = []
+    chance = random.Random(seed) if seed is not None else random
 
     state = GameState()
     state.default_setup()
-    state, _ , _ = _resolve_luck_log(state, log_file)
+    state, _ , _ = _resolve_luck_log(state, log_file, chance)
     
     # Spin up two separate MCTS brains
     mcts_mysore = MCTS(model_mysore, depsilon=0)
@@ -66,6 +67,9 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
         decision_branching_factors.append(int(np.sum(Engine.get_legal_moves(state))))
         
         # Both models evaluate with variable openings
+        if seed is not None:
+            random.seed(seed * 1000 + move_num)
+            np.random.seed(seed * 1000 + move_num)
         temperature = 1.0 if move_num < 6 else 0.0
         move_m, _ = mcts_mysore.find_move(state, sims_mysore, temperature)
         move_b, _ = mcts_british.find_move(state, sims_british, temperature)
@@ -116,7 +120,7 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
             
         # Execute move and resolve luck
         state = Updater.get_next_state(state, best_move)
-        state, luck_history, luck_branches = _resolve_luck_log(state, log_file)
+        state, luck_history, luck_branches = _resolve_luck_log(state, log_file, chance)
         replay.extend(luck_history)
         luck_branching_factors.extend(luck_branches)
 
@@ -162,7 +166,7 @@ def elo_summary(wins: int, games: int, confidence: float = 0.95) -> str:
     point = f"{elo(p):+.0f}" if 0 < p < 1 else "N/A"
     return f"{point} Elo ({elo(low):+.0f} to {elo(high):+.0f}; {confidence:.0%} CI)"
 
-def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_per_side: int, log_path: str):
+def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_per_side: int, log_path: str, seed: int = 190100):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     if not os.path.exists(ckpt1_path) or not os.path.exists(ckpt2_path):
@@ -197,7 +201,7 @@ def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_pe
         # Phase 1: Ckpt1 as Mysore
         for i in range(games_per_side):
             log_file.write(f"\n{'#'*40}\nGAME {i+1}: Ckpt1 (Mysore) vs Ckpt2 (British)\n{'#'*40}\n")
-            winner = play_match(model1, model2, sims1, sims2, log_file)
+            winner = play_match(model1, model2, sims1, sims2, log_file, seed=seed + i if seed is not None else None)
             
             if winner == -1:
                 matrix[0]['Mysore'] += 1
@@ -209,7 +213,8 @@ def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_pe
         # Phase 2: Ckpt1 as British
         for i in range(games_per_side):
             log_file.write(f"\n{'#'*40}\nGAME {i+1+games_per_side}: Ckpt2 (Mysore) vs Ckpt1 (British)\n{'#'*40}\n")
-            winner = play_match(model2, model1, sims2, sims1, log_file)
+            # pair seeds with mysore games
+            winner = play_match(model2, model1, sims2, sims1, log_file, seed=seed + i if seed is not None else None)
             
             if winner == 1:
                 matrix[0]['British'] += 1
@@ -235,6 +240,7 @@ if __name__ == "__main__":
     parser.add_argument("--ckpt2", type=str, default=DEFAULT_MODEL, help="Path to Checkpoint 2")
     parser.add_argument("--sims1", type=int, default=DEFAULT_SIMS, help="Simulations for Ckpt1")
     parser.add_argument("--sims2", type=int, default=DEFAULT_SIMS, help="Simulations for Ckpt2")
+    parser.add_argument("--seed", type=int, default=190100, help="Base seed for paired games (default: 190100)")
     
     # Control the mode: 1 game per side = quick check. 20 games per side = real arena.
     parser.add_argument("--games", type=int, default=20, help="Games to play PER SIDE (Total matches = games * 2)")
@@ -248,5 +254,6 @@ if __name__ == "__main__":
         sims1=args.sims1, 
         sims2=args.sims2, 
         games_per_side=args.games,
-        log_path=args.log
+        log_path=args.log,
+        seed=args.seed
     )
