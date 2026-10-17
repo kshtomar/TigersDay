@@ -16,7 +16,7 @@ from game.engine import get_legal_moves, legal_moves_dict
 from game.updater import get_next_state, get_state_winner, get_luck_outcomes
 from game.replay import notate, interpret
 from ai.mcts import MCTS
-from ai.neural import load_ai_model
+from ai.neural import ONNXAlphaTiger
 
 # ---------------------------------------------------------------------------
 # FastAPI App Initialization
@@ -34,7 +34,7 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # Global AI Model Singletons (Cached across warm serverless invocations)
 # ---------------------------------------------------------------------------
-ai_model_british = load_ai_model()
+ai_model_british = ONNXAlphaTiger()
 ai_model_mysore = ai_model_british
 DEFAULT_MCTS_SIMS = 400  # Tuned for fast sub-second serverless response
 

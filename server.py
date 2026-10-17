@@ -18,7 +18,7 @@ from game.replay import notate
 from game.state import GameState
 from game.constants import INDEX_MAP, WHO_TO_MOVE
 from ai.mcts import MCTS
-from ai.neural import AlphaTiger, load_checkpoint, load_dynamic_model
+from ai.neural import ONNXAlphaTiger
 from game.replay import interpret  
 
 
@@ -318,27 +318,13 @@ if __name__ == "__main__":
     human_player_side = args.human
     threshold = args.threshold
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
-    def load_ai(ckpt_path):
-        if os.path.exists(ckpt_path):
-            try:
-                model = load_dynamic_model(ckpt_path, device)
-                model.eval()
-                print(f"✅ Loaded model from {ckpt_path} onto {device}")
-                return model
-            except Exception as e:
-                print(f"❌ Failed to load AI model from {ckpt_path}: {e}")
-                raise e
-        else:
-            raise FileNotFoundError(f"Requested AI checkpoint not found: {ckpt_path}")
-
     # Determine which checkpoint to use for each side
     path_british = args.ckpt_british if args.ckpt_british else args.ckpt
     path_mysore = args.ckpt_mysore if args.ckpt_mysore else args.ckpt
 
     print("Initializing British AI...")
-    ai_model_british = load_ai(path_british)
+    ai_model_british = ONNXAlphaTiger(path_british)
+    print(f"Loaded model from {path_british}")
 
     # Optimize memory: if they point to the same path, just reference the same model object
     if path_british == path_mysore:
@@ -346,7 +332,8 @@ if __name__ == "__main__":
         ai_model_mysore = ai_model_british
     else:
         print("Initializing Mysore AI...")
-        ai_model_mysore = load_ai(path_mysore)         
+        ai_model_mysore = ONNXAlphaTiger(path_mysore)
+        print(f"Loaded model from {path_mysore}")         
 
     print(f"🚀 Starting server → http://localhost:{args.port}")
     print(f"   Mode : {match_mode}")

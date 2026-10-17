@@ -3,7 +3,6 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 from game.constants import *
-from ai.neural import AlphaTiger, load_dynamic_model
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a heatmap for AlphaTiger model weights.")
@@ -21,9 +20,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    device = torch.device('cpu')
-    model = load_dynamic_model(args.ckpt, device)
-    state_dict = model.state_dict()
+    checkpoint = torch.load(args.ckpt, map_location='cpu', weights_only=False)
+    state_dict = checkpoint.get('model_state_dict', checkpoint)
 
     if args.layer not in state_dict:
         available_layers = list(state_dict.keys())

@@ -13,7 +13,7 @@ from game.state import GameState
 from game.replay import interpret
 from game.constants import *
 from ai.mcts import MCTS
-from ai.neural import AlphaTiger, load_checkpoint, load_dynamic_model
+from ai.neural import ONNXAlphaTiger
 from ai.train import *
 
 def _resolve_luck_log(state: GameState, log_file, chance=random):
@@ -167,22 +167,12 @@ def elo_summary(wins: int, games: int, confidence: float = 0.95) -> str:
     return f"{point} Elo ({elo(low):+.0f} to {elo(high):+.0f}; {confidence:.0%} CI)"
 
 def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_per_side: int, log_path: str, seed: int = 190100):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
     if not os.path.exists(ckpt1_path) or not os.path.exists(ckpt2_path):
         print(f"Missing checkpoint! Ckpt1: {ckpt1_path} | Ckpt2: {ckpt2_path}")
         return
 
-    # Dynamically load models regardless of their internal architecture
-    try:
-        model1 = load_dynamic_model(ckpt1_path, device)
-        model2 = load_dynamic_model(ckpt2_path, device)
-    except Exception as e:
-        print(f"Failed to dynamically load models: {e}")
-        return
-
-    model1.eval()
-    model2.eval()
+    model1 = ONNXAlphaTiger(ckpt1_path)
+    model2 = ONNXAlphaTiger(ckpt2_path)
 
     matrix = {
         0: {'Mysore': 0, 'British': 0},
