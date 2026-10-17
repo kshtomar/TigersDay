@@ -143,3 +143,4 @@ ONNX for inference, PT for training
 Pairwise tournament to sample matchups
 Joint Bradley-Terry maximum likelihood estimation
 Anchor with alphatiger v8 at 1000 Elo
+Round to nearest 100 due to error bars
