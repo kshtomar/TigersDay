@@ -1,154 +1,76 @@
 import math
 import os
 import random
-import torch
 import numpy as np
 import argparse
-import sys
 from statistics import NormalDist
 
 import game.engine as Engine
 import game.updater as Updater
 from game.state import GameState
 from game.replay import interpret
-from game.constants import *
+from game.constants import DEFAULT_MODEL, DEFAULT_SIMS
 from ai.mcts import MCTS
 from ai.neural import ONNXAlphaTiger
-from ai.train import *
+from ai.train import _resolve_luck
 
-def _resolve_luck_log(state: GameState, log_file, chance=random):
-    """Resolves luck and writes what happened to the log file."""
-    luck_trajectory = []
-    luck_branches = []
-    while state.is_luck:    
-        outcomes = Updater.get_luck_outcomes(state)
-        luck_branches.append(len(outcomes))
-        idx = chance.randrange(len(outcomes))
-        state = outcomes[idx]
-        luck_trajectory.append(idx)
-        log_file.write(f"🎲 Luck resolved! Outcome index: {idx} of {len(outcomes)}\n")
-        log_file.write(str(state) + "\n")
-    return state, luck_trajectory, luck_branches
-
-
-def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int, log_file, seed: int = None) -> int:
+def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int, log_file=None, seed: int = None, record: bool = False):
     """
-    Plays a single match using pre-loaded models and logs the output.
-    Returns: -1 if Mysore wins, 1 if British wins.
+    Plays a single match using pre-loaded models and logs the algebraic output.
+    Returns: (winner, algebraic, data) where data is (positions, masks) if record=True else None.
     """
-    def log(text):
-        log_file.write(str(text) + "\n")
-    
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+
     replay = []
-    chance = random.Random(seed) if seed is not None else random
-
     state = GameState()
     state.default_setup()
-    state, _ , _ = _resolve_luck_log(state, log_file, chance)
+    state, luck_history = _resolve_luck(state)
+    replay.extend(luck_history)
     
     # Spin up two separate MCTS brains
     mcts_mysore = MCTS(model_mysore, depsilon=0)
     mcts_british = MCTS(model_british, depsilon=0)
 
     move_num = 0
-    luck_branching_factors = []
-    decision_branching_factors = []
-    disagreement_count = 0
-    
-    log(f"\n=== STARTING MATCH: CLASH OF THE AIs ===")
-    
+    positions, masks = [], []
+
     while Updater.get_state_winner(state) == 0:
         current_player = 'Mysore' if state.to_move == 1 else 'British'
-        
-        log("-" * 60)
-        log(f"MOVE {move_num} | Turn: {state.turn} | To Move: {current_player}")
-        log(state)
+        mask = Engine.get_legal_moves(state).astype(bool)
+        if record:
+            positions.append(state.vector.copy())
+            masks.append(mask)
 
-        decision_branching_factors.append(int(np.sum(Engine.get_legal_moves(state))))
-        
-        # Both models evaluate with variable openings
-        if seed is not None:
-            random.seed(seed * 1000 + move_num)
-            np.random.seed(seed * 1000 + move_num)
         temperature = 1.0 if move_num < 6 else 0.0
-        move_m, _ = mcts_mysore.find_move(state, sims_mysore, temperature)
-        move_b, _ = mcts_british.find_move(state, sims_british, temperature)
-        
-        assert mcts_mysore.root is not None
-        assert mcts_british.root is not None
+        active_mcts = mcts_mysore if current_player == 'Mysore' else mcts_british
+        active_sims = sims_mysore if current_player == 'Mysore' else sims_british
+        best_move, _ = active_mcts.find_move(state, active_sims, temperature)
+        assert mask[best_move]
 
-        # Check for disagreement
-        if move_m != move_b:
-            disagreement_count += 1
-            log("\n🚨 AIS DISAGREE ON THE BEST MOVE! 🚨")
-            log(f"--> Mysore AI prefers (Eval: {mcts_mysore.root.eval:+.3f}):")
-            
-            # Capture engine prints by temporarily redirecting stdout
-            old_stdout = sys.stdout
-            sys.stdout = log_file
-            Engine.print_legal_moves(np.arange(MOVE_VECTOR_LENGTH) == move_m)
-            sys.stdout = old_stdout
-            
-            log(f"--> British AI prefers (Eval: {mcts_british.root.eval:+.3f}):")
-            old_stdout = sys.stdout
-            sys.stdout = log_file
-            Engine.print_legal_moves(np.arange(MOVE_VECTOR_LENGTH) == move_b)
-            sys.stdout = old_stdout
-            log("-" * 30)
-        else:
-            log("\n🤝 AIs agree on the best move.")
-
-        # The actual player's AI makes the move
-        if current_player == 'Mysore':
-            best_move = move_m
-            active_eval = mcts_mysore.root.eval
-            active_mcts = mcts_mysore
-        else:
-            best_move = move_b
-            active_eval = mcts_british.root.eval
-            active_mcts = mcts_british
-            
-        log(f"\n{current_player} AI executes:")
         replay.append(best_move)
-        old_stdout = sys.stdout
-        sys.stdout = log_file
-        Engine.print_legal_moves(np.arange(MOVE_VECTOR_LENGTH) == best_move)
-        sys.stdout = old_stdout
-        
-        assert active_mcts.root is not None
-        log(f"prior: {active_mcts.root.children[best_move].prior:.3f} | eval: {active_eval:+.3f}")
-            
-        # Execute move and resolve luck
         state = Updater.get_next_state(state, best_move)
-        state, luck_history, luck_branches = _resolve_luck_log(state, log_file, chance)
+        state, luck_history = _resolve_luck(state)
         replay.extend(luck_history)
-        luck_branching_factors.extend(luck_branches)
 
         # Update BOTH MCTS trees
         mcts_mysore.update_root(best_move, luck_history)
         mcts_british.update_root(best_move, luck_history)
         
         move_num += 1
+        if move_num >= 500:
+            break
 
     winner = Updater.get_state_winner(state)
-    log("=" * 60)
-    log("MATCH OVER")
-    with open("replay_log.txt", "a", encoding="utf-8") as replay_file:
-        replay_file.write(str(replay) + "\n")
-        replay_file.write(interpret(replay)[0] + "\n")
-    if winner == -1: 
-        log("Winner: Mysore!")
-    else: 
-        log("Winner: British!")
-    log("=" * 60)
-    log(f"Total Disagreements: {disagreement_count}/{move_num} turns")
-    if decision_branching_factors:
-        log(f"Game Tree Complexity: {math.prod(decision_branching_factors):.2e}")
-        log(f"Average Choices per Turn: {np.mean(decision_branching_factors):.2f}")
-    if luck_branching_factors:
-        log(f"Luck happened {len(luck_branching_factors)} times with {math.prod(luck_branching_factors):.2e} Possibilities")
+    algebraic, _ = interpret(replay)
+    if log_file:
+        log_file.write(str(replay) + "\n")
+        log_file.write(algebraic + "\n")
+        log_file.flush()
 
-    return winner
+    data = (np.asarray(positions, dtype=np.float32), np.asarray(masks, dtype=bool)) if record else None
+    return winner, algebraic, replay, data
 
 
 def elo_summary(wins: int, games: int, confidence: float = 0.95) -> str:
@@ -165,6 +87,7 @@ def elo_summary(wins: int, games: int, confidence: float = 0.95) -> str:
 
     point = f"{elo(p):+.0f}" if 0 < p < 1 else "N/A"
     return f"{point} Elo ({elo(low):+.0f} to {elo(high):+.0f}; {confidence:.0%} CI)"
+
 
 def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_per_side: int, log_path: str, seed: int = 190100):
     if not os.path.exists(ckpt1_path) or not os.path.exists(ckpt2_path):
@@ -183,15 +106,10 @@ def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_pe
     print(f"Logging match details to: {log_path}")
     print("-" * 50)
 
-    open("replay_log.txt", "w", encoding="utf-8")
-
     with open(log_path, "w", encoding="utf-8") as log_file:
-        log_file.write(f"ARENA LOG: {ckpt1_path} vs {ckpt2_path}\n\n")
-
         # Phase 1: Ckpt1 as Mysore
         for i in range(games_per_side):
-            log_file.write(f"\n{'#'*40}\nGAME {i+1}: Ckpt1 (Mysore) vs Ckpt2 (British)\n{'#'*40}\n")
-            winner = play_match(model1, model2, sims1, sims2, log_file, seed=seed + i if seed is not None else None)
+            winner, _, _, _ = play_match(model1, model2, sims1, sims2, log_file, seed=seed + i if seed is not None else None)
             
             if winner == -1:
                 matrix[0]['Mysore'] += 1
@@ -202,9 +120,7 @@ def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_pe
 
         # Phase 2: Ckpt1 as British
         for i in range(games_per_side):
-            log_file.write(f"\n{'#'*40}\nGAME {i+1+games_per_side}: Ckpt2 (Mysore) vs Ckpt1 (British)\n{'#'*40}\n")
-            # pair seeds with mysore games
-            winner = play_match(model2, model1, sims2, sims1, log_file, seed=seed + i if seed is not None else None)
+            winner, _, _, _ = play_match(model2, model1, sims2, sims1, log_file, seed=seed + i if seed is not None else None)
             
             if winner == 1:
                 matrix[0]['British'] += 1
@@ -222,6 +138,7 @@ def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_pe
 
     player1_wins = matrix[0]['Mysore'] + matrix[0]['British']
     print(f"Player 1 Advantage: {elo_summary(player1_wins, games_per_side * 2)}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Unified AlphaTiger Arena and Visualizer.")
