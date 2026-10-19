@@ -96,27 +96,27 @@ def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_pe
     print("-" * 50)
 
     with open(log_path, "w", encoding="utf-8") as log_file:
-        # Phase 1: Ckpt1 as Mysore
+        total_games = games_per_side * 2
         for i in range(games_per_side):
-            winner, _, _, _ = play_match(model1, model2, sims1, sims2, log_file, seed=seed + i if seed is not None else None)
-            
+            s = seed + i if seed is not None else None
+
+            # Ckpt1 as Mysore
+            winner, _, _, _ = play_match(model1, model2, sims1, sims2, log_file, seed=s)
             if winner == -1:
                 matrix[0]['Mysore'] += 1
-                print(f"Game {i+1}/{games_per_side * 2} | mysore wins | Player 1")
+                print(f"Game {2 * i + 1}/{total_games} | mysore wins | Player 1")
             elif winner == 1:
                 matrix[1]['British'] += 1
-                print(f"Game {i+1}/{games_per_side * 2} | british win | Player 2")
+                print(f"Game {2 * i + 1}/{total_games} | british win | Player 2")
 
-        # Phase 2: Ckpt1 as British
-        for i in range(games_per_side):
-            winner, _, _, _ = play_match(model2, model1, sims2, sims1, log_file, seed=seed + i if seed is not None else None)
-            
+            # Ckpt1 as British
+            winner, _, _, _ = play_match(model2, model1, sims2, sims1, log_file, seed=s)
             if winner == 1:
                 matrix[0]['British'] += 1
-                print(f"Game {i+1+games_per_side}/{games_per_side * 2} | british win | Player 1")
+                print(f"Game {2 * i + 2}/{total_games} | british win | Player 1")
             elif winner == -1:
                 matrix[1]['Mysore'] += 1
-                print(f"Game {i+1+games_per_side}/{games_per_side * 2} | mysore wins | Player 2")
+                print(f"Game {2 * i + 2}/{total_games} | mysore wins | Player 2")
 
     print("🎯 ARENA RESULTS 🎯")
     print("-" * 50)
