@@ -22,6 +22,15 @@ This project features a **pure client-side WebAssembly game engine**, an **Alpha
   If $\text{Net Strength} > 0$, the British capture the fort; otherwise, Mysore holds.
 * **Card Play & Trading:** Cards can be played for unique tactical abilities (*e.g., Cavalry Raid, French Alliance, Royal Navy*), committed for combat strength, or traded to reclaim exhausted cards.
 
+### Game Properties
+
+- Decisive: always a winner
+- Acyclic: state cannot repeat
+- Finite: will always end
+- Stochastic: affected by luck
+- Transparent: perfect information
+- Asymmetric: players are different
+
 ---
 
 ## 🧠 AI & WebAssembly Architecture
@@ -115,6 +124,7 @@ Open your browser at **`http://localhost:8000`**.
 
 ## 🏋️ Training the AI Locally
 
+CUDA is faster than CPU is faster than MPS
 If you want to train or evaluate new AI models:
 
 1. Install development dependencies:

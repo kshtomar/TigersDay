@@ -1,5 +1,4 @@
 import math
-import os
 import random
 import numpy as np
 import argparse
@@ -26,8 +25,6 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
     replay = []
     state = GameState()
     state.default_setup()
-    state, luck_history = _resolve_luck(state)
-    replay.extend(luck_history)
     
     # Spin up two separate MCTS brains
     mcts_mysore = MCTS(model_mysore, depsilon=0)
@@ -38,16 +35,14 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
 
     while Updater.get_state_winner(state) == 0:
         current_player = 'Mysore' if state.to_move == 1 else 'British'
-        mask = Engine.get_legal_moves(state).astype(bool)
         if record:
             positions.append(state.vector.copy())
-            masks.append(mask)
+            masks.append(Engine.get_legal_moves(state).astype(bool))
 
         temperature = 1.0 if move_num < 6 else 0.0
         active_mcts = mcts_mysore if current_player == 'Mysore' else mcts_british
         active_sims = sims_mysore if current_player == 'Mysore' else sims_british
         best_move, _ = active_mcts.find_move(state, active_sims, temperature)
-        assert mask[best_move]
 
         replay.append(best_move)
         state = Updater.get_next_state(state, best_move)
@@ -59,8 +54,6 @@ def play_match(model_mysore, model_british, sims_mysore: int, sims_british: int,
         mcts_british.update_root(best_move, luck_history)
         
         move_num += 1
-        if move_num >= 500:
-            break
 
     winner = Updater.get_state_winner(state)
     algebraic, _ = interpret(replay)
@@ -90,10 +83,6 @@ def elo_summary(wins: int, games: int, confidence: float = 0.95) -> str:
 
 
 def run_arena(ckpt1_path: str, ckpt2_path: str, sims1: int, sims2: int, games_per_side: int, log_path: str, seed: int = 190100):
-    if not os.path.exists(ckpt1_path) or not os.path.exists(ckpt2_path):
-        print(f"Missing checkpoint! Ckpt1: {ckpt1_path} | Ckpt2: {ckpt2_path}")
-        return
-
     model1 = ONNXAlphaTiger(ckpt1_path)
     model2 = ONNXAlphaTiger(ckpt2_path)
 

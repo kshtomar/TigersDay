@@ -5,8 +5,10 @@ Abstract when it makes the code cleaner
 Constants should not be CLI flags
 Single source of truth
 Don't repeat yourself
+Fail fast and loud
 Leave it to standard errors
 Never make unrelated changes
+Understand game rules and properties
 
 ## Comments
 

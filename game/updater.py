@@ -140,6 +140,7 @@ def get_next_state(state, move):
     return next_state
 
 def get_state_winner(state):
+    # 1 for British win, -1 for Mysore win, 0 for game in progress
     if np.sum((state.tired_armies | state.fresh_armies) & KEYS) == 5:
         return 1
     elif state.turn == 4 and not state.fresh_armies.any() and state.to_move == 0:
