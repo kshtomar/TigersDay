@@ -6,21 +6,70 @@ This project features a **pure client-side WebAssembly game engine**, an **Alpha
 
 ---
 
-## 📖 The Game: Tiger's Day
+## 📖 Game Rules
 
-### Overview
-* **Asymmetric Factions:** Sultanate of Mysore (Defending with Forts & Rocket Artillery) vs. British East India Company (Attacking with Armies & Naval Superiority).
-* **Duration:** 4 turns representing the four Anglo-Mysore Wars.
-* **Victory Conditions:**
-  * **British Victory:** Occupy all 5 Key Cities (*Bombay, Hyderabad, Madras, Seringapatam, Coimbatore*) with British armies.
-  * **Mysore Victory:** Survive through Turn 4 while preventing British occupation of all 5 Key Cities, or eliminate all British armies.
+4 turn game - each turn is 1 of the 4 Anglo-Mysore Wars
+Armies - move once per war, for the British
+Forts - normally stationary, for Mysore
+Only a single army or fort per space
+Cannot deploy armies or forts on occupied space
+*Move to adjacent unless specified
+*Fort can never move into army
 
-### Core Rules
-* **Impulse System:** Players alternate impulses until all British armies are exhausted (*Tired*).
-* **Combat & Siege:** Moving into an enemy fort triggers a battle. The combat winner is determined by:
-  $$\text{Net Strength} = \text{Attacking Armies} - \text{Defending Forts} + \text{Net Card Strength}$$
-  If $\text{Net Strength} > 0$, the British capture the fort; otherwise, Mysore holds.
-* **Card Play & Trading:** Cards can be played for unique tactical abilities (*e.g., Cavalry Raid, French Alliance, Royal Navy*), committed for combat strength, or traded to reclaim exhausted cards.
+Tipu Sultan vs Cornwallis
+Sultanate of Mysore vs East India Company
+
+TURN SEQUENCE
+British and Mysore draw all 6 cards
+All British armies become Fresh
+Play impulses until all armies are Tired
+
+IMPULSE
+British Tire a Fresh army and may move it
+Mysore may play a card
+British may play a card
+Battles resolved if any
+
+BATTLES when an army moves into a fort:
+Army remains at starting point
+Resolve at end of impulse simultaneously
+Moving out cancels battle
+Strength = 1 per adjacent fort or army + number if card
+Adjacency counted on defending fort
+Higher Strength wins, ties go to Mysore
+If army loses, it does not move
+If fort loses, remove it and army moves in
+Losing player must discard
+*Never move into existing defender
+
+CARDS can be played for:
+Card text
+Draw a card of lower number
+Add Strength = number to unresolved battle
+*Discard means randomly throw a card away
+*Draw means pick up a used card
+*Keep all cards face up
+
+3 Iron Rockets
+2 Sepoy Mutiny - remove an army not in a key
+2 French Alliance - deploy a fort adjacent to existing fort
+1 Cavalry Raid - British discard
+1 Sea Trade - move a fort from Coast to any
+1 Monsoon - flip a Fresh army to Tired
+
+3 Wall Breach
+2 Highlanders - deploy a Fresh army on Coast
+2 Royal Navy - move an army to any Coast
+1 Divide and Rule - move a fort not in a key
+1 Force March - move a Tired army
+1 Princely States - deploy a Tired army in a key
+
+Coast refers to spaces that touch the ocean
+Key refers to square victory spaces
+Subscripts refer to game setup
+
+If an army in all 5 keys, British win
+At the end of turn 4, Mysore win
 
 ### Game Properties
 
