@@ -17,7 +17,7 @@
     "activation": "relu",
     "factorized": false,
     "parameters": 498496,
-    "training": "cycles",
+    "training": "finetune",
     "estimated_elo": 400
   },
   "alphatigerv11beta": {
@@ -31,7 +31,7 @@
     "activation": "relu",
     "factorized": false,
     "parameters": 498496,
-    "training": "cycles",
+    "training": "finetune",
     "estimated_elo": 1100
   },
   "alphatigerv12beta": {
@@ -45,7 +45,7 @@
     "activation": "relu",
     "factorized": false,
     "parameters": 498496,
-    "training": "cycles",
+    "training": "finetune",
     "estimated_elo": 1300
   },
   "alphatigerv13beta": {
@@ -59,7 +59,7 @@
     "activation": "relu",
     "factorized": true,
     "parameters": 395696,
-    "training": "cycles",
+    "training": "finetune",
     "estimated_elo": 1300
   },
   "alphatigerv14beta": {
@@ -70,6 +70,13 @@
     "estimated_elo": 1200
   },
   "alphatigerv14": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "distill",
+    "estimated_elo": 1400
+  },
+  "alphatigerv15": {
     "activation": "silu",
     "factorized": true,
     "parameters": 395696,
