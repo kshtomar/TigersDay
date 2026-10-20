@@ -150,23 +150,21 @@ class AlphaTiger(Module):
         return value.item(), policy_logits.squeeze(0).cpu().numpy()
 
 
-def save_checkpoint(model, optimizer, iteration, path, *, training_state=None):
+def save_checkpoint(model, optimizer, iteration, path):
     checkpoint = {
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'iteration': iteration,
         'model_config': {'activation': model.activation_name},
     }
-    if training_state is not None:
-        checkpoint['training_state'] = training_state
     torch.save(checkpoint, path)
 
 
-def load_checkpoint(model, optimizer, path, *, activation=None):
+def load_checkpoint(model, optimizer, path):
     checkpoint = torch.load(path, map_location=torch.device('cpu'), weights_only=False)
     state_dict = checkpoint.get('model_state_dict', checkpoint)
     meta = MANIFEST.get(Path(path).stem, {})
-    resolved_activation = activation or meta.get('activation') or checkpoint.get('model_config', {}).get('activation')
+    resolved_activation = meta.get('activation') or checkpoint.get('model_config', {}).get('activation')
     if resolved_activation:
         model.set_activation(resolved_activation)
     model.load_state_dict(state_dict)
