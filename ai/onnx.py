@@ -1,6 +1,7 @@
 import argparse
+from pathlib import Path
 import torch
-from ai.neural import AlphaTiger
+from ai.neural import AlphaTiger, MANIFEST, load_checkpoint
 from game.constants import GAME_VECTOR_LENGTH
 
 
@@ -8,28 +9,20 @@ def export_model(tiger_path: str, onnx_path: str):
     print(f"Loading weights from {tiger_path}...")
 
     # Use the latest architecture
-    model = AlphaTiger()
-    checkpoint = torch.load(tiger_path, map_location="cpu", weights_only=False)
-    model.load_state_dict(checkpoint.get("model_state_dict", checkpoint))
+    config = MANIFEST.get(Path(tiger_path).stem, {})
+    model = AlphaTiger(use_factorization=config.get('factorized', True))
+    load_checkpoint(model, None, tiger_path)
     model.eval()
 
-    dummy_input = torch.randn(1, GAME_VECTOR_LENGTH, dtype=torch.float32)
+    dummy_input = torch.randn(2, GAME_VECTOR_LENGTH, dtype=torch.float32)
     
     # Export with dynamic axes for batching
     torch.onnx.export(
         model,
         (dummy_input,),
         onnx_path,
-        export_params=True,
-        opset_version=14,
-        do_constant_folding=True,
-        input_names=["board_state"],
-        output_names=["value", "policy_logits"],
-        dynamic_axes={
-            "board_state": {0: "batch_size"},
-            "value": {0: "batch_size"},
-            "policy_logits": {0: "batch_size"},
-        },
+        dynamic_shapes=({0: torch.export.Dim("batch_size")},),
+        external_data=False,
     )
     print(f"✅ Model successfully exported to {onnx_path}")
 
