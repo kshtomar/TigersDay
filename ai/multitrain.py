@@ -24,7 +24,7 @@ def train(
     if config.device == "mps":
         raise ValueError("The multiprocessing trainer cannot share an MPS model; use ai.train for MPS.")
     device = torch.device(config.device or ("cuda" if torch.cuda.is_available() else "cpu"))
-    model     = AlphaTiger().to(device)
+    model = AlphaTiger().to(device)
     optimizer = torch.optim.Adam(
         model.parameters(), lr=config.lr, weight_decay=config.weight_decay
     )
@@ -32,7 +32,7 @@ def train(
     training_budget = TrainingBudget(config.train_ratio)
 
     global_iter = 0
-    if resume_path and os.path.exists(resume_path):
+    if resume_path:
         global_iter = load_checkpoint(model, optimizer, resume_path)
         print(f"Resumed ({model}) from iteration {global_iter}  ({resume_path}) on ({device})")
 

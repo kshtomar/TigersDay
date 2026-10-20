@@ -1,4 +1,3 @@
-# This file is slop and needs cleaning
 import os
 import random
 from collections import deque
@@ -23,46 +22,36 @@ Sample = Tuple[np.ndarray, np.ndarray, np.ndarray, float]
 
 @dataclass
 class CurriculumStage:
-    """
-   `state_factory` is a zero-argument callable that returns a fresh GameState.
-    This is the hook for curriculum learning — early stages can return simplified
-    or mid-game states so the model learns easier patterns first.
-
-    """
     name: str
     state_factory: Callable[[], GameState]
-    iterations: int                         # self-play + train cycles for this stage
-    simulations: int = 100                  # MCTS simulations per move
-    temperature: float = 1.0               # softmax temperature for move selection
-    temperature_cutoff: int = 0           # after this many moves, temperature → 0
+    iterations: int
+    simulations: int = 100
+    temperature: float = 1.0
+    # Set temperature to 0 after this many moves
+    temperature_cutoff: int = 0
 
 
 @dataclass
 class TrainerConfig:
-    # ── Replay buffer ──────────────────────────────────────────────────────────
     buffer_size: int = 20000
     batch_size: int = 256
-    # Don't start gradient updates until the buffer holds this many samples.
-    # Prevents the network from over-fitting tiny early batches.
+    # Avoid overfitting early batches
     min_buffer_size: int = 1000
 
-    # ── Optimizer ─────────────────────────────────────────────────────────────
     lr: float = 1e-3
     weight_decay: float = 1e-4
 
-    # ── Training ──────────────────────────────────────────────────────────────
-    # Training sample presentations per new full-search position, after warmup.
+    # For each new position collected, how many replay samples to train on
     train_ratio: float = 8.0
 
-    # Preserve default PCR behavior, use 1.0 to disable it.
+    # Fraction of moves using full MCTS searches
     pcr: float = 0.25
 
-    # None selects an available accelerator, falling back to CPU.
+    # None selects an available accelerator, falling back to CPU
     device: Optional[str] = None
 
-    # ── Checkpointing ─────────────────────────────────────────────────────────
     checkpoint_dir: str = "checkpoints"
-    save_every: int = 100                   # save a checkpoint every N global iters
+    save_every: int = 100
 
 
 class ReplayBuffer:
@@ -80,7 +69,7 @@ class ReplayBuffer:
 
 
 class TrainingBudget:
-    """Accumulate training credit from fresh data; keep partial batches across games."""
+    """Accumulate training credit from data, accumulating fractions across games."""
     def __init__(self, ratio):
         if not np.isfinite(ratio) or ratio < 0:
             raise ValueError("train_ratio must be finite and nonnegative")
@@ -97,7 +86,6 @@ class TrainingBudget:
 
 
 def _resolve_luck(state: GameState) -> tuple[GameState, list[int]]:
-    """Randomly resolve any pending luck outcomes (bluck/mluck)."""
     luck_trajectory = []
     while state.is_luck:
         outcomes = Updater.get_luck_outcomes(state)
@@ -105,6 +93,7 @@ def _resolve_luck(state: GameState) -> tuple[GameState, list[int]]:
         idx = random.randrange(len(outcomes))
 
         state = outcomes[idx]
+        # Return trajectory to allow game reconstruction
         luck_trajectory.append(idx)
     return state, luck_trajectory
 
@@ -116,16 +105,6 @@ def self_play_game(
     temperature_cutoff: int,
     simulations: int,
     pcr: float = 0.25):
-    """
-    Play one game via MCTS self-play from `state_factory()`.
-
-    Returns (samples, decision_count, winner). Each full-search sample contains
-    (state_vector, policy_target, legal_mask, outcome), where outcome
-    is -1 for a Mysore win and +1 for a British win.
-
-    Only full-search decision states are recorded for policy and value training.
-    Fast searches advance the game without root noise or training samples.
-    """
     if not 0 <= pcr <= 1:
         raise ValueError("pcr must be between 0 and 1")
     state = state_factory()
@@ -151,7 +130,6 @@ def self_play_game(
             # No dirichlet noise on fast searches
             move, _ = mcts.find_move(state, simulations // 10, temp, depsilon=0.0)
 
-        # Sample a move and advance the state
         state = Updater.get_next_state(state, move)
         state, luck_history = _resolve_luck(state)
         mcts.update_root(move, luck_history)
@@ -169,7 +147,6 @@ def train_step(
     batch: List[Sample],
     device: torch.device
 ) -> Tuple[float, float, float]:
-    """One gradient update. Returns (total, value, policy) losses."""
     states, policies, masks, values = zip(*batch)
 
     state_t   = torch.tensor(np.array(states),   dtype=torch.float32, device=device)
@@ -200,18 +177,6 @@ def train(
     *,
     device: Optional[str] = None,
 ) -> AlphaTiger:
-    """
-    Run the full curriculum.
-
-    Args:
-        curriculum:   Ordered list of CurriculumStage objects.
-        config:       Hyper-parameters and I/O settings.
-        resume_path:  Optional path to a checkpoint to resume from.
-        device:       Override config.device; otherwise select automatically.
-
-    Returns:
-        The trained AlphaTiger model.
-    """
     os.makedirs(config.checkpoint_dir, exist_ok=True)
 
     device = torch.device(device or config.device or (
@@ -238,7 +203,6 @@ def train(
 
         for i in range(stage.iterations):
             mcts = MCTS(model)
-            # ── Self-play ────────────────────────────────────────────────────
             model.eval()
             samples, game_length, winner = self_play_game(
                 mcts,
@@ -299,13 +263,13 @@ def train(
 
 
 def stage_full_game() -> GameState:
-    """Standard starting position."""
+    """Default setup position."""
     state = GameState()
     state.default_setup()
     return state
 
 def stage_early_game() -> GameState:
-    """A reasonable position after the opening of the game."""
+    """Handmade position after the opening of the game."""
     state = GameState()
     state.default_setup()
     state.set_node_empty(random.randrange(NODES))
@@ -313,7 +277,7 @@ def stage_early_game() -> GameState:
     return state
 
 def stage_mid_game() -> GameState:
-    """A reasonable position midway through the game."""
+    """Handmade position midway through the game."""
     state = GameState()
     for _ in range(random.randrange(5,7)):
         state.set_node_fresh_army(random.randrange(NODES))
@@ -329,7 +293,7 @@ def stage_mid_game() -> GameState:
     return state
 
 def stage_late_game() -> GameState:
-    """A reasonable position late in the game."""
+    """Handmade position late in the game."""
     state = GameState()
     for _ in range(random.randrange(4,7)):
         state.set_node_fresh_army(random.randrange(NODES))
@@ -343,7 +307,7 @@ def stage_late_game() -> GameState:
     return state
 
 def stage_end_game() -> GameState:
-    """A reasonable position before the ending of the game."""
+    """Handmade position before the ending of the game."""
     state = GameState()
     for _ in range(random.randrange(6)):
         state.set_node_fort(random.randrange(NODES))
@@ -367,7 +331,7 @@ def perturb_state(state, depth):
 
 
 class MixedStateFactory:
-    """Pick a curriculum phase per game; pickleable for the parallel trainer."""
+    """Randomly choose from provided state factories."""
     def __init__(self, factories):
         self.factories = tuple(factories)
 
@@ -375,7 +339,6 @@ class MixedStateFactory:
         return random.choice(self.factories)()
 
 def setup_training_run(description: str):
-    """Parses CLI args, builds the curriculum, and configures the trainer."""
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--resume", type=str, help="Path to checkpoint .pt file")
     parser.add_argument("--sims", type=int, default=None, help="Override MCTS simulations for all stages")
@@ -384,14 +347,10 @@ def setup_training_run(description: str):
                         help="Resume with a random curriculum phase for each game")
     parser.add_argument("--device", choices=["cpu", "mps", "cuda"], default=None,
                         help="Training device (automatically selected when omitted)")
-    parser.add_argument("--train-ratio", type=float, default=8.0,
-                        help="Training sample presentations per new full-search sample (default: 8)")
     parser.add_argument("--pcr",
                         type=float, default=0.25,
                         help="Fraction of full searches between 0 and 1 (default: 0.25; 1 disables PCR)")
     args = parser.parse_args()
-    if not np.isfinite(args.train_ratio) or args.train_ratio < 0:
-        parser.error("train-ratio must be finite and nonnegative")
     if not 0 <= args.pcr <= 1:
         parser.error("pcr must be between 0 and 1")
 
@@ -420,7 +379,7 @@ def setup_training_run(description: str):
         for stage in curriculum:
             stage.iterations = args.iters
 
-    config = TrainerConfig(pcr=args.pcr, device=args.device, train_ratio=args.train_ratio)
+    config = TrainerConfig(pcr=args.pcr, device=args.device)
 
     return args, curriculum, config
 
