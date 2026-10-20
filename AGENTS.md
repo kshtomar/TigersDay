@@ -5,10 +5,18 @@ Abstract when it makes the code cleaner
 Constants should not be CLI flags
 Single source of truth
 Don't repeat yourself
+Pass only necessary arguments
 Fail fast and loud
 Leave it to standard errors
 Never make unrelated changes
 Understand game rules and properties
+Defend the real threats
+
+## Avoid
+
+Hashing
+Try except
+Raise
 
 ## Comments
 
