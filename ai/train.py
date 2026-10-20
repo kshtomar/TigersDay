@@ -1,3 +1,4 @@
+# This file is slop and needs cleaning
 import os
 import random
 from collections import deque
@@ -364,13 +365,23 @@ def perturb_state(state, depth):
             state = random.choice(outcomes)
     return state
 
+
+class MixedStateFactory:
+    """Pick a curriculum phase per game; pickleable for the parallel trainer."""
+    def __init__(self, factories):
+        self.factories = tuple(factories)
+
+    def __call__(self):
+        return random.choice(self.factories)()
+
 def setup_training_run(description: str):
     """Parses CLI args, builds the curriculum, and configures the trainer."""
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--resume", type=str, help="Path to checkpoint .pt file")
     parser.add_argument("--sims", type=int, default=None, help="Override MCTS simulations for all stages")
     parser.add_argument("--iters", type=int, default=None, help="Override games per stage for all stages")
-    parser.add_argument("--cycle", action="store_true", help="Run 10 cycles of the 5 main stages instead")
+    parser.add_argument("--finetune", action="store_true",
+                        help="Resume with a random curriculum phase for each game")
     parser.add_argument("--device", choices=["cpu", "mps", "cuda"], default=None,
                         help="Training device (automatically selected when omitted)")
     parser.add_argument("--train-ratio", type=float, default=8.0,
@@ -384,16 +395,13 @@ def setup_training_run(description: str):
     if not 0 <= args.pcr <= 1:
         parser.error("pcr must be between 0 and 1")
 
-    if args.cycle:
-        curriculum = []
-        for i in range(10):
-            curriculum.extend([
-                CurriculumStage(name="End Game",   state_factory=stage_end_game,   iterations=100, simulations=4000, temperature_cutoff = 9),
-                CurriculumStage(name="Late Game",  state_factory=stage_late_game,  iterations=100, simulations=4000, temperature_cutoff = 12),
-                CurriculumStage(name="Mid Game",   state_factory=stage_mid_game,   iterations=100, simulations=4000, temperature_cutoff = 15),
-                CurriculumStage(name="Early Game", state_factory=stage_early_game, iterations=100, simulations=4000, temperature_cutoff = 18),
-                CurriculumStage(name="Full Game",  state_factory=stage_full_game,  iterations=100, simulations=4000, temperature_cutoff = 21),
-            ])
+    if args.finetune:
+        curriculum = [
+            CurriculumStage(name="Fine Tune", state_factory=MixedStateFactory([
+                stage_end_game, stage_late_game, stage_mid_game,
+                stage_early_game, stage_full_game,
+            ]), iterations=5000, simulations=4000, temperature_cutoff=21,
+        )]
     else:
         curriculum = [
             CurriculumStage(name="End Game",   state_factory=stage_end_game,   iterations=5000, simulations=800, temperature_cutoff = 6),
