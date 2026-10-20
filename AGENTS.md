@@ -11,6 +11,7 @@ Leave it to standard errors
 Never make unrelated changes
 Understand game rules and properties
 Defend the real threats
+Backward incompatible by default
 
 ## Avoid
 

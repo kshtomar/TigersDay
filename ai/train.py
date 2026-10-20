@@ -18,7 +18,7 @@ from ai.neural import AlphaTiger, load_checkpoint, save_checkpoint
 from game.state import GameState
 
 
-Sample = Tuple[np.ndarray, np.ndarray, float]
+Sample = Tuple[np.ndarray, np.ndarray, np.ndarray, float]
 
 @dataclass
 class CurriculumStage:
@@ -39,11 +39,11 @@ class CurriculumStage:
 @dataclass
 class TrainerConfig:
     # ── Replay buffer ──────────────────────────────────────────────────────────
-    buffer_size: int = 10_000
+    buffer_size: int = 20000
     batch_size: int = 256
     # Don't start gradient updates until the buffer holds this many samples.
     # Prevents the network from over-fitting tiny early batches.
-    min_buffer_size: int = 500
+    min_buffer_size: int = 1000
 
     # ── Optimizer ─────────────────────────────────────────────────────────────
     lr: float = 1e-3
@@ -119,7 +119,7 @@ def self_play_game(
     Play one game via MCTS self-play from `state_factory()`.
 
     Returns (samples, decision_count, winner). Each full-search sample contains
-    (state_vector, policy_target, legal_mask, weight, outcome), where outcome
+    (state_vector, policy_target, legal_mask, outcome), where outcome
     is -1 for a Mysore win and +1 for a British win.
 
     Only full-search decision states are recorded for policy and value training.
@@ -145,7 +145,7 @@ def self_play_game(
             move, policy = mcts.find_move(state, simulations, temp)
             # Train only on full searches
             legal_mask = Engine.get_legal_moves(state)
-            history.append((state.vector.copy(), policy, legal_mask, np.float32(1.0)))
+            history.append((state.vector.copy(), policy, legal_mask))
         else:
             # No dirichlet noise on fast searches
             move, _ = mcts.find_move(state, simulations // 10, temp, depsilon=0.0)
@@ -158,7 +158,7 @@ def self_play_game(
         move_num += 1
 
     winner = Updater.get_state_winner(state)
-    samples = [(sv, pt, lm, pw, np.float32(winner)) for sv, pt, lm, pw in history]
+    samples = [(sv, pt, lm, np.float32(winner)) for sv, pt, lm in history]
     return samples, move_num, winner
 
 
@@ -169,21 +169,17 @@ def train_step(
     device: torch.device
 ) -> Tuple[float, float, float]:
     """One gradient update. Returns (total, value, policy) losses."""
-    states, policies, masks, pweights, values = zip(*batch)
+    states, policies, masks, values = zip(*batch)
 
     state_t   = torch.tensor(np.array(states),   dtype=torch.float32, device=device)
     policy_t  = torch.tensor(np.array(policies), dtype=torch.float32, device=device)
     value_t   = torch.tensor(np.array(values),   dtype=torch.float32, device=device).unsqueeze(1)
     mask_t    = torch.tensor(np.array(masks),    dtype=torch.bool,    device=device)
-    pweight_t = torch.tensor(np.array(pweights), dtype=torch.float32, device=device)
 
     pred_value, pred_logits = model(state_t)
     pred_logits = pred_logits.masked_fill(~mask_t, -1e9)
 
-    # Mask out fast searches from policy loss
-    raw_policy_loss = F.cross_entropy(pred_logits, policy_t, reduction = "none")
-    policy_samples = pweight_t.sum().clamp(min=1.0)
-    policy_loss = (raw_policy_loss * pweight_t).sum() / policy_samples
+    policy_loss = F.cross_entropy(pred_logits, policy_t)
 
     value_loss  = F.mse_loss(pred_value, value_t)
 
@@ -220,7 +216,7 @@ def train(
     device = torch.device(device or config.device or (
         "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     ))
-    model     = AlphaTiger().to(device)
+    model = AlphaTiger().to(device)
     optimizer = optim.Adam(
         model.parameters(), lr=config.lr, weight_decay=config.weight_decay
     )
@@ -228,7 +224,7 @@ def train(
     training_budget = TrainingBudget(config.train_ratio)
 
     global_iter = 0
-    if resume_path and os.path.exists(resume_path):
+    if resume_path:
         global_iter = load_checkpoint(model, optimizer, resume_path)
         print(f"Resumed ({model}) from iteration {global_iter}  ({resume_path}) on ({device})")
 
