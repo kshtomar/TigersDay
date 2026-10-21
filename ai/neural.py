@@ -51,44 +51,33 @@ class AlphaTiger(Module):
         self.set_activation(activation)
 
         if self.use_factorization:
-            self.rn_size = NODES * len(COASTAL_INDICES)
-            self.st_size = NODES * len(COASTAL_INDICES)
-
             target_indices = []
             offset = 0
-            for name, size, move_type in MOVE_SPACE:
+            for name, size, _ in MOVE_SPACE:
                 if name == "Royal Navy":
-                    self.rn_start = offset
+                    rn = slice(offset, offset + size)
                 elif name == "Sea Trade":
-                    self.st_start = offset
+                    st = slice(offset, offset + size)
                 else:
                     target_indices.extend(range(offset, offset + size))
                 offset += size
 
-            self.base_size = len(target_indices)
-            self.factorized_size = len(target_indices) + NODES * 4
-            self.register_buffer("base_idx_map", torch.tensor(target_indices, dtype=torch.long))
-
-            rn_src_list, rn_dest_list = [], []
-            st_src_list, st_dest_list = [], []
-
-            for idx in range(self.rn_size):
-                node_idx = idx // len(COASTAL_INDICES)
-                coast_idx = COASTAL_INDICES[idx % len(COASTAL_INDICES)]
-
-                rn_src_list.append(node_idx)
-                rn_dest_list.append(coast_idx)
-
-                st_src_list.append(coast_idx)
-                st_dest_list.append(node_idx)
+            base_size = len(target_indices)
+            final_policy_size = base_size + NODES * 4
+            nodes = torch.arange(NODES).repeat_interleave(len(COASTAL_INDICES))
+            coasts = torch.tensor(COASTAL_INDICES, dtype=torch.long).repeat(NODES)
+            src = torch.empty(MOVE_VECTOR_LENGTH, dtype=torch.long)
+            dest = torch.full((MOVE_VECTOR_LENGTH,), final_policy_size, dtype=torch.long)
+            src[target_indices] = torch.arange(base_size)
+            # index map does: base + 0 or source + dest for factorization
+            src[rn] = base_size + nodes
+            dest[rn] = base_size + NODES + coasts
+            src[st] = base_size + 2*NODES + coasts
+            dest[st] = base_size + 3*NODES + nodes
 
             # buffer everything to gpu
-            self.register_buffer("rn_src_idx", torch.tensor(rn_src_list, dtype=torch.long))
-            self.register_buffer("rn_dest_idx", torch.tensor(rn_dest_list, dtype=torch.long))
-            self.register_buffer("st_src_idx", torch.tensor(st_src_list, dtype=torch.long))
-            self.register_buffer("st_dest_idx", torch.tensor(st_dest_list, dtype=torch.long))
-
-            final_policy_size = self.factorized_size
+            self.register_buffer("policy_src_idx", src, persistent=False)
+            self.register_buffer("policy_dest_idx", dest, persistent=False)
         else:
             final_policy_size = policy_out_size if policy_out_size else MOVE_VECTOR_LENGTH
 
@@ -124,27 +113,15 @@ class AlphaTiger(Module):
             return value, raw_logits
 
         # unfactorize RN and ST for the game engine
-        idx = 0
-        base_logits = raw_logits[:, idx : idx + self.base_size]; idx += self.base_size
-
-        rn_src  = raw_logits[:, idx : idx + NODES]; idx += NODES
-        rn_dest = raw_logits[:, idx : idx + NODES]; idx += NODES
-
-        st_src  = raw_logits[:, idx : idx + NODES]; idx += NODES
-        st_dest = raw_logits[:, idx : idx + NODES]
-
-        final_logits = raw_logits.new_zeros((raw_logits.shape[0], MOVE_VECTOR_LENGTH))
-        # index_copy preserves dynamic batching in ONNX for non-contiguous index mapping
-        final_logits = final_logits.index_copy(1, self.base_idx_map, base_logits)
-        final_logits[:, self.rn_start : self.rn_start + self.rn_size] = rn_src[:, self.rn_src_idx] + rn_dest[:, self.rn_dest_idx]
-        final_logits[:, self.st_start : self.st_start + self.st_size] = st_src[:, self.st_src_idx] + st_dest[:, self.st_dest_idx]
+        padded = torch.cat((raw_logits, raw_logits.new_zeros((raw_logits.shape[0], 1))), dim=1)
+        final_logits = padded.index_select(1, self.policy_src_idx) + padded.index_select(1, self.policy_dest_idx)
 
         # return evaluation and policy logits
         return value, final_logits
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def predict(self, state):
-        device = next(self.parameters()).device
+        device = self.fc1.weight.device
         x = torch.tensor(state.vector, dtype=torch.float32, device=device).unsqueeze(0)
         value, policy_logits = self.forward(x)
         return value.item(), policy_logits.squeeze(0).cpu().numpy()
@@ -167,6 +144,9 @@ def load_checkpoint(model, optimizer, path):
     resolved_activation = meta.get('activation') or checkpoint.get('model_config', {}).get('activation')
     if resolved_activation:
         model.set_activation(resolved_activation)
+    # Older checkpoints stored the intermediate factorization maps.
+    for key in ('base_idx_map', 'rn_src_idx', 'rn_dest_idx', 'st_src_idx', 'st_dest_idx'):
+        state_dict.pop(key, None)
     model.load_state_dict(state_dict)
     if optimizer is not None:
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
