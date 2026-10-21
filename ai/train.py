@@ -128,7 +128,7 @@ def self_play_game(
             history.append((state.vector.copy(), policy, legal_mask))
         else:
             # No dirichlet noise on fast searches
-            move, _ = mcts.find_move(state, simulations // 10, temp, depsilon=0.0)
+            move, _ = mcts.find_move(state, simulations // 5, temp, depsilon=0.0)
 
         state = Updater.get_next_state(state, move)
         state, luck_history = _resolve_luck(state)
@@ -351,8 +351,6 @@ def setup_training_run(description: str):
                         type=float, default=0.25,
                         help="Fraction of full searches between 0 and 1 (default: 0.25; 1 disables PCR)")
     args = parser.parse_args()
-    if not 0 <= args.pcr <= 1:
-        parser.error("pcr must be between 0 and 1")
 
     if args.finetune:
         curriculum = [
