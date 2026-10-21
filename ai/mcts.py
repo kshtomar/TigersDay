@@ -1,3 +1,4 @@
+import math
 import weakref
 import numpy as np
 import random
@@ -15,7 +16,8 @@ class Node:
         
         self.visit_count = 0
         self.value_sum = 0.0
-        self.prior = prior
+        # stick to Python scalars for speed
+        self.prior = float(prior)
 
     @property
     def eval(self):
@@ -97,7 +99,7 @@ class MCTS:
                     if node is self.root and noise_dict is None and depsilon > 0:
                         legal_moves = list(self.root.children.keys())
                         noise = np.random.dirichlet([self.dalpha] * len(legal_moves))
-                        noise_dict = {move: n for move, n in zip(legal_moves, noise)}
+                        noise_dict = {move: float(n) for move, n in zip(legal_moves, noise)}
                     node = self.select_child(node, noise_dict if node is self.root else None, depsilon=depsilon)
 
             # lazy evaluation, actually do it
@@ -138,8 +140,8 @@ class MCTS:
         depsilon = self.depsilon if depsilon is None else depsilon
         best_score, best_child = -np.inf, None
         # calculate once for every child
-        puct = 1.25 + np.log((node.visit_count + self.ipuct) / self.ipuct)
-        visits_sqrt = np.sqrt(node.visit_count)
+        puct = 1.25 + math.log((node.visit_count + self.ipuct) / self.ipuct)
+        visits_sqrt = math.sqrt(node.visit_count)
         mysore = node.state.to_move == 1
         parent_eval = node.eval
         for move, child in node.children.items():
