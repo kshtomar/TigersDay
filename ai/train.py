@@ -19,6 +19,7 @@ from game.state import GameState
 
 
 Sample = Tuple[np.ndarray, np.ndarray, np.ndarray, float]
+OUTCOME_WEIGHT = 0.75
 
 @dataclass
 class CurriculumStage:
@@ -125,7 +126,7 @@ def self_play_game(
             move, policy = mcts.find_move(state, simulations, temp)
             # Train only on full searches
             legal_mask = Engine.get_legal_moves(state)
-            history.append((state.vector.copy(), policy, legal_mask))
+            history.append((state.vector.copy(), policy, legal_mask, mcts.root.eval))
         else:
             # No dirichlet noise on fast searches
             move, _ = mcts.find_move(state, simulations // 5, temp, depsilon=0.0)
@@ -137,7 +138,11 @@ def self_play_game(
         move_num += 1
 
     winner = Updater.get_state_winner(state)
-    samples = [(sv, pt, lm, np.float32(winner)) for sv, pt, lm in history]
+    # blend final outcome with root value to lower variance
+    samples = [
+        (sv, pt, lm, np.float32(OUTCOME_WEIGHT * winner + (1 - OUTCOME_WEIGHT) * root_val))
+        for sv, pt, lm, root_val in history
+    ]
     return samples, move_num, winner
 
 
