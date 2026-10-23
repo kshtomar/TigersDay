@@ -54,8 +54,8 @@ class GameState:
 
     def copy(self):
         """Crucial for MCTS: Creates a fast, deep copy of the state."""
-        new_state = GameState()
-        new_state.vector = np.copy(self.vector)
+        new_state = GameState.__new__(GameState)
+        new_state.vector = self.vector.copy()
         new_state._attacker = self._attacker
         new_state._defender = self._defender
         new_state._card_strength = self._card_strength
