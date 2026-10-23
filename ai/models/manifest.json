@@ -95,12 +95,12 @@
     "games": 20000,
     "estimated_elo": 1400
   },
-  "alphatigerv16": {
+  "alphatigerv16beta": {
     "activation": "silu",
     "factorized": true,
     "parameters": 395696,
     "training": "curriculum",
     "games": 26000,
-    "estimated_elo": 1424
+    "estimated_elo": 1400
   }
 }
