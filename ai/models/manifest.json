@@ -4,6 +4,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "curriculum",
+    "value_target": "outcome",
     "games": 10000,
     "estimated_elo": 1000
   },
@@ -12,6 +13,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "curriculum",
+    "value_target": "outcome",
     "games": 8600,
     "estimated_elo": 800
   },
@@ -20,6 +22,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "finetune",
+    "value_target": "outcome",
     "games": 2500,
     "estimated_elo": 400
   },
@@ -28,6 +31,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "curriculum",
+    "value_target": "outcome",
     "games": 20200,
     "estimated_elo": 1100
   },
@@ -36,6 +40,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "finetune",
+    "value_target": "outcome",
     "games": 1000,
     "estimated_elo": 1100
   },
@@ -44,6 +49,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "curriculum",
+    "value_target": "outcome",
     "games": 25000,
     "estimated_elo": 1200
   },
@@ -52,6 +58,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "finetune",
+    "value_target": "outcome",
     "games": 1000,
     "estimated_elo": 1300
   },
@@ -60,6 +67,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "curriculum",
+    "value_target": "outcome",
     "games": 25600,
     "estimated_elo": 1400
   },
@@ -68,6 +76,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "finetune",
+    "value_target": "outcome",
     "games": 800,
     "estimated_elo": 1300
   },
@@ -76,6 +85,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "curriculum",
+    "value_target": "outcome",
     "games": 26000,
     "estimated_elo": 1200
   },
@@ -84,6 +94,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "distill",
+    "value_target": "outcome",
     "games": 20000,
     "estimated_elo": 1400
   },
@@ -92,6 +103,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "distill",
+    "value_target": "blended",
     "games": 20000,
     "estimated_elo": 1400
   },
@@ -100,6 +112,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "curriculum",
+    "value_target": "blended",
     "games": 26000,
     "estimated_elo": 1400
   }
