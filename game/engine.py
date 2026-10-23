@@ -17,7 +17,7 @@ def get_legal_moves(state: GameState):
             tire_in_place
         ))
     else:
-        phase0 = np.zeros(BRITISH_MOVES_SPACE, dtype=bool)
+        phase0 = np.zeros(BRITISH_MOVES_SPACE, dtype=np.bool_)
 
     if state.to_move == 1:
         sepoy_mutiny = state.mysore_cards[1] * ((state.fresh_armies | state.tired_armies) & ~KEYS)
@@ -32,9 +32,9 @@ def get_legal_moves(state: GameState):
 
         mysore_power = state.mysore_cards * state.is_battle
 
-        mysore3draw = np.zeros(6, dtype=bool)
-        mysore21draw = np.zeros(6, dtype=bool)
-        mysore22draw = np.zeros(6, dtype=bool)
+        mysore3draw = np.zeros(6, dtype=np.bool_)
+        mysore21draw = np.zeros(6, dtype=np.bool_)
+        mysore22draw = np.zeros(6, dtype=np.bool_)
         mysore3draw[1:6] = state.mysore_cards[0] * ~state.mysore_cards[1:6]
         mysore21draw[3:6] = state.mysore_cards[1] * ~state.mysore_cards[3:6]
         mysore22draw[3:6] = state.mysore_cards[2] * ~state.mysore_cards[3:6]
@@ -53,7 +53,7 @@ def get_legal_moves(state: GameState):
             mysore_pass
         ))
     else:
-        phase1 = np.zeros(MYSORE_CARDS_SPACE, dtype=bool)
+        phase1 = np.zeros(MYSORE_CARDS_SPACE, dtype=np.bool_)
 
     if state.to_move == 2:
         highlanders = state.british_cards[1] * (state.empty & COASTAL)
@@ -68,9 +68,9 @@ def get_legal_moves(state: GameState):
 
         british_power = state.british_cards * state.is_battle
 
-        british3draw = np.zeros(6, dtype=bool)
-        british21draw = np.zeros(6, dtype=bool)
-        british22draw = np.zeros(6, dtype=bool)
+        british3draw = np.zeros(6, dtype=np.bool_)
+        british21draw = np.zeros(6, dtype=np.bool_)
+        british22draw = np.zeros(6, dtype=np.bool_)
         british3draw[1:6] = state.british_cards[0] * ~state.british_cards[1:6]
         british21draw[3:6] = state.british_cards[1] * ~state.british_cards[3:6]
         british22draw[3:6] = state.british_cards[2] * ~state.british_cards[3:6]
@@ -89,7 +89,7 @@ def get_legal_moves(state: GameState):
             british_pass
         ))
     else:
-        phase2 = np.zeros(BRITISH_CARDS_SPACE, dtype=bool)
+        phase2 = np.zeros(BRITISH_CARDS_SPACE, dtype=np.bool_)
 
     mask = np.concatenate((
         phase0,
