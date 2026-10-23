@@ -4,6 +4,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "curriculum",
+    "games": 10000,
     "estimated_elo": 1000
   },
   "alphatigerv10beta": {
@@ -11,6 +12,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "curriculum",
+    "games": 8600,
     "estimated_elo": 800
   },
   "alphatigerv10": {
@@ -18,6 +20,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "finetune",
+    "games": 2500,
     "estimated_elo": 400
   },
   "alphatigerv11beta": {
@@ -25,6 +28,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "curriculum",
+    "games": 20200,
     "estimated_elo": 1100
   },
   "alphatigerv11": {
@@ -32,6 +36,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "finetune",
+    "games": 1000,
     "estimated_elo": 1100
   },
   "alphatigerv12beta": {
@@ -39,6 +44,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "curriculum",
+    "games": 25000,
     "estimated_elo": 1200
   },
   "alphatigerv12": {
@@ -46,6 +52,7 @@
     "factorized": false,
     "parameters": 498496,
     "training": "finetune",
+    "games": 1000,
     "estimated_elo": 1300
   },
   "alphatigerv13beta": {
@@ -53,6 +60,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "curriculum",
+    "games": 25600,
     "estimated_elo": 1400
   },
   "alphatigerv13": {
@@ -60,6 +68,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "finetune",
+    "games": 800,
     "estimated_elo": 1300
   },
   "alphatigerv14beta": {
@@ -67,6 +76,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "curriculum",
+    "games": 26000,
     "estimated_elo": 1200
   },
   "alphatigerv14": {
@@ -74,6 +84,7 @@
     "factorized": true,
     "parameters": 395696,
     "training": "distill",
+    "games": 20000,
     "estimated_elo": 1400
   },
   "alphatigerv15": {
@@ -81,6 +92,15 @@
     "factorized": true,
     "parameters": 395696,
     "training": "distill",
+    "games": 20000,
     "estimated_elo": 1400
+  },
+  "alphatigerv16": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "curriculum",
+    "games": 26000,
+    "estimated_elo": 1424
   }
 }
