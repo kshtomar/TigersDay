@@ -115,5 +115,14 @@
     "value_target": "blended",
     "games": 26000,
     "estimated_elo": 1400
+  },
+  "alphatigerv16": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "finetune",
+    "value_target": "blended",
+    "games": 4000,
+    "estimated_elo": 1500
   }
 }
