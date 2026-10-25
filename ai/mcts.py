@@ -6,6 +6,19 @@ from game.constants import *
 import game.updater as Updater
 import game.engine as Engine
 
+# declare constant for typing in C
+NEG_INF = -np.inf
+
+def mask_normalize(logits, mask):
+    moves = np.flatnonzero(mask)
+    policy = logits[moves]
+    policy = np.exp(policy - policy.max())
+    policy = policy / policy.sum()
+    # filter nonzero moves in numpy for efficiency
+    positive = policy > 0
+    return moves[positive], policy[positive].astype(np.float64)
+
+
 class Node:
     def __init__(self, state, parent = None, move = None, prior = 0.0):
         self.state = state
@@ -120,12 +133,9 @@ class MCTS:
                 continue
 
             value, raw_logits = self.model.predict(node.state)
-            legal_mask = Engine.get_legal_moves(node.state)
-            masked_logits = np.where(legal_mask == 1, raw_logits, -np.inf)
-            max_logit = np.max(masked_logits)
-            exp_logits = np.exp(masked_logits - max_logit)
-            policy = exp_logits / np.sum(exp_logits)
-            node.expand_decision(policy)
+            legal_mask = self.legal_moves(node.state)
+            moves, priors = mask_normalize(raw_logits, legal_mask)
+            node.expand_decision(moves, priors)
             self.backpropagate(node, value)
         
         return self.root
