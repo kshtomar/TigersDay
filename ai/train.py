@@ -86,12 +86,12 @@ class TrainingBudget:
         return steps
 
 
-def _resolve_luck(state: GameState) -> tuple[GameState, list[int]]:
+def _resolve_luck(state: GameState, rng=random) -> tuple[GameState, list[int]]:
     luck_trajectory = []
     while state.is_luck:
         outcomes = Updater.get_luck_outcomes(state)
 
-        idx = random.randrange(len(outcomes))
+        idx = rng.randrange(len(outcomes))
 
         state = outcomes[idx]
         # Return trajectory to allow game reconstruction

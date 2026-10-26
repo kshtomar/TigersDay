@@ -101,6 +101,8 @@ class MCTS:
         self.noise = None
         self.legal_moves = Engine.get_legal_moves
         self.winner = Updater.get_state_winner
+        self.rng = random
+        self.np_rng = np.random
 
     def search(self, root_state, simulations, depsilon=None):
 
@@ -123,11 +125,11 @@ class MCTS:
             while node.expanded():
                 # luck is slippery
                 if node.state.is_luck:
-                    node = random.choice(list(node.children.values()))
+                    node = self.rng.choice(list(node.children.values()))
                 else:
                     # generate noise on simulation 1
                     if node is self.root and self.noise is None and depsilon > 0:
-                        self.noise = np.random.dirichlet([self.dalpha] * len(self.root._moves))
+                        self.noise = self.np_rng.dirichlet([self.dalpha] * len(self.root._moves))
                     node = self.select_child(node, self.noise if node is self.root else None, depsilon=depsilon)
 
             # lazy evaluation, actually do it
@@ -138,7 +140,7 @@ class MCTS:
             while node.state.is_luck:
                 if not node.expanded():
                     node.expand_luck()  
-                node = random.choice(list(node.children.values()))
+                node = self.rng.choice(list(node.children.values()))
             
             reward = self.winner(node.state)
             if reward != 0:
@@ -238,5 +240,5 @@ class MCTS:
         # temperature affects move choice
         counts **= 1.0 / temperature
         tpolicy = counts / counts.sum()
-        move = int(np.random.choice(MOVE_VECTOR_LENGTH, p=tpolicy))
+        move = int(self.np_rng.choice(MOVE_VECTOR_LENGTH, p=tpolicy))
         return move, policy
