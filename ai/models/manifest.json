@@ -15,7 +15,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "games": 8600,
-    "estimated_elo": 800
+    "estimated_elo": 750
   },
   "alphatigerv10": {
     "activation": "relu",
@@ -24,7 +24,7 @@
     "training": "finetune",
     "value_target": "outcome",
     "games": 2500,
-    "estimated_elo": 400
+    "estimated_elo": 300
   },
   "alphatigerv11beta": {
     "activation": "relu",
@@ -33,7 +33,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "games": 20200,
-    "estimated_elo": 1100
+    "estimated_elo": 1250
   },
   "alphatigerv11": {
     "activation": "relu",
@@ -42,7 +42,7 @@
     "training": "finetune",
     "value_target": "outcome",
     "games": 1000,
-    "estimated_elo": 1100
+    "estimated_elo": 1200
   },
   "alphatigerv12beta": {
     "activation": "relu",
@@ -51,7 +51,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "games": 25000,
-    "estimated_elo": 1200
+    "estimated_elo": 1350
   },
   "alphatigerv12": {
     "activation": "relu",
@@ -60,7 +60,7 @@
     "training": "finetune",
     "value_target": "outcome",
     "games": 1000,
-    "estimated_elo": 1300
+    "estimated_elo": 1350
   },
   "alphatigerv13beta": {
     "activation": "relu",
@@ -78,7 +78,7 @@
     "training": "finetune",
     "value_target": "outcome",
     "games": 800,
-    "estimated_elo": 1300
+    "estimated_elo": 1400
   },
   "alphatigerv14beta": {
     "activation": "silu",
@@ -87,7 +87,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "games": 26000,
-    "estimated_elo": 1200
+    "estimated_elo": 1250
   },
   "alphatigerv14": {
     "activation": "silu",
@@ -96,7 +96,7 @@
     "training": "distill",
     "value_target": "outcome",
     "games": 20000,
-    "estimated_elo": 1400
+    "estimated_elo": 1450
   },
   "alphatigerv15": {
     "activation": "silu",
@@ -105,7 +105,7 @@
     "training": "distill",
     "value_target": "blended",
     "games": 20000,
-    "estimated_elo": 1400
+    "estimated_elo": 1500
   },
   "alphatigerv16beta": {
     "activation": "silu",
@@ -114,7 +114,7 @@
     "training": "curriculum",
     "value_target": "blended",
     "games": 26000,
-    "estimated_elo": 1400
+    "estimated_elo": 1450
   },
   "alphatigerv16": {
     "activation": "silu",
@@ -123,6 +123,6 @@
     "training": "finetune",
     "value_target": "blended",
     "games": 4000,
-    "estimated_elo": 1500
+    "estimated_elo": 1550
   }
 }
