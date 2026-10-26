@@ -159,12 +159,12 @@ def train_step(
     value_t   = torch.tensor(np.array(values),   dtype=torch.float32, device=device).unsqueeze(1)
     mask_t    = torch.tensor(np.array(masks),    dtype=torch.bool,    device=device)
 
-    pred_value, pred_logits = model(state_t)
+    pred_value, pred_logits = model(state_t, value_logits=True)
     pred_logits = pred_logits.masked_fill(~mask_t, -1e9)
 
     policy_loss = F.cross_entropy(pred_logits, policy_t)
 
-    value_loss  = F.mse_loss(pred_value, value_t)
+    value_loss = F.binary_cross_entropy_with_logits(pred_value, (value_t + 1) / 2)
 
     loss = value_loss + policy_loss
 

@@ -141,8 +141,8 @@ def stream_batches(data, indices):
 
 
 def compute_loss(model, x, m, v, p):
-    pv, lg = model(x)
-    lv = F.mse_loss(pv, v)
+    pv, lg = model(x, value_logits=True)
+    lv = F.binary_cross_entropy_with_logits(pv, (v + 1) / 2)
     lp = F.kl_div(F.log_softmax(lg.masked_fill(~m, -1e9), dim=-1), p, reduction='batchmean')
     return lv, lp
 
@@ -175,7 +175,7 @@ def train_student(student, data, device, seed):
     best_weights = copy.deepcopy(student.state_dict())
     best_optimizer = copy.deepcopy(opt.state_dict())
 
-    print(f"Baseline validation: MSE={base_v:.4f}, KL={base_p:.4f}")
+    print(f"Baseline validation: BCE={base_v:.4f}, KL={base_p:.4f}")
 
     for ep in range(1, MAX_EPOCHS + 1):
         student.train()
@@ -197,7 +197,7 @@ def train_student(student, data, device, seed):
             best_weights = copy.deepcopy(student.state_dict())
             best_optimizer = copy.deepcopy(opt.state_dict())
 
-        print(f"Epoch {ep:2d}: MSE={val_v:.4f}, KL={val_p:.4f}, Score={score:.4f}{' *' if improved else ''}", flush=True)
+        print(f"Epoch {ep:2d}: BCE={val_v:.4f}, KL={val_p:.4f}, Score={score:.4f}{' *' if improved else ''}", flush=True)
 
         if ep - best_ep >= PATIENCE:
             break

@@ -98,13 +98,15 @@ class AlphaTiger(Module):
         self.activation_name = activation
         self.activation = nn.ReLU() if activation == 'relu' else nn.SiLU()
 
-    def forward(self, x):
+    def forward(self, x, value_logits=False):
         x = self.activation(self.fc1(x))
         x = self.activation(self.fc2(x))
         x = self.activation(self.fc3(x))
 
         value = self.activation(self.value_fc1(x))
-        value = torch.tanh(self.value_fc2(value))
+        value = self.value_fc2(value)
+        # (tanh(z) + 1) / 2 = sigmoid(2z); train BCE before saturation.
+        value = 2 * value if value_logits else torch.tanh(value)
 
         policy = self.activation(self.policy_fc1(x))
         raw_logits = self.policy_fc2(policy)
