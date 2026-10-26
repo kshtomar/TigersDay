@@ -125,7 +125,7 @@ let settings = {
 };
 
 // Client-Side AI & MCTS Singletons
-const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx?v=16-compat');
+const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx?v=16-ort120');
 const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 400, depsilon: 0.1 }); // Micro Dirichlet noise
 const multiplayerManager = new TDMultiplayer.MultiplayerManager();
 
