@@ -1,3 +1,31 @@
+@font-face {
+    font-family: 'Game Baskerville';
+    src: local('Baskerville');
+    font-style: normal;
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Game Baskerville';
+    src: local('Baskerville-Bold');
+    font-style: normal;
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'Game Baskerville';
+    src: local('Baskerville-Italic');
+    font-style: italic;
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Game Baskerville';
+    src: local('Baskerville-BoldItalic');
+    font-style: italic;
+    font-weight: 700;
+}
+
 :root {
     --parchment: #e8d9b0;
     --parchment-light: #faf4e4;
@@ -17,20 +45,45 @@
     --mysore-green-deep: #0d280d;
     --mysore-gold: #d4a030;
     --tiger-gold: #e69500;
+    --sea: #75caf9;
+    --coast: #5B9BD5;
+    --font-map: 'Game Baskerville', Baskerville, serif;
 
     --gold-glow: rgba(230, 170, 40, 0.7);
     --crimson-glow: rgba(192, 40, 26, 0.6);
     --emerald-glow: rgba(46, 122, 46, 0.6);
 
-    --font-heading: 'Cinzel', serif;
-    --font-body: 'Cormorant Garamond', serif;
-    --font-historic: 'IM Fell English', serif;
+    --font-heading: var(--font-map);
+    --font-body: var(--font-map);
+    --font-historic: var(--font-map);
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+button, input, select {
+    font-family: inherit;
+}
+
+.game-footer {
+    flex: 0 0 auto;
+    max-width: 100%;
+    padding-top: 8px;
+    color: #bfa577;
+    font-size: 0.9rem;
+    font-style: italic;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.game-footer cite {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 0.8rem;
+    font-style: normal;
 }
 
 /* Custom Antique Scrollbars */
@@ -53,7 +106,7 @@
 
 body {
     background: #0f0d0a;
-    background-image: 
+    background-image:
         radial-gradient(circle at 50% 10%, #1c1712 0%, #0d0b09 80%),
         repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.2) 40px, rgba(0,0,0,0.2) 80px);
     color: var(--parchment);
@@ -81,22 +134,25 @@ body {
     padding: 4px 10px;
     margin-bottom: 4px;
     border-bottom: 1px solid rgba(122, 92, 46, 0.3);
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .header-branding {
     display: flex;
     align-items: baseline;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 4px 12px;
 }
 
 .header-branding h1 {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-size: clamp(2rem, 2.8vw, 2.5rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
     color: var(--parchment);
     text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-    line-height: 1;
+    line-height: 1.1;
 }
 
 .header-subtitle {
@@ -157,6 +213,14 @@ body {
     background: #382c1f;
     border-color: var(--mysore-gold);
     box-shadow: 0 0 8px var(--gold-glow);
+}
+
+.guide-btn {
+    width: auto;
+    padding: 0 9px;
+    border-radius: 3px;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
 }
 
 .info-glyph {
@@ -486,7 +550,7 @@ body {
     border: 1px solid #5a4220;
     border-radius: 3px;
     padding: 4px 6px;
-    font-family: monospace;
+    font-family: var(--font-body);
     font-size: 0.72rem;
     color: var(--parchment);
 }
@@ -743,64 +807,6 @@ body {
     gap: 6px;
 }
 
-.faction-column-header {
-    flex: 0 0 auto;
-    background: #1a1510;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 4px 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.mysore-column .faction-column-header {
-    border-color: #2e7a2e;
-    background: linear-gradient(90deg, #112811 0%, #1a1510 100%);
-}
-
-.british-column .faction-column-header {
-    border-color: #c0281a;
-    background: linear-gradient(90deg, #331210 0%, #1a1510 100%);
-}
-
-.faction-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.faction-emblem {
-    font-size: 3rem;
-}
-
-.faction-text h3 {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    letter-spacing: 0.08em;
-    line-height: 1.2;
-}
-
-.mysore-column .faction-text h3 { color: #8fe08f; }
-.british-column .faction-text h3 { color: #e58f8f; }
-
-.faction-motto {
-    font-family: var(--font-historic);
-    font-style: italic;
-    font-size: 1rem;
-    color: #a89470;
-}
-
-.card-count-badge {
-    font-family: var(--font-heading);
-    font-size: 0.62rem;
-    background: #2a2014;
-    border: 1px solid var(--border);
-    padding: 1px 5px;
-    border-radius: 8px;
-    color: var(--parchment);
-}
-
 .cards-deck {
     flex: 1 1 auto;
     min-height: 0;
@@ -819,7 +825,8 @@ body {
     border: 1.5px solid var(--border);
     border-radius: 4px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 0 10px rgba(138, 100, 40, 0.2);
-    padding: 6px 8px;
+    padding: 32px 10px 10px 62px;
+    min-height: 64px;
     cursor: pointer;
     position: relative;
     transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease, filter 0.2s ease;
@@ -828,10 +835,14 @@ body {
 }
 
 .mysore-card {
+    --card-color: var(--mysore-green);
+    --card-faction: "MYSORE";
     border-color: #3b6b3b;
 }
 
 .british-card {
+    --card-color: var(--british-red);
+    --card-faction: "BRITISH";
     border-color: #8b342a;
 }
 
@@ -840,20 +851,42 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.8), 0 0 8px rgba(220, 180, 80, 0.4);
 }
 
+/* The printed card's banner starts at the center of its circular number seal. */
+.player-card::before {
+    content: var(--card-faction);
+    position: absolute;
+    top: 8px;
+    left: 29px;
+    right: 8px;
+    height: 20px;
+    padding-right: 10px;
+    background: var(--card-color);
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+    text-align: right;
+    pointer-events: none;
+}
+
 /* Wax Seal Strength Badge (Single-Click Interaction) */
 .card-strength-seal {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 30px;
-    height: 30px;
+    top: 8px;
+    left: 8px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font-heading);
-    font-size: 1.25rem;
-    font-weight: 900;
+    font-family: var(--font-map);
+    font-size: 2rem;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1;
     color: #fff;
     cursor: pointer;
     z-index: 5;
@@ -884,14 +917,10 @@ body {
     display: flex;
     align-items: center;
     gap: 5px;
-    padding-right: 24px;
+    padding-right: 0;
     margin-bottom: 2px;
 }
 
-.card-icon {
-    font-size: 1.5rem;
-    line-height: 1;
-}
 
 .card-name {
     font-family: var(--font-heading);
@@ -1122,7 +1151,7 @@ body {
     border-radius: 4px;
     box-shadow: 0 0 0 3px #261b0e, 0 8px 30px rgba(0,0,0,0.85);
     overflow: hidden;
-    background: #5a9ab8;
+    background: var(--sea);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1188,7 +1217,7 @@ svg#board {
 .debug-move-list {
     max-height: 100px;
     overflow-y: auto;
-    font-family: monospace;
+    font-family: var(--font-body);
     font-size: 0.72rem;
     color: #d4c090;
     line-height: 1.4;
@@ -1372,7 +1401,7 @@ svg#board {
 }
 
 .room-code-text {
-    font-family: monospace;
+    font-family: var(--font-body);
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 0.12em;

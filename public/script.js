@@ -85,21 +85,21 @@ const EDGES = [
 ];
 
 const BRITISH_CARD_DATA = [
-  { name: 'Wall Breach',      strength: 3, icon: '💥', desc: 'Powerful' },
-  { name: 'Highlanders',      strength: 2, icon: '🎖️', desc: 'Deploy a Fresh Army on Coast' },
-  { name: 'Royal Navy',       strength: 2, icon: '⚓', desc: 'Move an Army to any Coast' },
-  { name: 'Divide and Rule',  strength: 1, icon: '🤝', desc: 'Move a Fort not in a Key' },
-  { name: 'Force March',      strength: 1, icon: '🥾', desc: 'Move a Tired Army' },
-  { name: 'Princely States',  strength: 1, icon: '🏰', desc: 'Deploy a Tired Army in a Key' },
+  { name: 'Wall Breach',      strength: 3, desc: 'Powerful' },
+  { name: 'Highlanders',      strength: 2, desc: 'Deploy a Fresh Army on Coast' },
+  { name: 'Royal Navy',       strength: 2, desc: 'Move an Army to any Coast' },
+  { name: 'Divide and Rule',  strength: 1, desc: 'Move a Fort not in a Key' },
+  { name: 'Force March',      strength: 1, desc: 'Move a Tired Army' },
+  { name: 'Princely States',  strength: 1, desc: 'Deploy a Tired Army in a Key' },
 ];
 
 const MYSORE_CARD_DATA = [
-  { name: 'Iron Rockets',     strength: 3, icon: '🚀', desc: 'Powerful' },
-  { name: 'Sepoy Mutiny',     strength: 2, icon: '⚔️', desc: 'Remove an Army not in a Key' },
-  { name: 'French Alliance',  strength: 2, icon: '🇫🇷', desc: 'Deploy a Fort adjacent to another Fort' },
-  { name: 'Monsoon',          strength: 1, icon: '🌧️', desc: 'Flip a Fresh Army to Tired' },
-  { name: 'Cavalry Raid',     strength: 1, icon: '🏇', desc: 'British discard' },
-  { name: 'Sea Trade',        strength: 1, icon: '🪙', desc: 'Move a Fort from Coast to any' },
+  { name: 'Iron Rockets',     strength: 3, desc: 'Powerful' },
+  { name: 'Sepoy Mutiny',     strength: 2, desc: 'Remove an Army not in a Key' },
+  { name: 'French Alliance',  strength: 2, desc: 'Deploy a Fort adjacent to another Fort' },
+  { name: 'Monsoon',          strength: 1, desc: 'Flip a Fresh Army to Tired' },
+  { name: 'Cavalry Raid',     strength: 1, desc: 'British discard' },
+  { name: 'Sea Trade',        strength: 1, desc: 'Move a Fort from Coast to any' },
 ];
 
 const CARD_VALUE = [3, 2, 2, 1, 1, 1];
@@ -231,14 +231,14 @@ window.renderNodes = function renderNodes() {
       sq.setAttribute('y', '-18');
       sq.setAttribute('width', '36');
       sq.setAttribute('height', '36');
-      sq.setAttribute('fill', '#1c1814');
+      sq.setAttribute('fill', '#000');
       sq.setAttribute('stroke', '#e0c896');
       sq.setAttribute('stroke-width', '1.6');
       g.appendChild(sq);
     } else {
       const circ = document.createElementNS(SVG_NS, 'circle');
       circ.setAttribute('r', '10');
-      circ.setAttribute('fill', '#2a2420');
+      circ.setAttribute('fill', '#000');
       circ.setAttribute('stroke', '#b0a080');
       circ.setAttribute('stroke-width', '1.4');
       g.appendChild(circ);
@@ -299,10 +299,9 @@ window.renderNodes = function renderNodes() {
       t.setAttribute('dy', String(ldy));
       t.setAttribute('dx', String(ldx));
       t.setAttribute('text-anchor', anchor);
-      t.setAttribute('font-family', key ? 'Cinzel,serif' : 'Cormorant Garamond,serif');
-      t.setAttribute('font-size', key ? '21' : '19');
-      t.setAttribute('font-weight', '700');
-      if (key) t.setAttribute('letter-spacing', '.06em');
+      t.setAttribute('font-family', 'var(--font-map)');
+      t.setAttribute('font-size', '19');
+      t.setAttribute('font-weight', key ? '700' : '400');
       if (isHalo) {
         t.setAttribute('stroke', 'rgba(228,213,155,0.92)');
         t.setAttribute('stroke-width', '4');
@@ -310,9 +309,15 @@ window.renderNodes = function renderNodes() {
         t.setAttribute('fill', 'none');
         t.setAttribute('paint-order', 'stroke');
       } else {
-        t.setAttribute('fill', '#1a1208');
+        t.setAttribute('fill', '#000');
+        if (!key) {
+          // A thin stroke adds weight without jumping to Baskerville Bold.
+          t.setAttribute('stroke', '#000');
+          t.setAttribute('stroke-width', '0.35');
+          t.setAttribute('paint-order', 'stroke');
+        }
       }
-      t.textContent = name;
+      t.textContent = key ? name.toUpperCase() : name;
       return t;
     };
     g.appendChild(makeLabel(true));
@@ -536,12 +541,6 @@ function renderAllCards() {
   renderCardDeck('mysore', lastUiState.mysore_cards);
   renderCardDeck('british', lastUiState.british_cards);
 
-  const mAvail = lastUiState.mysore_cards.filter(Boolean).length;
-  const bAvail = lastUiState.british_cards.filter(Boolean).length;
-  const mBadge = document.getElementById('mysore-hand-count');
-  const bBadge = document.getElementById('british-hand-count');
-  if (mBadge) mBadge.textContent = `${mAvail}/6`;
-  if (bBadge) bBadge.textContent = `${bAvail}/6`;
 }
 
 function renderCardDeck(faction, availArray) {
@@ -585,7 +584,6 @@ function renderCardDeck(faction, availArray) {
     const headerRow = document.createElement('div');
     headerRow.className = 'card-header-row';
     headerRow.innerHTML = `
-      <span class="card-icon">${card.icon}</span>
       <span class="card-name">${card.name}</span>
     `;
     cardDiv.appendChild(headerRow);
@@ -1029,52 +1027,39 @@ function renderDebugMoveList() {
   `).join('');
 }
 
+function toggleDrawer(id) {
+  document.querySelectorAll('.drawer-panel').forEach(drawer => {
+    if (drawer.id === id) drawer.classList.toggle('hidden');
+    else drawer.classList.add('hidden');
+  });
+}
+
 function toggleTutorialMenu() {
-  const tutorialDrawer = document.getElementById('tutorial-drawer');
-  const settingsDrawer = document.getElementById('settings-drawer');
-  if (settingsDrawer) settingsDrawer.classList.add('hidden');
-  if (tutorialDrawer) tutorialDrawer.classList.toggle('hidden');
+  toggleDrawer('tutorial-drawer');
+}
+
+function toggleRulesMenu() {
+  toggleDrawer('rules-drawer');
 }
 
 function toggleSettingsMenu() {
-  const tutorialDrawer = document.getElementById('tutorial-drawer');
-  const settingsDrawer = document.getElementById('settings-drawer');
-  if (tutorialDrawer) tutorialDrawer.classList.add('hidden');
-  if (settingsDrawer) settingsDrawer.classList.toggle('hidden');
+  toggleDrawer('settings-drawer');
 }
 
 document.addEventListener('click', (e) => {
-  const tutorialDrawer = document.getElementById('tutorial-drawer');
-  const tutorialBtn = document.getElementById('tutorial-toggle-btn');
-  const settingsDrawer = document.getElementById('settings-drawer');
-  const settingsBtn = document.getElementById('settings-toggle-btn');
-
-  if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-    if (!tutorialDrawer.contains(e.target) && !tutorialBtn.contains(e.target)) {
-      tutorialDrawer.classList.add('hidden');
+  document.querySelectorAll('.drawer-panel:not(.hidden)').forEach(drawer => {
+    const button = document.querySelector(`[aria-controls="${drawer.id}"]`);
+    if (!drawer.contains(e.target) && !button.contains(e.target)) {
+      drawer.classList.add('hidden');
     }
-  }
-
-  if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
-    if (!settingsDrawer.contains(e.target) && !settingsBtn.contains(e.target)) {
-      settingsDrawer.classList.add('hidden');
-    }
-  }
+  });
 });
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    const tutorialDrawer = document.getElementById('tutorial-drawer');
-    const settingsDrawer = document.getElementById('settings-drawer');
-    if (tutorialDrawer && !tutorialDrawer.classList.contains('hidden')) {
-      tutorialDrawer.classList.add('hidden');
-      return;
-    }
-    if (settingsDrawer && !settingsDrawer.classList.contains('hidden')) {
-      settingsDrawer.classList.add('hidden');
-      return;
-    }
-    handleHeaderCancelClick();
+    const drawer = document.querySelector('.drawer-panel:not(.hidden)');
+    if (drawer) drawer.classList.add('hidden');
+    else handleHeaderCancelClick();
   }
 });
 
@@ -1510,7 +1495,7 @@ function renderBattleMarker(uiState) {
     const t = document.createElementNS(SVG_NS, 'text');
     t.setAttribute('text-anchor', 'middle');
     t.setAttribute('dominant-baseline', 'central'); // Align with icon center
-    t.setAttribute('font-family', 'Cinzel, serif'); // Keeping historic font
+    t.setAttribute('font-family', 'var(--font-heading)'); // Keeping historic font
     t.setAttribute('font-size', '28');
     t.setAttribute('font-weight', '700');
 

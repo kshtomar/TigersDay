@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Tiger's Day – The Anglo-Mysore Wars</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="style.css?v=20261026-10">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -18,7 +16,7 @@
 <!-- TOP UTILITY BAR: TITLE, TUTORIAL & SETTINGS -->
 <header class="app-header">
     <div class="header-branding">
-        <h1>THE TIGER'S DAY</h1>
+        <h1>The Tiger’s Day</h1>
         <span class="header-subtitle">Anglo-Mysore Wars · 1767 – 1799</span>
     </div>
     
@@ -26,12 +24,11 @@
         <div id="connection-pill" class="pill disconnected">⬤ CONNECTING</div>
         
         <!-- Tutorial (i) Button -->
-        <button id="tutorial-toggle-btn" class="icon-btn" title="How to Play & Controls" aria-label="How to Play" onclick="toggleTutorialMenu()">
-            <span class="info-glyph">ⓘ</span>
-        </button>
+        <button id="rules-toggle-btn" class="icon-btn guide-btn" title="Game Rules" aria-controls="rules-drawer" onclick="toggleRulesMenu()">Rules</button>
+        <button id="tutorial-toggle-btn" class="icon-btn guide-btn" title="App Controls" aria-controls="tutorial-drawer" onclick="toggleTutorialMenu()">Controls</button>
 
         <!-- Settings (Gear) Button -->
-        <button id="settings-toggle-btn" class="icon-btn" title="Settings & Options" aria-label="Settings" onclick="toggleSettingsMenu()">
+        <button id="settings-toggle-btn" class="icon-btn" title="Settings & Options" aria-label="Settings" aria-controls="settings-drawer" onclick="toggleSettingsMenu()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -43,62 +40,62 @@
 <!-- TUTORIAL MENU DRAWER (Zero Popups) -->
 <div id="tutorial-drawer" class="drawer-panel hidden">
     <div class="drawer-header">
-        <div class="drawer-title-wrap">
-            <span class="drawer-icon">📜</span>
-            <h3>HOW TO PLAY & CONTROLS</h3>
-        </div>
-        <button class="close-drawer-btn" onclick="toggleTutorialMenu()">✕</button>
+        <h3>CONTROLS</h3>
+        <button class="close-drawer-btn" aria-label="Close controls" onclick="toggleTutorialMenu()">✕</button>
     </div>
-
     <div class="drawer-content tutorial-content">
         <div class="tutorial-item">
-            <div class="tutorial-item-title">
-                <span class="step-num">1</span>
-                <strong>Direct Army Movement</strong>
-            </div>
-            <p><strong>Click an Army/Fort unit</strong> to select it. Valid destination territories will pulse on the map. <strong>Click any glowing territory</strong> to move immediately.</p>
-            <span class="tutorial-tip">💡 <strong>Toggle Deselection:</strong> Click the same selected unit again to instantly cancel selection.</span>
+            <div class="tutorial-item-title"><span class="step-num">1</span><strong>Your Phase & Legal Actions</strong></div>
+            <p>Follow the turn header. You can act only for the side whose phase it is; wait for the AI or online opponent during their phase. Pulsing spaces and highlighted exhausted cards show legal choices.</p>
         </div>
-
         <div class="tutorial-item">
-            <div class="tutorial-item-title">
-                <span class="step-num">2</span>
-                <strong>Combat Strength in Battle</strong>
-            </div>
-            <p><strong>Single-Click the round Wax Seal number</strong> on the top-right of any card to commit its value (+1, +2, or +3) as Combat Strength in an active battle.</p>
+            <div class="tutorial-item-title"><span class="step-num">2</span><strong>Move or Rest</strong></div>
+            <p>In the British movement phase, <strong>click a Fresh army</strong>, then a pulsing destination. To leave it in place, select it and click <strong>Rest Unit</strong>. Both actions make it Tired. Select a fort for movement only after activating an appropriate card.</p>
         </div>
-
         <div class="tutorial-item">
-            <div class="tutorial-item-title">
-                <span class="step-num">3</span>
-                <strong>Card Ability Activation</strong>
-            </div>
-            <p><strong>Click the body of any active card</strong> in your hand:</p>
-            <ul class="tutorial-list">
-                <li><em>Non-Targeted (e.g. Cavalry Raid):</em> Executes immediately.</li>
-                <li><em>Targeted (e.g. Sepoy Mutiny, French Alliance, Highlanders):</em> Enters <strong>Targeting Mode</strong>. Valid map territories will pulse—click one to apply.</li>
-                <li><em>No ability available?</em> The card will automatically stage for trade instead.</li>
-            </ul>
+            <div class="tutorial-item-title"><span class="step-num">3</span><strong>Card Abilities</strong></div>
+            <p><strong>Click the card body</strong>, away from its number seal.</p><ul class="tutorial-list"><li><strong>Sepoy Mutiny, French Alliance, Monsoon, Highlanders, Princely States:</strong> click a pulsing map target.</li><li><strong>Divide and Rule, Force March, Royal Navy, Sea Trade:</strong> click a pulsing origin, then a pulsing destination.</li><li><strong>Cavalry Raid:</strong> executes immediately.</li></ul>
         </div>
-
         <div class="tutorial-item">
-            <div class="tutorial-item-title">
-                <span class="step-num">4</span>
-                <strong>Card-to-Card Trading</strong>
-            </div>
-            <p>Reclaim an exhausted (greyed-out) card by trading a higher-value active card:</p>
-            <ol class="tutorial-list numbered">
-                <li><strong>Click</strong> an active card with no ability move (it glows gold, staged for trade).</li>
-                <li><strong>Click</strong> an eligible exhausted card to trade and reclaim it.</li>
-            </ol>
+            <div class="tutorial-item-title"><span class="step-num">4</span><strong>Trade or Commit Strength</strong></div>
+            <p><strong>Trade:</strong> click an available card body, then the body of a highlighted, exhausted card in the same hand. You can choose a trade even if map targets are also available. Cavalry Raid executes immediately when its ability is available.</p><p><strong>Battle strength:</strong> during your card phase, click an available card’s <strong>number seal on the left</strong> to commit its value to an active battle.</p>
         </div>
-
         <div class="tutorial-item">
-            <div class="tutorial-item-title">
-                <span class="step-num">5</span>
-                <strong>Passing & Resting</strong>
-            </div>
-            <p>Use the inline <strong>"Pass Phase"</strong> or <strong>"Rest Unit"</strong> buttons located in the top turn header when those options are available.</p>
+            <div class="tutorial-item-title"><span class="step-num">5</span><strong>Pass & Cancel</strong></div>
+            <p><strong>Pass Phase</strong> skips a card action when available. Click the selected army or card again, use <strong>Cancel</strong>, or press <strong>Escape</strong> to clear targeting. These controls do not undo completed moves. Escape closes an open drawer first.</p>
+        </div>
+        <div class="tutorial-item">
+            <div class="tutorial-item-title"><span class="step-num">6</span><strong>Settings & Modes</strong></div>
+            <p>Open the <strong>gear</strong> for AI play, local Pass & Play, online P2P, or AI spectator mode. Changing the mode or your side starts a new game. Settings also has AI evaluation, thinking depth, board reset, and binary state copy/restore.</p>
+        </div>
+    </div>
+</div>
+
+<div id="rules-drawer" class="drawer-panel hidden">
+    <div class="drawer-header">
+        <h3>RULES</h3>
+        <button class="close-drawer-btn" aria-label="Close rules" onclick="toggleRulesMenu()">✕</button>
+    </div>
+    <div class="drawer-content tutorial-content">
+        <div class="tutorial-item">
+            <div class="tutorial-item-title"><span class="step-num">1</span><strong>Victory</strong></div>
+            <p><strong>British:</strong> occupy all five square keys with armies. <strong>Mysore:</strong> survive through the end of turn 4. Each turn represents one Anglo-Mysore War.</p>
+        </div>
+        <div class="tutorial-item">
+            <div class="tutorial-item-title"><span class="step-num">2</span><strong>Armies, Forts & Spaces</strong></div>
+            <p>Red squares are British armies; green diamonds are Mysore forts. Keys are square spaces with bold uppercase labels. Only one army or fort may occupy a space. Armies normally move along a connection; forts move only through card abilities. A faded, slashed army is Tired.</p>
+        </div>
+        <div class="tutorial-item">
+            <div class="tutorial-item-title"><span class="step-num">3</span><strong>Turn & Impulse Sequence</strong></div>
+            <p>At the start of each turn, both hands refresh and all armies become Fresh. Each impulse runs <strong>British army move → Mysore card → British card → battle resolution</strong>. The British move one Fresh army or tire it in place. Each side may use one card or pass during its card phase. Repeat until no Fresh armies remain, then begin the next turn.</p>
+        </div>
+        <div class="tutorial-item">
+            <div class="tutorial-item-title"><span class="step-num">4</span><strong>Three Uses for a Card</strong></div>
+            <p>Spend an available card to <strong>use its printed ability</strong>, <strong>recover an exhausted card with a lower number</strong>, or <strong>add its number to an unresolved battle</strong>. Each use exhausts the card. Iron Rockets and Wall Breach have no separate map ability. All cards remain face up; discards are random.</p><p>Coast means a space touching the ocean. Card abilities can change the normal movement and deployment rules; their text describes the effect.</p>
+        </div>
+        <div class="tutorial-item">
+            <div class="tutorial-item-title"><span class="step-num">5</span><strong>Battles</strong></div>
+            <p>An army moving into a fort starts a battle and stays at its origin until resolution. Moving the attacker or defender away cancels that battle. Count British armies and Mysore forts adjacent to the defending space, then add committed card strength. <strong>Higher strength wins; ties favor Mysore.</strong></p><p>If the British win, remove the fort and move the army into its space. Otherwise the army stays at its origin. The losing side randomly discards a card. Battles resolve automatically after the British card phase.</p>
         </div>
     </div>
 </div>
@@ -257,17 +254,6 @@
     
     <!-- LEFT COLUMN: SULTANATE OF MYSORE CARDS & INTEL -->
     <aside class="faction-column mysore-column" id="mysore-column">
-        <div class="faction-column-header">
-            <div class="faction-title-wrap">
-                <span class="faction-emblem">🐅</span>
-                <div class="faction-text">
-                    <h3>MYSORE</h3>
-                    <span class="faction-motto">Sultanate Hand</span>
-                </div>
-            </div>
-            <span id="mysore-hand-count" class="card-count-badge">6/6</span>
-        </div>
-
         <div id="mysore-cards-list" class="cards-deck">
             <!-- Dynamically populated cards with wax seal strength badges -->
         </div>
@@ -309,16 +295,13 @@
             <svg id="board" viewBox="0 0 760 880" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="seaGrad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stop-color="#8ec4dc"/>
-                        <stop offset="100%" stop-color="#5a9ab8"/>
+                        <stop offset="0%" stop-color="var(--sea)"/>
+                        <stop offset="100%" stop-color="var(--sea)"/>
                     </linearGradient>
                     <linearGradient id="landGrad" x1="0" y1="0" x2=".25" y2="1">
                         <stop offset="0%" stop-color="#e2d09a"/>
                         <stop offset="100%" stop-color="#c8b474"/>
                     </linearGradient>
-                    <filter id="landshadow">
-                        <feDropShadow dx="2" dy="3" stdDeviation="5" flood-color="#0005"/>
-                    </filter>
                     <filter id="nshadow">
                         <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0007"/>
                     </filter>
@@ -345,14 +328,13 @@
                 </g>
 
                 <!-- Coastlines -->
-                <path id="india" d="M 0,0 L 760,0 L 760,82 L 675,116 L 656,162 L 664,205 L 643,260 L 618,322 L 615,380 L 610,446 L 596,504 L 573,558 L 546,612 L 514,663 L 481,712 L 450,750 L 415,782 L 374,812 L 332,836 L 293,846 L 263,838 L 240,820 L 214,794 L 191,756 L 173,714 L 165,682 L 147,624 L 133,563 L 125,502 L 125,482 L 118,438 L 118,398 L 106,334 L 94,278 L 94,262 L 88,214 L 84,162 L 93,116 L 110,74 L 0,0 Z" fill="url(#landGrad)" stroke="#68696b" stroke-width="3.5" filter="url(#landshadow)"/>
-                <path id="ceylon-land" d="M 528,718 L 558,699 L 594,700 L 620,718 L 628,750 L 622,800 L 608,850 L 592,880 L 560,880 L 548,850 L 538,800 L 524,742 Z" fill="url(#landGrad)" stroke="#68696b" stroke-width="2.5" filter="url(#landshadow)"/>
-                <path d="M 528,718 L 558,699 L 594,700 L 620,718 L 628,750 L 622,800 L 608,850 L 592,880 L 560,880 L 548,850 L 538,800 L 524,742 Z" fill="none" stroke="#e0cfa0" stroke-width=".8" opacity=".5"/>
+                <path id="india" d="M 0,0 L 760,0 L 760,82 L 675,116 L 656,162 L 664,205 L 643,260 L 618,322 L 615,380 L 610,446 L 596,504 L 573,558 L 546,612 L 514,663 L 481,712 L 450,750 L 415,782 L 374,812 L 332,836 L 293,846 L 263,838 L 240,820 L 214,794 L 191,756 L 173,714 L 165,682 L 147,624 L 133,563 L 125,502 L 125,482 L 118,438 L 118,398 L 106,334 L 94,278 L 94,262 L 88,214 L 84,162 L 93,116 L 110,74 L 0,0 Z" fill="url(#landGrad)" stroke="var(--coast)" stroke-width="3.5"/>
+                <path id="ceylon-land" d="M 528,718 L 558,699 L 594,700 L 620,718 L 628,750 L 622,800 L 608,850 L 592,880 L 560,880 L 548,850 L 538,800 L 524,742 Z" fill="url(#landGrad)" stroke="var(--coast)" stroke-width="2.5"/>
                 
                 <!-- Sea Labels -->
-                <text x="44" y="540" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="16" fill="#2a5a7a" opacity=".7" transform="rotate(-90,44,540)">Arabian Sea</text>
-                <text x="726" y="430" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="16" fill="#2a5a7a" opacity=".7" transform="rotate(90,726,430)">Bay of Bengal</text>
-                <text x="480" y="806" text-anchor="middle" font-family="IM Fell English,serif" font-style="italic" font-size="13" fill="#2a5a7a" opacity=".75">Palk Strait</text>
+                <text x="44" y="540" text-anchor="middle" font-family="var(--font-map)" font-style="italic" font-size="16" fill="#2a5a7a" opacity=".7" transform="rotate(-90,44,540)">Arabian Sea</text>
+                <text x="726" y="430" text-anchor="middle" font-family="var(--font-map)" font-style="italic" font-size="16" fill="#2a5a7a" opacity=".7" transform="rotate(90,726,430)">Bay of Bengal</text>
+                <text x="480" y="806" text-anchor="middle" font-family="var(--font-map)" font-style="italic" font-size="13" fill="#2a5a7a" opacity=".75">Palk Strait</text>
                 
                 <!-- Compass Rose -->
                 <g transform="translate(688,808)" opacity=".45">
@@ -360,7 +342,7 @@
                     <line x1="0" y1="-27" x2="0" y2="27" stroke="#6a4c1e" stroke-width="1"/>
                     <line x1="-27" y1="0" x2="27" y2="0" stroke="#6a4c1e" stroke-width="1"/>
                     <polygon points="0,-27 3,-10 0,-14 -3,-10" fill="#6a4c1e"/>
-                    <text y="-31" text-anchor="middle" font-size="8" font-family="Cinzel,serif" fill="#6a4c1e">N</text>
+                    <text y="-31" text-anchor="middle" font-size="8" font-family="var(--font-map)" fill="#6a4c1e">N</text>
                 </g>
 
                 <!-- Road Edges & Maritime Paths -->
@@ -389,17 +371,6 @@
 
     <!-- RIGHT COLUMN: BRITISH EAST INDIA COMPANY CARDS & INTEL -->
     <aside class="faction-column british-column" id="british-column">
-        <div class="faction-column-header">
-            <div class="faction-title-wrap">
-                <span class="faction-emblem">🦁</span>
-                <div class="faction-text">
-                    <h3>BRITISH</h3>
-                    <span class="faction-motto">East India Co. Hand</span>
-                </div>
-            </div>
-            <span id="british-hand-count" class="card-count-badge">6/6</span>
-        </div>
-
         <div id="british-cards-list" class="cards-deck">
             <!-- Dynamically populated cards with wax seal strength badges -->
         </div>
@@ -417,6 +388,13 @@
     </aside>
 
 </main>
+
+<footer class="game-footer">
+    <blockquote>
+        “Better to live one day as a tiger than a thousand years as a sheep.”
+        <cite>— Tipu Sultan</cite>
+    </blockquote>
+</footer>
 
 <!-- INLINE FLOATING TOOLTIP -->
 <div id="tooltip" class="tooltip"></div>
@@ -437,7 +415,7 @@
 <script src="js/multiplayer.js"></script>
 
 <!-- Frontend Client & UI Controller -->
-<script src="script.js"></script>
+<script src="script.js?v=20261026-10"></script>
 
 </body>
 </html>
