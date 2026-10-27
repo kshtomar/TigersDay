@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261026-12">
+    <link rel="stylesheet" href="style.css?v=20261026-19">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -206,6 +206,77 @@
 </div>
 
 <!-- 1. PERSISTENT, LOW-PROFILE TURN HEADER -->
+<dialog id="learn-dialog" class="learn-dialog" aria-labelledby="learn-title" oncancel="event.preventDefault(); finishTutorial()">
+    <header class="learn-header">
+        <span class="learn-eyebrow">FIELD GUIDE <span id="learn-progress"></span></span>
+        <nav aria-label="Tutorial navigation"><button class="learn-skip" onclick="finishTutorial()">Skip</button><button id="learn-back" class="learn-back" onclick="stepTutorial(-1)">Back</button><button id="learn-next" class="learn-next" onclick="stepTutorial(1)" autofocus>Next</button></nav>
+    </header>
+    <div id="learn-body" class="learn-body" aria-live="polite" aria-atomic="true">
+        <h2 id="learn-title"></h2>
+        <section data-lesson="Armies & forts">
+            <p class="learn-lead">4 turn game — each turn is 1 of the 4 Anglo-Mysore Wars</p>
+            <div class="learn-columns">
+                <div><span class="learn-piece army" aria-hidden="true"></span><h3>British armies</h3><p>Move once per war<br>Army in all 5 keys — British win</p></div>
+                <div><span class="learn-piece fort" aria-hidden="true"></span><h3>Mysore forts</h3><p>Normally stationary<br>End of turn 4 — Mysore win</p></div>
+            </div>
+            <p>Only a single army or fort per space<br>Cannot deploy on occupied space<br>Move to adjacent unless specified<br>Fort can never move into army</p>
+            <div class="learn-locations">
+                <figure class="learn-location" data-location="Goa"><figcaption>Coast</figcaption></figure>
+                <figure class="learn-location" data-location="Hyderabad"><figcaption>Key</figcaption></figure>
+            </div>
+        </section>
+        <section data-lesson="Turn sequence" class="learn-layout" hidden>
+            <div class="learn-rules">
+                <p class="learn-lead">British and Mysore draw all 6 cards<br>All British armies become Fresh<br>Play impulses until all armies are Tired</p>
+                <ol class="learn-sequence">
+                    <li><strong>British move</strong><span>Tire a Fresh army and may move it</span></li>
+                    <li><strong>Mysore card</strong><span>May play a card</span></li>
+                    <li><strong>British card</strong><span>May play a card</span></li>
+                    <li><strong>Battles</strong><span>Resolve if any</span></li>
+                </ol>
+                <p class="learn-note">Click a Fresh army, then a glowing destination<br>Rest Unit — Tire without moving<br>Pass Phase — play no card</p>
+            </div>
+            <div data-demo="move" class="watch-player" aria-live="off"></div>
+        </section>
+        <section data-lesson="Cards can be played for" class="learn-layout" hidden>
+            <div class="learn-rules">
+                <ol class="learn-sequence">
+                    <li><strong>Card text</strong><span>Click the card body, then a glowing target</span></li>
+                    <li><strong>Draw</strong><span>Pick up a used card of lower number</span></li>
+                    <li><strong>Strength</strong><span>Add number to unresolved battle — click the number seal</span></li>
+                </ol>
+                <p>Each use exhausts the card<br>Keep all cards face up</p>
+                <p class="learn-note">Discard — randomly throw a card away<br>Draw — pick up a used card<br>To draw, select an available card, then a highlighted used card<br>Cancel or Escape — clear selection</p>
+            </div>
+            <div data-demo="uses" class="watch-player" aria-live="off"></div>
+        </section>
+        <section data-lesson="Battles" class="learn-layout" hidden>
+            <div class="learn-rules">
+                <p class="learn-lead">When an army moves into a fort</p>
+                <div class="learn-equation"><span>1 per adjacent unit</span><b>+</b><span>Number if card</span><b>=</b><span>Strength</span></div>
+                <p>Army remains at starting point<br>Resolve at end of impulse<br>Moving out cancels battle</p>
+                <p>Adjacency counted on defending fort<br>Higher Strength wins — ties go to Mysore</p>
+                <p>Army loses — does not move<br>Fort loses — remove it, army moves in<br>Losing player must discard</p>
+                <p class="learn-note">Count armies for British, forts for Mysore<br>Never move into an existing defender</p>
+            </div>
+            <div data-demo="battle" class="watch-player" aria-live="off"></div>
+        </section>
+        <section data-lesson="British cards" class="learn-layout" hidden>
+            <div class="learn-rules">
+                <p class="learn-lead">Red squares — armies · A slash — Tired</p>
+                <p class="learn-note">Every card can also draw a lower number or add Strength<br>Choose a card to watch it played</p>
+            </div>
+            <div data-demo="british" class="watch-player" aria-live="off"></div>
+        </section>
+        <section data-lesson="Mysore cards" class="learn-layout" hidden>
+            <div class="learn-rules">
+                <p class="learn-lead">Green diamonds — forts · Blue edge — Coast</p>
+                <p class="learn-note">Every card can also draw a lower number or add Strength<br>Choose a card to watch it played</p>
+            </div>
+            <div data-demo="mysore" class="watch-player" aria-live="off"></div>
+        </section>
+    </div>
+</dialog>
 <div id="war-transition" class="war-transition hidden" role="status" aria-live="polite" aria-atomic="true">
     <h2 id="war-title"></h2>
     <p id="war-dates"></p>
@@ -419,7 +490,7 @@
 <script src="js/multiplayer.js"></script>
 
 <!-- Frontend Client & UI Controller -->
-<script src="script.js?v=20261026-12"></script>
+<script src="script.js?v=20261026-19"></script>
 
 </body>
 </html>

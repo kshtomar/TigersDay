@@ -119,6 +119,9 @@ let currentBitString = "";
 let lastUiState = null;
 let warTimer = null;
 let aiTimer = null;
+let tutorialOpen = true;
+let tutorialStep = 0;
+let demoTimer = null;
 let currentMoves = [];                 // Array of { idx, type, desc }
 let selectedUnit = null;               // Selected territory string on map
 let activeSelection = null;            // Selected card name
@@ -184,12 +187,11 @@ function renderEdges() {
   }
 }
 
-window.renderNodes = function renderNodes() {
-  const layer = document.getElementById('node-layer');
+window.renderNodes = function renderNodes(nodes = window.NODES, layer = document.getElementById('node-layer')) {
   if (!layer) return;
   layer.innerHTML = '';
 
-  for (const [name, data] of Object.entries(window.NODES)) {
+  for (const [name, data] of Object.entries(nodes)) {
     const { x, y, owner, key, coast } = data;
     const armyType = data.armyType || 'empty';
     const la = data.labelAnchor || { anchor: 'middle', dx: 0, dy: key ? -24 : -16 };
@@ -335,7 +337,7 @@ window.renderNodes = function renderNodes() {
     layer.appendChild(g);
   }
 
-  refreshMapHighlights();
+  if (layer.id === 'node-layer') refreshMapHighlights();
 };
 
 // ==========================================================================
@@ -1112,7 +1114,7 @@ function isCurrentSideAi(uiState) {
 }
 
 function isTurnBlockedForLocalPlayer() {
-  if (warTimer !== null) return true;
+  if (tutorialOpen || warTimer !== null) return true;
   if (!lastUiState) return true;
   const whoToMove = (lastUiState.who_to_move || '').toLowerCase();
   if (matchMode === 'p2p_multiplayer') {
@@ -1125,6 +1127,230 @@ function isTurnBlockedForLocalPlayer() {
     return true;
   }
   return false;
+}
+
+function renderTutorial() {
+  clearTimeout(demoTimer);
+  const lessons = document.querySelectorAll('[data-lesson]');
+  lessons.forEach((lesson, i) => { lesson.hidden = i !== tutorialStep; });
+  document.getElementById('learn-title').textContent = lessons[tutorialStep].dataset.lesson;
+  document.getElementById('learn-progress').textContent = `${tutorialStep + 1} / ${lessons.length}`;
+  document.getElementById('learn-back').disabled = tutorialStep === 0;
+  document.getElementById('learn-next').textContent = tutorialStep === lessons.length - 1 ? 'Begin First War' : 'Next';
+  document.getElementById('learn-body').scrollTop = 0;
+  const demo = lessons[tutorialStep].querySelector('[data-demo]');
+  if (demo) playTutorialDemo(demo.dataset.demo, 0);
+}
+
+function stepTutorial(delta) {
+  const count = document.querySelectorAll('[data-lesson]').length;
+  if (tutorialStep + delta === count) {
+    finishTutorial();
+    return;
+  }
+  tutorialStep = Math.max(0, Math.min(count - 1, tutorialStep + delta));
+  renderTutorial();
+}
+
+function finishTutorial() {
+  if (!tutorialOpen) return;
+  tutorialOpen = false;
+  clearTimeout(demoTimer);
+  document.getElementById('learn-dialog').close();
+  showWarTransition(lastUiState.turn);
+}
+
+function tutorialScenario(side, index) {
+  const state = new GameState();
+  state.default_setup();
+  for (let i = 0; i < TDConstants.NODES; i++) state.set_node_empty(i);
+  const node = TDConstants.NODE_TO_IDX;
+  state.set_node_fresh_army(node.Hyderabad);
+  state.set_node_fort(node.Mangalore);
+  const uses = side === 'uses';
+  const faction = uses || side === 'move' || side === 'battle' ? 'british' : side;
+  const card = (faction === 'british' ? BRITISH_CARD_DATA : MYSORE_CARD_DATA)[side === 'battle' ? 0 : uses ? (index === 0 ? 1 : 0) : index];
+  state.to_move = faction === 'british' ? 2 : 1;
+  let type = card.name;
+  let target = 'Goa';
+  if (side === 'battle') {
+    state.set_node_tired_army(node.Goa);
+    state.set_node_fort(node.Darwar);
+    if (index === 1) state.set_node_fort(node.Chitaldoorg);
+    state.attacker = node.Goa;
+    state.defender = node.Darwar;
+    type = 'Pass British';
+    target = '-';
+  } else if (side === 'move') {
+    state.to_move = 0;
+    state.set_node_fresh_army(node.Goa);
+    if (index === 1) state.set_node_fort(node.Darwar);
+    type = 'Move';
+    target = 'Goa -> Darwar';
+  } else if (uses && index === 1) {
+    state.british_cards[4] = 0;
+    type = 'Draw Wall Breach';
+    target = 'Force March';
+  } else if (card.strength === 3) {
+    state.set_node_tired_army(node.Goa);
+    state.set_node_fort(node.Darwar);
+    state.attacker = node.Goa;
+    state.defender = node.Darwar;
+    type = faction === 'british' ? 'British Power' : 'Mysore Power';
+    target = card.name;
+  } else if (card.name === 'Royal Navy' || card.name === 'Divide and Rule') {
+    if (card.name === 'Royal Navy') state.set_node_fresh_army(node.Darwar);
+    else state.set_node_fort(node.Darwar);
+    target = 'Darwar -> Goa';
+  } else if (card.name === 'Force March' || card.name === 'Sea Trade') {
+    if (card.name === 'Force March') state.set_node_tired_army(node.Goa);
+    else state.set_node_fort(node.Goa);
+    target = 'Goa -> Darwar';
+  } else if (card.name === 'French Alliance') {
+    state.set_node_fort(node.Darwar);
+  } else if (card.name === 'Princely States') {
+    target = 'Bombay';
+  } else if (card.name === 'Monsoon' || card.name === 'Sepoy Mutiny') {
+    state.set_node_fresh_army(node.Goa);
+  } else if (card.name === 'Cavalry Raid') {
+    target = '-';
+  }
+  const move = TDEngine.generateGameData(state).moves.find(move => move.type === type && move.desc === target);
+  // Resolve the example with the same legal move and luck code as a live game.
+  const after = TDEngine.resolveLuck(TDEngine.getNextState(state, move.idx));
+  return { state, after, move, faction, card, mode: side === 'battle' ? 'battle' : side === 'move' ? 'move' : uses && index === 1 ? 'draw' : card.strength === 3 ? 'strength' : 'ability' };
+}
+
+function tutorialBoard(state, names) {
+  const board = document.getElementById('board').cloneNode(true);
+  const layer = board.querySelector('#node-layer');
+  const nodes = Object.fromEntries(TDEngine.generateGameData(state).ui_state.nodes.map(node => [node.name, {
+    ...NODES[node.name], armyType: node.armyType === 'fresh' ? 'active' : node.armyType,
+    owner: node.armyType === 'fort' ? 'mysore' : node.armyType === 'empty' ? 'empty' : 'british'
+  }]));
+  layer.removeAttribute('id');
+  window.renderNodes(nodes, layer);
+  renderBattleMarker(TDEngine.generateGameData(state).ui_state, board.querySelector('#battle-layer'));
+  board.querySelector('defs').remove();
+  board.removeAttribute('id');
+  board.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+  const points = names.map(name => NODES[name]);
+  const x = Math.min(...points.map(p => p.x)) - 85;
+  const y = Math.min(...points.map(p => p.y)) - 65;
+  board.setAttribute('viewBox', `${x} ${y} ${Math.max(...points.map(p => p.x)) - x + 85} ${Math.max(...points.map(p => p.y)) - y + 65}`);
+  board.classList.add('watch-board');
+  return board;
+}
+
+function tutorialCard(card, side, used) {
+  const cards = side === 'british' ? BRITISH_CARD_DATA : MYSORE_CARD_DATA;
+  const clone = document.getElementById(`${side}-cards-list`).children[cards.indexOf(card)].cloneNode(true);
+  clone.classList.toggle('used', used);
+  clone.classList.toggle('card-activated', used);
+  clone.dataset.card = card.name;
+  return clone;
+}
+
+function tutorialHand(data, side) {
+  const hand = document.createElement('div');
+  hand.className = 'watch-opponent';
+  const label = document.createElement('span');
+  label.className = 'watch-hand-label';
+  label.textContent = `${side === 'british' ? 'British' : 'Mysore'} hand · discard is random`;
+  hand.appendChild(label);
+  const cards = side === 'british' ? BRITISH_CARD_DATA : MYSORE_CARD_DATA;
+  cards.forEach((card, i) => hand.appendChild(tutorialCard(card, side, !data[`${side}_cards`][i])));
+  return hand;
+}
+
+function playTutorialDemo(side, index) {
+  clearTimeout(demoTimer);
+  const host = document.querySelector('[data-lesson]:not([hidden]) [data-demo]');
+  host.classList.remove('watch-paused');
+  host.querySelectorAll('[data-choice]').forEach((button, i) => button.setAttribute('aria-pressed', i === index));
+  const demo = tutorialScenario(side, index);
+  const { card, faction, mode, move } = demo;
+  const names = move.desc.includes(' -> ') ? move.desc.split(' -> ') : ['Goa', mode === 'strength' ? 'Darwar' : move.desc === 'Bombay' ? 'Bombay' : 'Darwar'];
+  if (mode === 'battle' && index === 1) names.push('Chitaldoorg');
+  const twoStep = move.desc.includes(' -> ');
+  const steps = mode === 'battle' ? [`Strength: British 1 · Mysore ${index}`, 'Click Pass Phase — resolve battle', index === 0 ? 'British win — fort removed, army moves in. Mysore discard randomly.' : 'Mysore win the tie — fort holds, army stays. British discard randomly.']
+    : mode === 'move' ? ['Select a Fresh army', index === 1 ? 'Click the adjacent fort' : 'Click a glowing destination', index === 1 ? 'Battle starts — army stays at Goa. Mysore may play a card.' : 'Army becomes Tired']
+    : mode === 'draw' ? ['Click the available card', 'Click a used card of lower number', 'Pick up the used card']
+    : mode === 'strength' ? ['Battle unresolved', 'Click the number seal', `Add ${card.strength} Strength`]
+    : card.name === 'Cavalry Raid' ? ['Click Cavalry Raid', 'British discard randomly']
+    : twoStep ? ['Click the card body', 'Select the unit', 'Click a glowing destination', 'Card used']
+    : ['Click the card body', 'Click a glowing space', 'Card used'];
+  host.querySelector('.watch-replay').onclick = () => playTutorialDemo(side, index);
+  host.querySelector('.watch-pause').onclick = () => {
+    clearTimeout(demoTimer);
+    host.classList.add('watch-paused');
+  };
+  const frame = host.querySelector('.watch-frame');
+  const pointer = host.querySelector('.watch-pointer');
+  function show(step) {
+    const done = step === steps.length - 1;
+    const state = done ? demo.after : demo.state;
+    const data = TDEngine.generateGameData(state).ui_state;
+    const phase = data.who_to_move.startsWith('Mysore') ? 'mysore' : 'british';
+    frame.innerHTML = `<div class="turn-header ${phase}-phase"><span class="turn-counter">TURN 1 OF 4</span><strong>${data.who_to_move.toUpperCase()}</strong><span class="header-action-btn pass-btn">${data.who_to_move === 'British Move' ? 'Rest Unit' : 'Pass Phase'}</span></div><div class="watch-map"></div><div class="watch-hand"></div>`;
+    frame.inert = true;
+    const board = tutorialBoard(state, names);
+    frame.querySelector('.watch-map').appendChild(board);
+    const hand = frame.querySelector('.watch-hand');
+    const avail = faction === 'british' ? data.british_cards : data.mysore_cards;
+    const deck = faction === 'british' ? BRITISH_CARD_DATA : MYSORE_CARD_DATA;
+    const cardEl = tutorialCard(card, faction, !avail[deck.indexOf(card)]);
+    hand.appendChild(cardEl);
+    hand.hidden = mode === 'move' || mode === 'battle';
+    if (mode === 'draw') hand.appendChild(tutorialCard(BRITISH_CARD_DATA[4], faction, !avail[4]));
+    if (mode === 'battle' || card.name === 'Cavalry Raid') {
+      frame.appendChild(tutorialHand(data, mode === 'battle' && index === 0 ? 'mysore' : 'british'));
+    }
+    let target = mode === 'battle' ? frame.querySelector('.pass-btn') : mode === 'strength' ? cardEl.querySelector('.card-strength-seal') : cardEl;
+    if (!done && step > 0 && mode === 'draw') {
+      cardEl.classList.add('targeting-active');
+      target = hand.lastElementChild;
+      target.classList.add('valid-trade-target');
+    } else if (!done && (mode === 'move' || (step > 0 && mode === 'ability'))) {
+      const name = mode === 'move' ? names[step] : twoStep ? names[step === 1 ? 0 : 1] : move.desc;
+      target = board.querySelector(`[data-name="${name}"]`);
+      target.classList.add('valid-map-target');
+      target.querySelector('.target-glow-ring').setAttribute('opacity', '1');
+      if ((twoStep && step === 2) || (mode === 'move' && step === 1)) {
+        board.querySelector(`[data-name="${names[0]}"] .sel-ring`).setAttribute('opacity', '1');
+      }
+      if (mode !== 'move') cardEl.classList.add('targeting-active');
+    }
+    host.querySelector('.watch-caption').textContent = `${step + 1} / ${steps.length} · ${steps[step]}`;
+    pointer.hidden = done;
+    if (!done) {
+      const rect = target.getBoundingClientRect();
+      const bounds = host.getBoundingClientRect();
+      pointer.style.left = `${rect.left - bounds.left + rect.width / 2}px`;
+      pointer.style.top = `${rect.top - bounds.top + rect.height / 2}px`;
+    }
+    if (!done) demoTimer = setTimeout(() => show(step + 1), 1600);
+  }
+  show(0);
+}
+
+function initTutorial() {
+  const state = new GameState();
+  state.default_setup();
+  for (let i = 0; i < TDConstants.NODES; i++) state.set_node_empty(i);
+  for (const crop of document.querySelectorAll('[data-location]')) {
+    const board = tutorialBoard(state, [crop.dataset.location]);
+    board.setAttribute('role', 'img');
+    board.setAttribute('aria-label', `${crop.textContent} — ${crop.dataset.location}`);
+    crop.prepend(board);
+  }
+  for (const host of document.querySelectorAll('[data-demo]')) {
+    const side = host.dataset.demo;
+    const choices = side === 'battle' ? ['British win / Mysore lose', 'Mysore win / British lose'] : side === 'uses' ? ['Card text', 'Draw', 'Strength'] : side === 'move' ? ['Move an army', 'Start battle'] : (side === 'british' ? BRITISH_CARD_DATA : MYSORE_CARD_DATA).map(card => card.name);
+    host.innerHTML = `<div class="watch-choices">${choices.map((name, i) => `<button data-choice aria-pressed="false" onclick="playTutorialDemo('${side}', ${i})">${name}</button>`).join('')}</div><div class="watch-frame"></div><span class="watch-pointer" aria-hidden="true">➤</span><div class="watch-toolbar"><span class="watch-caption"></span><button class="watch-pause">Pause</button><button class="watch-replay">Replay</button></div>`;
+  }
+  document.getElementById('learn-dialog').showModal();
+  renderTutorial();
 }
 
 function hideWarTransition() {
@@ -1153,7 +1379,7 @@ function showWarTransition(turn) {
 
 function scheduleAiMove() {
   clearTimeout(aiTimer);
-  if (warTimer !== null || !lastUiState || getStateWinner(currentGameState) !== 0) return;
+  if (tutorialOpen || warTimer !== null || !lastUiState || getStateWinner(currentGameState) !== 0) return;
   if (isCurrentSideAi(lastUiState)) {
     const delay = players.british === 'ai' && players.mysore === 'ai' ? 600 : 250;
     aiTimer = setTimeout(triggerAiMove, delay);
@@ -1196,7 +1422,7 @@ function handleLocalGameUpdate(data, announceWar = true) {
 
   if (data.winner !== 0 || !announceWar) {
     hideWarTransition();
-  } else if (previousTurn == null || data.ui_state.turn > previousTurn) {
+  } else if (!tutorialOpen && (previousTurn == null || data.ui_state.turn > previousTurn)) {
     showWarTransition(data.ui_state.turn);
   }
 
@@ -1209,7 +1435,7 @@ function handleLocalGameUpdate(data, announceWar = true) {
 }
 
 async function triggerAiMove() {
-  if (warTimer !== null || !currentGameState || getStateWinner(currentGameState) !== 0) return;
+  if (tutorialOpen || warTimer !== null || !currentGameState || getStateWinner(currentGameState) !== 0) return;
   const state = currentGameState;
   updateConnectionPill('waiting', '⬤ AI THINKING (WASM)…');
 
@@ -1230,7 +1456,7 @@ async function triggerAiMove() {
 }
 
 window.applyMove = function(moveIdx) {
-  if (warTimer !== null || !currentGameState) return;
+  if (tutorialOpen || warTimer !== null || !currentGameState) return;
 
   try {
     currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
@@ -1505,8 +1731,7 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
-function renderBattleMarker(uiState) {
-  const layer = document.getElementById('battle-layer');
+function renderBattleMarker(uiState, layer = document.getElementById('battle-layer')) {
   if (!layer) return;
   layer.innerHTML = '';
 
@@ -1602,5 +1827,6 @@ function syncUIStateOnLoad() {
 // Start game client on load
 document.addEventListener('DOMContentLoaded', () => {
   syncUIStateOnLoad();
-  initGame(); 
+  initGame();
+  initTutorial();
 });
