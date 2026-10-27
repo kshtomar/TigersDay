@@ -14,7 +14,7 @@ const WARS = [
   ['First War', '1767–1769'],
   ['Second War', '1780–1784'],
   ['Third War', '1790–1792'],
-  ['Fourth War', '1799']
+  ['Fourth War', '1798–1799']
 ];
 
 var NODES = {
@@ -117,6 +117,7 @@ const CARD_VALUE = [3, 2, 2, 1, 1, 1];
 let currentGameState = null;
 let currentBitString = "";
 let lastUiState = null;
+let lastWinner = 0;
 let warTimer = null;
 let aiTimer = null;
 let tutorialOpen = true;
@@ -739,14 +740,12 @@ function updateTurnHeader(uiState, winner) {
     counter.textContent = 'GAME OVER';
     title.textContent = 'BRITISH VICTORY! ALL KEY CITIES OCCUPIED';
     icon.textContent = '👑';
-    showToast('The British East India Company has achieved total dominion!', 'success');
     return;
   } else if (winner === -1) {
     header.className = 'turn-header mysore-phase victory-state';
     counter.textContent = 'GAME OVER';
     title.textContent = 'MYSORE VICTORY! SULTANATE HAS WITHSTOOD SIEGE';
     icon.textContent = '🐅';
-    showToast('The Sultanate of Mysore has repelled the British invasion!', 'success');
     return;
   }
 
@@ -882,13 +881,13 @@ function handleHeaderResignClick() {
   // Declare the opponent the winner
   const winnerVal = resigningSide === 'british' ? -1 : 1;
   const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
-  showToast(`${resigningSide.toUpperCase()} has resigned. ${winnerName} wins!`, 'success');
+  showVictoryTransition(winnerVal, `${resigningSide.toUpperCase()} RESIGNED`);
 
   // Update the turn header to show victory state
   const header = document.getElementById('turn-header');
   const counter = document.getElementById('turn-counter');
   const title = document.getElementById('turn-phase-title');
-  const icon = document.getElementById('turn-phase-icon');
+  const icon = document.getElementById('turn-faction-icon');
 
   if (header && counter && title && icon) {
     header.className = winnerVal === 1
@@ -1370,12 +1369,13 @@ function hideWarTransition() {
   document.getElementById('war-transition').classList.add('hidden');
 }
 
-function showWarTransition(turn) {
+function showTransition(title, detail, resumeAi = true, faction = '') {
   hideWarTransition();
-  const [title, dates] = WARS[turn - 1];
   document.getElementById('war-title').textContent = title;
-  document.getElementById('war-dates').textContent = dates;
+  document.getElementById('war-dates').textContent = detail;
   const transition = document.getElementById('war-transition');
+  transition.classList.remove('british-victory', 'mysore-victory');
+  if (faction) transition.classList.add(`${faction}-victory`);
   transition.style.animationDuration = `${WAR_CUT_MS}ms`;
   transition.classList.remove('hidden');
   transition.getAnimations().forEach(animation => {
@@ -1384,8 +1384,17 @@ function showWarTransition(turn) {
   });
   warTimer = setTimeout(() => {
     hideWarTransition();
-    scheduleAiMove();
+    if (resumeAi) scheduleAiMove();
   }, WAR_CUT_MS);
+}
+
+function showWarTransition(turn) {
+  showTransition(...WARS[turn - 1]);
+}
+
+function showVictoryTransition(winner, detail) {
+  const title = winner === 1 ? 'British Victory' : 'Mysore Victory';
+  showTransition(title, detail || (winner === 1 ? 'ARMY IN ALL 5 KEYS' : '4TH WAR ENDED'), false, winner === 1 ? 'british' : 'mysore');
 }
 
 function scheduleAiMove() {
@@ -1399,6 +1408,8 @@ function scheduleAiMove() {
 
 function handleLocalGameUpdate(data, announceWar = true) {
   const previousTurn = lastUiState?.turn;
+  const previousWinner = lastWinner;
+  lastWinner = data.winner;
   clearAllInteractionState();
 
   currentBitString = data.state_str;
@@ -1431,9 +1442,11 @@ function handleLocalGameUpdate(data, announceWar = true) {
   updateTurnHeader(data.ui_state, data.winner);
   renderDebugMoveList();
 
-  if (data.winner !== 0 || !announceWar) {
+  if (data.winner !== 0 && data.winner !== previousWinner) {
+    showVictoryTransition(data.winner);
+  } else if (!announceWar) {
     hideWarTransition();
-  } else if (!tutorialOpen && (previousTurn == null || data.ui_state.turn > previousTurn)) {
+  } else if (data.winner === 0 && !tutorialOpen && (previousTurn == null || data.ui_state.turn > previousTurn)) {
     showWarTransition(data.ui_state.turn);
   }
 
@@ -1487,7 +1500,9 @@ window.applyMove = function(moveIdx) {
 };
 
 function initGame() {
+  hideWarTransition();
   lastUiState = null;
+  lastWinner = 0;
   renderEdges();
   window.renderNodes();
 
@@ -1595,12 +1610,12 @@ function setupMultiplayerCallbacks() {
   multiplayerManager.onResignReceived = (resigningSide) => {
     const winnerVal = resigningSide === 'british' ? -1 : 1;
     const winnerName = winnerVal === 1 ? 'BRITISH' : 'MYSORE';
-    showToast(`Opponent (${resigningSide.toUpperCase()}) resigned! ${winnerName} wins!`, 'success');
+    showVictoryTransition(winnerVal, `${resigningSide.toUpperCase()} RESIGNED`);
 
     const header = document.getElementById('turn-header');
     const counter = document.getElementById('turn-counter');
     const title = document.getElementById('turn-phase-title');
-    const icon = document.getElementById('turn-phase-icon');
+    const icon = document.getElementById('turn-faction-icon');
 
     if (header && counter && title && icon) {
       header.className = winnerVal === 1

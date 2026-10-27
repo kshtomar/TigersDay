@@ -634,6 +634,30 @@ body {
     letter-spacing: 0.22em;
 }
 
+.war-transition.british-victory {
+    --victory-color: var(--british-red);
+    --victory-background: var(--british-red-deep);
+}
+
+.war-transition.mysore-victory {
+    --victory-color: var(--mysore-green);
+    --victory-background: var(--mysore-green-deep);
+}
+
+.war-transition.british-victory,
+.war-transition.mysore-victory {
+    background: var(--victory-background);
+}
+
+.war-transition[class*="-victory"] h2::after {
+    content: '';
+    display: block;
+    width: 5rem;
+    height: 2px;
+    margin: 18px auto 0;
+    background: var(--victory-color);
+}
+
 @keyframes warCut {
     0%, 100% { opacity: 0; }
     18%, 78% { opacity: 1; }
