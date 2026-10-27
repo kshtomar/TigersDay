@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261026-19">
+    <link rel="stylesheet" href="style.css?v=20261027-1">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -25,7 +25,6 @@
         
         <!-- Tutorial (i) Button -->
         <button id="learn-toggle-btn" class="icon-btn guide-btn" title="Interactive Tutorial" aria-controls="learn-dialog" onclick="openTutorial()">Tutorial</button>
-        <button id="tutorial-toggle-btn" class="icon-btn guide-btn" title="App Controls" aria-controls="tutorial-drawer" onclick="toggleTutorialMenu()">Controls</button>
 
         <!-- Settings (Gear) Button -->
         <button id="settings-toggle-btn" class="icon-btn" title="Settings & Options" aria-label="Settings" aria-controls="settings-drawer" onclick="toggleSettingsMenu()">
@@ -38,39 +37,6 @@
 </header>
 
 <!-- TUTORIAL MENU DRAWER (Zero Popups) -->
-<div id="tutorial-drawer" class="drawer-panel hidden">
-    <div class="drawer-header">
-        <h3>CONTROLS</h3>
-        <button class="close-drawer-btn" aria-label="Close controls" onclick="toggleTutorialMenu()">✕</button>
-    </div>
-    <div class="drawer-content tutorial-content">
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">1</span><strong>Your Phase & Legal Actions</strong></div>
-            <p>Follow the turn header. You can act only for the side whose phase it is; wait for the AI or online opponent during their phase. Pulsing spaces and highlighted exhausted cards show legal choices.</p>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">2</span><strong>Move or Rest</strong></div>
-            <p>In the British movement phase, <strong>click a Fresh army</strong>, then a pulsing destination. To leave it in place, select it and click <strong>Rest Unit</strong>. Both actions make it Tired. Select a fort for movement only after activating an appropriate card.</p>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">3</span><strong>Card Abilities</strong></div>
-            <p><strong>Click the card body</strong>, away from its number seal.</p><ul class="tutorial-list"><li><strong>Sepoy Mutiny, French Alliance, Monsoon, Highlanders, Princely States:</strong> click a pulsing map target.</li><li><strong>Divide and Rule, Force March, Royal Navy, Sea Trade:</strong> click a pulsing origin, then a pulsing destination.</li><li><strong>Cavalry Raid:</strong> executes immediately.</li></ul>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">4</span><strong>Trade or Commit Strength</strong></div>
-            <p><strong>Trade:</strong> click an available card body, then the body of a highlighted, exhausted card in the same hand. You can choose a trade even if map targets are also available. Cavalry Raid executes immediately when its ability is available.</p><p><strong>Battle strength:</strong> during your card phase, click an available card’s <strong>number seal on the left</strong> to commit its value to an active battle.</p>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">5</span><strong>Pass & Cancel</strong></div>
-            <p><strong>Pass Phase</strong> skips a card action when available. Click the selected army or card again, use <strong>Cancel</strong>, or press <strong>Escape</strong> to clear targeting. These controls do not undo completed moves. Escape closes an open drawer first.</p>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">6</span><strong>Settings & Modes</strong></div>
-            <p>Open the <strong>gear</strong> for AI play, local Pass & Play, online P2P, or AI spectator mode. Changing the mode or your side starts a new game. Settings also has AI evaluation, thinking depth, board reset, and binary state copy/restore.</p>
-        </div>
-    </div>
-</div>
-
 <!-- SETTINGS DRAWER (Zero Popups) -->
 <div id="settings-drawer" class="drawer-panel hidden">
     <div class="drawer-header">
@@ -474,7 +440,7 @@
 
 <!-- Frontend Client & UI Controller -->
 <script src="model-info.js"></script>
-<script src="script.js?v=20261027-2"></script>
+<script src="script.js?v=20261027-3"></script>
 
 </body>
 </html>

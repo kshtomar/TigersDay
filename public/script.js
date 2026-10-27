@@ -1046,10 +1046,6 @@ function toggleDrawer(id) {
   });
 }
 
-function toggleTutorialMenu() {
-  toggleDrawer('tutorial-drawer');
-}
-
 function toggleSettingsMenu() {
   toggleDrawer('settings-drawer');
 }
