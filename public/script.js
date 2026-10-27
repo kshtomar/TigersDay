@@ -9,6 +9,13 @@
 // 1. CONSTANTS & GAME MAP GEOMETRY
 // ==========================================================================
 const SVG_NS = 'http://www.w3.org/2000/svg';
+const WAR_CUT_MS = 3000;
+const WARS = [
+  ['First War', '1767–1769'],
+  ['Second War', '1780–1784'],
+  ['Third War', '1790–1792'],
+  ['Fourth War', '1799']
+];
 
 var NODES = {
   Bombay:        { x:110, y: 74,  owner:'british', armyType:'active',  key:true,  coast:true,  labelAnchor:{anchor:'middle', dx:0,   dy:-24} },
@@ -110,6 +117,8 @@ const CARD_VALUE = [3, 2, 2, 1, 1, 1];
 let currentGameState = null;
 let currentBitString = "";
 let lastUiState = null;
+let warTimer = null;
+let aiTimer = null;
 let currentMoves = [];                 // Array of { idx, type, desc }
 let selectedUnit = null;               // Selected territory string on map
 let activeSelection = null;            // Selected card name
@@ -1103,6 +1112,7 @@ function isCurrentSideAi(uiState) {
 }
 
 function isTurnBlockedForLocalPlayer() {
+  if (warTimer !== null) return true;
   if (!lastUiState) return true;
   const whoToMove = (lastUiState.who_to_move || '').toLowerCase();
   if (matchMode === 'p2p_multiplayer') {
@@ -1117,7 +1127,41 @@ function isTurnBlockedForLocalPlayer() {
   return false;
 }
 
-function handleLocalGameUpdate(data) {
+function hideWarTransition() {
+  clearTimeout(warTimer);
+  warTimer = null;
+  document.getElementById('war-transition').classList.add('hidden');
+}
+
+function showWarTransition(turn) {
+  hideWarTransition();
+  const [title, dates] = WARS[turn - 1];
+  document.getElementById('war-title').textContent = title;
+  document.getElementById('war-dates').textContent = dates;
+  const transition = document.getElementById('war-transition');
+  transition.style.animationDuration = `${WAR_CUT_MS}ms`;
+  transition.classList.remove('hidden');
+  transition.getAnimations().forEach(animation => {
+    animation.cancel();
+    animation.play();
+  });
+  warTimer = setTimeout(() => {
+    hideWarTransition();
+    scheduleAiMove();
+  }, WAR_CUT_MS);
+}
+
+function scheduleAiMove() {
+  clearTimeout(aiTimer);
+  if (warTimer !== null || !lastUiState || getStateWinner(currentGameState) !== 0) return;
+  if (isCurrentSideAi(lastUiState)) {
+    const delay = players.british === 'ai' && players.mysore === 'ai' ? 600 : 250;
+    aiTimer = setTimeout(triggerAiMove, delay);
+  }
+}
+
+function handleLocalGameUpdate(data, announceWar = true) {
+  const previousTurn = lastUiState?.turn;
   clearAllInteractionState();
 
   currentBitString = data.state_str;
@@ -1150,23 +1194,28 @@ function handleLocalGameUpdate(data) {
   updateTurnHeader(data.ui_state, data.winner);
   renderDebugMoveList();
 
+  if (data.winner !== 0 || !announceWar) {
+    hideWarTransition();
+  } else if (previousTurn == null || data.ui_state.turn > previousTurn) {
+    showWarTransition(data.ui_state.turn);
+  }
+
   if (settings.showEval) {
     startProgressiveEval(data.state_str);
   }
 
   // Handle AI turn execution locally
-  if (data.winner === 0 && isCurrentSideAi(data.ui_state)) {
-    const delay = players.british === 'ai' && players.mysore === 'ai' ? 600 : 250;
-    setTimeout(() => triggerAiMove(), delay);
-  }
+  scheduleAiMove();
 }
 
 async function triggerAiMove() {
-  if (!currentGameState || getStateWinner(currentGameState) !== 0) return;
+  if (warTimer !== null || !currentGameState || getStateWinner(currentGameState) !== 0) return;
+  const state = currentGameState;
   updateConnectionPill('waiting', '⬤ AI THINKING (WASM)…');
 
   try {
     const { bestMove } = await mctsEngine.findMove(currentGameState, 0.0);
+    if (currentGameState !== state) return;
     
     currentGameState = TDEngine.getNextState(currentGameState, bestMove);
     currentGameState = TDEngine.resolveLuck(currentGameState);
@@ -1181,7 +1230,7 @@ async function triggerAiMove() {
 }
 
 window.applyMove = function(moveIdx) {
-  if (!currentGameState) return;
+  if (warTimer !== null || !currentGameState) return;
 
   try {
     currentGameState = TDEngine.getNextState(currentGameState, moveIdx);
@@ -1201,6 +1250,7 @@ window.applyMove = function(moveIdx) {
 };
 
 function initGame() {
+  lastUiState = null;
   renderEdges();
   window.renderNodes();
 
@@ -1398,7 +1448,7 @@ function loadBinaryState() {
   try {
     currentGameState = new GameState().read_str(rawInput);
     const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
-    handleLocalGameUpdate(gameData);
+    handleLocalGameUpdate(gameData, false);
     showToast("Game state loaded successfully!", 'success');
     toggleSettingsMenu();
   } catch (err) {

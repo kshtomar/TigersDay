@@ -563,6 +563,42 @@ body {
 /* ==========================================================================
    3. PERSISTENT LOW-PROFILE TURN HEADER
    ========================================================================== */
+.war-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 4000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    background: #000;
+    color: #eee8dc;
+    text-align: center;
+    animation: warCut ease-in-out both;
+}
+
+.war-transition h2 {
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+}
+
+.war-transition p {
+    color: #a49d91;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    letter-spacing: 0.22em;
+}
+
+@keyframes warCut {
+    0%, 100% { opacity: 0; }
+    18%, 78% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .war-transition { animation: none; }
+}
+
 .turn-header {
     width: 100%;
     max-width: 1400px;
