@@ -189,6 +189,9 @@ If you want to train or evaluate new AI models:
    python -m ai.export_to_onnx
    ```
    Copy the exported `alphatiger.onnx` into `public/alphatiger.onnx` for browser gameplay.
+   After committing the browser weights, run `python3 scripts/model_info.py` and commit
+   `public/model-info.js`. This matches the deployed weights to the model manifest and
+   generates the tutorial's version, estimated Elo, and browser release date from Git.
 
 ### Model Versions
 

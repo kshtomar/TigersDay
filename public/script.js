@@ -137,7 +137,7 @@ let settings = {
 };
 
 // Client-Side AI & MCTS Singletons
-const onnxModel = new TDMCTS.ONNXModelWrapper('./alphatiger.onnx?v=16-ort120');
+const onnxModel = new TDMCTS.ONNXModelWrapper(`./alphatiger.onnx?v=${ALPHATIGER.version}-${ALPHATIGER.released}`);
 const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 400, depsilon: 0.1 }); // Micro Dirichlet noise
 const multiplayerManager = new TDMultiplayer.MultiplayerManager();
 
@@ -934,7 +934,7 @@ function handleSimsSliderInput(sliderPos) {
   const sims = simsSliderToValue(Number(sliderPos));
   mctsEngine.simulations = sims;
   const label = document.getElementById('mcts-sims-label');
-  if (label) label.textContent = formatSimsLabel(sims);
+  if (label) label.textContent = `${formatSimsLabel(sims)} sims`;
 }
 
 // ==========================================================================
@@ -1336,6 +1336,8 @@ function playTutorialDemo(side, index) {
 }
 
 function initTutorial() {
+  const released = new Date(`${ALPHATIGER.released}T00:00:00Z`).toLocaleDateString('en-US', { dateStyle: 'long', timeZone: 'UTC' });
+  document.getElementById('learn-model-info').textContent = `AlphaTiger ${ALPHATIGER.version} · Browser release: ${released} · Estimated Elo: ${ALPHATIGER.estimated_elo.toLocaleString('en-US')}`;
   // Share the live settings controls so choices persist when the tutorial closes.
   document.getElementById('learn-play-options').appendChild(document.getElementById('play-options'));
   const state = new GameState();

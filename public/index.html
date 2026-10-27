@@ -114,12 +114,12 @@
         <div id="play-options">
         <!-- MATCH MODE CONTROLLER -->
         <div class="settings-section">
-            <h4>MATCH OPPONENT & MODE</h4>
+            <label class="setting-label" for="game-mode-select">HOW TO PLAY</label>
             <select id="game-mode-select" class="mode-select" onchange="handleGameModeChange(this.value)">
-                <option value="human_vs_ai">Human vs WebAssembly AI</option>
-                <option value="human">Pass & Play (Local 2-Player)</option>
-                <option value="p2p_multiplayer">P2P Online Multiplayer (WebRTC)</option>
-                <option value="ai_vs_ai">AI vs AI (Spectator Mode)</option>
+                <option value="human_vs_ai">Play against the bot</option>
+                <option value="human">Play a friend on this device</option>
+                <option value="p2p_multiplayer">Play a friend online</option>
+                <option value="ai_vs_ai">Watch the bot play itself</option>
             </select>
 
             <!-- Human Side Selector -->
@@ -134,7 +134,7 @@
             <!-- P2P Multiplayer Panel -->
             <div id="multiplayer-panel" class="multiplayer-panel hidden">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="setting-label" style="margin: 0;">P2P MULTIPLAYER</span>
+                    <span class="setting-label" style="margin: 0;">ONLINE GAME</span>
                     <span id="p2p-status-pill" class="p2p-status-pill offline">OFFLINE</span>
                 </div>
 
@@ -161,20 +161,20 @@
 
         <div class="settings-section">
             <label class="toggle-control">
-                <span class="toggle-label">Show AI Engine Evaluation</span>
+                <span class="toggle-label">Show who is ahead</span>
                 <input type="checkbox" id="eval-toggle-checkbox" onchange="handleEvalToggle(this.checked)">
                 <span class="toggle-slider"></span>
             </label>
-            <span class="setting-desc">Render Stockfish-style evaluation bar and top candidate engine lines.</span>
+            <span class="setting-desc">Show the bot's estimate and suggested moves. Positive scores favor British; negative scores favor Mysore. Turn off to play without hints.</span>
         </div>
 
         <div class="settings-section">
-            <label class="setting-label" for="mcts-sims-slider">AI THINKING DEPTH (MCTS SIMULATIONS)</label>
+            <label class="setting-label" for="mcts-sims-slider">BOT THINKING TIME</label>
             <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
                 <input type="range" id="mcts-sims-slider" class="sims-slider" min="0" max="100" value="0" step="1" oninput="handleSimsSliderInput(this.value)">
-                <span id="mcts-sims-label" class="sims-label">400</span>
+                <span id="mcts-sims-label" class="sims-label">400 sims</span>
             </div>
-            <span class="setting-desc">Higher values = stronger AI but slower thinking. Range: 400 – 1,000,000.</span>
+            <span class="setting-desc">How many times the bot explores possible moves (simulations). More means deeper thinking and longer waits. Start at 400 for quick play.</span>
         </div>
         </div>
 
@@ -278,22 +278,14 @@
             <div data-demo="mysore" class="watch-player" aria-live="off"></div>
         </section>
         <section data-lesson="AlphaTiger & play options" hidden>
-            <p class="learn-lead">AlphaTiger is our bot. It uses a trained neural network and Monte Carlo Tree Search (MCTS) to explore moves, right in your browser.</p>
             <div class="learn-layout">
                 <div class="learn-rules">
-                    <h3>Choose your game</h3>
-                    <ol class="learn-sequence">
-                        <li><strong>Human vs WebAssembly AI</strong><span>Play the bot. Choose British or Mysore under Play As.</span></li>
-                        <li><strong>Pass & Play</strong><span>Two people take turns on the same device.</span></li>
-                        <li><strong>P2P Online Multiplayer</strong><span>Play a friend on another device. Host a room and share its code, or join with their code.</span></li>
-                        <li><strong>AI vs AI</strong><span>Watch the bot play both sides.</span></li>
-                    </ol>
-                    <p class="learn-note">Sims are search simulations per decision. Start at 400 for quick play; increase for deeper search and longer waits.</p>
-                    <p class="learn-note">Evaluation on shows the bot's estimate and candidate moves. Positive favors British; negative favors Mysore. Turn it off for unaided play.</p>
+                    <p class="learn-lead">Meet AlphaTiger, our bot. It combines a trained neural network with a search through possible moves to decide what to play, right in your browser.</p>
+                    <p id="learn-model-info" class="learn-note"></p>
+                    <p class="learn-note">Elo is an estimate relative to other AlphaTiger versions, with v8 set to 1,000. Playing strength also depends on thinking time.</p>
                 </div>
                 <div id="learn-play-options"></div>
             </div>
-            <p class="learn-note">Choose your options here, then Begin First War. You can change them later in the gear menu; changing mode or side starts a new game.</p>
         </section>
     </div>
 </dialog>
@@ -510,7 +502,8 @@
 <script src="js/multiplayer.js"></script>
 
 <!-- Frontend Client & UI Controller -->
-<script src="script.js?v=20261026-20"></script>
+<script src="model-info.js"></script>
+<script src="script.js?v=20261027-1"></script>
 
 </body>
 </html>
