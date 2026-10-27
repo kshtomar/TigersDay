@@ -110,7 +110,8 @@
         <button class="close-drawer-btn" onclick="toggleSettingsMenu()">✕</button>
     </div>
     
-    <div class="drawer-content">
+    <div id="settings-play-options" class="drawer-content">
+        <div id="play-options">
         <!-- MATCH MODE CONTROLLER -->
         <div class="settings-section">
             <h4>MATCH OPPONENT & MODE</h4>
@@ -174,6 +175,7 @@
                 <span id="mcts-sims-label" class="sims-label">400</span>
             </div>
             <span class="setting-desc">Higher values = stronger AI but slower thinking. Range: 400 – 1,000,000.</span>
+        </div>
         </div>
 
         <div class="settings-section">
@@ -274,6 +276,24 @@
                 <p class="learn-note">Every card can also draw a lower number or add Strength<br>Choose a card to watch it played</p>
             </div>
             <div data-demo="mysore" class="watch-player" aria-live="off"></div>
+        </section>
+        <section data-lesson="AlphaTiger & play options" hidden>
+            <p class="learn-lead">AlphaTiger is our bot. It uses a trained neural network and Monte Carlo Tree Search (MCTS) to explore moves, right in your browser.</p>
+            <div class="learn-layout">
+                <div class="learn-rules">
+                    <h3>Choose your game</h3>
+                    <ol class="learn-sequence">
+                        <li><strong>Human vs WebAssembly AI</strong><span>Play the bot. Choose British or Mysore under Play As.</span></li>
+                        <li><strong>Pass & Play</strong><span>Two people take turns on the same device.</span></li>
+                        <li><strong>P2P Online Multiplayer</strong><span>Play a friend on another device. Host a room and share its code, or join with their code.</span></li>
+                        <li><strong>AI vs AI</strong><span>Watch the bot play both sides.</span></li>
+                    </ol>
+                    <p class="learn-note">Sims are search simulations per decision. Start at 400 for quick play; increase for deeper search and longer waits.</p>
+                    <p class="learn-note">Evaluation on shows the bot's estimate and candidate moves. Positive favors British; negative favors Mysore. Turn it off for unaided play.</p>
+                </div>
+                <div id="learn-play-options"></div>
+            </div>
+            <p class="learn-note">Choose your options here, then Begin First War. You can change them later in the gear menu; changing mode or side starts a new game.</p>
         </section>
     </div>
 </dialog>
@@ -490,7 +510,7 @@
 <script src="js/multiplayer.js"></script>
 
 <!-- Frontend Client & UI Controller -->
-<script src="script.js?v=20261026-19"></script>
+<script src="script.js?v=20261026-20"></script>
 
 </body>
 </html>

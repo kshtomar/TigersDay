@@ -1156,6 +1156,7 @@ function finishTutorial() {
   if (!tutorialOpen) return;
   tutorialOpen = false;
   clearTimeout(demoTimer);
+  document.getElementById('settings-play-options').prepend(document.getElementById('play-options'));
   document.getElementById('learn-dialog').close();
   showWarTransition(lastUiState.turn);
 }
@@ -1335,6 +1336,8 @@ function playTutorialDemo(side, index) {
 }
 
 function initTutorial() {
+  // Share the live settings controls so choices persist when the tutorial closes.
+  document.getElementById('learn-play-options').appendChild(document.getElementById('play-options'));
   const state = new GameState();
   state.default_setup();
   for (let i = 0; i < TDConstants.NODES; i++) state.set_node_empty(i);
