@@ -120,6 +120,7 @@ let lastUiState = null;
 let warTimer = null;
 let aiTimer = null;
 let tutorialOpen = true;
+let firstTutorial = true;
 let tutorialStep = 0;
 let demoTimer = null;
 let currentMoves = [];                 // Array of { idx, type, desc }
@@ -1049,10 +1050,6 @@ function toggleTutorialMenu() {
   toggleDrawer('tutorial-drawer');
 }
 
-function toggleRulesMenu() {
-  toggleDrawer('rules-drawer');
-}
-
 function toggleSettingsMenu() {
   toggleDrawer('settings-drawer');
 }
@@ -1152,13 +1149,29 @@ function stepTutorial(delta) {
   renderTutorial();
 }
 
+function openTutorial() {
+  tutorialOpen = true;
+  tutorialStep = 0;
+  clearTimeout(aiTimer);
+  document.querySelectorAll('.drawer-panel').forEach(drawer => drawer.classList.add('hidden'));
+  // Share the live settings controls so choices persist when the tutorial closes.
+  document.getElementById('learn-play-options').appendChild(document.getElementById('play-options'));
+  document.getElementById('learn-dialog').showModal();
+  renderTutorial();
+}
+
 function finishTutorial() {
   if (!tutorialOpen) return;
   tutorialOpen = false;
   clearTimeout(demoTimer);
   document.getElementById('settings-play-options').prepend(document.getElementById('play-options'));
   document.getElementById('learn-dialog').close();
-  showWarTransition(lastUiState.turn);
+  if (firstTutorial) {
+    firstTutorial = false;
+    showWarTransition(lastUiState.turn);
+  } else {
+    scheduleAiMove();
+  }
 }
 
 function tutorialScenario(side, index) {
@@ -1338,8 +1351,6 @@ function playTutorialDemo(side, index) {
 function initTutorial() {
   const released = new Date(`${ALPHATIGER.released}T00:00:00Z`).toLocaleDateString('en-US', { dateStyle: 'long', timeZone: 'UTC' });
   document.getElementById('learn-model-info').textContent = `AlphaTiger ${ALPHATIGER.version} · Browser release: ${released} · Estimated Elo: ${ALPHATIGER.estimated_elo.toLocaleString('en-US')}`;
-  // Share the live settings controls so choices persist when the tutorial closes.
-  document.getElementById('learn-play-options').appendChild(document.getElementById('play-options'));
   const state = new GameState();
   state.default_setup();
   for (let i = 0; i < TDConstants.NODES; i++) state.set_node_empty(i);
@@ -1354,8 +1365,7 @@ function initTutorial() {
     const choices = side === 'battle' ? ['British win / Mysore lose', 'Mysore win / British lose'] : side === 'uses' ? ['Card text', 'Draw', 'Strength'] : side === 'move' ? ['Move an army', 'Start battle'] : (side === 'british' ? BRITISH_CARD_DATA : MYSORE_CARD_DATA).map(card => card.name);
     host.innerHTML = `<div class="watch-choices">${choices.map((name, i) => `<button data-choice aria-pressed="false" onclick="playTutorialDemo('${side}', ${i})">${name}</button>`).join('')}</div><div class="watch-frame"></div><span class="watch-pointer" aria-hidden="true">➤</span><div class="watch-toolbar"><span class="watch-caption"></span><button class="watch-pause">Pause</button><button class="watch-replay">Replay</button></div>`;
   }
-  document.getElementById('learn-dialog').showModal();
-  renderTutorial();
+  openTutorial();
 }
 
 function hideWarTransition() {

@@ -24,7 +24,7 @@
         <div id="connection-pill" class="pill disconnected">⬤ CONNECTING</div>
         
         <!-- Tutorial (i) Button -->
-        <button id="rules-toggle-btn" class="icon-btn guide-btn" title="Game Rules" aria-controls="rules-drawer" onclick="toggleRulesMenu()">Rules</button>
+        <button id="learn-toggle-btn" class="icon-btn guide-btn" title="Interactive Tutorial" aria-controls="learn-dialog" onclick="openTutorial()">Tutorial</button>
         <button id="tutorial-toggle-btn" class="icon-btn guide-btn" title="App Controls" aria-controls="tutorial-drawer" onclick="toggleTutorialMenu()">Controls</button>
 
         <!-- Settings (Gear) Button -->
@@ -67,35 +67,6 @@
         <div class="tutorial-item">
             <div class="tutorial-item-title"><span class="step-num">6</span><strong>Settings & Modes</strong></div>
             <p>Open the <strong>gear</strong> for AI play, local Pass & Play, online P2P, or AI spectator mode. Changing the mode or your side starts a new game. Settings also has AI evaluation, thinking depth, board reset, and binary state copy/restore.</p>
-        </div>
-    </div>
-</div>
-
-<div id="rules-drawer" class="drawer-panel hidden">
-    <div class="drawer-header">
-        <h3>RULES</h3>
-        <button class="close-drawer-btn" aria-label="Close rules" onclick="toggleRulesMenu()">✕</button>
-    </div>
-    <div class="drawer-content tutorial-content">
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">1</span><strong>Victory</strong></div>
-            <p><strong>British:</strong> occupy all five square keys with armies. <strong>Mysore:</strong> survive through the end of turn 4. Each turn represents one Anglo-Mysore War.</p>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">2</span><strong>Armies, Forts & Spaces</strong></div>
-            <p>Red squares are British armies; green diamonds are Mysore forts. Keys are square spaces with bold uppercase labels. Only one army or fort may occupy a space. Armies normally move along a connection; forts move only through card abilities. A faded, slashed army is Tired.</p>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">3</span><strong>Turn & Impulse Sequence</strong></div>
-            <p>At the start of each turn, both hands refresh and all armies become Fresh. Each impulse runs <strong>British army move → Mysore card → British card → battle resolution</strong>. The British move one Fresh army or tire it in place. Each side may use one card or pass during its card phase. Repeat until no Fresh armies remain, then begin the next turn.</p>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">4</span><strong>Three Uses for a Card</strong></div>
-            <p>Spend an available card to <strong>use its printed ability</strong>, <strong>recover an exhausted card with a lower number</strong>, or <strong>add its number to an unresolved battle</strong>. Each use exhausts the card. Iron Rockets and Wall Breach have no separate map ability. All cards remain face up; discards are random.</p><p>Coast means a space touching the ocean. Card abilities can change the normal movement and deployment rules; their text describes the effect.</p>
-        </div>
-        <div class="tutorial-item">
-            <div class="tutorial-item-title"><span class="step-num">5</span><strong>Battles</strong></div>
-            <p>An army moving into a fort starts a battle and stays at its origin until resolution. Moving the attacker or defender away cancels that battle. Count British armies and Mysore forts adjacent to the defending space, then add committed card strength. <strong>Higher strength wins; ties favor Mysore.</strong></p><p>If the British win, remove the fort and move the army into its space. Otherwise the army stays at its origin. The losing side randomly discards a card. Battles resolve automatically after the British card phase.</p>
         </div>
     </div>
 </div>
@@ -503,7 +474,7 @@
 
 <!-- Frontend Client & UI Controller -->
 <script src="model-info.js"></script>
-<script src="script.js?v=20261027-1"></script>
+<script src="script.js?v=20261027-2"></script>
 
 </body>
 </html>
