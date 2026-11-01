@@ -1,10 +1,7 @@
-# 🐅 Tiger’s Day – Anglo-Mysore Wars (1767 – 1799)
+# Tiger's Day
 
-Welcome to **Tiger’s Day**, a strategic board game simulating the historical Anglo-Mysore Wars between Tipu Sultan (Sultanate of Mysore) and Lord Cornwallis (British East India Company). 
-
-This project features a **pure client-side WebAssembly game engine**, an **AlphaZero-inspired Deep Neural Network + Monte Carlo Tree Search (MCTS) AI**, and **real-time Peer-to-Peer (P2P) WebRTC multiplayer**, capable of running 100% in the browser with zero server dependencies.
-
----
+Board game of the Anglo-Mysore Wars (1767–1799)
+Play a friend online or AlphaTiger, an AlphaZero-style AI, in the browser
 
 ## 📖 Game Rules
 
@@ -66,7 +63,6 @@ Add Strength = number to unresolved battle
 
 Coast refers to spaces that touch the ocean
 Key refers to square victory spaces
-Subscripts refer to game setup
 
 If an army in all 5 keys, British win
 At the end of turn 4, Mysore win
@@ -80,122 +76,82 @@ At the end of turn 4, Mysore win
 - Transparent: perfect information
 - Asymmetric: players are different
 
----
+## AI
 
-## 🧠 AI & WebAssembly Architecture
+- MLP with policy and value heads, guided by MCTS
+- Trained by self-play, starting from end-game positions
+- Policy covers 959 actions
 
-The AI is built on Deep Multi-Layer Perceptrons (MLP) paired with Monte Carlo Tree Search (MCTS), trained via reinforcement self-play.
+### State
 
-### Game State Representation
-The complete board state is serialized into a compact **148-bit binary vector**:
-* **British & Mysore Cards (12 bits):** Active/exhausted status of each faction's 6 cards.
-* **Board Nodes (75 bits):** 25 territories $\times$ 3 one-hot states (*Fresh Army, Tired Army, Fort, Empty*).
-* **Turn Counter (4 bits):** One-hot encoding of Turns 1–4.
-* **Impulse Indicator (3 bits):** *British Move*, *Mysore Card*, or *British Card*.
-* **Combat State (54 bits):** Attacker location, Defender location, and Mysore committed battle strength (0–3).
+148-bit input vector, in order:
 
-### Client-Side ONNX WebAssembly Inference
-* The trained PyTorch model (`AlphaTiger`) is exported to **ONNX** format (`alphatiger.onnx`).
-* The browser runs **`onnxruntime-web` (WebAssembly)** to perform high-speed neural network evaluations on the client CPU without requiring a backend GPU/Python server.
+- 12: unused cards, 6 per side
+- 75: fresh army, tired army, or fort for each of 25 spaces, all zero if empty
+- 4: turn, one-hot
+- 3: impulse phase, one of British move, Mysore card, British card
+- 4: Mysore card strength in the current battle, 0–3
+- 50: attacker and defender space, one-hot each
 
-### Browser MCTS Loop
-* Performs real-time tree rollouts combining neural policy priors ($p$) and state value evaluations ($v$).
-* Features PUCT exploration bonuses, Dirichlet root noise, and early stopping.
-* Drives the **Stockfish-style live evaluation bar** and computes the top candidate engine lines in real time.
+### Browser
 
----
+- Network runs as ONNX in onnxruntime-web (WebAssembly)
+- MCTS in JavaScript with PUCT, Dirichlet root noise, and early stopping
+- Search drives the eval bar and top lines
 
-## 🌐 Real-Time P2P WebRTC Multiplayer
+## Multiplayer
 
-* Built on **PeerJS (WebRTC)** for zero-server, direct browser-to-browser online play.
-* **Room Codes:** Host a match to generate a short room code (*e.g., `TIGER-ABCD`*), which a friend can enter to connect immediately.
-* **Deterministic State Sync:** Synchronizes move actions, exact stochastic luck trajectories (*e.g., random battle discards, cavalry raids*), and full 148-bit state vectors to guarantee both clients stay in lockstep.
+- PeerJS (WebRTC), browser to browser
+- PeerJS cloud server connects peers, STUN for NAT traversal
+- Host shares a `TIGER-` room code
+- Moves and luck outcomes are sent so both clients stay in sync
 
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```text
-TigersDay/
-├── ai/                      # Machine Learning & Training Pipeline (Python)
-│   ├── models/              # Neural network checkpoints (.pt and exported .onnx)
-│   ├── export_to_onnx.py    # Exporter from PyTorch to ONNX
-│   ├── mcts.py              # Python Monte Carlo Tree Search
-│   ├── neural.py            # Hybrid PyTorch & ONNX model definitions
-│   ├── train.py             # Self-play training loop
-│   └── arena.py             # Model evaluation tournament arena
-│
-├── game/                    # Core Python Game Logic & Rules
-│   ├── constants.py         # 25-node map geometry, edges, card values, move spaces
-│   ├── engine.py            # Legal move masking & move space dict (959 actions)
-│   ├── state.py             # 148D GameState vector management
-│   ├── updater.py           # Battle resolution & state transition logic
-│   └── replay.py            # Algebraic notation & game replay parser
-│
-├── public/                  # 100% Client-Side Web Application
-│   ├── js/
-│   │   ├── state.js         # JavaScript GameState & 148D vector port
-│   │   ├── engine.js        # JavaScript rule engine, combat, & luck resolution
-│   │   ├── mcts.js          # Client-side MCTS & onnxruntime-web inference
-│   │   └── multiplayer.js   # PeerJS WebRTC P2P multiplayer controller
-│   ├── alphatiger.onnx      # Lightweight WebAssembly neural network weights
-│   ├── index.html           # Interactive SVG board UI, drawers, & controls
-│   ├── script.js            # UI event controller & game coordinator
-│   └── style.css            # Historic Deccan parchment design system
-│
-├── api/                     # Optional Python Serverless API entrypoint
-│   └── index.py             # FastAPI backend for serverless environments
-│
-├── vercel.json              # Vercel deployment configuration
-├── requirements.txt         # Production dependencies
-└── README.md                # Project documentation
+ai/        training, search, arena, models (Python)
+game/      rules (Python)
+public/    web app with JavaScript ports of rules and MCTS
+api/       FastAPI endpoint for Vercel
+scripts/   generates public/model-info.js
+server.py  local server with the Python AI
 ```
 
----
+## Running Locally
 
-## 🚀 Running Locally
-
-Because the web application is 100% client-side, you can host it with any static file server:
-
-### Using Python
 ```bash
 python3 -m http.server 8000 --directory public
 ```
 
-### Using Node / npx
-```bash
-npx serve public -p 8000
-```
+Open `http://localhost:8000`
+`python server.py` serves the same UI with the Python AI instead
 
-Open your browser at **`http://localhost:8000`**.
-
----
-
-## 🏋️ Training the AI Locally
+## Training
 
 CUDA is faster than CPU is faster than MPS
-If you want to train or evaluate new AI models:
+Training picks CUDA, then MPS, then CPU, so pass `--device cpu` on Apple Silicon
 
-1. Install development dependencies:
+1. Install dependencies
    ```bash
    pip install -r requirements-dev.txt
    ```
-2. Run the self-play training loop:
+2. Train, saving `checkpoints/final.pt`
    ```bash
    python -m ai.train
    ```
-3. Export new weights to ONNX:
+3. Save the weights as `ai/models/pt/alphatigervN.pt` and export to ONNX
    ```bash
-   python -m ai.export_to_onnx
+   python -m ai.onnx --input ai/models/pt/alphatigervN.pt --output ai/models/onnx/alphatigervN.onnx
    ```
-   Copy the exported `alphatiger.onnx` into `public/alphatiger.onnx` for browser gameplay.
-   After committing the browser weights, run `python3 scripts/model_info.py` and commit
-   `public/model-info.js`. This matches the deployed weights to the model manifest and
-   generates the tutorial's version, estimated Elo, and browser release date from Git.
+4. Deploy by copying it to `public/alphatiger.onnx` and committing
+5. Regenerate the tutorial's version, Elo, and release date, then commit `public/model-info.js`
+   ```bash
+   python3 scripts/model_info.py
+   ```
 
 ### Model Versions
 
-Models named `alphatigerv`
+Models named `alphatiger`
 `v7` version number for later models
 `beta` used for pretrain only models
 ONNX for inference, PT for training
@@ -204,6 +160,6 @@ ONNX for inference, PT for training
 
 Pairwise tournament to sample matchups
 Joint Bradley-Terry maximum likelihood estimation
-Anchor with alphatiger v8 at 1000 Elo
+Anchor with v8 at 1000 Elo
 Round to nearest 50 due to error bars
 Sufficient games for +-25 Elo 95% CI
