@@ -105,7 +105,8 @@ def self_play_game(
     temperature: float,
     temperature_cutoff: int,
     simulations: int,
-    pcr: float = 0.25):
+    pcr: float = 0.25,
+    outcome_weight: float = OUTCOME_WEIGHT):
     if not 0 <= pcr <= 1:
         raise ValueError("pcr must be between 0 and 1")
     state = state_factory()
@@ -140,7 +141,7 @@ def self_play_game(
     winner = Updater.get_state_winner(state)
     # blend final outcome with root value to lower variance
     samples = [
-        (sv, pt, lm, np.float32(OUTCOME_WEIGHT * winner + (1 - OUTCOME_WEIGHT) * root_val))
+        (sv, pt, lm, np.float32(outcome_weight * winner + (1 - outcome_weight) * root_val))
         for sv, pt, lm, root_val in history
     ]
     return samples, move_num, winner
