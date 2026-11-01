@@ -34,6 +34,7 @@ class Node:
         self.value_sum = 0.0
         # stick to Python scalars for speed
         self.prior = float(prior)
+        self.offset = 0
 
     @property
     def eval(self):
@@ -83,13 +84,15 @@ class Node:
         self._children = None
         # lazy evaluation, leave game state unexplored
 
-    def expand_luck(self):
+    def expand_luck(self, rng):
         luck_outcomes = Updater.get_luck_outcomes(self.state)
         prior = 1.0 / len(luck_outcomes)
         self._moves = np.arange(len(luck_outcomes), dtype=np.int_)
         self._priors = np.full(len(luck_outcomes), prior, dtype=np.float64)
         self._nodes = [Node(outcome, self, i, prior) for i, outcome in enumerate(luck_outcomes)]
         self._children = dict(enumerate(self._nodes))
+        # offset for unbiased choice in round robin luck sampling
+        self.offset = int(rng.random() * len(self._nodes))
 
 class MCTS:
     def __init__(self, model, ipuct = 800, dalpha = 0.5, depsilon = 0.25):
@@ -125,7 +128,7 @@ class MCTS:
             while node.expanded():
                 # luck is slippery
                 if node.state.is_luck:
-                    node = self.rng.choice(list(node.children.values()))
+                    node = node._nodes[(node.offset + node.visit_count) % len(node._nodes)]
                 else:
                     # generate noise on simulation 1
                     if node is self.root and self.noise is None and depsilon > 0:
@@ -139,8 +142,8 @@ class MCTS:
             # handle more luck ply
             while node.state.is_luck:
                 if not node.expanded():
-                    node.expand_luck()  
-                node = self.rng.choice(list(node.children.values()))
+                    node.expand_luck(self.rng)
+                node = node._nodes[(node.offset + node.visit_count) % len(node._nodes)]
             
             reward = self.winner(node.state)
             if reward != 0:
