@@ -5,7 +5,9 @@
     "parameters": 498496,
     "training": "curriculum",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 10000,
+    "hardware": "latte",
     "estimated_elo": 1000
   },
   "alphatigerv11beta": {
@@ -14,7 +16,9 @@
     "parameters": 498496,
     "training": "curriculum",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 20200,
+    "hardware": "latte",
     "estimated_elo": 1250
   },
   "alphatigerv11": {
@@ -23,7 +27,9 @@
     "parameters": 498496,
     "training": "finetune",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 1000,
+    "hardware": "latte",
     "estimated_elo": 1200
   },
   "alphatigerv12beta": {
@@ -32,7 +38,9 @@
     "parameters": 498496,
     "training": "curriculum",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 25000,
+    "hardware": "latte",
     "estimated_elo": 1350
   },
   "alphatigerv12": {
@@ -41,7 +49,9 @@
     "parameters": 498496,
     "training": "finetune",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 1000,
+    "hardware": "latte",
     "estimated_elo": 1350
   },
   "alphatigerv13beta": {
@@ -50,7 +60,9 @@
     "parameters": 395696,
     "training": "curriculum",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 25600,
+    "hardware": "latte",
     "estimated_elo": 1400
   },
   "alphatigerv13": {
@@ -59,7 +71,9 @@
     "parameters": 395696,
     "training": "finetune",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 800,
+    "hardware": "latte",
     "estimated_elo": 1400
   },
   "alphatigerv14beta": {
@@ -68,7 +82,9 @@
     "parameters": 395696,
     "training": "curriculum",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 26000,
+    "hardware": "mac",
     "estimated_elo": 1250
   },
   "alphatigerv14": {
@@ -77,7 +93,9 @@
     "parameters": 395696,
     "training": "distill",
     "value_target": "outcome",
+    "value_loss": "mse",
     "games": 20000,
+    "hardware": "mac",
     "estimated_elo": 1450
   },
   "alphatigerv15": {
@@ -86,7 +104,9 @@
     "parameters": 395696,
     "training": "distill",
     "value_target": "blended",
+    "value_loss": "mse",
     "games": 20000,
+    "hardware": "mac",
     "estimated_elo": 1500
   },
   "alphatigerv16beta": {
@@ -95,7 +115,9 @@
     "parameters": 395696,
     "training": "curriculum",
     "value_target": "blended",
+    "value_loss": "mse",
     "games": 26000,
+    "hardware": "kaggle",
     "estimated_elo": 1450
   },
   "alphatigerv16": {
@@ -104,7 +126,9 @@
     "parameters": 395696,
     "training": "finetune",
     "value_target": "blended",
+    "value_loss": "mse",
     "games": 4000,
+    "hardware": "kaggle",
     "estimated_elo": 1550
   }
 }
