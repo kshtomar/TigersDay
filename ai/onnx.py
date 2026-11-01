@@ -13,6 +13,10 @@ def export_model(tiger_path: str, onnx_path: str):
     model = AlphaTiger(use_factorization=config.get('factorized', True))
     load_checkpoint(model, None, tiger_path)
     model.eval()
+    # Trained weights decay into subnormals, which are ~10x slower on x86
+    with torch.no_grad():
+        for p in model.parameters():
+            p[p.abs() < torch.finfo(p.dtype).tiny] = 0
 
     dummy_input = torch.randn(2, GAME_VECTOR_LENGTH, dtype=torch.float32)
     
