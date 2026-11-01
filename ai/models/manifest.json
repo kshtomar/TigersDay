@@ -7,6 +7,7 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "games": 10000,
+    "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1000
   },
@@ -18,6 +19,7 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "games": 20200,
+    "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1250
   },
@@ -29,6 +31,7 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "games": 1000,
+    "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1200
   },
@@ -40,6 +43,7 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "games": 25000,
+    "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1350
   },
@@ -51,6 +55,7 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "games": 1000,
+    "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1350
   },
@@ -62,6 +67,7 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "games": 25600,
+    "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1400
   },
@@ -72,7 +78,8 @@
     "training": "finetune",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 800,
+    "games": 200,
+    "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1400
   },
@@ -84,6 +91,7 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "games": 26000,
+    "replay_buffer": 10000,
     "hardware": "mac",
     "estimated_elo": 1250
   },
@@ -95,6 +103,7 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "games": 20000,
+    "replay_buffer": null,
     "hardware": "mac",
     "estimated_elo": 1450
   },
@@ -106,6 +115,7 @@
     "value_target": "blended",
     "value_loss": "mse",
     "games": 20000,
+    "replay_buffer": null,
     "hardware": "mac",
     "estimated_elo": 1500
   },
@@ -117,6 +127,7 @@
     "value_target": "blended",
     "value_loss": "mse",
     "games": 26000,
+    "replay_buffer": 100000,
     "hardware": "kaggle",
     "estimated_elo": 1450
   },
@@ -128,6 +139,7 @@
     "value_target": "blended",
     "value_loss": "mse",
     "games": 4000,
+    "replay_buffer": 100000,
     "hardware": "kaggle",
     "estimated_elo": 1550
   }
