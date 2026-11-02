@@ -6,7 +6,15 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 10000,
+    "curriculum": [
+      {"stage": "end", "games": 2000, "sims": 1000, "temperature_cutoff": null},
+      {"stage": "late", "games": 2000, "sims": 1000, "temperature_cutoff": null},
+      {"stage": "mid", "games": 2000, "sims": 1000, "temperature_cutoff": null},
+      {"stage": "early", "games": 2000, "sims": 1000, "temperature_cutoff": null},
+      {"stage": "full", "games": 2000, "sims": 1000, "temperature_cutoff": null}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1000
@@ -18,7 +26,15 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 20200,
+    "curriculum": [
+      {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 3},
+      {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 6},
+      {"stage": "mid", "games": 5000, "sims": 800, "temperature_cutoff": 9},
+      {"stage": "early", "games": 5000, "sims": 800, "temperature_cutoff": 12},
+      {"stage": "full", "games": 200, "sims": 800, "temperature_cutoff": 15}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1250
@@ -30,7 +46,11 @@
     "training": "finetune",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 1000,
+    "curriculum": [
+      {"stage": "full", "games": 1000, "sims": 800, "temperature_cutoff": 15}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1200
@@ -42,7 +62,15 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 25000,
+    "curriculum": [
+      {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 3},
+      {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 6},
+      {"stage": "mid", "games": 5000, "sims": 800, "temperature_cutoff": 9},
+      {"stage": "early", "games": 5000, "sims": 800, "temperature_cutoff": 12},
+      {"stage": "full", "games": 5000, "sims": 800, "temperature_cutoff": 15}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1350
@@ -54,7 +82,11 @@
     "training": "finetune",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 1000,
+    "curriculum": [
+      {"stage": "full", "games": 1000, "sims": 4000, "temperature_cutoff": 18}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1350
@@ -66,7 +98,16 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 25600,
+    "curriculum": [
+      {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 6},
+      {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 9},
+      {"stage": "mid", "games": 5000, "sims": 800, "temperature_cutoff": 12},
+      {"stage": "early", "games": 5000, "sims": 800, "temperature_cutoff": 15},
+      {"stage": "full", "games": 5000, "sims": 800, "temperature_cutoff": 18},
+      {"stage": "full", "games": 600, "sims": 4000, "temperature_cutoff": 21}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1400
@@ -78,7 +119,11 @@
     "training": "finetune",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 200,
+    "curriculum": [
+      {"stage": "full", "games": 200, "sims": 4000, "temperature_cutoff": 21}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
     "estimated_elo": 1400
@@ -90,7 +135,16 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 26000,
+    "curriculum": [
+      {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 6},
+      {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 9},
+      {"stage": "mid", "games": 5000, "sims": 800, "temperature_cutoff": 12},
+      {"stage": "early", "games": 5000, "sims": 800, "temperature_cutoff": 15},
+      {"stage": "full", "games": 5000, "sims": 800, "temperature_cutoff": 18},
+      {"stage": "full", "games": 1000, "sims": 4000, "temperature_cutoff": 21}
+    ],
+    "pcr": 0.25,
+    "fast_sims": 0.1,
     "replay_buffer": 10000,
     "hardware": "mac",
     "estimated_elo": 1250
@@ -102,7 +156,12 @@
     "training": "distill",
     "value_target": "outcome",
     "value_loss": "mse",
-    "games": 20000,
+    "curriculum": [
+      {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
+    "teachers": ["alphatigerv13", "alphatigerv14beta"],
     "replay_buffer": null,
     "hardware": "mac",
     "estimated_elo": 1450
@@ -114,7 +173,12 @@
     "training": "distill",
     "value_target": "blended",
     "value_loss": "mse",
-    "games": 20000,
+    "curriculum": [
+      {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
+    "teachers": ["alphatigerv13", "alphatigerv14beta"],
     "replay_buffer": null,
     "hardware": "mac",
     "estimated_elo": 1500
@@ -126,7 +190,16 @@
     "training": "curriculum",
     "value_target": "blended",
     "value_loss": "mse",
-    "games": 26000,
+    "curriculum": [
+      {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 6},
+      {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 9},
+      {"stage": "mid", "games": 5000, "sims": 800, "temperature_cutoff": 12},
+      {"stage": "early", "games": 5000, "sims": 800, "temperature_cutoff": 15},
+      {"stage": "full", "games": 5000, "sims": 800, "temperature_cutoff": 18},
+      {"stage": "full", "games": 1000, "sims": 4000, "temperature_cutoff": 21}
+    ],
+    "pcr": 0.25,
+    "fast_sims": 0.2,
     "replay_buffer": 100000,
     "hardware": "kaggle",
     "estimated_elo": 1450
@@ -138,7 +211,11 @@
     "training": "finetune",
     "value_target": "blended",
     "value_loss": "mse",
-    "games": 4000,
+    "curriculum": [
+      {"stage": "full", "games": 4000, "sims": 4000, "temperature_cutoff": 21}
+    ],
+    "pcr": 0.25,
+    "fast_sims": 0.2,
     "replay_buffer": 100000,
     "hardware": "kaggle",
     "estimated_elo": 1550
@@ -150,7 +227,16 @@
     "training": "curriculum",
     "value_target": "blended",
     "value_loss": "bce",
-    "games": 26000,
+    "curriculum": [
+      {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 3},
+      {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 6},
+      {"stage": "mid", "games": 5000, "sims": 800, "temperature_cutoff": 9},
+      {"stage": "early", "games": 5000, "sims": 800, "temperature_cutoff": 12},
+      {"stage": "full", "games": 5000, "sims": 800, "temperature_cutoff": 12},
+      {"stage": "full", "games": 1000, "sims": 4000, "temperature_cutoff": 15}
+    ],
+    "pcr": 0.25,
+    "fast_sims": 0.2,
     "replay_buffer": 100000,
     "hardware": "kaggle",
     "estimated_elo": 1500
@@ -162,7 +248,11 @@
     "training": "finetune",
     "value_target": "blended",
     "value_loss": "bce",
-    "games": 4000,
+    "curriculum": [
+      {"stage": "full", "games": 4000, "sims": 4000, "temperature_cutoff": 15}
+    ],
+    "pcr": 0.25,
+    "fast_sims": 0.2,
     "replay_buffer": 100000,
     "hardware": "kaggle",
     "estimated_elo": 1550
@@ -174,7 +264,12 @@
     "training": "distill",
     "value_target": "blended",
     "value_loss": "bce",
-    "games": 20000,
+    "curriculum": [
+      {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
+    "teachers": ["alphatigerv16", "alphatigerv17"],
     "replay_buffer": null,
     "hardware": "kaggle",
     "estimated_elo": 1600
