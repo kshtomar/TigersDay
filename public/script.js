@@ -140,7 +140,7 @@ let settings = {
 
 // Client-Side AI & MCTS Singletons
 const onnxModel = new TDMCTS.ONNXModelWrapper(`./alphatiger.onnx?v=${ALPHATIGER.version}-${ALPHATIGER.released}`);
-const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 400, depsilon: 0.1 }); // Micro Dirichlet noise
+const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 400 });
 const multiplayerManager = new TDMultiplayer.MultiplayerManager();
 
 // Preload ONNX model in background
@@ -980,7 +980,7 @@ async function startProgressiveEval(stateStr) {
   const linesContainer = document.getElementById('engine-lines-container');
 
   try {
-    const rootNode = await mctsEngine.search(currentGameState, false);
+    const rootNode = await mctsEngine.search(currentGameState);
     if (stateStr !== currentBitString || !settings.showEval) return;
 
     setEvalBar(rootNode.eval, mctsEngine.simulations);

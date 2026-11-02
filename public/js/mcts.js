@@ -32,9 +32,13 @@
       this.parent = parent;
       this.move = move;
       this.prior = prior;
-      this.children = new Map(); // moveIdx -> MCTSNode
+      this._moves = [];
+      this._priors = [];
+      this._nodes = [];
+      this._children = null;
       this.visit_count = 0;
       this.value_sum = 0.0;
+      this.offset = 0;
     }
 
     get eval() {
@@ -45,30 +49,42 @@
     }
 
     get is_expanded() {
-      return this.children.size > 0;
+      return this._nodes.length > 0;
     }
 
-    get is_luck() {
-      return Boolean(this.state && this.state.is_luck);
-    }
-
-    expand_decision(actionPriors) {
-      for (let move = 0; move < actionPriors.length; move++) {
-        const prior = actionPriors[move];
-        if (prior > 0.0 && !this.children.has(move)) {
-          this.children.set(move, new MCTSNode(null, this, move, prior));
+    // Expose the tree in action order; search creates only selected nodes.
+    get children() {
+      if (this._children === null) {
+        this._children = new Map();
+        for (let i = 0; i < this._nodes.length; i++) {
+          this._nodes[i] ??= new MCTSNode(null, this, this._moves[i], this._priors[i]);
+          this._children.set(this._moves[i], this._nodes[i]);
         }
       }
+      return this._children;
+    }
+
+    // round robin from a random offset for unbiased luck sampling
+    get luck_child() {
+      return this._nodes[(this.offset + this.visit_count) % this._nodes.length];
+    }
+
+    // lazy child creation, start as null
+    expand_decision(moves, priors) {
+      this._moves = moves;
+      this._priors = priors;
+      this._nodes = new Array(moves.length).fill(null);
+      this._children = null;
     }
 
     expand_luck() {
       const outcomes = getLuckOutcomes(this.state);
       const prior = 1.0 / outcomes.length;
-      for (let i = 0; i < outcomes.length; i++) {
-        if (!this.children.has(i)) {
-          this.children.set(i, new MCTSNode(outcomes[i], this, i, prior));
-        }
-      }
+      this._moves = outcomes.map((_, i) => i);
+      this._priors = outcomes.map(() => prior);
+      this._nodes = outcomes.map((outcome, i) => new MCTSNode(outcome, this, i, prior));
+      this._children = null;
+      this.offset = Math.floor(Math.random() * outcomes.length);
     }
   }
 
@@ -153,70 +169,35 @@
       this.model = model;
       this.simulations = options.simulations || 400;
       this.ipuct = options.ipuct || 800;
-      this.dalpha = options.dalpha || 0.5;
-      this.depsilon = options.depsilon || 0.25;
       this.root = null;
     }
 
-    sampleGamma(shape, scale = 1.0) {
-      // Marsaglia and Tsang method for Gamma(alpha, 1) when alpha >= 1
-      if (shape < 1) {
-        return this.sampleGamma(shape + 1, scale) * Math.pow(Math.random(), 1 / shape);
-      }
-      const d = shape - 1 / 3;
-      const c = 1 / Math.sqrt(9 * d);
-      while (true) {
-        let u = Math.random();
-        let v = 0;
-        let x = 0;
-        do {
-          const z = (Math.random() + Math.random() + Math.random() + Math.random() - 2) * 1.732; // Normal approx
-          v = 1 + c * z;
-        } while (v <= 0);
-        v = v * v * v;
-        x = (Math.random() + Math.random() - 1);
-        if (u < 1 - 0.0331 * x * x * x * x) return d * v * scale;
-        if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v * scale;
-      }
-    }
-
-    getDirichletNoise(length, alpha) {
-      const samples = new Float32Array(length);
-      let sum = 0;
-      for (let i = 0; i < length; i++) {
-        samples[i] = this.sampleGamma(alpha, 1.0);
-        sum += samples[i];
-      }
-      if (sum > 0) {
-        for (let i = 0; i < length; i++) samples[i] /= sum;
-      }
-      return samples;
-    }
-
-    selectChild(node, noiseDict = null) {
+    selectChild(node) {
+      // calculate once for every child
+      const puct = 1.25 + Math.log((node.visit_count + this.ipuct) / this.ipuct);
+      const visitsSqrt = Math.sqrt(node.visit_count);
+      const mysore = node.state.to_move === 1;
+      const parentEval = node.value_sum / node.visit_count;
       let bestScore = -Infinity;
-      let bestChild = null;
+      let bestIndex = -1;
 
-      for (const [move, child] of node.children.entries()) {
-        const exploitation = node.state.to_move === 1 ? -child.eval : child.eval;
-
-        let prior = child.prior;
-        if (noiseDict && noiseDict.has(move)) {
-          prior = (1 - this.depsilon) * prior + this.depsilon * noiseDict.get(move);
-        }
-
-        const puct = 1.25 + Math.log((node.visit_count + this.ipuct) / this.ipuct);
-
-        const exploration = puct * prior * (Math.sqrt(node.visit_count) / (1 + child.visit_count));
+      for (let i = 0; i < node._nodes.length; i++) {
+        const child = node._nodes[i];
+        const visits = child ? child.visit_count : 0;
+        const value = visits ? child.value_sum / visits : parentEval;
+        // flip evaluation for mysore
+        const exploitation = mysore ? -value : value;
+        const exploration = puct * node._priors[i] * (visitsSqrt / (1 + visits));
         const score = exploitation + exploration;
 
         if (score > bestScore) {
           bestScore = score;
-          bestChild = child;
+          bestIndex = i;
         }
       }
 
-      return bestChild;
+      node._nodes[bestIndex] ??= new MCTSNode(null, node, node._moves[bestIndex], node._priors[bestIndex]);
+      return node._nodes[bestIndex];
     }
 
     backpropagate(node, value) {
@@ -228,66 +209,30 @@
       }
     }
 
-    async search(rootState, stop = true, onProgress = null) {
-      if (!this.root || !this.root.state || this.root.state.toString() !== rootState.toString()) {
-        this.root = new MCTSNode(rootState.copy());
-      }
-
-      let noiseDict = null;
-      const warmup = stop ? Math.floor(this.simulations / 5) : this.simulations;
-      const stopThreshold = 0.9;
+    // fresh tree every search so the bot never thinks beyond its sims
+    async search(rootState, onProgress = null) {
+      // local root so overlapping searches never share a tree
+      const root = this.root = new MCTSNode(rootState.copy());
 
       for (let currentSim = 0; currentSim < this.simulations; currentSim++) {
-        let node = this.root;
-
-        // Early stopping if single move dominates
-        if (currentSim > warmup && this.root.children.size > 0) {
-          let maxVisits = 0;
-          for (const child of this.root.children.values()) {
-            if (child.visit_count > maxVisits) maxVisits = child.visit_count;
-          }
-          if (this.root.visit_count > 0 && (maxVisits / this.root.visit_count) > stopThreshold) {
-            return this.root;
-          }
-        }
+        let node = root;
 
         // 1. Selection
         while (node.is_expanded) {
-          if (node.is_luck) {
-            const childArr = Array.from(node.children.values());
-            node = childArr[Math.floor(Math.random() * childArr.length)];
-          } else {
-            if (node === this.root && noiseDict === null && this.depsilon > 0) {
-              const legalMoves = Array.from(this.root.children.keys());
-              const noise = this.getDirichletNoise(legalMoves.length, this.dalpha);
-              noiseDict = new Map();
-              for (let i = 0; i < legalMoves.length; i++) {
-                noiseDict.set(legalMoves[i], noise[i]);
-              }
-            }
-            node = this.selectChild(node, node === this.root ? noiseDict : null);
-            if (!node) break;
-          }
+          node = node.state.is_luck ? node.luck_child : this.selectChild(node);
         }
-
-        if (!node) continue;
 
         // 2. State Materialization (Lazy evaluation)
         if (node.state === null) {
-          if (node.parent && node.parent.state) {
-            node.state = getNextState(node.parent.state, node.move);
-          } else {
-            continue;
-          }
+          node.state = getNextState(node.parent.state, node.move);
         }
 
         // Luck resolution loop
-        while (node.is_luck) {
+        while (node.state.is_luck) {
           if (!node.is_expanded) {
             node.expand_luck();
           }
-          const childArr = Array.from(node.children.values());
-          node = childArr[Math.floor(Math.random() * childArr.length)];
+          node = node.luck_child;
         }
 
         // 3. Terminal evaluation check
@@ -309,23 +254,20 @@
         }
 
         let sumExp = 0;
-        const expLogits = new Float32Array(MOVE_VECTOR_LENGTH);
+        const moves = [];
+        const expLogits = [];
         for (let i = 0; i < MOVE_VECTOR_LENGTH; i++) {
           if (legalMask[i]) {
             const e = Math.exp(rawLogits[i] - maxLogit);
-            expLogits[i] = e;
+            moves.push(i);
+            expLogits.push(e);
             sumExp += e;
           }
         }
 
-        const policy = new Float32Array(MOVE_VECTOR_LENGTH);
-        if (sumExp > 0) {
-          for (let i = 0; i < MOVE_VECTOR_LENGTH; i++) {
-            if (legalMask[i]) policy[i] = expLogits[i] / sumExp;
-          }
-        }
-
-        node.expand_decision(policy);
+        // filter moves whose prior underflows to zero
+        const policy = expLogits.map(e => e / sumExp);
+        node.expand_decision(moves.filter((_, i) => policy[i] > 0), policy.filter(p => p > 0));
         this.backpropagate(node, value);
 
         if (onProgress && currentSim % 50 === 0) {
@@ -333,11 +275,11 @@
         }
       }
 
-      return this.root;
+      return root;
     }
 
     async findMove(state, temperature = 0.0) {
-      const root = await this.search(state, true);
+      const root = await this.search(state);
       const counts = new Float32Array(MOVE_VECTOR_LENGTH);
 
       for (const [m, child] of root.children.entries()) {
