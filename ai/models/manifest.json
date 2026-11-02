@@ -142,5 +142,29 @@
     "replay_buffer": 100000,
     "hardware": "kaggle",
     "estimated_elo": 1550
+  },
+  "alphatigerv17beta": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "curriculum",
+    "value_target": "blended",
+    "value_loss": "bce",
+    "games": 26000,
+    "replay_buffer": 100000,
+    "hardware": "kaggle",
+    "estimated_elo": 1500
+  },
+  "alphatigerv17": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "finetune",
+    "value_target": "blended",
+    "value_loss": "bce",
+    "games": 4000,
+    "replay_buffer": 100000,
+    "hardware": "kaggle",
+    "estimated_elo": 1550
   }
 }
