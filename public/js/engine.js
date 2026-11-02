@@ -684,7 +684,8 @@
       }
     }
 
-    if (state.turn === 4 && !hasFresh && state.to_move === 0) {
+    // turn_refresh leaves British without fresh armies only when they have no armies
+    if (!hasFresh && state.to_move === 0) {
       return -1; // Mysore Victory
     }
 

@@ -143,7 +143,8 @@ def get_state_winner(state):
     # 1 for British win, -1 for Mysore win, 0 for game in progress
     if np.sum((state.tired_armies | state.fresh_armies) & KEYS) == 5:
         return 1
-    elif state.turn == 4 and not state.fresh_armies.any() and state.to_move == 0:
+    # turn_refresh leaves British without fresh armies only when they have no armies
+    elif not state.fresh_armies.any() and state.to_move == 0:
         return -1
     else:
         return 0
