@@ -1,6 +1,6 @@
 import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
-import copy
+import math
 import multiprocessing
 from pathlib import Path
 import time
@@ -13,11 +13,10 @@ from ai.arena import play_match
 from ai.neural import AlphaTiger, ONNXAlphaTiger, load_checkpoint, save_checkpoint
 from game.constants import DEFAULT_MODEL
 
-LR = 1e-3
+LR = 2e-3
 BATCH_SIZE = 512
 WEIGHT_DECAY = 1e-4
-MAX_EPOCHS = 100
-PATIENCE = 8
+EPOCHS = 10
 VAL_SPLIT = 0.2
 SHARD_GAMES = 100
 CACHE_DIR = Path('checkpoints/distill')
@@ -170,14 +169,11 @@ def train_student(student, data, device, seed):
     validation, training = np.flatnonzero(val_mask), np.flatnonzero(~val_mask)
 
     opt = torch.optim.Adam(student.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
-    base_v, base_p = evaluate(student, data, validation, device)
-    best_score, best_ep = 1.0, 0
-    best_weights = copy.deepcopy(student.state_dict())
-    best_optimizer = copy.deepcopy(opt.state_dict())
+    # Linear decay to zero by the last step
+    steps = EPOCHS * math.ceil(len(training) / BATCH_SIZE)
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda step: 1 - step / steps)
 
-    print(f"Baseline validation: BCE={base_v:.4f}, KL={base_p:.4f}")
-
-    for ep in range(1, MAX_EPOCHS + 1):
+    for ep in range(1, EPOCHS + 1):
         student.train()
         rng.shuffle(training)
         for x, m, v, p in stream_batches(data, training):
@@ -186,24 +182,12 @@ def train_student(student, data, device, seed):
             opt.zero_grad()
             (lv + lp).backward()
             opt.step()
+            sched.step()
 
         # Early stop if validation loss not improving
         val_v, val_p = evaluate(student, data, validation, device)
-        score = 0.5 * (val_v / base_v + val_p / base_p)
-        improved = score < best_score
+        print(f"Epoch {ep:2d}: BCE={val_v:.4f}, KL={val_p:.4f}", flush=True)
 
-        if improved:
-            best_score, best_ep = score, ep
-            best_weights = copy.deepcopy(student.state_dict())
-            best_optimizer = copy.deepcopy(opt.state_dict())
-
-        print(f"Epoch {ep:2d}: BCE={val_v:.4f}, KL={val_p:.4f}, Score={score:.4f}{' *' if improved else ''}", flush=True)
-
-        if ep - best_ep >= PATIENCE:
-            break
-
-    student.load_state_dict(best_weights)
-    opt.load_state_dict(best_optimizer)
     student.eval()
     return opt
 
