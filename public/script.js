@@ -139,12 +139,14 @@ let settings = {
 };
 
 // Client-Side AI & MCTS Singletons
-const onnxModel = new TDMCTS.ONNXModelWrapper(`./alphatiger.onnx?v=${ALPHATIGER.version}-${ALPHATIGER.released}`);
-const mctsEngine = new TDMCTS.MCTS(onnxModel, { simulations: 400 });
 const multiplayerManager = new TDMultiplayer.MultiplayerManager();
+let mctsSims = 400;
 
 // Preload ONNX model in background
-onnxModel.init().catch(err => console.log("ONNX preload notice:", err));
+// eval and AI search concurrently, so each gets its own worker
+const modelPath = `./alphatiger.onnx?v=${ALPHATIGER.version}-${ALPHATIGER.released}`;
+const evalSearch = new TDMCTS.SearchWorker(modelPath);
+const aiSearch = new TDMCTS.SearchWorker(modelPath);
 
 /**
  * Central state reset — clears ALL interactive UI state (unit selection,
@@ -932,7 +934,7 @@ function formatSimsLabel(val) {
 
 function handleSimsSliderInput(sliderPos) {
   const sims = simsSliderToValue(Number(sliderPos));
-  mctsEngine.simulations = sims;
+  mctsSims = sims;
   const label = document.getElementById('mcts-sims-label');
   if (label) label.textContent = `${formatSimsLabel(sims)} sims`;
 }
@@ -980,13 +982,11 @@ async function startProgressiveEval(stateStr) {
   const linesContainer = document.getElementById('engine-lines-container');
 
   try {
-    const rootNode = await mctsEngine.search(currentGameState);
-    if (stateStr !== currentBitString || !settings.showEval) return;
-
-    setEvalBar(rootNode.eval, mctsEngine.simulations);
-
-    const topLines = mctsEngine.getTopCandidateLines(3);
-    if (linesContainer && topLines.length > 0) {
+    const stale = () => stateStr !== currentBitString || !settings.showEval;
+    // stream like Stockfish, redrawing as the search deepens
+    const render = ({ score, visits, lines: topLines }) => {
+      setEvalBar(score, visits);
+      if (!linesContainer || topLines.length === 0) return;
       linesContainer.innerHTML = '';
       topLines.forEach(item => {
         const evalVal = item.eval;
@@ -1002,7 +1002,8 @@ async function startProgressiveEval(stateStr) {
         `;
         linesContainer.appendChild(lineDiv);
       });
-    }
+    };
+    render(await evalSearch.search(currentGameState, mctsSims, stale, render));
   } catch (err) {
     console.warn("Client eval error:", err);
   }
@@ -1464,9 +1465,8 @@ async function triggerAiMove() {
   updateConnectionPill('waiting', '⬤ AI THINKING (WASM)…');
 
   try {
-    const { bestMove } = await mctsEngine.findMove(currentGameState, 0.0);
-    if (currentGameState !== state) return;
-    
+    const { bestMove } = await aiSearch.search(state, mctsSims, () => currentGameState !== state);
+
     currentGameState = TDEngine.getNextState(currentGameState, bestMove);
     currentGameState = TDEngine.resolveLuck(currentGameState);
 

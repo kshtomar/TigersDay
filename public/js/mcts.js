@@ -278,8 +278,8 @@
       return root;
     }
 
-    async findMove(state, temperature = 0.0) {
-      const root = await this.search(state);
+    async findMove(state, temperature = 0.0, onProgress = null) {
+      const root = await this.search(state, onProgress);
       const counts = new Float32Array(MOVE_VECTOR_LENGTH);
 
       for (const [m, child] of root.children.entries()) {
@@ -368,10 +368,52 @@
     }
   }
 
+  // =========================================================================
+  // 4. WEB WORKER SEARCH (main thread side)
+  // =========================================================================
+  class SearchWorker {
+    constructor(modelPath) {
+      this.url = `js/search-worker.js?model=${encodeURIComponent(new URL(modelPath, location.href))}`;
+      this.spawn();
+    }
+
+    // fresh worker preloads the model before the next search
+    spawn() {
+      this.worker = new Worker(this.url);
+      this.busy = false;
+    }
+
+    // terminating frees the stale tree and CPU instantly
+    cancel() {
+      this.worker.terminate();
+      this.spawn();
+    }
+
+    // streams progress, a stale or replaced search never resolves
+    search(state, sims, stale, onProgress = null) {
+      if (this.busy) this.cancel();
+      this.busy = true;
+      return new Promise(resolve => {
+        this.worker.onmessage = ({ data }) => {
+          if (data.done) this.busy = false;
+          if (stale()) {
+            if (this.busy) this.cancel();
+          } else if (data.done) {
+            resolve(data);
+          } else if (onProgress) {
+            onProgress(data);
+          }
+        };
+        this.worker.postMessage({ state, sims });
+      });
+    }
+  }
+
   const TDMCTS = {
     MCTSNode,
     ONNXModelWrapper,
-    MCTS
+    MCTS,
+    SearchWorker
   };
 
   if (typeof module !== 'undefined' && module.exports) {
