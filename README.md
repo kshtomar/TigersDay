@@ -113,7 +113,6 @@ ai/        training, search, arena, models (Python)
 game/      rules (Python)
 public/    web app with JavaScript ports of rules and MCTS
 api/       FastAPI endpoint for Vercel
-scripts/   generates public/model-info.js
 server.py  local server with the Python AI
 ```
 
@@ -146,7 +145,7 @@ Training picks CUDA, then MPS, then CPU, so pass `--device cpu` on Apple Silicon
 4. Deploy by copying it to `public/alphatiger.onnx` and committing
 5. Regenerate the tutorial's version, Elo, and release date, then commit `public/model-info.js`
    ```bash
-   python3 scripts/model_info.py
+   python3 ai/model_info.py
    ```
 
 ### Model Versions
