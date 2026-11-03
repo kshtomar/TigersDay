@@ -10,7 +10,7 @@ import torch
 import torch.nn.functional as F
 
 from ai.arena import play_match
-from ai.neural import AlphaTiger, ONNXAlphaTiger, load_checkpoint, save_checkpoint
+from ai.neural import AlphaTiger, ONNXAlphaTiger, adamw, load_checkpoint, save_checkpoint
 from game.constants import DEFAULT_MODEL
 
 LR = 2e-3
@@ -168,7 +168,7 @@ def train_student(student, data, device, seed):
     val_mask = np.isin(game_ids, val_games)
     validation, training = np.flatnonzero(val_mask), np.flatnonzero(~val_mask)
 
-    opt = torch.optim.Adam(student.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
+    opt = adamw(student, LR, WEIGHT_DECAY)
     # Linear decay to zero by the last step
     steps = EPOCHS * math.ceil(len(training) / BATCH_SIZE)
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda step: 1 - step / steps)

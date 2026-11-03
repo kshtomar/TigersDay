@@ -14,7 +14,7 @@ import game.updater as Updater
 import game.engine as Engine
 from game.constants import *
 from ai.mcts import MCTS
-from ai.neural import AlphaTiger, load_checkpoint, save_checkpoint
+from ai.neural import AlphaTiger, adamw, load_checkpoint, save_checkpoint
 from game.state import GameState
 
 
@@ -189,9 +189,7 @@ def train(
         "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     ))
     model = AlphaTiger().to(device)
-    optimizer = optim.Adam(
-        model.parameters(), lr=config.lr, weight_decay=config.weight_decay
-    )
+    optimizer = adamw(model, config.lr, config.weight_decay)
     buffer    = ReplayBuffer(config.buffer_size)
     training_budget = TrainingBudget(config.train_ratio)
 

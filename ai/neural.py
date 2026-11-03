@@ -129,6 +129,15 @@ class AlphaTiger(Module):
         return value.item(), policy_logits.squeeze(0).cpu().numpy()
 
 
+def adamw(model, lr, weight_decay):
+    # Decoupled decay on weight matrices only; biases are not regularized
+    params = list(model.parameters())
+    return torch.optim.AdamW([
+        {'params': [p for p in params if p.ndim > 1], 'weight_decay': weight_decay},
+        {'params': [p for p in params if p.ndim <= 1], 'weight_decay': 0.0},
+    ], lr=lr)
+
+
 def save_checkpoint(model, optimizer, iteration, path):
     checkpoint = {
         'model_state_dict': model.state_dict(),

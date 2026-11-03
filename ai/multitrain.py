@@ -9,7 +9,7 @@ from concurrent.futures import ProcessPoolExecutor
 import torch
 
 from ai.mcts import MCTS
-from ai.neural import AlphaTiger, load_checkpoint, save_checkpoint
+from ai.neural import AlphaTiger, adamw, load_checkpoint, save_checkpoint
 from ai.train import * # type: ignore
 
 def train(
@@ -25,9 +25,7 @@ def train(
         raise ValueError("The multiprocessing trainer cannot share an MPS model; use ai.train for MPS.")
     device = torch.device(config.device or ("cuda" if torch.cuda.is_available() else "cpu"))
     model = AlphaTiger().to(device)
-    optimizer = torch.optim.Adam(
-        model.parameters(), lr=config.lr, weight_decay=config.weight_decay
-    )
+    optimizer = adamw(model, config.lr, config.weight_decay)
     buffer    = ReplayBuffer(config.buffer_size)
     training_budget = TrainingBudget(config.train_ratio)
 
