@@ -19,7 +19,7 @@
     "hardware": "latte",
     "estimated_elo": 1000
   },
-  "alphatigerv11beta": {
+  "alphatigerv11": {
     "activation": "relu",
     "factorized": false,
     "parameters": 498496,
@@ -31,23 +31,7 @@
       {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 6},
       {"stage": "mid", "games": 5000, "sims": 800, "temperature_cutoff": 9},
       {"stage": "early", "games": 5000, "sims": 800, "temperature_cutoff": 12},
-      {"stage": "full", "games": 200, "sims": 800, "temperature_cutoff": 15}
-    ],
-    "pcr": 1,
-    "fast_sims": null,
-    "replay_buffer": 50000,
-    "hardware": "latte",
-    "estimated_elo": 1250
-  },
-  "alphatigerv11": {
-    "activation": "relu",
-    "factorized": false,
-    "parameters": 498496,
-    "training": "finetune",
-    "value_target": "outcome",
-    "value_loss": "mse",
-    "curriculum": [
-      {"stage": "full", "games": 1000, "sims": 800, "temperature_cutoff": 15}
+      {"stage": "full", "games": 1200, "sims": 800, "temperature_cutoff": 15}
     ],
     "pcr": 1,
     "fast_sims": null,
@@ -91,7 +75,7 @@
     "hardware": "latte",
     "estimated_elo": 1350
   },
-  "alphatigerv13beta": {
+  "alphatigerv13": {
     "activation": "relu",
     "factorized": true,
     "parameters": 395696,
@@ -104,23 +88,7 @@
       {"stage": "mid", "games": 5000, "sims": 800, "temperature_cutoff": 12},
       {"stage": "early", "games": 5000, "sims": 800, "temperature_cutoff": 15},
       {"stage": "full", "games": 5000, "sims": 800, "temperature_cutoff": 18},
-      {"stage": "full", "games": 600, "sims": 4000, "temperature_cutoff": 21}
-    ],
-    "pcr": 1,
-    "fast_sims": null,
-    "replay_buffer": 50000,
-    "hardware": "latte",
-    "estimated_elo": 1400
-  },
-  "alphatigerv13": {
-    "activation": "relu",
-    "factorized": true,
-    "parameters": 395696,
-    "training": "finetune",
-    "value_target": "outcome",
-    "value_loss": "mse",
-    "curriculum": [
-      {"stage": "full", "games": 200, "sims": 4000, "temperature_cutoff": 21}
+      {"stage": "full", "games": 800, "sims": 4000, "temperature_cutoff": 21}
     ],
     "pcr": 1,
     "fast_sims": null,
