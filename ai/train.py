@@ -40,7 +40,6 @@ class TrainerConfig:
     min_buffer_size: int = 1000
 
     lr: float = 1e-3
-    weight_decay: float = 1e-4
 
     # For each new position collected, how many replay samples to train on
     train_ratio: float = 8.0
@@ -189,7 +188,7 @@ def train(
         "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     ))
     model = AlphaTiger().to(device)
-    optimizer = adamw(model, config.lr, config.weight_decay)
+    optimizer = adamw(model, config.lr)
     buffer    = ReplayBuffer(config.buffer_size)
     training_budget = TrainingBudget(config.train_ratio)
 

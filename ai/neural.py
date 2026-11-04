@@ -129,7 +129,7 @@ class AlphaTiger(Module):
         return value.item(), policy_logits.squeeze(0).cpu().numpy()
 
 
-def adamw(model, lr, weight_decay):
+def adamw(model, lr, weight_decay=0.1):
     # Decoupled decay on weight matrices only; biases are not regularized
     params = list(model.parameters())
     return torch.optim.AdamW([

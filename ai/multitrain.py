@@ -25,7 +25,7 @@ def train(
         raise ValueError("The multiprocessing trainer cannot share an MPS model; use ai.train for MPS.")
     device = torch.device(config.device or ("cuda" if torch.cuda.is_available() else "cpu"))
     model = AlphaTiger().to(device)
-    optimizer = adamw(model, config.lr, config.weight_decay)
+    optimizer = adamw(model, config.lr)
     buffer    = ReplayBuffer(config.buffer_size)
     training_budget = TrainingBudget(config.train_ratio)
 

@@ -15,7 +15,6 @@ from game.constants import DEFAULT_MODEL
 
 LR = 2e-3
 BATCH_SIZE = 512
-WEIGHT_DECAY = 1e-4
 EPOCHS = 10
 VAL_SPLIT = 0.2
 SHARD_GAMES = 100
@@ -168,7 +167,7 @@ def train_student(student, data, device, seed):
     val_mask = np.isin(game_ids, val_games)
     validation, training = np.flatnonzero(val_mask), np.flatnonzero(~val_mask)
 
-    opt = adamw(student, LR, WEIGHT_DECAY)
+    opt = adamw(student, LR)
     # Linear decay to zero by the last step
     steps = EPOCHS * math.ceil(len(training) / BATCH_SIZE)
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda step: 1 - step / steps)
