@@ -6,6 +6,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "end", "games": 2000, "sims": 1000, "temperature_cutoff": null},
       {"stage": "late", "games": 2000, "sims": 1000, "temperature_cutoff": null},
@@ -26,6 +27,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 3},
       {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 6},
@@ -46,6 +48,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 3},
       {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 6},
@@ -66,6 +69,7 @@
     "training": "finetune",
     "value_target": "outcome",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "full", "games": 1000, "sims": 4000, "temperature_cutoff": 18}
     ],
@@ -82,6 +86,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 6},
       {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 9},
@@ -103,6 +108,7 @@
     "training": "curriculum",
     "value_target": "outcome",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 6},
       {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 9},
@@ -124,6 +130,7 @@
     "training": "distill",
     "value_target": "outcome",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
     ],
@@ -141,6 +148,7 @@
     "training": "distill",
     "value_target": "blended",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
     ],
@@ -158,6 +166,7 @@
     "training": "curriculum",
     "value_target": "blended",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 6},
       {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 9},
@@ -179,6 +188,7 @@
     "training": "finetune",
     "value_target": "blended",
     "value_loss": "mse",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "full", "games": 4000, "sims": 4000, "temperature_cutoff": 21}
     ],
@@ -195,6 +205,7 @@
     "training": "curriculum",
     "value_target": "blended",
     "value_loss": "bce",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 3},
       {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 6},
@@ -216,6 +227,7 @@
     "training": "finetune",
     "value_target": "blended",
     "value_loss": "bce",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "full", "games": 4000, "sims": 4000, "temperature_cutoff": 15}
     ],
@@ -232,6 +244,7 @@
     "training": "distill",
     "value_target": "blended",
     "value_loss": "bce",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
     ],
@@ -249,6 +262,7 @@
     "training": "curriculum",
     "value_target": "blended",
     "value_loss": "bce",
+    "weight_decay": "L2",
     "curriculum": [
       {"stage": "end", "games": 10000, "sims": 800, "temperature_cutoff": 3},
       {"stage": "late", "games": 10000, "sims": 800, "temperature_cutoff": 6},
@@ -262,5 +276,23 @@
     "replay_buffer": 100000,
     "hardware": "kaggle",
     "estimated_elo": 1700
+  },
+  "alphatigerv19": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "distill",
+    "value_target": "blended",
+    "value_loss": "bce",
+    "weight_decay": "adamW",
+    "curriculum": [
+      {"stage": "full", "games": 32096, "sims": 400, "temperature_cutoff": 6}
+    ],
+    "pcr": 1,
+    "fast_sims": null,
+    "teachers": ["alphatigerv19beta"],
+    "replay_buffer": null,
+    "hardware": "kaggle",
+    "estimated_elo": 1750
   }
 }
