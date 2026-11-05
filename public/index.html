@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261105-10">
+    <link rel="stylesheet" href="style.css?v=20261105-11">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -275,7 +275,8 @@
 
         <!-- MAIN INTERACTIVE SVG BOARD -->
         <div class="board-card" id="board-card">
-            <svg id="board" viewBox="0 0 760 880" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <div class="board-frame">
+            <svg id="board" viewBox="0 0 760 880" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="seaGrad" x1="0" y1="0" x2="1" y2="1">
                         <stop offset="0%" stop-color="var(--sea)"/>
@@ -347,6 +348,7 @@
                 </span>
                 <button class="track-btn resign" onclick="handleResignClick()">Resign</button>
             </nav>
+          </div>
         </div>
 
         <!-- OPTIONAL DEBUG MOVE VECTOR CONSOLE (Controlled via Settings) -->

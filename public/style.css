@@ -635,6 +635,7 @@ body {
 
 .impulse-track {
     display: flex;
+    height: var(--track-h, 2rem);
     align-items: stretch;
     width: 100%;
     background: #2a2115;
@@ -1024,25 +1025,30 @@ body {
 }
 
 .board-card {
+    --track-h: 2rem;
     flex: 1 1 0;
     min-height: 0;
-    max-height: 100%;
-    aspect-ratio: 760 / 880;
-    max-width: 100%;
+    width: 100%;
+    container-type: size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Largest map-shaped frame that fits, leaving room for the track and 2px borders */
+.board-frame {
+    width: min(100cqw, (100cqh - var(--track-h) - 4px) * 760 / 880 + 4px);
     border: 2px solid var(--border);
     border-radius: 4px;
     box-shadow: 0 0 0 3px #261b0e, 0 8px 30px rgba(0,0,0,0.85);
     overflow: hidden;
     background: var(--sea);
-    display: flex;
-    flex-direction: column;
 }
 
 svg#board {
     display: block;
     width: 100%;
-    flex: 1 1 0;
-    min-height: 0;
+    aspect-ratio: 760 / 880;
 }
 
 /* Node Groups & Interactive Styling */
@@ -1292,8 +1298,8 @@ svg#board {
         max-height: none;
     }
     .board-card {
-        height: auto;
-        max-height: 75vh;
+        flex: none;
+        height: 75vh;
     }
     .faction-column {
         flex: 1 1 260px;
