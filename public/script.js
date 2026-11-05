@@ -18,30 +18,30 @@ const WARS = [
 ];
 
 var NODES = {
-  Bombay:        { x: 66, y:  88,  owner:'british', armyType:'active',  key:true,  coast:true,  labelAnchor:{anchor:'middle', dx:0,   dy:-24} },
-  Hyderabad:     { x:500, y:  95,  owner:'british', armyType:'active',  key:true,  coast:false, labelAnchor:{anchor:'middle', dx:0,   dy:-24} },
-  Madras:        { x:601, y: 297,  owner:'british', armyType:'active',  key:true,  coast:true,  labelAnchor:{anchor:'end',    dx:-18, dy:-24} },
-  Seringapatam:  { x:288, y: 416,  owner:'mysore',  armyType:'fort',    key:true,  coast:false, labelAnchor:{anchor:'middle', dx:0,   dy:-24} },
-  Coimbatore:    { x:378, y: 546,  owner:'mysore',  armyType:'fort',    key:true,  coast:false, labelAnchor:{anchor:'middle', dx:0,   dy:-24} },
+  Bombay:        { x: 66, y:  88,  owner:'british', armyType:'active',  key:true,  coast:true },
+  Hyderabad:     { x:500, y:  95,  owner:'british', armyType:'active',  key:true,  coast:false },
+  Madras:        { x:601, y: 297,  owner:'british', armyType:'active',  key:true,  coast:true },
+  Seringapatam:  { x:288, y: 416,  owner:'mysore',  armyType:'fort',    key:true,  coast:false },
+  Coimbatore:    { x:378, y: 546,  owner:'mysore',  armyType:'fort',    key:true,  coast:false },
   Satara:        { x:220, y: 122,  owner:'empty',   armyType:'empty',   key:false, coast:false },
   Poona:         { x:320, y:  75,   owner:'empty',   armyType:'empty',   key:false, coast:false },
   Raichur:       { x:356, y: 191,  owner:'empty',   armyType:'empty',   key:false, coast:false },
-  Masulipatam:   { x:694, y: 155,  owner:'empty',   armyType:'empty',   key:false, coast:true,  labelAnchor:{anchor:'end',   dx:-12, dy:-16} },
-  Goa:           { x:102, y: 211,  owner:'empty',   armyType:'empty',   key:false, coast:true,  labelAnchor:{anchor:'start', dx: 12, dy:-16} },
+  Masulipatam:   { x:694, y: 155,  owner:'empty',   armyType:'empty',   key:false, coast:true },
+  Goa:           { x:102, y: 211,  owner:'empty',   armyType:'empty',   key:false, coast:true },
   Darwar:        { x:215, y: 210,  owner:'mysore',  armyType:'fort',    key:false, coast:false },
   Anantapur:     { x:464, y: 215,  owner:'empty',   armyType:'empty',   key:false, coast:false },
   Chitaldoorg:   { x:282, y: 291,  owner:'mysore',  armyType:'fort',    key:false, coast:false },
-  Mangalore:     { x:164, y: 333,  owner:'mysore',  armyType:'fort',    key:false, coast:true,  labelAnchor:{anchor:'start', dx: 12, dy:-16} },
+  Mangalore:     { x:164, y: 333,  owner:'mysore',  armyType:'fort',    key:false, coast:true },
   Bangalore:     { x:380, y: 342,  owner:'mysore',  armyType:'fort',    key:false, coast:false },
   Vellore:       { x:489, y: 331,  owner:'empty',   armyType:'empty',   key:false, coast:false },
-  'Mahé':        { x:244, y: 518,  owner:'mysore',  armyType:'fort',    key:false, coast:true,  labelAnchor:{anchor:'start', dx: 12, dy:-16} },
-  Pondicherry:   { x:625, y: 432,  owner:'empty',   armyType:'empty',   key:false, coast:true,  labelAnchor:{anchor:'end',   dx:-12, dy:-16} },
+  'Mahé':        { x:244, y: 518,  owner:'mysore',  armyType:'fort',    key:false, coast:true },
+  Pondicherry:   { x:625, y: 432,  owner:'empty',   armyType:'empty',   key:false, coast:true },
   Erode:         { x:458, y: 448,  owner:'mysore',  armyType:'fort',    key:false, coast:false },
   Trichy:        { x:542, y: 545,  owner:'empty',   armyType:'empty',   key:false, coast:false },
   Alwaye:        { x:344, y: 667,  owner:'mysore',  armyType:'empty',   key:false, coast:false },
   Dindigul:      { x:468, y: 622,  owner:'empty',   armyType:'fort',    key:false, coast:false },
   Ramnad:        { x:476, y: 735,  owner:'empty',   armyType:'empty',   key:false, coast:true },
-  Travancore:    { x:373, y: 805,  owner:'british', armyType:'active',  key:false, coast:true,  labelAnchor:{anchor:'start', dx: 12, dy:-16} },
+  Travancore:    { x:373, y: 805,  owner:'british', armyType:'active',  key:false, coast:true },
   Ceylon:        { x:602, y: 753,  owner:'empty',   armyType:'empty',   key:false, coast:true  },
 };
 
@@ -196,8 +196,6 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
   for (const [name, data] of Object.entries(nodes)) {
     const { x, y, owner, key, coast } = data;
     const armyType = data.armyType || 'empty';
-    const la = data.labelAnchor || { anchor: 'middle', dx: 0, dy: key ? -24 : -16 };
-    const anchor = la.anchor || 'middle', ldx = la.dx || 0, ldy = la.dy || (key ? -24 : -16);
 
     const g = document.createElementNS(SVG_NS, 'g');
     g.setAttribute('class', 'node-group');
@@ -309,9 +307,8 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
     // Labels
     const makeLabel = (isHalo) => {
       const t = document.createElementNS(SVG_NS, 'text');
-      t.setAttribute('dy', String(ldy));
-      t.setAttribute('dx', String(ldx));
-      t.setAttribute('text-anchor', anchor);
+      t.setAttribute('dy', key ? '-24' : '-16');
+      t.setAttribute('text-anchor', 'middle');
       t.setAttribute('font-family', 'var(--font-map)');
       t.setAttribute('font-size', '19');
       t.setAttribute('font-weight', key ? '700' : '400');
