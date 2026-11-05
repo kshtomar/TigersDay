@@ -1031,7 +1031,7 @@ body {
     width: 100%;
     container-type: size;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
 }
 
