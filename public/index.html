@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261105-4">
+    <link rel="stylesheet" href="style.css?v=20261105-5">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -183,7 +183,7 @@
                     <li><strong>Strength</strong><span>Add number to unresolved battle — click the number seal</span></li>
                 </ol>
                 <p>Each use exhausts the card<br>Keep all cards face up</p>
-                <p class="learn-note">Discard — randomly throw a card away<br>Draw — pick up a used card<br>To draw, select an available card, then a highlighted used card<br>Cancel or Escape — clear selection</p>
+                <p class="learn-note">Discard — randomly throw a card away<br>Draw — pick up a used card<br>To draw, select an available card, then a highlighted used card<br>Escape — clear selection</p>
             </div>
             <div data-demo="uses" class="watch-player" aria-live="off"></div>
         </section>
@@ -340,7 +340,6 @@
                 <span id="track-actions">
                     <button id="rest-btn" class="track-btn" onclick="handleRestClick()" hidden>Rest</button>
                     <button id="pass-btn" class="track-btn" onclick="handlePassClick()" hidden>Pass</button>
-                    <button id="cancel-btn" class="track-btn" onclick="handleCancelClick()" hidden>Cancel</button>
                 </span>
                 <button class="track-btn resign" onclick="handleResignClick()">Resign</button>
             </nav>
@@ -398,7 +397,7 @@
 
 <!-- Frontend Client & UI Controller -->
 <script src="model-info.js"></script>
-<script src="script.js?v=20261105-4"></script>
+<script src="script.js?v=20261105-5"></script>
 
 </body>
 </html>

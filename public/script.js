@@ -724,7 +724,6 @@ function updateTurnHeader(uiState, winner) {
 
 function updateActionButtons() {
   const hasPass = currentMoves.some(m => m.type === 'Pass Mysore' || m.type === 'Pass British');
-  document.getElementById('cancel-btn').hidden = !(selectedUnit || activeSelection);
   document.getElementById('rest-btn').hidden = !currentMoves.some(m => m.type === 'Tire' && m.desc === selectedUnit);
   document.getElementById('pass-btn').hidden = !hasPass || !!activeSelection;
 }
