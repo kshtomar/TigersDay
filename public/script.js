@@ -45,50 +45,53 @@ var NODES = {
   Ceylon:        { x:602, y: 753,  owner:'empty',   armyType:'empty',   key:false, coast:true  },
 };
 
+// Roads join a node at a face center (N/E/S/W), as on the physical board,
+// then follow Bezier control points traced from it
+const FACES = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] };
 const EDGES = [
-  ['Bombay', 'Satara'],
-  ['Bombay', 'Goa', {curve: -0.2}],
-  ['Hyderabad', 'Raichur'],
-  ['Hyderabad', 'Masulipatam'],
-  ['Hyderabad', 'Anantapur'],
-  ['Madras', 'Masulipatam', {curve: -0.2}],
-  ['Madras', 'Anantapur'],
-  ['Madras', 'Vellore'],
-  ['Madras', 'Pondicherry'],
-  ['Seringapatam', 'Mangalore'],
-  ['Seringapatam', 'Bangalore'],
-  ['Seringapatam', 'Mahé'],
-  ['Seringapatam', 'Erode'],
-  ['Coimbatore', 'Mahé'],
-  ['Coimbatore', 'Erode'],
-  ['Coimbatore', 'Alwaye'],
-  ['Coimbatore', 'Dindigul'],
-  ['Satara', 'Raichur'],
-  ['Satara', 'Darwar'],
-  ['Poona', 'Satara'],
-  ['Poona', 'Hyderabad'],
-  ['Poona', 'Bombay'],
-  ['Raichur', 'Anantapur'],
-  ['Raichur', 'Chitaldoorg'],
-  ['Goa', 'Darwar'],
-  ['Goa', 'Mangalore', {curve: -0.2}],
-  ['Darwar', 'Chitaldoorg'],
-  ['Anantapur', 'Vellore'],
-  ['Chitaldoorg', 'Mangalore'],
-  ['Chitaldoorg', 'Bangalore'],
-  ['Bangalore', 'Vellore'],
-  ['Vellore', 'Erode'],
-  ['Pondicherry', 'Erode'],
-  ['Pondicherry', 'Trichy'],
-  ['Erode', 'Trichy'],
-  ['Trichy', 'Dindigul'],
-  ['Trichy', 'Ceylon', {curve: -0.2}],
-  ['Alwaye', 'Travancore'],
-  ['Alwaye', 'Ramnad'],
-  ['Dindigul', 'Ramnad'],
-  ['Ramnad', 'Ceylon'],
-  ['Ramnad', 'Travancore'],
-  ['Travancore', 'Ceylon']
+  ['Bombay', 'Satara', 'E', 'W', [105, 88, 137, 89, 149, 106, 159, 120, 193, 122]],
+  ['Bombay', 'Goa', 'E', 'E', [115, 88, 137, 118, 140, 145, 141, 157, 139, 169, 136, 179, 133, 188, 126, 211]],
+  ['Hyderabad', 'Raichur', 'W', 'N', [454, 95, 427, 102, 405, 115, 383, 129, 356, 153]],
+  ['Hyderabad', 'Masulipatam', 'E', 'W', [545, 95, 595, 98, 603, 126, 608, 141, 629, 145, 641, 148, 654, 152, 670, 155]],
+  ['Hyderabad', 'Anantapur', 'S', 'E', [500, 133, 500, 150, 496, 168, 495, 176, 493, 184, 491, 191, 489, 197, 484, 215]],
+  ['Madras', 'Masulipatam', 'N', 'W', [601, 252, 601, 221, 614, 200, 629, 175, 655, 155]],
+  ['Madras', 'Anantapur', 'N', 'E', [601, 250, 566, 233, 543, 226, 521, 220, 499, 215]],
+  ['Madras', 'Vellore', 'W', 'E', [567, 297, 546, 300, 540, 315, 534, 329, 512, 331]],
+  ['Madras', 'Pondicherry', 'W', 'W', [566, 297, 559, 324, 556, 336, 554, 348, 551, 362, 554, 374, 559, 402, 583, 432]],
+  ['Seringapatam', 'Mangalore', 'W', 'E', [242, 416, 227, 400, 222, 374, 217, 352, 199, 333]],
+  ['Seringapatam', 'Bangalore', 'E', 'W', [329, 416, 338, 399, 340, 379, 342, 365, 353, 342]],
+  ['Seringapatam', 'Mahé', 'S', 'E', [288, 452, 287, 468, 282, 484, 278, 497, 271, 518]],
+  ['Seringapatam', 'Erode', 'E', 'W', [331, 416, 364, 417, 380, 435, 393, 450, 428, 448]],
+  ['Coimbatore', 'Mahé', 'W', 'E', [340, 546, 318, 549, 306, 532, 298, 521, 268, 518]],
+  ['Coimbatore', 'Erode', 'N', 'S', [378, 478, 458, 508]],
+  ['Coimbatore', 'Alwaye', 'S', 'N', [378, 583, 377, 603, 360, 612, 345, 619, 344, 643]],
+  ['Coimbatore', 'Dindigul', 'E', 'W', [440, 546, 411, 622]],
+  ['Satara', 'Raichur', 'E', 'W', [252, 122, 285, 130, 288, 157, 290, 181, 325, 191]],
+  ['Satara', 'Darwar', 'S', 'E', [220, 143, 221, 152, 228, 160, 235, 168, 244, 165, 251, 174, 267, 194, 244, 210]],
+  ['Poona', 'Satara', 'W', 'E', [294, 75, 274, 80, 270, 98, 267, 113, 245, 122]],
+  ['Poona', 'Hyderabad', 'E', 'W', [352, 75, 388, 71, 404, 84, 423, 99, 458, 95]],
+  ['Poona', 'Bombay', 'N', 'E', [320, 53, 299, 49, 291, 47, 281, 45, 271, 44, 262, 43, 242, 41, 222, 44, 204, 48, 181, 52, 174, 76, 151, 81, 129, 85, 108, 88]],
+  ['Raichur', 'Anantapur', 'E', 'W', [381, 191, 400, 192, 409, 204, 418, 215, 440, 215]],
+  ['Raichur', 'Chitaldoorg', 'S', 'E', [356, 237, 335, 291]],
+  ['Goa', 'Darwar', 'E', 'W', [143, 211, 174, 210]],
+  ['Goa', 'Mangalore', 'E', 'E', [137, 211, 152, 243, 160, 262, 163, 271, 166, 281, 169, 291, 169, 296, 171, 301, 171, 306, 171, 310, 176, 333]],
+  ['Darwar', 'Chitaldoorg', 'E', 'N', [260, 210, 282, 251]],
+  ['Anantapur', 'Vellore', 'S', 'N', [464, 242, 464, 263, 477, 273, 488, 282, 489, 307]],
+  ['Chitaldoorg', 'Mangalore', 'W', 'E', [255, 291, 229, 295, 224, 313, 219, 330, 189, 333]],
+  ['Chitaldoorg', 'Bangalore', 'E', 'N', [308, 291, 326, 293, 340, 299, 354, 304, 380, 313]],
+  ['Bangalore', 'Vellore', 'E', 'W', [423, 342, 446, 331]],
+  ['Vellore', 'Erode', 'S', 'N', [489, 357, 487, 381, 473, 390, 460, 398, 458, 423]],
+  ['Pondicherry', 'Erode', 'W', 'E', [561, 432, 521, 448]],
+  ['Pondicherry', 'Trichy', 'W', 'N', [568, 432, 542, 495]],
+  ['Erode', 'Trichy', 'S', 'W', [458, 498, 488, 545]],
+  ['Trichy', 'Dindigul', 'S', 'E', [542, 590, 513, 622]],
+  ['Trichy', 'Ceylon', 'E', 'N', [570, 545, 579, 581, 583, 594, 587, 609, 592, 626, 594, 642, 597, 675, 602, 708]],
+  ['Alwaye', 'Travancore', 'S', 'N', [344, 698, 343, 724, 360, 736, 374, 746, 373, 778]],
+  ['Alwaye', 'Ramnad', 'E', 'W', [368, 667, 378, 672, 387, 683, 395, 693, 392, 704, 402, 714, 417, 729, 444, 735]],
+  ['Dindigul', 'Ramnad', 'S', 'W', [468, 645, 467, 654, 462, 666, 457, 679, 444, 677, 437, 688, 421, 710, 440, 735]],
+  ['Ramnad', 'Ceylon', 'E', 'W', [526, 735, 552, 753]],
+  ['Ramnad', 'Travancore', 'W', 'E', [415, 735, 435, 805]],
+  ['Travancore', 'Ceylon', 'E', 'S', [421, 805, 458, 802, 494, 798, 512, 797, 530, 795, 547, 789, 556, 787, 566, 786, 574, 783, 581, 780, 602, 775]]
 ];
 
 const BRITISH_CARD_DATA = [
@@ -161,11 +164,11 @@ function clearAllInteractionState() {
 // ==========================================================================
 // 3. SVG MAP RENDERING & INITIALIZATION
 // ==========================================================================
-function splineControlPoint(ax, ay, bx, by, f = 0.18) {
-  const mx = (ax + bx) / 2, my = (ay + by) / 2;
-  const dx = bx - ax, dy = by - ay;
-  const len = Math.sqrt(dx * dx + dy * dy);
-  return { cx: mx + (-dy / len) * len * f, cy: my + (dx / len) * len * f };
+function faceCenter(name, face) {
+  const { x, y, key } = NODES[name];
+  const half = key ? 18 : 10;
+  const [dx, dy] = FACES[face];
+  return [x + dx * half, y + dy * half];
 }
 
 function renderEdges() {
@@ -173,12 +176,10 @@ function renderEdges() {
   if (!layer) return;
   layer.innerHTML = '';
   for (const edge of EDGES) {
-    const [aName, bName, opts = {}] = edge;
-    const a = NODES[aName], b = NODES[bName];
-    if (!a || !b) continue;
-    const { cx, cy } = splineControlPoint(a.x, a.y, b.x, b.y, opts.curve || 0.15);
+    const [aName, bName, aFace, bFace, controls] = edge;
+    const [ax, ay] = faceCenter(aName, aFace), [bx, by] = faceCenter(bName, bFace);
     const path = document.createElementNS(SVG_NS, 'path');
-    path.setAttribute('d', `M ${a.x},${a.y} Q ${cx},${cy} ${b.x},${b.y}`);
+    path.setAttribute('d', `M ${ax},${ay} C ${controls.join(' ')} ${bx},${by}`);
     path.setAttribute('fill', 'none');
     path.setAttribute('stroke', '#6a4c1e');
     path.setAttribute('stroke-width', '1.8');
