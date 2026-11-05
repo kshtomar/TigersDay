@@ -4,14 +4,18 @@ Write minimal code
 Abstract when it makes the code cleaner
 Constants should not be CLI flags
 Single source of truth
+Everything in the right home
 Don't repeat yourself
 Pass only necessary arguments
-Fail fast and loud
-Leave it to standard errors
 Never make unrelated changes
 Understand game rules and properties
-Defend the real threats
 Backward incompatible by default
+
+## Errors
+
+Fail fast and loud
+Leave it to standard errors
+Don't check for the impossible
 
 ## Avoid
 
@@ -28,6 +32,7 @@ Explain nonobvious functionality
 ## Naming
 
 Keep variable names concise
+Abstract data layout behind names
 Good function name obviates docstring
 
 ## Modules
