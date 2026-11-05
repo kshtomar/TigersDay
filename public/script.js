@@ -109,8 +109,6 @@ const MYSORE_CARD_DATA = [
   { name: 'Sea Trade',        strength: 1, desc: 'Move a Fort from Coast to any' },
 ];
 
-const CARD_VALUE = [3, 2, 2, 1, 1, 1];
-
 // ==========================================================================
 // 2. RUNTIME STATE MACHINE & ENGINES
 // ==========================================================================
@@ -452,21 +450,14 @@ function getValidTwoStepDestinations(cardName, sourceName) {
 // 5. DIRECT POINT-AND-CLICK MAP INTERACTIONS
 // ==========================================================================
 function handleNodeClick(nodeName) {
-  if (isTurnBlockedForLocalPlayer()) {
-    showToast("It is not your turn.", 'error');
-    return;
-  }
+  if (isTurnBlockedForLocalPlayer()) return;
 
   if (activeSelection) {
     if (!activeSelection.isTwoStep) {
       if (activeSelection.mapTargets[nodeName] !== undefined) {
         const moveIdx = activeSelection.mapTargets[nodeName];
-        const cName = activeSelection.cardName;
         clearAllInteractionState();
-        showToast(`Activated ${cName} on ${nodeName}!`, 'success');
         window.applyMove(moveIdx);
-      } else {
-        showToast("Invalid target.", "error");
       }
       return;
     } 
@@ -476,8 +467,6 @@ function handleNodeClick(nodeName) {
         activeSelection.sourceNode = nodeName;
         activeSelection.step = 2;
         refreshMapHighlights();
-      } else {
-        showToast(`${nodeName} cannot be selected as a source.`, 'error');
       }
       return;
     } 
@@ -494,13 +483,8 @@ function handleNodeClick(nodeName) {
       const destMove = dests.find(d => d.dest === nodeName);
       
       if (destMove) {
-        const cName = activeSelection.cardName;
-        const targetMoveStr = `${activeSelection.sourceNode} -> ${nodeName}`;
         clearAllInteractionState();
-        showToast(`Executed ${cName}: ${targetMoveStr}!`, 'success');
         window.applyMove(destMove.idx);
-      } else {
-        showToast(`${nodeName} is not a valid destination.`, 'error');
       }
       return;
     }
@@ -518,11 +502,9 @@ function handleNodeClick(nodeName) {
     const move = currentMoves.find(m => m.type === 'Move' && m.desc === targetMoveStr);
 
     if (move) {
-      const fromUnit = selectedUnit;
       selectedUnit = null;
       refreshMapHighlights();
       updateActionButtons();
-      showToast(`Moving ${fromUnit} → ${nodeName}`, 'info');
       window.applyMove(move.idx);
       return;
     }
@@ -535,11 +517,6 @@ function handleNodeClick(nodeName) {
     selectedUnit = nodeName;
     refreshMapHighlights();
     updateActionButtons();
-  } else {
-    const node = NODES[nodeName];
-    if (node && node.armyType !== 'empty') {
-      showToast(`${nodeName} has no legal moves right now.`);
-    }
   }
 }
 
@@ -614,39 +591,25 @@ function renderCardDeck(faction, availArray) {
 }
 
 function handleCardStrengthClick(faction, index, cardName) {
-  if (isTurnBlockedForLocalPlayer()) {
-    showToast("It is not your turn.", 'error');
-    return;
-  }
+  if (isTurnBlockedForLocalPlayer()) return;
 
   const powerType = faction === 'mysore' ? 'Mysore Power' : 'British Power';
   const move = currentMoves.find(m => m.type === powerType && m.desc === cardName);
 
-  if (move) {
-    showToast(`Committed ${cardName} (+${CARD_VALUE[index]} Strength) to battle!`, 'success');
-    window.applyMove(move.idx);
-  } else {
-    showToast(`Cannot commit strength outside active combat.`, 'info');
-  }
+  if (move) window.applyMove(move.idx);
 }
 
 function handleCardBodyClick(faction, index, cardName, isUsable) {
-  if (isTurnBlockedForLocalPlayer()) {
-    showToast("It is not your turn.", 'error');
-    return;
-  }
+  if (isTurnBlockedForLocalPlayer()) return;
 
   // 1. Resolve a Trade if clicking an exhausted card while a selection is active
   if (!isUsable) {
     if (activeSelection && activeSelection.tradeTargets && activeSelection.tradeTargets[cardName] !== undefined) {
       const moveIdx = activeSelection.tradeTargets[cardName];
-      const tradedCard = activeSelection.cardName;
       clearAllInteractionState();
-      showToast(`Traded ${tradedCard} to reclaim ${cardName}!`, 'success');
       window.applyMove(moveIdx);
       return;
     }
-    showToast(`${cardName} is exhausted. Click an active card to stage a trade.`, 'info');
     return;
   }
 
@@ -677,7 +640,6 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
   if (abilityMoves.length > 0) {
     // Immediate Execute (e.g., Cavalry Raid)
     if (cardName === 'Cavalry Raid') { 
-      showToast(`Cavalry Raid launched! British must discard.`, 'success');
       window.applyMove(abilityMoves[0].idx);
       return;
     }
@@ -706,17 +668,13 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
   // Validate state
   if (Object.keys(newSelection.mapTargets).length === 0 &&
       Object.keys(newSelection.tradeTargets).length === 0 &&
-      Object.keys(newSelection.validSources).length === 0) {
-      showToast(`No legal actions or trades available for ${cardName}.`, 'info');
-      return;
-  }
+      Object.keys(newSelection.validSources).length === 0) return;
 
   // 4. Mount the Unified State & Render
   activeSelection = newSelection;
   renderAllCards();
   refreshMapHighlights();
   updateActionButtons();
-  showToast(`Activated ${cardName}. Select a map target or card to trade.`, 'info');
 }
 
 // ==========================================================================
@@ -776,7 +734,6 @@ function handleRestClick() {
   if (!selectedUnit) return;
   const tireMove = currentMoves.find(m => m.type === 'Tire' && m.desc === selectedUnit);
   if (tireMove) {
-    showToast(`Rested army at ${selectedUnit}.`, 'info');
     clearAllInteractionState();
     window.applyMove(tireMove.idx);
   }
@@ -786,7 +743,6 @@ function handlePassClick() {
   if (isTurnBlockedForLocalPlayer()) return;
   const passMove = currentMoves.find(m => m.type === 'Pass Mysore' || m.type === 'Pass British');
   if (passMove) {
-    showToast('Passed turn phase.', 'info');
     clearAllInteractionState();
     window.applyMove(passMove.idx);
   }
@@ -1399,7 +1355,6 @@ window.applyMove = function(moveIdx) {
     handleLocalGameUpdate(gameData);
   } catch (err) {
     console.error("Error applying move:", err);
-    showToast("Failed to apply move.", 'error');
   }
 };
 
@@ -1443,14 +1398,12 @@ function handleGameModeChange(newMode) {
 
   buildPlayerMap(matchMode, humanPlayerSide);
   initGame();
-  showToast(`Switched mode: ${newMode.replace(/_/g, ' ').toUpperCase()}`, 'info');
 }
 
 function handleHumanSideChange(side) {
   humanPlayerSide = side;
   buildPlayerMap(matchMode, humanPlayerSide);
   initGame();
-  showToast(`Playing as ${side.toUpperCase()}`, 'info');
 }
 
 function setupMultiplayerCallbacks() {
@@ -1464,13 +1417,11 @@ function setupMultiplayerCallbacks() {
 
     if (status === 'connected') {
       buildPlayerMap('p2p_multiplayer', mySide);
-      showToast(`P2P Connected! You are playing as ${mySide.toUpperCase()}`, 'success');
       toggleSettingsMenu();
     }
   };
 
   multiplayerManager.onMoveReceived = (moveIdx, luckTrajectory, stateStr) => {
-    showToast("Opponent moved!", 'info');
     if (currentGameState) {
       if (stateStr) {
         try {
@@ -1501,7 +1452,6 @@ function setupMultiplayerCallbacks() {
   };
 
   multiplayerManager.onGameResetReceived = () => {
-    showToast("Host reset the board.", 'info');
     initGame();
   };
 
@@ -1516,24 +1466,17 @@ function setupMultiplayerCallbacks() {
     clearAllInteractionState();
   };
 
-  multiplayerManager.onError = (err) => {
-    showToast(`P2P Error: ${err}`, 'error');
-  };
+  multiplayerManager.onError = console.error;
 }
 
 async function handleHostGameClick() {
   setupMultiplayerCallbacks();
-  try {
-    const code = await multiplayerManager.hostGame(humanPlayerSide);
-    const box = document.getElementById('room-code-box');
-    const val = document.getElementById('room-code-val');
-    if (box && val) {
-      box.classList.remove('hidden');
-      val.textContent = code;
-    }
-    showToast(`Room created! Share code: ${code}`, 'success');
-  } catch (err) {
-    showToast("Failed to host P2P room.", 'error');
+  const code = await multiplayerManager.hostGame(humanPlayerSide);
+  const box = document.getElementById('room-code-box');
+  const val = document.getElementById('room-code-val');
+  if (box && val) {
+    box.classList.remove('hidden');
+    val.textContent = code;
   }
 }
 
@@ -1541,56 +1484,33 @@ async function handleJoinGameClick() {
   setupMultiplayerCallbacks();
   const input = document.getElementById('join-room-input');
   const code = input ? input.value.trim().toUpperCase() : '';
-  if (!code) {
-    showToast("Enter a room code.", 'error');
-    return;
-  }
-  try {
-    await multiplayerManager.joinGame(code);
-    showToast(`Connecting to ${code}...`, 'info');
-  } catch (err) {
-    showToast("Failed to join room.", 'error');
-  }
+  if (!code) return;
+  await multiplayerManager.joinGame(code);
 }
 
 function copyRoomCode() {
   const val = document.getElementById('room-code-val');
   if (!val) return;
-  navigator.clipboard.writeText(val.textContent).then(() => {
-    showToast("Room code copied to clipboard!", 'success');
-  });
+  navigator.clipboard.writeText(val.textContent);
 }
 
 // ==========================================================================
 // 12. ZERO-POPUP STATE SAVE / LOAD & UTILITIES
 // ==========================================================================
 function saveBinaryState() {
-  if (!currentBitString) {
-    showToast("No active game state to save.", 'error');
-    return;
-  }
-  navigator.clipboard.writeText(currentBitString).then(() => {
-    showToast("Binary state copied to clipboard!", 'success');
-  });
+  if (!currentBitString) return;
+  navigator.clipboard.writeText(currentBitString);
   toggleSettingsMenu();
 }
 
 function loadBinaryState() {
   const input = document.getElementById('binary-load-input');
   const rawInput = input ? input.value.trim() : '';
-  if (!rawInput) {
-    showToast("Please enter a valid binary state string.", 'error');
-    return;
-  }
-  try {
-    currentGameState = new GameState().read_str(rawInput);
-    const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
-    handleLocalGameUpdate(gameData, false);
-    showToast("Game state loaded successfully!", 'success');
-    toggleSettingsMenu();
-  } catch (err) {
-    showToast(`Error: ${err.message}`, 'error');
-  }
+  if (!rawInput) return;
+  currentGameState = new GameState().read_str(rawInput);
+  const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
+  handleLocalGameUpdate(gameData, false);
+  toggleSettingsMenu();
 }
 
 function resetGamePrompt() {
@@ -1598,7 +1518,6 @@ function resetGamePrompt() {
   if (matchMode === 'p2p_multiplayer') {
     multiplayerManager.sendReset();
   }
-  showToast("Game reset to starting position.", 'info');
   toggleSettingsMenu();
 }
 
@@ -1625,21 +1544,6 @@ function tooltipShow(e, name, data) {
 
 function tooltipHide() {
   if (tooltip) tooltip.classList.remove('show');
-}
-
-function showToast(message, type = 'info') {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.textContent = message;
-
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    if (toast.parentNode) toast.parentNode.removeChild(toast);
-  }, 3000);
 }
 
 function renderBattleMarker(uiState, layer = document.getElementById('battle-layer')) {

@@ -1149,43 +1149,6 @@ svg#board {
     margin-bottom: 2px;
 }
 
-.toast-container {
-    position: fixed;
-    bottom: 18px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    z-index: 3000;
-    pointer-events: none;
-}
-
-.toast {
-    background: rgba(28, 22, 16, 0.95);
-    border: 1.5px solid var(--mysore-gold);
-    color: var(--parchment);
-    font-family: var(--font-heading);
-    font-size: 0.78rem;
-    letter-spacing: 0.05em;
-    padding: 6px 14px;
-    border-radius: 4px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.85);
-    animation: toastIn 0.25s ease-out, toastOut 0.25s ease-in 2.75s forwards;
-    pointer-events: auto;
-    text-align: center;
-}
-
-.toast.toast-error {
-    border-color: var(--british-red);
-    color: #ff9999;
-}
-
-.toast.toast-success {
-    border-color: #55cc55;
-    color: #aaffaa;
-}
-
 /* ==========================================================================
    10. KEYFRAME ANIMATIONS & HELPERS
    ========================================================================== */
@@ -1227,17 +1190,6 @@ svg#board {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
-@keyframes toastIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes toastOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); }
-}
-
 
 .hidden {
     display: none !important;
