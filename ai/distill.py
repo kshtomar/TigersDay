@@ -11,7 +11,7 @@ import torch.nn.functional as F
 
 from ai.arena import play_match
 from ai.neural import AlphaTiger, ONNXAlphaTiger, adamw, load_checkpoint, save_checkpoint
-from game.constants import DEFAULT_MODEL
+from game.constants import DEFAULT_MODEL, MOVE_VECTOR_LENGTH
 
 LR = 2e-3
 BATCH_SIZE = 512
@@ -21,7 +21,9 @@ SHARD_GAMES = 100
 CACHE_DIR = Path('checkpoints/distill')
 OUTPUT_PATH = CACHE_DIR / 'student.pt'
 OUTCOME_WEIGHT = 0.75
-FIELDS = ('states', 'masks', 'values', 'policies', 'game_ids')
+# hopefully this is maximum occurring legal moves per turn
+LEGAL_WIDTH = 128
+FIELDS = ('states', 'moves', 'values', 'probs', 'game_ids')
 
 
 def evaluate_positions(model, pos):
@@ -29,8 +31,28 @@ def evaluate_positions(model, pos):
     return values.ravel(), logits
 
 
+def compact(masks, policies):
+    widest = masks.sum(axis=1).max()
+    assert widest <= LEGAL_WIDTH, widest
+    # stable sort to bring legal moves first (False -> True)
+    moves = np.argsort(~masks, axis=1, kind='stable')[:, :LEGAL_WIDTH]
+    legal = np.take_along_axis(masks, moves, axis=1)
+    probs = np.take_along_axis(policies, moves, axis=1).astype(np.float32)
+    # phantom index 1 above true maximum is MOVE_VECTOR_LENGTH
+    return np.where(legal, moves, MOVE_VECTOR_LENGTH).astype(np.int16), probs
+
+
+def expand(moves, probs):
+    moves = moves.long()
+    # scatter into dropped extra column to handle phantom index
+    dense = torch.zeros(len(moves), MOVE_VECTOR_LENGTH + 1, device=moves.device)
+    policy = dense.scatter(1, moves, probs)[:, :-1]
+    mask = dense.bool().scatter(1, moves, True)[:, :-1]
+    return mask, policy
+
+
 def collect_games(models, count, sims, seed, offset=0):
-    states, masks, values, policies, game_ids = [], [], [], [], []
+    states, moves, values, probs, game_ids = [], [], [], [], []
     for game_id in range(offset, offset + count):
         game_seed = seed + game_id
 
@@ -49,16 +71,17 @@ def collect_games(models, count, sims, seed, offset=0):
         masked_logits = torch.from_numpy(logits).masked_fill(~torch.from_numpy(msk), -1e9)
         policy = torch.softmax(masked_logits, dim=-1).numpy()
 
-        states.append(pos)
-        masks.append(msk)
+        states.append(pos.astype(np.uint8))
+        move, prob = compact(msk, policy)
+        moves.append(move)
+        probs.append(prob)
         # Blend true outcome with teacher predicted value
         values.append((OUTCOME_WEIGHT * winner + (1 - OUTCOME_WEIGHT) * teacher_values).astype(np.float32))
-        policies.append(policy.astype(np.float32))
         game_ids.append(np.full(len(pos), game_id, dtype=np.int64))
 
     return {
-        'states': np.concatenate(states), 'masks': np.concatenate(masks),
-        'values': np.concatenate(values), 'policies': np.concatenate(policies),
+        'states': np.concatenate(states), 'moves': np.concatenate(moves),
+        'values': np.concatenate(values), 'probs': np.concatenate(probs),
         'game_ids': np.concatenate(game_ids)
     }
 
@@ -134,8 +157,9 @@ def read_rows(path, indices):
 def stream_batches(data, indices):
     for start in range(0, len(indices), BATCH_SIZE):
         idx = indices[start:start + BATCH_SIZE]
-        x, m, v, p = (torch.from_numpy(read_rows(data[key], idx)) for key in FIELDS[:-1])
-        yield x, m, v[:, None], p
+        x, moves, v, probs = (torch.from_numpy(read_rows(data[key], idx)) for key in FIELDS[:-1])
+        m, p = expand(moves, probs)
+        yield x.float(), m, v[:, None], p
 
 
 def compute_loss(model, x, m, v, p):
