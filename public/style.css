@@ -1037,7 +1037,7 @@ body {
 
 /* Largest map-shaped frame that fits, leaving room for the track and 2px borders */
 .board-frame {
-    width: min(100cqw, (100cqh - var(--track-h) - 4px) * 760 / 880 + 4px);
+    width: min(100cqw, (100cqh - var(--track-h) - 4px) * 760 / 818 + 4px);
     border: 2px solid var(--border);
     border-radius: 4px;
     box-shadow: 0 0 0 3px #261b0e, 0 8px 30px rgba(0,0,0,0.85);
@@ -1048,7 +1048,7 @@ body {
 svg#board {
     display: block;
     width: 100%;
-    aspect-ratio: 760 / 880;
+    aspect-ratio: 760 / 818;
 }
 
 /* Node Groups & Interactive Styling */
