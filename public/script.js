@@ -596,7 +596,9 @@ function handleCardStrengthClick(faction, index, cardName) {
   const powerType = faction === 'mysore' ? 'Mysore Power' : 'British Power';
   const move = currentMoves.find(m => m.type === powerType && m.desc === cardName);
 
-  if (move) window.applyMove(move.idx);
+  if (!move) return;
+  setDrawer('');
+  window.applyMove(move.idx);
 }
 
 function handleCardBodyClick(faction, index, cardName, isUsable) {
@@ -607,6 +609,7 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
     if (activeSelection && activeSelection.tradeTargets && activeSelection.tradeTargets[cardName] !== undefined) {
       const moveIdx = activeSelection.tradeTargets[cardName];
       clearAllInteractionState();
+      setDrawer('');
       window.applyMove(moveIdx);
       return;
     }
@@ -640,6 +643,7 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
   if (abilityMoves.length > 0) {
     // Immediate Execute (e.g., Cavalry Raid)
     if (cardName === 'Cavalry Raid') { 
+      setDrawer('');
       window.applyMove(abilityMoves[0].idx);
       return;
     }
@@ -672,6 +676,8 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
 
   // 4. Mount the Unified State & Render
   activeSelection = newSelection;
+  // Map targets need the map, so get the drawer out of the way
+  if (abilityMoves.length > 0) setDrawer('');
   renderAllCards();
   refreshMapHighlights();
   updateActionButtons();
@@ -915,11 +921,17 @@ function toggleDrawer(id) {
   });
 }
 
+// Mobile card drawers; '' closes both
+function setDrawer(side) {
+  document.body.dataset.drawer = side;
+}
+
 function toggleSettingsMenu() {
   toggleDrawer('settings-drawer');
 }
 
 document.addEventListener('click', (e) => {
+  if (!e.target.closest('.faction-column, .drawer-tab')) setDrawer('');
   document.querySelectorAll('.drawer-panel:not(.hidden)').forEach(drawer => {
     const button = document.querySelector(`[aria-controls="${drawer.id}"]`);
     if (!drawer.contains(e.target) && !button.contains(e.target)) {
@@ -930,6 +942,7 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
+    setDrawer('');
     const drawer = document.querySelector('.drawer-panel:not(.hidden)');
     if (drawer) drawer.classList.add('hidden');
     else handleCancelClick();

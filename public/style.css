@@ -1278,35 +1278,54 @@ svg#board {
 /* ==========================================================================
    11. RESPONSIVE FALLBACKS (Small screens / Mobile)
    ========================================================================== */
+/* Discord-style drawers: side columns slide over the map, opened from edge tabs */
+.drawer-tab { display: none; }
+
 @media (max-width: 1000px), (max-height: 520px) {
     body {
-        height: auto;
-        min-height: 100vh;
-        max-height: none;
-        overflow-y: auto;
+        height: 100dvh;
+        max-height: 100dvh;
     }
-    .game-container {
-        flex-wrap: wrap;
-        height: auto;
-        max-height: none;
-        overflow: visible;
-    }
-    .board-section {
-        order: -1;
-        flex: 1 1 100%;
-        height: auto;
-        max-height: none;
-    }
-    .board-card {
-        flex: none;
-        height: 75vh;
-    }
+    .header-quote { display: none; }
+    /* Takes over the hidden quote's job of pushing the buttons right */
+    .guide-btn { margin-left: auto; }
     .faction-column {
-        flex: 1 1 260px;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        /* Padding sits outside so cards keep the desktop column width */
+        box-sizing: content-box;
+        width: 300px;
         height: auto;
-        max-height: none;
+        padding: 10px;
+        background: #19140e;
+        box-shadow: 0 0 30px rgba(0,0,0,0.9);
+        z-index: 900;
+        transition: transform 0.25s ease;
     }
-    .cards-deck {
-        max-height: 380px;
+    .mysore-column { left: 0; transform: translateX(-100%); }
+    .british-column { right: 0; transform: translateX(100%); }
+    body[data-drawer="mysore"] .mysore-column,
+    body[data-drawer="british"] .british-column { transform: none; }
+    /* A tap outside an open drawer only closes it */
+    body:is([data-drawer="mysore"], [data-drawer="british"]) .board-section { pointer-events: none; }
+
+    .drawer-tab {
+        display: block;
+        position: fixed;
+        top: 50%;
+        z-index: 800;
+        padding: 14px 4px;
+        border: 1px solid;
+        border-right: none;
+        border-radius: 4px 0 0 4px;
+        color: #fff;
+        font: 0.7rem var(--font-body);
+        letter-spacing: 0.1em;
+        writing-mode: vertical-rl;
+        cursor: pointer;
     }
+    /* Rotated so the text reads bottom-up and the open side faces the screen edge */
+    .drawer-tab.mysore { left: 0; transform: translateY(-50%) rotate(180deg); background: var(--mysore-green-dark); border-color: var(--mysore-green-deep); }
+    .drawer-tab.british { right: 0; transform: translateY(-50%); background: var(--british-red-dark); border-color: var(--british-red-deep); }
 }
