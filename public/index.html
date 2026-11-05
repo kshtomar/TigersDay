@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261027-2">
+    <link rel="stylesheet" href="style.css?v=20261105-3">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -21,8 +21,6 @@
     </div>
     
     <div class="header-actions">
-        <div id="connection-pill" class="pill disconnected">⬤ CONNECTING</div>
-        
         <!-- Tutorial (i) Button -->
         <button id="learn-toggle-btn" class="icon-btn guide-btn" title="Interactive Tutorial" aria-controls="learn-dialog" onclick="openTutorial()">Tutorial</button>
 
@@ -173,7 +171,7 @@
                     <li><strong>British card</strong><span>May play a card</span></li>
                     <li><strong>Battles</strong><span>Resolve if any</span></li>
                 </ol>
-                <p class="learn-note">Click a Fresh army, then a glowing destination<br>Rest Unit — Tire without moving<br>Pass Phase — play no card</p>
+                <p class="learn-note">Click a Fresh army, then a glowing destination<br>Rest — Tire without moving<br>Pass — play no card</p>
             </div>
             <div data-demo="move" class="watch-player" aria-live="off"></div>
         </section>
@@ -230,49 +228,6 @@
     <h2 id="war-title"></h2>
     <p id="war-dates"></p>
 </div>
-<div id="turn-header" class="turn-header british-phase">
-    <div class="turn-header-main">
-        <div class="turn-header-badge">
-            <span id="turn-faction-icon" class="faction-icon">🦁</span>
-            <div class="turn-phase-meta">
-                <span id="turn-counter" class="turn-counter">TURN 1 OF 4</span>
-                <h2 id="turn-phase-title" class="turn-phase-title">BRITISH TURN: MOVE AN ARMY</h2>
-            </div>
-        </div>
-
-        <div id="turn-instruction" class="turn-instruction">
-            Click a unit to select, then click a glowing destination node on the map.
-        </div>
-
-            <!-- Dynamic Inline Action Buttons (Pass, Rest, Resign, Cancel) -->
-            <button id="header-rest-btn" class="header-action-btn rest-btn hidden" onclick="handleHeaderRestClick()">
-                😴 Rest Unit
-            </button>
-            <button id="header-pass-btn" class="header-action-btn pass-btn hidden" onclick="handleHeaderPassClick()">
-                ⏭ Pass Phase
-            </button>
-            <button id="header-resign-btn" class="header-action-btn resign-btn" onclick="handleHeaderResignClick()" title="Concede the match">
-                🏳 Resign
-            </button>
-            <button id="header-cancel-btn" class="header-action-btn cancel-btn hidden" onclick="handleHeaderCancelClick()">
-                ✕ Cancel
-            </button>
-        </div>
-    </div>
-
-    <!-- INLINE BATTLE STATUS BAR (Active only during battles) -->
-    <div id="battle-status-bar" class="battle-status-bar hidden">
-        <div class="battle-pill">⚔️ BATTLE ACTIVE</div>
-        <div class="battle-details">
-            <span class="battle-role">Attacker: <strong id="battle-attacker-name">—</strong></span>
-            <span class="battle-vs">vs</span>
-            <span class="battle-role">Defender: <strong id="battle-defender-name">—</strong></span>
-            <span class="battle-strength-pill">Net Strength: <strong id="battle-strength-val">+0</strong></span>
-        </div>
-        <div class="battle-tip">Single-click card strength seal to commit Combat Strength</div>
-    </div>
-</div>
-
 <!-- MAIN GAMEPLAY BOARD & DECKS LAYOUT -->
 <main class="game-container">
     
@@ -316,7 +271,7 @@
 
         <!-- MAIN INTERACTIVE SVG BOARD -->
         <div class="board-card" id="board-card">
-            <svg id="board" viewBox="0 0 760 880" xmlns="http://www.w3.org/2000/svg">
+            <svg id="board" viewBox="0 0 760 880" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="seaGrad" x1="0" y1="0" x2="1" y2="1">
                         <stop offset="0%" stop-color="var(--sea)"/>
@@ -381,6 +336,14 @@
                 <!-- Territories & Units Layer -->
                 <g id="node-layer"></g>
             </svg>
+            <nav id="impulse-track" class="impulse-track" aria-label="Turn">
+                <span id="track-actions">
+                    <button id="rest-btn" class="track-btn" onclick="handleRestClick()" hidden>Rest</button>
+                    <button id="pass-btn" class="track-btn" onclick="handlePassClick()" hidden>Pass</button>
+                    <button id="cancel-btn" class="track-btn" onclick="handleCancelClick()" hidden>Cancel</button>
+                </span>
+                <button class="track-btn resign" onclick="handleResignClick()">Resign</button>
+            </nav>
         </div>
 
         <!-- OPTIONAL DEBUG MOVE VECTOR CONSOLE (Controlled via Settings) -->
@@ -437,7 +400,7 @@
 
 <!-- Frontend Client & UI Controller -->
 <script src="model-info.js"></script>
-<script src="script.js?v=20261027-4"></script>
+<script src="script.js?v=20261105-3"></script>
 
 </body>
 </html>
