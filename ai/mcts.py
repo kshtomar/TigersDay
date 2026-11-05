@@ -20,79 +20,52 @@ def mask_normalize(logits, mask):
 
 
 class Node:
-    def __init__(self, state, parent = None, move = None, prior = 0.0):
+    def __init__(self, state, parent = None):
         self.state = state
         self._parent = weakref.ref(parent) if parent is not None else None
-        # move to get here
-        self.move = move
-        self._children = None
+        # joint indexed lists
         self._priors = None
         self._moves = None
-        self._nodes = []
+        self._children = []
         
         self.visit_count = 0
         self.value_sum = 0.0
-        # stick to Python scalars for speed
-        self.prior = float(prior)
         self.offset = 0
+        self.is_expanded = False
 
     @property
     def eval(self):
-        if self.parent and self.visit_count == 0:
-            return self.parent.eval
+        if self.parent() and self.visit_count == 0:
             # assume unplayed nodes are as good as parent
+            return self.parent().eval
         return self.value_sum / self.visit_count
     
-    def expanded(self):
-        return self._moves is not None and len(self._moves) > 0
-
-    @property
-    def children(self):
-        if self._children is None:
-            # Expose the tree in action order; search creates only selected nodes.
-            self._children = {}
-            for i in range(len(self._nodes)):
-                move = int(self._moves[i])
-                if self._nodes[i] is None:
-                    self._nodes[i] = Node(None, self, move, self._priors[i])
-                self._children[move] = self._nodes[i]
-        return self._children
-     
-    @property
-    def is_luck(self):
-        return self.state.is_luck
-
-    @property
+    def child(self, i):
+        if self._children[i] is None:
+            self._children[i] = Node(Updater.get_next_state(self.state, int(self._moves[i])), self)
+        return self._children[i]
+    
     def parent(self):
-        """Cleanly dereferences the weakref. Returns the Node or None."""
+        # handle weakref nonsense
         return self._parent() if self._parent is not None else None
-
-    @parent.setter
-    def parent(self, value):
-        """Allows assigning `node.parent = None` or `node.parent = new_node` directly."""
-        if value is None:
-            self._parent = None
-        else:
-            self._parent = weakref.ref(value)
     
     # mask and normalize before this
     def expand_decision(self, moves, priors):
         self._moves = moves
         self._priors = priors
+        self.is_expanded = len(moves) > 0
         # lazy child creation, start as None
-        self._nodes = [None] * len(self._moves)
-        self._children = None
-        # lazy evaluation, leave game state unexplored
+        self._children = [None] * len(self._moves)
 
     def expand_luck(self, rng):
         luck_outcomes = Updater.get_luck_outcomes(self.state)
         prior = 1.0 / len(luck_outcomes)
         self._moves = np.arange(len(luck_outcomes), dtype=np.int_)
         self._priors = np.full(len(luck_outcomes), prior, dtype=np.float64)
-        self._nodes = [Node(outcome, self, i, prior) for i, outcome in enumerate(luck_outcomes)]
-        self._children = dict(enumerate(self._nodes))
+        self._children = [Node(outcome, self) for outcome in luck_outcomes]
+        self.is_expanded = True
         # offset for unbiased choice in round robin luck sampling
-        self.offset = int(rng.random() * len(self._nodes))
+        self.offset = int(rng.random() * len(self._children))
 
 class MCTS:
     def __init__(self, model, ipuct = 800, dalpha = 0.5, depsilon = 0.25):
@@ -101,7 +74,6 @@ class MCTS:
         self.dalpha = dalpha
         self.depsilon = depsilon
         self.root = None
-        self.noise = None
         self.legal_moves = Engine.get_legal_moves
         self.winner = Updater.get_state_winner
         self.rng = random
@@ -111,8 +83,7 @@ class MCTS:
 
         # override depsilon for this search
         depsilon = self.depsilon if depsilon is None else depsilon
-        if not 0 <= depsilon <= 1:
-            raise ValueError("depsilon must be between 0 and 1")
+        assert 0 <= depsilon <= 1, depsilon
         
         # only call search on decision nodes
 
@@ -120,30 +91,26 @@ class MCTS:
             self.root = Node(root_state.copy())
 
         # lazy generate dirichlet root noise
-        self.noise = None
+        noise = None
 
         for sim in range(simulations):
             node = self.root
 
-            while node.expanded():
+            while node.is_expanded:
                 # luck is slippery
                 if node.state.is_luck:
-                    node = node._nodes[(node.offset + node.visit_count) % len(node._nodes)]
+                    node = node._children[(node.offset + node.visit_count) % len(node._children)]
                 else:
                     # generate noise on simulation 1
-                    if node is self.root and self.noise is None and depsilon > 0:
-                        self.noise = self.np_rng.dirichlet([self.dalpha] * len(self.root._moves))
-                    node = self.select_child(node, self.noise if node is self.root else None, depsilon=depsilon)
-
-            # lazy evaluation, actually do it
-            if node.state is None:
-                node.state = Updater.get_next_state(node.parent.state, node.move)
+                    if node is self.root and noise is None and depsilon > 0:
+                        noise = self.np_rng.dirichlet([self.dalpha] * len(self.root._moves))
+                    node = self.select_child(node, noise if node is self.root else None, depsilon=depsilon)
 
             # handle more luck ply
             while node.state.is_luck:
-                if not node.expanded():
+                if not node.is_expanded:
                     node.expand_luck(self.rng)
-                node = node._nodes[(node.offset + node.visit_count) % len(node._nodes)]
+                node = node._children[(node.offset + node.visit_count) % len(node._children)]
             
             reward = self.winner(node.state)
             if reward != 0:
@@ -163,69 +130,55 @@ class MCTS:
         while node is not None:
             node.visit_count += 1
             node.value_sum += value
-            node = node._parent() if node._parent is not None else None
+            node = node.parent()
 
     def select_child(self, node, noise=None, depsilon=None):
         weight = self.depsilon if depsilon is None else depsilon
-        best_score, best_child = NEG_INF, None
+        best_score, best = NEG_INF, -1
         # calculate once for every child
         puct = 1.25 + math.log((node.visit_count + self.ipuct) / self.ipuct)
         visits_sqrt = math.sqrt(node.visit_count)
         mysore = node.state.to_move == 1
         parent_eval = node.value_sum / node.visit_count
-        children = node._nodes
-        best_index = -1
-        for i in range(len(children)):
-            base_prior = float(node._priors[i])
-            child = children[i]
+        for i in range(len(node._children)):
+            child = node._children[i]
             visits = child.visit_count if child is not None else 0
             value = child.value_sum / visits if visits else parent_eval
             # flip evaluation for mysore
             exploitation = -value if mysore else value
-            prior = child.prior if child is not None else base_prior
+            prior = node._priors[i]
             if noise is not None:
                 prior = (1-weight) * prior + weight * float(noise[i])
             # blend dirichlet noise at select time
             exploration = puct * prior * (visits_sqrt / (1 + visits))
             score = exploitation + exploration
             if score > best_score:
-                best_score = score
-                best_child = child
-                best_index = i
-        if best_child is None and best_index >= 0:
-            best_child = children[best_index] = Node(
-                None, node, int(node._moves[best_index]), node._priors[best_index],
-            )
-        return best_child
+                best_score, best = score, i
+        return node.child(best)
 
     # retain subtree if mcts already has it
     def update_root(self, action, luck_trajectory):
-        if self.root is None or action not in self.root.children:
-            self.root = None
-            return
-        
-        current_node = self.root.children[action]
-
-        if current_node.state is None:
-            # drop subtree if unexpanded
-            self.root = None
+        if self.root is None:
             return
 
+        slot = np.flatnonzero(np.asarray(self.root._moves) == action)
+        new_root = self.root._children[slot[0]] if len(slot) else None
+        # luck outcomes are numbered by slot, and luck children are created eagerly
         for idx in luck_trajectory:
-            if idx in current_node.children:
-                current_node = current_node.children[idx]
-            else:
-                self.root = None
-                return
-            
-        self.root = current_node
-        self.root.parent = None
+            if new_root is None:
+                break
+            new_root = new_root._children[idx]
+
+        self.root = new_root
+        if new_root is not None:
+            new_root._parent = None
 
     def find_move(self, state, simulations, temperature=0.0, *, depsilon=None):
         root = self.search(state, simulations, depsilon=depsilon)
         counts = np.zeros(MOVE_VECTOR_LENGTH, dtype=np.float32)
-        for move, child in root.children.items():
-            counts[move] = child.visit_count
+        for i, child in enumerate(root._children):
+            if child is not None:
+                counts[root._moves[i]] = child.visit_count
 
         # fallback if no visits
         if counts.sum() == 0:
