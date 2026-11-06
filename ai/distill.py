@@ -20,7 +20,7 @@ VAL_SPLIT = 0.2
 SHARD_GAMES = 100
 CACHE_DIR = Path('checkpoints/distill')
 OUTPUT_PATH = CACHE_DIR / 'student.pt'
-OUTCOME_WEIGHT = 0.75
+LAMBDA = 0.97
 # hopefully this is maximum occurring legal moves per turn
 LEGAL_WIDTH = 128
 FIELDS = ('states', 'moves', 'values', 'probs', 'game_ids')
@@ -29,6 +29,16 @@ FIELDS = ('states', 'moves', 'values', 'probs', 'game_ids')
 def evaluate_positions(model, pos):
     values, logits = model.session.run(model.output_names, {model.input_name: pos.astype(np.float32)})
     return values.ravel(), logits
+
+
+def td_lambda(values, outcome):
+    # include the position value itself since teacher != student
+    targets = np.empty_like(values)
+    target = outcome
+    for t in range(len(values) - 1, -1, -1):
+        target = (1 - LAMBDA) * values[t] + LAMBDA * target
+        targets[t] = target
+    return targets
 
 
 def compact(masks, policies):
@@ -76,7 +86,7 @@ def collect_games(models, count, sims, seed, offset=0):
         moves.append(move)
         probs.append(prob)
         # Blend true outcome with teacher predicted value
-        values.append((OUTCOME_WEIGHT * winner + (1 - OUTCOME_WEIGHT) * teacher_values).astype(np.float32))
+        values.append(td_lambda(teacher_values, winner).astype(np.float32))
         game_ids.append(np.full(len(pos), game_id, dtype=np.int64))
 
     return {
