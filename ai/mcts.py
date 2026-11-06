@@ -66,6 +66,10 @@ class Node:
         self.is_expanded = True
         # offset for unbiased choice in round robin luck sampling
         self.offset = int(rng.random() * len(self._children))
+        # handle more luck ply
+        for node in self._children:
+            if node.state.is_luck:
+                node.expand_luck(rng)
 
 class MCTS:
     def __init__(self, model, ipuct = 800, dalpha = 0.5, depsilon = 0.25):
@@ -105,13 +109,10 @@ class MCTS:
                     if node is self.root and noise is None and depsilon > 0:
                         noise = self.np_rng.dirichlet([self.dalpha] * len(self.root._moves))
                     node = self.select_child(node, noise if node is self.root else None, depsilon=depsilon)
+                    # expand luck when first reached
+                    if node.state.is_luck and not node.is_expanded:
+                        node.expand_luck(self.rng)
 
-            # handle more luck ply
-            while node.state.is_luck:
-                if not node.is_expanded:
-                    node.expand_luck(self.rng)
-                node = node._children[(node.offset + node.visit_count) % len(node._children)]
-            
             reward = self.winner(node.state)
             if reward != 0:
                 self.backpropagate(node, reward)
