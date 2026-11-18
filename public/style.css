@@ -673,10 +673,10 @@ body {
     display: flex;
     gap: 12px;
     width: 100%;
-    max-width: 1400px;
     align-items: stretch;
     justify-content: center;
     overflow: hidden;
+    container-type: size;
 }
 
 /* Side Card Decks Columns */
@@ -1013,7 +1013,9 @@ body {
    7. BOARD CARD & SVG MAP (RESPONSIVE VIEWPORT SCALING)
    ========================================================================== */
 .board-section {
-    flex: 1 1 0;
+    --track-h: 2rem;
+    /* As wide as the full-height map frame, so the side columns hug it */
+    flex: 0 1 calc((100cqh - var(--track-h) - 4px) * 760 / 818 + 4px);
     min-height: 0;
     min-width: 0;
     height: 100%;
@@ -1025,7 +1027,6 @@ body {
 }
 
 .board-card {
-    --track-h: 2rem;
     flex: 1 1 0;
     min-height: 0;
     width: 100%;
