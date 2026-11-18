@@ -907,11 +907,6 @@ svg#board {
 /* Node Groups & Interactive Styling */
 .node-group {
     cursor: pointer;
-    transition: filter 0.15s ease;
-}
-
-.node-group:hover {
-    filter: drop-shadow(0 0 6px rgba(230, 170, 40, 0.8));
 }
 
 .node-group.selected-unit .sel-ring {
@@ -972,37 +967,6 @@ svg#board {
 
 .move-entry:hover {
     background: rgba(232, 217, 176, 0.15);
-}
-
-/* ==========================================================================
-   9. FLOATING TOOLTIPS & TOAST NOTIFICATIONS
-   ========================================================================== */
-.tooltip {
-    position: fixed;
-    background: var(--parchment);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 5px 8px;
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    color: var(--ink);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.12s ease;
-    z-index: 2000;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.6);
-    max-width: 180px;
-}
-
-.tooltip.show {
-    opacity: 1;
-}
-
-.tooltip b {
-    font-family: var(--font-heading);
-    font-size: 0.72rem;
-    display: block;
-    margin-bottom: 2px;
 }
 
 /* ==========================================================================

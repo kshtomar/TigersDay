@@ -212,8 +212,6 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
       e.stopPropagation();
       handleNodeClick(name);
     });
-    g.addEventListener('mousemove', (e) => tooltipShow(e, name, data));
-    g.addEventListener('mouseleave', tooltipHide);
 
     // Selection ring
     const ring = document.createElementNS(SVG_NS, 'circle');
@@ -1521,28 +1519,6 @@ function resetGamePrompt() {
 // ==========================================================================
 // 13. FLOATING TOOLTIPS & TOAST NOTIFICATIONS
 // ==========================================================================
-const tooltip = document.getElementById('tooltip');
-
-function tooltipShow(e, name, data) {
-  if (!tooltip) return;
-  const armyType = data.armyType || 'empty';
-  const owner = data.owner === 'empty' ? 'Unoccupied' : data.owner.charAt(0).toUpperCase() + data.owner.slice(1);
-  const armyLabel = { active: '⚔ Fresh Army', tired: '😴 Tired Army', fort: '🏰 Fort', empty: 'Empty' };
-
-  let extra = '';
-  if (data.key) extra += ' · ⬛ Key';
-  if (data.coast) extra += ' · 🌊 Coast';
-
-  tooltip.innerHTML = `<b>${name}</b><span style="color:var(--border);">${owner} · ${armyLabel[armyType] || ''}${extra}</span>`;
-  tooltip.classList.add('show');
-  tooltip.style.left = (e.clientX + 14) + 'px';
-  tooltip.style.top = (e.clientY + 14) + 'px';
-}
-
-function tooltipHide() {
-  if (tooltip) tooltip.classList.remove('show');
-}
-
 function renderBattleMarker(uiState, layer = document.getElementById('battle-layer')) {
   if (!layer) return;
   layer.innerHTML = '';
