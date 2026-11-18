@@ -181,7 +181,7 @@ function renderEdges() {
     const path = document.createElementNS(SVG_NS, 'path');
     path.setAttribute('d', `M ${ax},${ay} C ${controls.join(' ')} ${bx},${by}`);
     path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', '#6a4c1e');
+    path.setAttribute('stroke', 'var(--border)');
     path.setAttribute('stroke-width', '1.8');
     path.setAttribute('stroke-linecap', 'round');
     path.setAttribute('opacity', '0.7');
@@ -230,7 +230,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
     targetRing.setAttribute('class', 'target-glow-ring');
     targetRing.setAttribute('r', '20');
     targetRing.setAttribute('fill', 'none');
-    targetRing.setAttribute('stroke', '#ffdd44');
+    targetRing.setAttribute('stroke', 'var(--highlight)');
     targetRing.setAttribute('stroke-width', '3');
     targetRing.setAttribute('opacity', '0');
     g.appendChild(targetRing);
@@ -243,14 +243,14 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
       sq.setAttribute('width', '36');
       sq.setAttribute('height', '36');
       sq.setAttribute('fill', '#000');
-      sq.setAttribute('stroke', '#e0c896');
+      sq.setAttribute('stroke', 'var(--parchment)');
       sq.setAttribute('stroke-width', '1.6');
       g.appendChild(sq);
     } else {
       const circ = document.createElementNS(SVG_NS, 'circle');
       circ.setAttribute('r', '10');
       circ.setAttribute('fill', '#000');
-      circ.setAttribute('stroke', '#b0a080');
+      circ.setAttribute('stroke', 'var(--text-muted)');
       circ.setAttribute('stroke-width', '1.4');
       g.appendChild(circ);
     }
@@ -260,7 +260,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
       const p = document.createElementNS(SVG_NS, 'polygon');
       p.setAttribute('points', '0,-22 22,0 0,22 -22,0');
       p.setAttribute('fill', 'var(--mysore-green)');
-      p.setAttribute('stroke', '#8fe08f');
+      p.setAttribute('stroke', 'var(--mysore-green-light)');
       p.setAttribute('stroke-width', '1.2');
       p.setAttribute('filter', 'url(#nshadow)');
       g.appendChild(p);
@@ -275,7 +275,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
         p.setAttribute('width', '36');
         p.setAttribute('height', '36');
         p.setAttribute('fill', 'var(--british-red)');
-        p.setAttribute('stroke', '#ff9999');
+        p.setAttribute('stroke', 'var(--british-red-light)');
         p.setAttribute('stroke-width', '1.2');
         p.setAttribute('opacity', opacity);
         p.setAttribute('filter', 'url(#nshadow)');
@@ -284,7 +284,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
         const p = document.createElementNS(SVG_NS, 'polygon');
         p.setAttribute('points', '0,-24 24,0 0,24 -24,0');
         p.setAttribute('fill', 'var(--mysore-green)');
-        p.setAttribute('stroke', '#8fe08f');
+        p.setAttribute('stroke', 'var(--mysore-green-light)');
         p.setAttribute('stroke-width', '1.2');
         p.setAttribute('opacity', opacity);
         p.setAttribute('filter', 'url(#nshadow)');
@@ -905,7 +905,7 @@ function renderDebugMoveList() {
   badge.textContent = currentMoves.length;
   list.innerHTML = currentMoves.map(m => `
     <div class="move-entry" onclick="window.applyMove(${m.idx})">
-      <span style="color:#bfa577; min-width:30px;">[${m.idx}]</span>
+      <span style="color:var(--text-muted); min-width:30px;">[${m.idx}]</span>
       <strong style="color:var(--parchment); min-width:130px;">${m.type}</strong>
       <span>${m.desc}</span>
     </div>
@@ -1546,7 +1546,7 @@ function tooltipShow(e, name, data) {
   if (data.key) extra += ' · ⬛ Key';
   if (data.coast) extra += ' · 🌊 Coast';
 
-  tooltip.innerHTML = `<b>${name}</b><span style="color:#6a4c1e;">${owner} · ${armyLabel[armyType] || ''}${extra}</span>`;
+  tooltip.innerHTML = `<b>${name}</b><span style="color:var(--border);">${owner} · ${armyLabel[armyType] || ''}${extra}</span>`;
   tooltip.classList.add('show');
   tooltip.style.left = (e.clientX + 14) + 'px';
   tooltip.style.top = (e.clientY + 14) + 'px';
@@ -1600,7 +1600,7 @@ function renderBattleMarker(uiState, layer = document.getElementById('battle-lay
     t.setAttribute('font-weight', '700');
 
     if (isHalo) {
-      t.setAttribute('stroke', '#1a1208'); 
+      t.setAttribute('stroke', 'var(--chrome)'); 
       t.setAttribute('stroke-width', '3');
       t.setAttribute('fill', 'none');
     } else {
