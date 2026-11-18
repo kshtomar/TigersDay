@@ -241,15 +241,17 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
       sq.setAttribute('width', '36');
       sq.setAttribute('height', '36');
       sq.setAttribute('fill', '#000');
-      sq.setAttribute('stroke', 'var(--parchment)');
+      sq.setAttribute('stroke', 'var(--border)');
       sq.setAttribute('stroke-width', '1.6');
+      sq.setAttribute('stroke-opacity', '0.7');
       g.appendChild(sq);
     } else {
       const circ = document.createElementNS(SVG_NS, 'circle');
       circ.setAttribute('r', '10');
       circ.setAttribute('fill', '#000');
-      circ.setAttribute('stroke', 'var(--text-muted)');
+      circ.setAttribute('stroke', 'var(--border)');
       circ.setAttribute('stroke-width', '1.4');
+      circ.setAttribute('stroke-opacity', '0.7');
       g.appendChild(circ);
     }
 
@@ -311,7 +313,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
       t.setAttribute('font-size', '19');
       t.setAttribute('font-weight', key ? '700' : '400');
       if (isHalo) {
-        t.setAttribute('stroke', 'rgba(228,213,155,0.92)');
+        t.setAttribute('stroke', 'var(--parchment)');
         t.setAttribute('stroke-width', '4');
         t.setAttribute('stroke-linejoin', 'round');
         t.setAttribute('fill', 'none');
@@ -1535,11 +1537,7 @@ function renderBattleMarker(uiState, layer = document.getElementById('battle-lay
   const netVal = Math.abs(uiState.net_strength);
   const textStr = `${netVal}`;
 
-  const styles = getComputedStyle(document.body);
-  const britishRed = styles.getPropertyValue('--british-red').trim();
-  const mysoreGreen = styles.getPropertyValue('--mysore-green').trim();
-
-  const battleColor = uiState.net_strength > 0 ? britishRed : mysoreGreen;
+  const battleColor = uiState.net_strength > 0 ? 'var(--british-red)' : 'var(--mysore-green)';
 
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('transform', `translate(${mx},${my})`);
