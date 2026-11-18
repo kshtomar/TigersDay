@@ -810,6 +810,7 @@ function formatSimsLabel(val) {
 function handleSimsSliderInput(sliderPos) {
   const sims = simsSliderToValue(Number(sliderPos));
   mctsSims = sims;
+  document.getElementById('mcts-sims-slider').style.setProperty('--fill', `${sliderPos}%`);
   const label = document.getElementById('mcts-sims-label');
   if (label) label.textContent = `${formatSimsLabel(sims)} sims`;
 }
@@ -914,38 +915,24 @@ function renderDebugMoveList() {
   `).join('');
 }
 
-function toggleDrawer(id) {
-  document.querySelectorAll('.drawer-panel').forEach(drawer => {
-    if (drawer.id === id) drawer.classList.toggle('hidden');
-    else drawer.classList.add('hidden');
-  });
-}
-
 // Mobile card drawers; '' closes both
 function setDrawer(side) {
   document.body.dataset.drawer = side;
 }
 
-function toggleSettingsMenu() {
-  toggleDrawer('settings-drawer');
+function closeSettings() {
+  document.getElementById('settings').hidePopover();
 }
 
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.faction-column, .drawer-tab')) setDrawer('');
-  document.querySelectorAll('.drawer-panel:not(.hidden)').forEach(drawer => {
-    const button = document.querySelector(`[aria-controls="${drawer.id}"]`);
-    if (!drawer.contains(e.target) && !button.contains(e.target)) {
-      drawer.classList.add('hidden');
-    }
-  });
 });
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     setDrawer('');
-    const drawer = document.querySelector('.drawer-panel:not(.hidden)');
-    if (drawer) drawer.classList.add('hidden');
-    else handleCancelClick();
+    // Escape closes open settings itself
+    if (!document.querySelector('#settings:popover-open')) handleCancelClick();
   }
 });
 
@@ -1020,7 +1007,7 @@ function openTutorial() {
   tutorialOpen = true;
   tutorialStep = 0;
   clearTimeout(aiTimer);
-  document.querySelectorAll('.drawer-panel').forEach(drawer => drawer.classList.add('hidden'));
+  closeSettings();
   // Share the live settings controls so choices persist when the tutorial closes.
   document.getElementById('learn-play-options').appendChild(document.getElementById('play-options'));
   document.getElementById('learn-dialog').showModal();
@@ -1031,7 +1018,7 @@ function finishTutorial() {
   if (!tutorialOpen) return;
   tutorialOpen = false;
   clearTimeout(demoTimer);
-  document.getElementById('settings-play-options').prepend(document.getElementById('play-options'));
+  document.getElementById('settings').prepend(document.getElementById('play-options'));
   document.getElementById('learn-dialog').close();
   if (firstTutorial) {
     firstTutorial = false;
@@ -1172,7 +1159,7 @@ function playTutorialDemo(side, index) {
     const done = step === steps.length - 1;
     const state = done ? demo.after : demo.state;
     const data = TDEngine.generateGameData(state).ui_state;
-    frame.innerHTML = `<div class="watch-map"><nav class="impulse-track">${trackHTML()}<div class="track-actions"><span class="track-btn pass-btn">${data.who_to_move === 'British Move' ? 'Rest' : 'Pass'}</span></div></nav></div><div class="watch-hand"></div>`;
+    frame.innerHTML = `<div class="watch-map"><nav class="impulse-track">${trackHTML()}<div class="track-actions"><span class="btn track-btn pass-btn">${data.who_to_move === 'British Move' ? 'Rest' : 'Pass'}</span></div></nav></div><div class="watch-hand"></div>`;
     renderTrack(frame.querySelector('.impulse-track'), data);
     frame.inert = true;
     const board = tutorialBoard(state, names);
@@ -1414,6 +1401,7 @@ function handleGameModeChange(newMode) {
 
 function handleHumanSideChange(side) {
   humanPlayerSide = side;
+  document.querySelectorAll('#human-side-row .side').forEach(b => b.setAttribute('aria-pressed', b.value === side));
   buildPlayerMap(matchMode, humanPlayerSide);
   initGame();
 }
@@ -1422,14 +1410,11 @@ function setupMultiplayerCallbacks() {
   const statusPill = document.getElementById('p2p-status-pill');
 
   multiplayerManager.onStatusChange = ({ status, isHost, mySide, roomCode }) => {
-    if (statusPill) {
-      statusPill.className = `p2p-status-pill ${status}`;
-      statusPill.textContent = status.toUpperCase();
-    }
+    if (statusPill) statusPill.textContent = status;
 
     if (status === 'connected') {
       buildPlayerMap('p2p_multiplayer', mySide);
-      toggleSettingsMenu();
+      closeSettings();
     }
   };
 
@@ -1512,7 +1497,7 @@ function copyRoomCode() {
 function saveBinaryState() {
   if (!currentBitString) return;
   navigator.clipboard.writeText(currentBitString);
-  toggleSettingsMenu();
+  closeSettings();
 }
 
 function loadBinaryState() {
@@ -1522,7 +1507,7 @@ function loadBinaryState() {
   currentGameState = new GameState().read_str(rawInput);
   const gameData = TDEngine.generateGameData(currentGameState, matchMode, humanPlayerSide);
   handleLocalGameUpdate(gameData, false);
-  toggleSettingsMenu();
+  closeSettings();
 }
 
 function resetGamePrompt() {
@@ -1530,7 +1515,7 @@ function resetGamePrompt() {
   if (matchMode === 'p2p_multiplayer') {
     multiplayerManager.sendReset();
   }
-  toggleSettingsMenu();
+  closeSettings();
 }
 
 // ==========================================================================
@@ -1639,9 +1624,8 @@ function syncUIStateOnLoad() {
   }
 
   // 4. Sync Player Side
-  const sideSelect = document.getElementById('human-side-select');
-  if (sideSelect && typeof handleHumanSideChange === 'function') {
-    handleHumanSideChange(sideSelect.value);
+  if (typeof handleHumanSideChange === 'function') {
+    handleHumanSideChange(humanPlayerSide);
   }
 
   // 5. Sync Game Mode

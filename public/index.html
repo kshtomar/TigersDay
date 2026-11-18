@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261105-27">
+    <link rel="stylesheet" href="style.css?v=20261105-35">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -29,7 +29,7 @@
         <button id="learn-toggle-btn" class="icon-btn guide-btn" title="Interactive Tutorial" aria-controls="learn-dialog" onclick="openTutorial()">Tutorial</button>
 
         <!-- Settings (Gear) Button -->
-        <button id="settings-toggle-btn" class="icon-btn" title="Settings & Options" aria-label="Settings" aria-controls="settings-drawer" onclick="toggleSettingsMenu()">
+        <button id="settings-toggle-btn" class="icon-btn" title="Settings & Options" aria-label="Settings" popovertarget="settings">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -39,111 +39,39 @@
 </header>
 
 <!-- TUTORIAL MENU DRAWER (Zero Popups) -->
-<!-- SETTINGS DRAWER (Zero Popups) -->
-<div id="settings-drawer" class="drawer-panel hidden">
-    <div class="drawer-header">
-        <div class="drawer-title-wrap">
-            <span class="drawer-icon">⚙</span>
-            <h3>GAME SETTINGS</h3>
-        </div>
-        <button class="close-drawer-btn" onclick="toggleSettingsMenu()">✕</button>
-    </div>
-    
-    <div id="settings-play-options" class="drawer-content">
-        <div id="play-options">
-        <!-- MATCH MODE CONTROLLER -->
-        <div class="settings-section">
-            <label class="setting-label" for="game-mode-select">HOW TO PLAY</label>
-            <select id="game-mode-select" class="mode-select" onchange="handleGameModeChange(this.value)">
+<!-- SETTINGS -->
+<div id="settings" class="settings" popover>
+    <div id="play-options">
+        <label>How to play
+            <select id="game-mode-select" onchange="handleGameModeChange(this.value)">
                 <option value="human_vs_ai">Play against the bot</option>
                 <option value="human">Play a friend on this device</option>
                 <option value="p2p_multiplayer">Play a friend online</option>
                 <option value="ai_vs_ai">Watch the bot play itself</option>
             </select>
-
-            <!-- Human Side Selector -->
-            <div id="human-side-row" style="margin-top: 8px;">
-                <label class="setting-label">PLAY AS:</label>
-                <select id="human-side-select" class="mode-select" onchange="handleHumanSideChange(this.value)">
-                    <option value="british">British East India Company</option>
-                    <option value="mysore">Sultanate of Mysore</option>
-                </select>
-            </div>
-
-            <!-- P2P Multiplayer Panel -->
-            <div id="multiplayer-panel" class="multiplayer-panel hidden">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="setting-label" style="margin: 0;">ONLINE GAME</span>
-                    <span id="p2p-status-pill" class="p2p-status-pill offline">OFFLINE</span>
-                </div>
-
-                <div style="margin-top: 8px; display: flex; gap: 6px;">
-                    <button class="primary-btn" style="flex: 1;" onclick="handleHostGameClick()">Host Room</button>
-                </div>
-
-                <div id="room-code-box" class="room-code-display hidden">
-                    <span id="room-code-val" class="room-code-text">TIGER-XXXX</span>
-                    <button class="secondary-btn" style="padding: 3px 8px; font-size: 0.75rem;" onclick="copyRoomCode()">Copy Code</button>
-                </div>
-
-                <div style="margin-top: 10px;">
-                    <label for="join-room-input" class="setting-label">OR JOIN FRIEND'S ROOM:</label>
-                    <div class="input-action-row">
-                        <input type="text" id="join-room-input" placeholder="e.g. TIGER-ABCD" spellcheck="false" style="text-transform: uppercase;">
-                        <button class="primary-btn" onclick="handleJoinGameClick()">Join</button>
-                    </div>
-                </div>
-            </div>
+        </label>
+        <div id="human-side-row" class="field">Play as
+            <p class="row"><button class="btn side" value="british" aria-pressed="true" onclick="handleHumanSideChange(this.value)">British</button><button class="btn side" value="mysore" aria-pressed="false" onclick="handleHumanSideChange(this.value)">Mysore</button></p>
         </div>
-
-        <hr class="settings-divider">
-
-        <div class="settings-section">
-            <label class="toggle-control">
-                <span class="toggle-label">Show who is ahead</span>
-                <input type="checkbox" id="eval-toggle-checkbox" onchange="handleEvalToggle(this.checked)">
-                <span class="toggle-slider"></span>
-            </label>
-            <span class="setting-desc">Show the bot's estimate and suggested moves. Positive scores favor British; negative scores favor Mysore. Turn off to play without hints.</span>
+        <div id="multiplayer-panel" class="hidden">
+            <p class="settings-head">Online game <span id="p2p-status-pill">offline</span></p>
+            <p class="row"><button class="btn" onclick="handleHostGameClick()">Host room</button></p>
+            <p id="room-code-box" class="row hidden"><b id="room-code-val">TIGER-XXXX</b><button class="btn quiet" onclick="copyRoomCode()">Copy code</button></p>
+            <p class="row"><input type="text" id="join-room-input" placeholder="TIGER-ROOM" spellcheck="false"><button class="btn" onclick="handleJoinGameClick()">Join</button></p>
         </div>
-
-        <div class="settings-section">
-            <label class="setting-label" for="mcts-sims-slider">BOT THINKING TIME</label>
-            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
-                <input type="range" id="mcts-sims-slider" class="sims-slider" min="0" max="100" value="0" step="1" oninput="handleSimsSliderInput(this.value)">
-                <span id="mcts-sims-label" class="sims-label">400 sims</span>
-            </div>
-            <span class="setting-desc">How many times the bot explores possible moves (simulations). More means deeper thinking and longer waits. Start at 400 for quick play.</span>
-        </div>
-        </div>
-
-        <div class="settings-section">
-            <label class="toggle-control">
-                <span class="toggle-label">Show Move Log / Debug</span>
-                <input type="checkbox" id="debug-toggle-checkbox" onchange="handleDebugToggle(this.checked)">
-                <span class="toggle-slider"></span>
-            </label>
-            <span class="setting-desc">Display raw legal move vector (Vt) console.</span>
-        </div>
-
-        <hr class="settings-divider">
-
-        <div class="settings-section">
-            <h4>STATE & CONTROLS</h4>
-            <div class="settings-btn-group">
-                <button class="secondary-btn" onclick="saveBinaryState()">📋 Copy Game State (Binary)</button>
-                <button class="secondary-btn" onclick="resetGamePrompt()">🔄 Reset Board to Start</button>
-            </div>
-        </div>
-
-        <div class="settings-section">
-            <label for="binary-load-input" class="setting-label">RESTORE FROM BINARY STRING:</label>
-            <div class="input-action-row">
-                <input type="text" id="binary-load-input" placeholder="Paste bit-string here..." spellcheck="false">
-                <button class="primary-btn" onclick="loadBinaryState()">Load</button>
-            </div>
-        </div>
+        <hr>
+        <label class="check"><input type="checkbox" id="eval-toggle-checkbox" onchange="handleEvalToggle(this.checked)">Show who is ahead</label>
+        <small>Hints from the bot on suggested moves.</small>
+        <label>Bot thinking time <span id="mcts-sims-label">400 sims</span>
+            <input type="range" id="mcts-sims-slider" min="0" max="100" value="0" step="1" oninput="handleSimsSliderInput(this.value)">
+        </label>
+        <small>More simulations play stronger but slower.</small>
     </div>
+    <hr>
+    <label class="check"><input type="checkbox" id="debug-toggle-checkbox" onchange="handleDebugToggle(this.checked)">Show move log</label>
+    <small>Every legal move, for debugging.</small>
+    <p class="row"><button class="btn quiet" onclick="saveBinaryState()">Copy game state</button><button class="btn quiet" onclick="resetGamePrompt()">Reset board</button></p>
+    <p class="row"><input type="text" id="binary-load-input" placeholder="Game state" spellcheck="false"><button class="btn" onclick="loadBinaryState()">Load</button></p>
 </div>
 
 <!-- 1. PERSISTENT, LOW-PROFILE TURN HEADER -->
@@ -223,7 +151,7 @@
                     <p id="learn-model-info" class="learn-note"></p>
                     <p class="learn-note">Elo is an estimate relative to other AlphaTiger versions, with v8 set to 1,000. Playing strength also depends on thinking time.</p>
                 </div>
-                <div id="learn-play-options"></div>
+                <div id="learn-play-options" class="settings"></div>
             </div>
         </section>
     </div>
@@ -323,9 +251,9 @@
             </svg>
             <nav id="impulse-track" class="impulse-track" aria-label="Turn">
                 <div class="track-actions">
-                    <button id="rest-btn" class="track-btn" onclick="handleRestClick()" hidden>Rest</button>
-                    <button id="pass-btn" class="track-btn" onclick="handlePassClick()" hidden>Pass</button>
-                    <button class="track-btn resign" onclick="handleResignClick()">Resign</button>
+                    <button id="rest-btn" class="btn track-btn" onclick="handleRestClick()" hidden>Rest</button>
+                    <button id="pass-btn" class="btn track-btn" onclick="handlePassClick()" hidden>Pass</button>
+                    <button class="btn quiet track-btn" onclick="handleResignClick()">Resign</button>
                 </div>
             </nav>
           </div>
@@ -377,7 +305,7 @@
 
 <!-- Frontend Client & UI Controller -->
 <script src="model-info.js"></script>
-<script src="script.js?v=20261105-12"></script>
+<script src="script.js?v=20261105-15"></script>
 
 </body>
 </html>

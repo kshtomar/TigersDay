@@ -49,7 +49,6 @@
     --mysore-green-deep: #0d280d;
     --mysore-green-light: #66bb66;
     --mysore-gold: #d4a030;
-    --gold-light: #f0c868;
     --highlight: #ffdd44;
     --sea: #75caf9;
     --coast: #5B9BD5;
@@ -209,266 +208,105 @@ body {
 }
 
 /* ==========================================================================
-   2. SLIDE-OUT DRAWERS (Tutorial & Settings - Zero Modal Popups)
+   2. SETTINGS (Dark like the tutorial; one control and button style)
    ========================================================================== */
-.drawer-panel {
+#settings {
     position: fixed;
-    top: 50px;
-    right: 20px;
-    width: 350px;
+    inset: 50px 20px auto auto;
+    margin: 0;
+    width: 320px;
     max-width: calc(100vw - 40px);
     max-height: calc(100vh - 70px);
-    background: var(--chrome);
-    border: 2px solid var(--border);
-    border-radius: 4px;
-    box-shadow: 0 12px 36px rgba(0,0,0,0.9), 0 0 0 1px var(--chrome-hover);
-    z-index: 1000;
-    animation: slideDown 0.2s ease-out;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    padding: 8px 12px;
-    background: var(--chrome-raised);
-}
-
-.drawer-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.drawer-icon {
-    font-size: 1rem;
-}
-
-.drawer-header h3 {
-    font-family: var(--font-heading);
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    color: var(--parchment);
-}
-
-.close-drawer-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 1.1rem;
-    cursor: pointer;
-    padding: 0 4px;
-}
-
-.close-drawer-btn:hover {
-    color: #fff;
-}
-
-.drawer-content {
-    padding: 12px 14px;
     overflow-y: auto;
-    max-height: 70vh;
+    box-shadow: 0 24px 100px #000;
 }
-
-/* Tutorial Specific Layout */
-/* Settings Specific Layout */
-.settings-section {
-    margin-bottom: 10px;
+.settings {
+    padding: 14px 16px;
+    background: var(--chrome-deep);
+    border: 1px solid var(--border);
+    color: #fff;
+    color-scheme: dark;
+    font-size: 0.95rem;
 }
-
-.settings-section h4 {
-    font-family: var(--font-heading);
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    margin-bottom: 5px;
-    letter-spacing: 0.06em;
-}
-
-.toggle-control {
+/* Headings read like the tutorial's eyebrow; checkbox labels and values in white */
+.settings :is(label, .field, .settings-head) {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
-}
-
-.toggle-label {
-    font-family: var(--font-heading);
-    font-size: 0.74rem;
-    color: var(--parchment);
-    letter-spacing: 0.04em;
-}
-
-.toggle-control input {
-    display: none;
-}
-
-.toggle-slider {
-    width: 34px;
-    height: 17px;
-    background: var(--chrome-hover);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    position: relative;
-    transition: 0.2s;
-}
-
-.toggle-slider::before {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 11px;
-    height: 11px;
-    background: var(--text-muted);
-    border-radius: 50%;
-    transition: 0.2s;
-}
-
-.toggle-control input:checked + .toggle-slider {
-    background: var(--mysore-green);
-    border-color: var(--mysore-green-light);
-}
-
-.toggle-control input:checked + .toggle-slider::before {
-    transform: translateX(17px);
-    background: #fff;
-}
-
-.setting-desc {
-    display: block;
+    gap: 4px 8px;
+    margin-top: 12px;
     font-size: 0.7rem;
-    color: var(--text-dim);
-    font-style: italic;
-    margin-top: 2px;
-    line-height: 1.25;
-}
-
-/* MCTS Simulations Slider */
-.sims-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    flex: 1;
-    height: 6px;
-    border-radius: 3px;
-    background: linear-gradient(90deg, var(--chrome-hover) 0%, var(--mysore-gold) 100%);
-    outline: none;
-    cursor: pointer;
-}
-
-.sims-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--mysore-gold));
-    border: 2px solid var(--chrome-hover);
-    box-shadow: 0 0 6px color-mix(in srgb, var(--mysore-gold) 60%, transparent);
-    cursor: grab;
-}
-
-.sims-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--mysore-gold));
-    border: 2px solid var(--chrome-hover);
-    box-shadow: 0 0 6px color-mix(in srgb, var(--mysore-gold) 60%, transparent);
-    cursor: grab;
-}
-
-.sims-label {
-    font-family: var(--font-heading);
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--gold-light);
-    background: rgba(58, 42, 16, 0.7);
-    border: 1px solid color-mix(in srgb, var(--mysore-gold) 40%, transparent);
-    border-radius: 4px;
-    padding: 2px 8px;
-    min-width: 80px;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.settings-divider {
-    border: 0;
-    border-top: 1px solid rgba(122, 92, 46, 0.4);
-    margin: 10px 0;
-}
-
-.settings-btn-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.primary-btn, .secondary-btn {
-    font-family: var(--font-heading);
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.secondary-btn {
-    background: var(--chrome-raised);
-    border: 1px solid var(--border);
-    color: var(--parchment);
-    text-align: left;
-}
-
-.secondary-btn:hover {
-    background: var(--chrome-hover);
-    border-color: var(--mysore-gold);
-}
-
-.primary-btn {
-    background: var(--border);
-    border: 1px solid var(--text-dim);
-    color: #fff;
-    font-weight: 700;
-}
-
-.primary-btn:hover {
-    background: var(--text-dim);
-}
-
-.setting-label {
-    display: block;
-    font-family: var(--font-heading);
-    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 3px;
-    letter-spacing: 0.05em;
 }
-
-.input-action-row {
-    display: flex;
-    gap: 5px;
-}
-
-.input-action-row input {
-    flex: 1;
-    background: var(--chrome-deep);
-    border: 1px solid var(--ink-light);
+#play-options > :first-child { margin-top: 0; }
+.settings :is(label, .field) > :is(select, input[type=range], .row) { flex-basis: 100%; margin-top: 0; }
+.settings label.check { justify-content: flex-start; font-size: inherit; letter-spacing: 0; text-transform: none; color: #fff; }
+#p2p-status-pill, #mcts-sims-label { color: #fff; text-transform: none; letter-spacing: 0; font-size: 0.85rem; }
+#p2p-status-pill { text-transform: capitalize; }
+.settings :is(select, input[type=text]) {
+    padding: 5px 8px;
+    border: 1px solid var(--border);
     border-radius: 3px;
-    padding: 4px 6px;
-    font-family: var(--font-body);
-    font-size: 0.72rem;
-    color: var(--parchment);
+    background: var(--chrome-raised);
+    font: inherit;
+    font-size: 0.95rem;
+    color: #fff;
+    text-transform: none;
+    letter-spacing: 0;
 }
+.settings :is(select, input[type=text]):focus { outline: 1px solid var(--parchment); }
+/* Codes and game states read as monospace */
+:is(#binary-load-input, #join-room-input, #room-code-val) { font-family: monospace; font-size: 0.85rem; }
+/* Checkbox and slider drawn in palette colours: raised when empty, parchment when on */
+.settings input[type=checkbox] {
+    appearance: none;
+    display: grid;
+    place-content: center;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--chrome-raised);
+    cursor: pointer;
+}
+.settings input[type=checkbox]:checked { background: var(--parchment); border-color: var(--parchment); }
+.settings input[type=checkbox]:checked::before { content: '✓'; font-size: 12px; font-weight: 700; line-height: 1; color: var(--chrome-deep); }
+/* --fill is the slider position, set by handleSimsSliderInput */
+.settings input[type=range] {
+    appearance: none;
+    height: 6px;
+    margin: 6px 0;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--parchment) var(--fill, 0%), var(--chrome-hover) 0);
+    cursor: pointer;
+}
+.settings input[type=range]::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; border: 2px solid var(--chrome-deep); border-radius: 50%; background: var(--parchment); }
+.settings input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border: 2px solid var(--chrome-deep); border-radius: 50%; background: var(--parchment); }
+.settings small { display: block; margin-top: 2px; font-size: 0.8rem; font-style: italic; color: var(--text-muted); }
+.settings hr { margin: 14px 0; border: 0; border-top: 1px solid var(--chrome-hover); }
+.settings .row { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 0.95rem; letter-spacing: 0; text-transform: none; color: #fff; }
+.settings .row input { flex: 1; min-width: 0; }
+#room-code-val { flex: 1; letter-spacing: 0.1em; font-weight: 700; }
 
-.input-action-row input:focus {
-    outline: none;
-    border-color: var(--mysore-gold);
-}
+/* Buttons: filled for actions, quiet outline for the rest; light surfaces use ink, dark ones parchment */
+.btn { padding: 5px 12px; border: 1px solid var(--ink); border-radius: 3px; background: var(--ink); color: var(--parchment); font: inherit; font-weight: 700; cursor: pointer; }
+.btn:hover { background: var(--ink-light); }
+.btn.quiet { background: none; border-color: var(--parchment-dark); color: var(--ink-light); font-weight: 400; }
+.btn.quiet:hover { background: var(--parchment-dark); }
+.settings .btn { background: var(--parchment); border-color: var(--parchment); color: var(--chrome-deep); }
+.settings .btn:hover { background: var(--parchment-dark); border-color: var(--parchment-dark); }
+.settings .btn.quiet { background: var(--chrome-raised); border-color: var(--border); color: var(--text-muted); }
+.settings .btn.quiet:hover { background: var(--chrome-hover); }
+/* Side picker: in the side's colour, filled once chosen */
+.side[value=british] { --side: var(--british-red); }
+.side[value=mysore] { --side: var(--mysore-green); }
+.settings .side { flex: 1; background: var(--chrome-raised); border-color: var(--side); color: var(--side); }
+.settings .side:hover { background: var(--chrome-hover); border-color: var(--side); }
+.settings .side[aria-pressed=true] { background: var(--side); color: #fff; }
 
 /* ==========================================================================
    3. PERSISTENT LOW-PROFILE TURN HEADER
@@ -676,10 +514,7 @@ body {
 .impulse-track.over :is(.impulse-steps, .track-actions) { display: none; }
 .impulse-track.over .track-outcome { display: block; margin-top: calc(10 * var(--u)); }
 .track-actions { display: flex; justify-content: center; gap: calc(8 * var(--u)); margin-top: calc(12 * var(--u)); }
-.track-btn { width: calc(84 * var(--u)); padding: calc(5 * var(--u)) 0; border: 1px solid var(--ink); border-radius: 3px; background: var(--ink); color: var(--parchment); font-size: calc(15 * var(--u)); font-weight: 700; cursor: pointer; }
-.track-btn:hover { background: var(--ink-light); }
-.track-btn.resign { background: none; border-color: var(--parchment-dark); color: var(--ink-light); font-weight: 400; }
-.track-btn.resign:hover { background: var(--parchment-dark); }
+.track-btn { width: calc(84 * var(--u)); padding: calc(5 * var(--u)) 0; font-size: calc(15 * var(--u)); }
 
 /* ==========================================================================
    4. MAIN GAMEPLAY CONTAINER (Viewport Scaled)
@@ -1207,90 +1042,11 @@ svg#board {
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 
 .hidden {
     display: none !important;
 }
 
-/* ==========================================================================
-   GAME MODE & P2P MULTIPLAYER STYLES
-   ========================================================================== */
-.mode-select {
-    width: 100%;
-    padding: 8px 10px;
-    background: var(--chrome);
-    border: 1px solid var(--border);
-    color: var(--parchment);
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    border-radius: 4px;
-    margin-top: 6px;
-    cursor: pointer;
-}
-
-.mode-select:focus {
-    outline: none;
-    border-color: var(--mysore-gold);
-}
-
-.multiplayer-panel {
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px;
-    margin-top: 10px;
-}
-
-.room-code-display {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--chrome-deep);
-    border: 1px dashed var(--mysore-gold);
-    padding: 8px 12px;
-    border-radius: 4px;
-    margin: 8px 0;
-}
-
-.room-code-text {
-    font-family: var(--font-body);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--gold-light);
-}
-
-.p2p-status-pill {
-    display: inline-block;
-    font-family: var(--font-heading);
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    padding: 3px 8px;
-    border-radius: 10px;
-    margin-top: 4px;
-}
-
-.p2p-status-pill.hosting {
-    background: rgba(212, 160, 48, 0.25);
-    color: var(--gold-light);
-    border: 1px solid var(--mysore-gold);
-}
-
-.p2p-status-pill.connected {
-    background: rgba(46, 122, 46, 0.25);
-    color: var(--mysore-green-light);
-    border: 1px solid var(--mysore-green);
-}
-
-.p2p-status-pill.offline {
-    background: rgba(100, 100, 100, 0.25);
-    color: #aaa;
-    border: 1px solid #666;
-}
 
 
 /* ==========================================================================
