@@ -19,7 +19,7 @@
     "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
-    "estimated_elo": 1000
+    "estimated_elo": 1050
   },
   "alphatigerv11": {
     "activation": "relu",
@@ -41,7 +41,7 @@
     "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
-    "estimated_elo": 1200
+    "estimated_elo": 1225
   },
   "alphatigerv12beta": {
     "activation": "relu",
@@ -63,7 +63,7 @@
     "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
-    "estimated_elo": 1350
+    "estimated_elo": 1375
   },
   "alphatigerv12": {
     "activation": "relu",
@@ -81,7 +81,7 @@
     "fast_sims": null,
     "replay_buffer": 50000,
     "hardware": "latte",
-    "estimated_elo": 1350
+    "estimated_elo": 1375
   },
   "alphatigerv13": {
     "activation": "relu",
@@ -247,7 +247,7 @@
     "fast_sims": 0.2,
     "replay_buffer": 100000,
     "hardware": "kaggle",
-    "estimated_elo": 1550
+    "estimated_elo": 1525
   },
   "alphatigerv18": {
     "activation": "silu",
@@ -289,7 +289,7 @@
     "fast_sims": 0.2,
     "replay_buffer": 100000,
     "hardware": "kaggle",
-    "estimated_elo": 1700
+    "estimated_elo": 1675
   },
   "alphatigerv19": {
     "activation": "silu",
@@ -308,7 +308,7 @@
     "teachers": ["alphatigerv19beta"],
     "replay_buffer": null,
     "hardware": "kaggle",
-    "estimated_elo": 1750
+    "estimated_elo": 1725
   },
   "alphatigerv20beta": {
     "activation": "silu",
@@ -331,7 +331,7 @@
     "fast_sims": 0.2,
     "replay_buffer": 100000,
     "hardware": "kaggle",
-    "estimated_elo": 1750
+    "estimated_elo": 1700
   },
   "alphatigerv20": {
     "activation": "silu",
@@ -350,7 +350,7 @@
     "teachers": ["alphatigerv20beta"],
     "replay_buffer": null,
     "hardware": "kaggle",
-    "estimated_elo": 1800
+    "estimated_elo": 1750
   },
   "alphatigerv20mini": {
     "activation": "silu",
@@ -372,7 +372,7 @@
     "fast_sims": 0.2,
     "replay_buffer": 100000,
     "hardware": "kaggle",
-    "estimated_elo": 1000
+    "estimated_elo": 1075
   },
   "alphatigerv21beta": {
     "activation": "silu",
@@ -394,6 +394,6 @@
     "fast_sims": 0.2,
     "replay_buffer": 800000,
     "hardware": "kaggle",
-    "estimated_elo": 1800
+    "estimated_elo": 1775
   }
 }

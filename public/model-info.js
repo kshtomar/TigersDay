@@ -2,5 +2,5 @@
 const ALPHATIGER = {
   "version": "v21beta",
   "released": "2026-11-17",
-  "estimated_elo": 1800
+  "estimated_elo": 1775
 };

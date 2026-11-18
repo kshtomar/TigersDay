@@ -159,6 +159,6 @@ ONNX for inference, PT for training
 
 Pairwise tournament to sample matchups
 Joint Bradley-Terry maximum likelihood estimation
-Anchor with v8 at 1000 Elo
-Round to nearest 50 due to error bars
+Anchor with v13 at 1400 Elo
+Round to nearest 25 due to error bars
 Sufficient games for +-25 Elo 95% CI
