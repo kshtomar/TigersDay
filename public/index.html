@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261105-15">
+    <link rel="stylesheet" href="style.css?v=20261105-26">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -322,11 +322,11 @@
                 <g id="node-layer"></g>
             </svg>
             <nav id="impulse-track" class="impulse-track" aria-label="Turn">
-                <span id="track-actions">
+                <div class="track-actions">
                     <button id="rest-btn" class="track-btn" onclick="handleRestClick()" hidden>Rest</button>
                     <button id="pass-btn" class="track-btn" onclick="handlePassClick()" hidden>Pass</button>
-                </span>
-                <button class="track-btn resign" onclick="handleResignClick()">Resign</button>
+                    <button class="track-btn resign" onclick="handleResignClick()">Resign</button>
+                </div>
             </nav>
           </div>
         </div>
@@ -377,7 +377,7 @@
 
 <!-- Frontend Client & UI Controller -->
 <script src="model-info.js"></script>
-<script src="script.js?v=20261105-8"></script>
+<script src="script.js?v=20261105-12"></script>
 
 </body>
 </html>

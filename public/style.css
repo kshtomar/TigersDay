@@ -65,6 +65,7 @@
     --font-heading: var(--font-map);
     --font-body: var(--font-map);
     --font-historic: var(--font-map);
+    --card-title: 1.25rem;
 }
 
 * {
@@ -541,8 +542,9 @@ body {
 .learn-dialog .watch-choices button { padding: 7px 10px; background: transparent; color: var(--text-muted); border-color: var(--chrome-hover); font-size: 0.85rem; }
 .learn-dialog .watch-choices button[aria-pressed="true"] { background: var(--parchment); color: var(--chrome-deep); border-color: var(--parchment); }
 .watch-frame { overflow: hidden; border: 1px solid var(--border); border-radius: 4px; background: var(--chrome); }
-.watch-map { background: var(--sea); }
-.watch-board { display: block; width: 100%; height: clamp(130px, 25dvh, 210px); }
+.watch-map { display: flex; align-items: center; background: var(--sea); }
+.watch-map .impulse-track { --u: 0.7px; position: static; flex: none; margin: 8px; }
+.watch-board { display: block; flex: 1; min-width: 0; height: clamp(130px, 25dvh, 210px); }
 .watch-hand { display: flex; gap: 8px; padding: 10px; }
 .watch-opponent { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 0 10px 10px; }
 .watch-hand-label { grid-column: 1 / -1; color: var(--text-muted); font-size: 0.75rem; padding-top: 8px; }
@@ -642,36 +644,45 @@ body {
     .war-transition { animation: none; }
 }
 
+/* Cartouche in the open Arabian Sea; --u is one map unit so it scales with the board */
 .impulse-track {
-    display: flex;
-    height: var(--track-h, 2rem);
-    align-items: stretch;
-    width: 100%;
-    background: #2a2115;
-    border-top: 1px solid var(--border);
-    font-size: 0.8rem;
-    color: #9c8a66;
+    position: absolute;
+    left: calc(14 * var(--u));
+    bottom: calc(9 * var(--u));
+    width: calc(226 * var(--u));
+    padding: calc(12 * var(--u)) calc(10 * var(--u));
+    background: var(--parchment);
+    /* Double rules need 3px to show both lines */
+    border: max(3px, calc(4 * var(--u))) double var(--border);
+    /* Same drop shadow as the armies and forts (#nshadow) */
+    box-shadow: 0 calc(1 * var(--u)) calc(4 * var(--u)) #0007;
+    text-align: center;
+    color: var(--ink);
 }
-.impulse-track ol { display: flex; list-style: none; }
-.war-pips { gap: 6px; align-items: center; padding: 0 10px; border-right: 1px solid #3a2d18; }
-.war-pips .done { color: #6a5a3e; }
-.war-pips .now { color: var(--parchment); font-weight: 700; }
-.impulse-steps { flex: 1; }
-.impulse-steps li { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 6px; border-right: 1px solid #3a2d18; white-space: nowrap; }
-.impulse-steps .done { color: #6a5a3e; text-decoration: line-through; }
-.impulse-steps .now { color: #fff; }
-.impulse-steps .now.british { background: var(--british-red-dark); }
-.impulse-steps .now.mysore { background: var(--mysore-green-dark); }
-.impulse-steps .pending { color: var(--parchment); box-shadow: inset 0 0 0 1px var(--british-gold); }
-.thinking .impulse-steps .now::after { content: '···'; letter-spacing: 2px; animation: thinking 1.2s infinite; }
+.impulse-track ol { list-style: none; }
+.war-pips { display: flex; justify-content: center; align-items: center; gap: calc(7 * var(--u)); }
+.war-pips li { display: grid; place-items: center; width: calc(28 * var(--u)); height: calc(28 * var(--u)); border: 1px solid var(--border); border-radius: 50%; font-size: calc(13 * var(--u)); color: var(--border); }
+.war-pips .done { background: var(--parchment-dark); }
+.war-pips .now { width: calc(38 * var(--u)); height: calc(38 * var(--u)); background: var(--ink); border-color: var(--ink); color: var(--parchment); font-size: calc(17 * var(--u)); font-weight: 700; }
+.impulse-steps { margin-top: calc(10 * var(--u)); font-size: calc(13 * var(--u)); color: var(--border); }
+.impulse-steps li { padding: calc(2 * var(--u)) 0; }
+.impulse-steps .now { padding: calc(5 * var(--u)) 0; font-size: min(var(--card-title), calc(20 * var(--u))); font-style: italic; color: var(--ink); }
+.impulse-steps .now b { font-style: normal; }
+.impulse-track :is(.british b, b.british) { color: var(--british-red); }
+.impulse-track :is(.mysore b, b.mysore) { color: var(--mysore-green); }
+.impulse-steps .battle:not(.pending) { font-style: italic; opacity: 0.55; }
+.thinking .impulse-steps .now { animation: thinking 1.2s infinite; }
 @keyframes thinking { 50% { opacity: 0.3; } }
-.track-outcome { display: none; flex: 1; padding: 6px; text-align: center; color: var(--parchment); }
-.impulse-track.over .impulse-steps, .impulse-track.over .resign { display: none; }
-.impulse-track.over .track-outcome { display: block; }
-#track-actions { display: contents; }
-.track-btn { background: none; border: none; padding: 0; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.track-btn:hover { color: var(--british-gold); }
-.track-btn.resign { padding: 0 10px; color: #9c8a66; }
+.track-outcome { display: none; font-size: calc(22 * var(--u)); font-style: italic; }
+.track-outcome b { font-style: normal; }
+.track-outcome small { display: block; font-size: calc(13 * var(--u)); font-style: normal; color: var(--border); }
+.impulse-track.over :is(.impulse-steps, .track-actions) { display: none; }
+.impulse-track.over .track-outcome { display: block; margin-top: calc(10 * var(--u)); }
+.track-actions { display: flex; justify-content: center; gap: calc(8 * var(--u)); margin-top: calc(12 * var(--u)); }
+.track-btn { width: calc(84 * var(--u)); padding: calc(5 * var(--u)) 0; border: 1px solid var(--ink); border-radius: 3px; background: var(--ink); color: var(--parchment); font-size: calc(15 * var(--u)); font-weight: 700; cursor: pointer; }
+.track-btn:hover { background: var(--ink-light); }
+.track-btn.resign { background: none; border-color: var(--parchment-dark); color: var(--ink-light); font-weight: 400; }
+.track-btn.resign:hover { background: var(--parchment-dark); }
 
 /* ==========================================================================
    4. MAIN GAMEPLAY CONTAINER (Viewport Scaled)
@@ -814,7 +825,7 @@ body {
 
 .card-name {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
+    font-size: var(--card-title);
     font-weight: 700;
     letter-spacing: 0.02em;
     color: var(--ink);
@@ -1020,9 +1031,8 @@ body {
    7. BOARD CARD & SVG MAP (RESPONSIVE VIEWPORT SCALING)
    ========================================================================== */
 .board-section {
-    --track-h: 2rem;
     /* As wide as the full-height map frame, so the side columns hug it */
-    flex: 0 1 calc((100cqh - var(--track-h) - 4px) * 760 / 818 + 4px);
+    flex: 0 1 calc((100cqh - 4px) * 760 / 818 + 4px);
     min-height: 0;
     min-width: 0;
     height: 100%;
@@ -1043,9 +1053,12 @@ body {
     justify-content: center;
 }
 
-/* Largest map-shaped frame that fits, leaving room for the track and 2px borders */
+/* Largest map-shaped frame that fits, leaving room for 2px borders */
 .board-frame {
-    width: min(100cqw, (100cqh - var(--track-h) - 4px) * 760 / 818 + 4px);
+    position: relative;
+    container-type: inline-size;
+    --u: calc(100cqw / 760);
+    width: min(100cqw, (100cqh - 4px) * 760 / 818 + 4px);
     border: 2px solid var(--border);
     border-radius: 4px;
     box-shadow: 0 0 0 3px var(--chrome-raised), 0 8px 30px rgba(0,0,0,0.85);

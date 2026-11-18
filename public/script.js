@@ -685,15 +685,18 @@ function handleCardBodyClick(faction, index, cardName, isUsable) {
 // 7. HEADER INSTRUCTIONS & ACTION BUTTONS
 // ==========================================================================
 const IMPULSE = ['British Move', 'Mysore Card', 'British Card'];
+const IMPULSE_VERB = ['to move an army', 'to play a card', 'to play a card'];
+const stepSide = step => step.split(' ')[0];
+const stepLabel = step => step[0] + step.slice(1).toLowerCase();
 
 function trackHTML() {
   return `<ol class="war-pips">${WARS.map(([name], i) => `<li title="${name}">${['I', 'II', 'III', 'IV'][i]}</li>`).join('')}</ol>`
-    + `<ol class="impulse-steps">${IMPULSE.map(step => `<li class="${step.split(' ')[0].toLowerCase()}">${step[0] + step.slice(1).toLowerCase()}</li>`).join('')}<li>Battle</li></ol>`
+    + `<ol class="impulse-steps">${IMPULSE.map(step => `<li class="${stepSide(step).toLowerCase()}"></li>`).join('')}<li class="battle">Resolve battle</li></ol>`
     + '<p class="track-outcome"></p>';
 }
 document.getElementById('impulse-track').insertAdjacentHTML('afterbegin', trackHTML());
 
-// Returns the step the side to move is on, so callers can attach its actions
+// The step to move reads as a sentence, the rest as labels
 function renderTrack(track, uiState) {
   track.classList.remove('over');
   track.querySelectorAll('.war-pips li').forEach((li, i) => {
@@ -702,18 +705,17 @@ function renderTrack(track, uiState) {
   });
   const at = IMPULSE.indexOf(uiState.who_to_move);
   const steps = track.querySelectorAll('.impulse-steps li');
-  steps.forEach((li, i) => {
-    li.classList.toggle('done', i < at);
-    li.classList.toggle('now', i === at);
+  IMPULSE.forEach((step, i) => {
+    steps[i].classList.toggle('now', i === at);
+    steps[i].innerHTML = i === at ? `<b>${stepSide(step)}</b> ${IMPULSE_VERB[i]}` : stepLabel(step);
   });
   steps[IMPULSE.length].classList.toggle('pending', uiState.attacker !== 'None');
-  return steps[at];
 }
 
 function showGameOver(winner, detail) {
   const track = document.getElementById('impulse-track');
   track.classList.add('over');
-  track.querySelector('.track-outcome').textContent = `${winner === 1 ? 'British' : 'Mysore'} victory · ${detail}`;
+  track.querySelector('.track-outcome').innerHTML = `<b class="${winner === 1 ? 'british' : 'mysore'}">${winner === 1 ? 'British' : 'Mysore'}</b> victory<small>${detail}</small>`;
 }
 
 function updateTurnHeader(uiState, winner) {
@@ -721,7 +723,7 @@ function updateTurnHeader(uiState, winner) {
     showGameOver(winner, winner === 1 ? 'Army in all 5 keys' : '4th war ended');
     return;
   }
-  renderTrack(document.getElementById('impulse-track'), uiState).append(document.getElementById('track-actions'));
+  renderTrack(document.getElementById('impulse-track'), uiState);
   renderBattleMarker(uiState);
   updateActionButtons();
 }
@@ -1170,8 +1172,8 @@ function playTutorialDemo(side, index) {
     const done = step === steps.length - 1;
     const state = done ? demo.after : demo.state;
     const data = TDEngine.generateGameData(state).ui_state;
-    frame.innerHTML = `<nav class="impulse-track">${trackHTML()}</nav><div class="watch-map"></div><div class="watch-hand"></div>`;
-    renderTrack(frame.querySelector('.impulse-track'), data).insertAdjacentHTML('beforeend', `<span class="track-btn pass-btn">${data.who_to_move === 'British Move' ? 'Rest' : 'Pass'}</span>`);
+    frame.innerHTML = `<div class="watch-map"><nav class="impulse-track">${trackHTML()}<div class="track-actions"><span class="track-btn pass-btn">${data.who_to_move === 'British Move' ? 'Rest' : 'Pass'}</span></div></nav></div><div class="watch-hand"></div>`;
+    renderTrack(frame.querySelector('.impulse-track'), data);
     frame.inert = true;
     const board = tutorialBoard(state, names);
     frame.querySelector('.watch-map').appendChild(board);
