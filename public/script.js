@@ -220,7 +220,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
     ring.setAttribute('class', 'sel-ring');
     ring.setAttribute('r', key ? '24' : '18');
     ring.setAttribute('fill', 'none');
-    ring.setAttribute('stroke', '#d4a030');
+    ring.setAttribute('stroke', 'var(--mysore-gold)');
     ring.setAttribute('stroke-width', '2.5');
     ring.setAttribute('opacity', '0');
     g.appendChild(ring);
@@ -259,7 +259,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
     if (armyType === 'fort') {
       const p = document.createElementNS(SVG_NS, 'polygon');
       p.setAttribute('points', '0,-22 22,0 0,22 -22,0');
-      p.setAttribute('fill', '#2e7a2e');
+      p.setAttribute('fill', 'var(--mysore-green)');
       p.setAttribute('stroke', '#8fe08f');
       p.setAttribute('stroke-width', '1.2');
       p.setAttribute('filter', 'url(#nshadow)');
@@ -274,7 +274,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
         p.setAttribute('y', '-18');
         p.setAttribute('width', '36');
         p.setAttribute('height', '36');
-        p.setAttribute('fill', '#c0281a');
+        p.setAttribute('fill', 'var(--british-red)');
         p.setAttribute('stroke', '#ff9999');
         p.setAttribute('stroke-width', '1.2');
         p.setAttribute('opacity', opacity);
@@ -283,7 +283,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
       } else if (owner === 'mysore') {
         const p = document.createElementNS(SVG_NS, 'polygon');
         p.setAttribute('points', '0,-24 24,0 0,24 -24,0');
-        p.setAttribute('fill', '#2e7a2e');
+        p.setAttribute('fill', 'var(--mysore-green)');
         p.setAttribute('stroke', '#8fe08f');
         p.setAttribute('stroke-width', '1.2');
         p.setAttribute('opacity', opacity);

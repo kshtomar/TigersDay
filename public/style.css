@@ -33,7 +33,6 @@
     --ink: #2a1f0e;
     --ink-light: #5a3e18;
     --border: #7a5c2e;
-    --border-dark: #4a3418;
     
     --british-red: #c0281a;
     --british-red-dark: #7a1810;
@@ -44,14 +43,11 @@
     --mysore-green-dark: #1b4f1b;
     --mysore-green-deep: #0d280d;
     --mysore-gold: #d4a030;
-    --tiger-gold: #e69500;
     --sea: #75caf9;
     --coast: #5B9BD5;
     --font-map: 'Game Baskerville', Baskerville, serif;
 
     --gold-glow: rgba(230, 170, 40, 0.7);
-    --crimson-glow: rgba(192, 40, 26, 0.6);
-    --emerald-glow: rgba(46, 122, 46, 0.6);
 
     --font-heading: var(--font-map);
     --font-body: var(--font-map);
@@ -322,7 +318,7 @@ body {
 }
 
 .toggle-control input:checked + .toggle-slider {
-    background: #2e7a2e;
+    background: var(--mysore-green);
     border-color: #55a855;
 }
 
@@ -347,7 +343,7 @@ body {
     flex: 1;
     height: 6px;
     border-radius: 3px;
-    background: linear-gradient(90deg, #3a2a10 0%, #e5a93c 100%);
+    background: linear-gradient(90deg, #3a2a10 0%, var(--british-gold) 100%);
     outline: none;
     cursor: pointer;
 }
@@ -423,7 +419,7 @@ body {
 }
 
 .primary-btn {
-    background: #7a5c2e;
+    background: var(--border);
     border: 1px solid #a88448;
     color: #fff;
     font-weight: 700;
@@ -1128,7 +1124,7 @@ svg#board {
 .tooltip {
     position: fixed;
     background: #efe0bc;
-    border: 1px solid #7a5c2e;
+    border: 1px solid var(--border);
     border-radius: 3px;
     padding: 5px 8px;
     font-family: var(--font-body);
@@ -1217,7 +1213,7 @@ svg#board {
 
 .mode-select:focus {
     outline: none;
-    border-color: #d4a030;
+    border-color: var(--mysore-gold);
 }
 
 .multiplayer-panel {
@@ -1233,7 +1229,7 @@ svg#board {
     align-items: center;
     justify-content: space-between;
     background: #120e0b;
-    border: 1px dashed #d4a030;
+    border: 1px dashed var(--mysore-gold);
     padding: 8px 12px;
     border-radius: 4px;
     margin: 8px 0;
