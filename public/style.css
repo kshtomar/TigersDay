@@ -61,7 +61,7 @@
     --font-heading: var(--font-map);
     --font-body: var(--font-map);
     --font-historic: var(--font-map);
-    --card-title: 1.25rem;
+    --card-title: 1.5rem;
 }
 
 * {
