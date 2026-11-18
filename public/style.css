@@ -28,12 +28,10 @@
 
 :root {
     --parchment: #e8d9b0;
-    --parchment-light: #faf4e4;
     --parchment-dark: #cbb882;
     --ink: #2a1f0e;
     --ink-light: #5a3e18;
     --border: #7a5c2e;
-    --border-light: #a88448;
     --chrome-deep: #0f0d0a;
     --chrome: #17130e;
     --chrome-raised: #221c15;
@@ -45,7 +43,6 @@
     --british-red-dark: #7a1810;
     --british-red-deep: #3a100d;
     --british-red-light: #ff6655;
-    --british-gold: #e5a93c;
 
     --mysore-green: #2e7a2e;
     --mysore-green-dark: #1b4f1b;
@@ -268,7 +265,7 @@ body {
 }
 
 .close-drawer-btn:hover {
-    color: #ffffff;
+    color: #fff;
 }
 
 .drawer-content {
@@ -357,7 +354,7 @@ body {
     flex: 1;
     height: 6px;
     border-radius: 3px;
-    background: linear-gradient(90deg, var(--chrome-hover) 0%, var(--british-gold) 100%);
+    background: linear-gradient(90deg, var(--chrome-hover) 0%, var(--mysore-gold) 100%);
     outline: none;
     cursor: pointer;
 }
@@ -370,7 +367,7 @@ body {
     border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--mysore-gold));
     border: 2px solid var(--chrome-hover);
-    box-shadow: 0 0 6px rgba(229, 169, 60, 0.6);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--mysore-gold) 60%, transparent);
     cursor: grab;
 }
 
@@ -380,7 +377,7 @@ body {
     border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--mysore-gold));
     border: 2px solid var(--chrome-hover);
-    box-shadow: 0 0 6px rgba(229, 169, 60, 0.6);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--mysore-gold) 60%, transparent);
     cursor: grab;
 }
 
@@ -390,7 +387,7 @@ body {
     font-weight: 700;
     color: var(--gold-light);
     background: rgba(58, 42, 16, 0.7);
-    border: 1px solid rgba(229, 169, 60, 0.4);
+    border: 1px solid color-mix(in srgb, var(--mysore-gold) 40%, transparent);
     border-radius: 4px;
     padding: 2px 8px;
     min-width: 80px;
@@ -434,13 +431,13 @@ body {
 
 .primary-btn {
     background: var(--border);
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--text-dim);
     color: #fff;
     font-weight: 700;
 }
 
 .primary-btn:hover {
-    background: var(--border-light);
+    background: var(--text-dim);
 }
 
 .setting-label {
@@ -483,7 +480,7 @@ body {
     padding: 0;
     border: 1px solid var(--border);
     background: var(--chrome-deep);
-    color: var(--parchment-light);
+    color: #fff;
     box-shadow: 0 24px 100px #000;
 }
 
@@ -501,7 +498,7 @@ body {
 
 .learn-header { border-bottom: 1px solid var(--chrome-hover); }
 .learn-header nav { display: flex; align-items: center; gap: 8px; }
-#learn-progress { margin-left: 10px; color: var(--parchment-light); }
+#learn-progress { margin-left: 10px; color: #fff; }
 .learn-eyebrow { color: var(--text-muted); font-size: 0.7rem; letter-spacing: 0.14em; }
 .learn-body { overflow-y: auto; min-height: 0; padding: 18px; }
 .learn-body [hidden] { display: none; }
@@ -594,7 +591,7 @@ body {
     justify-content: center;
     gap: 18px;
     background: #000;
-    color: var(--parchment-light);
+    color: #fff;
     text-align: center;
     animation: warCut ease-in-out both;
 }
@@ -958,7 +955,7 @@ body {
     font-family: var(--font-heading);
     font-size: 0.76rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #fff;
     text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 2px #000;
     pointer-events: none;
 }
