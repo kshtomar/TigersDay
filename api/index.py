@@ -10,7 +10,8 @@ from pydantic import BaseModel
 # Ensure root workspace is in Python path for Vercel's execution environment
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from game.constants import INDEX_MAP, WHO_TO_MOVE, MOVE_VECTOR_LENGTH, DEFAULT_SIMS
+from game.constants import INDEX_MAP, WHO_TO_MOVE, MOVE_VECTOR_LENGTH
+from ai.constants import DEFAULT_SIMS
 from game.state import GameState
 from game.engine import get_legal_moves, legal_moves_dict
 from game.updater import get_next_state, get_state_winner, get_luck_outcomes

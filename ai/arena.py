@@ -8,7 +8,7 @@ import game.engine as Engine
 import game.updater as Updater
 from game.state import GameState
 from game.replay import interpret
-from game.constants import DEFAULT_MODEL, DEFAULT_SIMS
+from ai.constants import DEFAULT_MODEL, DEFAULT_SIMS
 from ai.mcts import MCTS
 from ai.neural import ONNXAlphaTiger
 from ai.train import _resolve_luck

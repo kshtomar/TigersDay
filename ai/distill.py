@@ -11,7 +11,8 @@ import torch.nn.functional as F
 
 from ai.arena import play_match
 from ai.neural import AlphaTiger, ONNXAlphaTiger, adamw, load_checkpoint, save_checkpoint
-from game.constants import DEFAULT_MODEL, MOVE_VECTOR_LENGTH
+from ai.constants import DEFAULT_MODEL
+from game.constants import MOVE_VECTOR_LENGTH
 
 LR = 2e-3
 BATCH_SIZE = 512

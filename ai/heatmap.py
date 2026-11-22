@@ -2,7 +2,7 @@ import argparse
 import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
-from game.constants import *
+from ai.constants import DEFAULT_MODEL
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate a heatmap for AlphaTiger model weights.")

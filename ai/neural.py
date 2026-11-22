@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import numpy as np
 from game.constants import *
+from ai.constants import DEFAULT_MODEL
 
 MANIFEST_PATH = os.path.join(os.path.dirname(__file__), "models", "manifest.json")
 MANIFEST = json.load(open(MANIFEST_PATH)) if os.path.exists(MANIFEST_PATH) else {}

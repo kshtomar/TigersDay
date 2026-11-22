@@ -17,6 +17,7 @@ from game.updater import *
 from game.replay import notate
 from game.state import GameState
 from game.constants import INDEX_MAP, WHO_TO_MOVE
+from ai.constants import DEFAULT_MODEL, DEFAULT_SIMS
 from ai.mcts import MCTS
 from ai.neural import ONNXAlphaTiger
 from game.replay import interpret  

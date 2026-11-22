@@ -132,9 +132,6 @@ BRITISH_CARDS_SPACE = sum(val for _, val, _ in MOVE_SPACE[12:])
 
 MOVE_VECTOR_LENGTH = BRITISH_MOVES_SPACE + MYSORE_CARDS_SPACE + BRITISH_CARDS_SPACE
 
-DEFAULT_MODEL = "ai/models/onnx/alphatigerv21.onnx"
-DEFAULT_SIMS = 400
-
 CARDS_ABBREV = {
     "Iron Rockets": "IR",
     "Sepoy Mutiny": "SM",
