@@ -395,5 +395,23 @@
     "replay_buffer": 800000,
     "hardware": "kaggle",
     "estimated_elo": 1775
+  },
+  "alphatigerv21": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "finetune",
+    "value_target": "blended",
+    "value_loss": "bce",
+    "weight_decay": "adamW",
+    "curriculum": [
+      {"stage": "full", "games": 32000, "sims": 250, "temperature_cutoff": 15}
+    ],
+    "simturns": 12800000,
+    "pcr": 0.25,
+    "fast_sims": 0.2,
+    "replay_buffer": 800000,
+    "hardware": "kaggle",
+    "estimated_elo": 1825
   }
 }
