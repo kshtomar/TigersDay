@@ -45,3 +45,11 @@ How is feedback received?
 /public - low risk, commit on summary
 /ai - medium risk, read every line
 /game - high risk, write by hand
+
+## Execution
+
+Quick jobs locally
+> analysis, testing
+Long jobs on Kaggle
+> training, evaluation
+Prefer CPU to save GPU quota
