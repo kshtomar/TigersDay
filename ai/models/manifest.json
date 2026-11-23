@@ -453,5 +453,29 @@
     "replay_buffer": 800000,
     "hardware": "kaggle",
     "estimated_elo": 1800
+  },
+  "alphatigerv23beta": {
+    "activation": "silu",
+    "factorized": true,
+    "parameters": 395696,
+    "training": "curriculum",
+    "value_target": "blended",
+    "value_loss": "bce",
+    "weight_decay": "adamW",
+    "lr": 1e-3,
+    "lr_decay": true,
+    "curriculum": [
+      {"stage": "end", "games": 80000, "sims": 100, "temperature_cutoff": 3},
+      {"stage": "late", "games": 80000, "sims": 100, "temperature_cutoff": 6},
+      {"stage": "mid", "games": 80000, "sims": 100, "temperature_cutoff": 9},
+      {"stage": "early", "games": 80000, "sims": 100, "temperature_cutoff": 12},
+      {"stage": "full", "games": 80000, "sims": 100, "temperature_cutoff": 12}
+    ],
+    "simturns": 44800000,
+    "pcr": 0.25,
+    "fast_sims": 0.2,
+    "replay_buffer": 400000,
+    "hardware": "kaggle",
+    "estimated_elo": 1825
   }
 }
