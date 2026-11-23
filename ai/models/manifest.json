@@ -7,6 +7,8 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 2000, "sims": 1000, "temperature_cutoff": null},
       {"stage": "late", "games": 2000, "sims": 1000, "temperature_cutoff": null},
@@ -29,6 +31,8 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 3},
       {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 6},
@@ -51,6 +55,8 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 3},
       {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 6},
@@ -73,6 +79,8 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "full", "games": 1000, "sims": 4000, "temperature_cutoff": 18}
     ],
@@ -91,6 +99,8 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 400, "temperature_cutoff": 6},
       {"stage": "late", "games": 5000, "sims": 400, "temperature_cutoff": 9},
@@ -114,6 +124,8 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 6},
       {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 9},
@@ -137,6 +149,8 @@
     "value_target": "outcome",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
     ],
@@ -156,6 +170,8 @@
     "value_target": "blended",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
     ],
@@ -175,6 +191,8 @@
     "value_target": "blended",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 6},
       {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 9},
@@ -198,6 +216,8 @@
     "value_target": "blended",
     "value_loss": "mse",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "full", "games": 4000, "sims": 4000, "temperature_cutoff": 21}
     ],
@@ -216,6 +236,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 5000, "sims": 800, "temperature_cutoff": 3},
       {"stage": "late", "games": 5000, "sims": 800, "temperature_cutoff": 6},
@@ -239,6 +261,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "full", "games": 4000, "sims": 4000, "temperature_cutoff": 15}
     ],
@@ -257,6 +281,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "L2",
+    "lr": 2e-3,
+    "lr_decay": true,
     "curriculum": [
       {"stage": "full", "games": 20000, "sims": 40, "temperature_cutoff": 6}
     ],
@@ -276,6 +302,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 10000, "sims": 800, "temperature_cutoff": 3},
       {"stage": "late", "games": 10000, "sims": 800, "temperature_cutoff": 6},
@@ -299,6 +327,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "adamW",
+    "lr": 2e-3,
+    "lr_decay": true,
     "curriculum": [
       {"stage": "full", "games": 32096, "sims": 400, "temperature_cutoff": 6}
     ],
@@ -318,6 +348,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "L2",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 20000, "sims": 400, "temperature_cutoff": 3},
       {"stage": "late", "games": 20000, "sims": 400, "temperature_cutoff": 6},
@@ -341,6 +373,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "adamW",
+    "lr": 2e-3,
+    "lr_decay": true,
     "curriculum": [
       {"stage": "full", "games": 32096, "sims": 400, "temperature_cutoff": 6}
     ],
@@ -360,6 +394,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "adamW",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 2500, "sims": 200, "temperature_cutoff": 3},
       {"stage": "late", "games": 2500, "sims": 200, "temperature_cutoff": 6},
@@ -382,6 +418,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "adamW",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "end", "games": 160000, "sims": 50, "temperature_cutoff": 3},
       {"stage": "late", "games": 160000, "sims": 50, "temperature_cutoff": 6},
@@ -404,6 +442,8 @@
     "value_target": "blended",
     "value_loss": "bce",
     "weight_decay": "adamW",
+    "lr": 1e-3,
+    "lr_decay": false,
     "curriculum": [
       {"stage": "full", "games": 32000, "sims": 250, "temperature_cutoff": 15}
     ],
