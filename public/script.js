@@ -889,7 +889,8 @@ function renderEngineLines() {
     // steps sit in fixed columns, so a cursor at rest always means the same line and step
     lineDiv.innerHTML = `
       <span class="engine-eval-square ${squareClass}">${evalStr}</span>
-      <span class="engine-move">${item.names.map((name, step) => `<span class="engine-step" data-line="${line}" data-step="${step}">${name}</span>`).join('')}</span>
+      <span class="engine-move">${item.names.map((name, step) => `<span class="engine-step" data-line="${line}" data-step="${step}">${name}</span>`).join('')}${
+        item.discards.length ? `<span class="engine-step engine-discard" data-line="${line}" data-step="${item.moves.length - 1}">${item.discards.map(side => dieIcon(side)).join('')}</span>` : ''}</span>
       <span class="engine-visits">(${item.visits}v)</span>
     `;
     container.appendChild(lineDiv);
@@ -898,20 +899,37 @@ function renderEngineLines() {
   if (hoveredStep) previewStep(hoveredStep);
 }
 
+// Die face in the colour of the side whose random discard is still to come
+function dieIcon(side) {
+  const pips = [[6, 6], [14, 6], [10, 10], [6, 14], [14, 14]];
+  return `<svg class="die" viewBox="0 0 20 20"><rect x="1" y="1" width="18" height="18" rx="4" fill="var(--${side === 'british' ? 'british-red' : 'mysore-green'})"/>${
+    pips.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.9" fill="#fff"/>`).join('')}</svg>`;
+}
+
 // Draws the position after a line step without touching the live game
 function previewStep(step) {
   hoveredStep = step;
-  const moves = engineLines.lines[step.line]?.moves;
-  if (!moves || step.step >= moves.length) {
+  const item = engineLines.lines[step.line];
+  if (!item || step.step >= item.moves.length) {
     showLive();
     return;
   }
   let state = engineLines.state;
-  for (const move of moves.slice(0, step.step + 1)) state = TDEngine.getNextState(state, move);
+  for (const move of item.moves.slice(0, step.step + 1)) state = TDEngine.getNextState(state, move);
   const data = TDEngine.generateGameData(state);
   window.renderNodes(boardNodes(data.ui_state));
   renderCardDeck('mysore', data.ui_state.mysore_cards);
   renderCardDeck('british', data.ui_state.british_cards);
+  // the last move leads into the line's random discards
+  if (step.step === item.moves.length - 1) {
+    for (const side of new Set(item.discards)) {
+      const deck = document.getElementById(`${side}-cards-list`);
+      // as tall as the cards, since the column runs on below them in tall windows
+      const last = deck.lastElementChild;
+      deck.insertAdjacentHTML('beforeend', `<div class="discard-cover" style="height: ${last.offsetTop + last.offsetHeight}px">${
+        item.discards.filter(s => s === side).map(dieIcon).join('')}</div>`);
+    }
+  }
   updateTurnHeader(data.ui_state, data.winner);
   document.body.classList.add('previewing');
   document.querySelectorAll('.engine-step').forEach(el => {

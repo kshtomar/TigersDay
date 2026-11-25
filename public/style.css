@@ -543,6 +543,7 @@ body {
 }
 
 .cards-deck {
+    position: relative;
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
@@ -786,14 +787,12 @@ body {
 .engine-lines-container {
     display: flex;
     flex-direction: column;
-    gap: 2px;
 }
 
 .engine-line {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 1px 0;
     border-radius: 2px;
     cursor: default;
     font-size: 0.8rem;
@@ -846,7 +845,42 @@ body {
 .engine-step {
     display: inline-block;
     width: 11ch;
+    /* Row spacing lives inside the steps, so the cursor never falls between rows */
+    padding: 3px 0;
     cursor: default;
+}
+
+.engine-discard {
+    width: auto;
+}
+
+.engine-discard .die {
+    width: 14px;
+    height: 14px;
+    vertical-align: -2px;
+}
+
+.engine-discard .die + .die {
+    margin-left: 3px;
+}
+
+/* A hovered discard fades the hand it comes from behind one big die per card lost */
+.discard-cover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(15, 13, 10, 0.6);
+    pointer-events: none;
+    /* above the strength seals */
+    z-index: 6;
+}
+
+.discard-cover .die {
+    width: 96px;
+    height: 96px;
 }
 
 .engine-step.previewed {

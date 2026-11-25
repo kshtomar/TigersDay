@@ -358,9 +358,13 @@
           currNode = bestChildNode;
         }
 
+        // a line stops before random discards, one per lost battle or Cavalry Raid
+        const discards = [...Array(currState.bluck).fill('british'), ...Array(currState.mluck).fill('mysore')];
+
         topLines.push({
           moves,
           names,
+          discards,
           eval: Number(node.eval.toFixed(2)),
           visits: node.visit_count
         });
