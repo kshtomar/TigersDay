@@ -855,6 +855,9 @@ function setEvalBar(score) {
 let engineLines = { state: null, lines: [] };
 // Line and step under the cursor, drawn on the board in place of the live game
 let hoveredStep = null;
+// Line step whose position was just copied, which says so in place of its move for a moment
+let copiedStep = null;
+const COPIED_MS = 1000;
 
 async function startProgressiveEval(stateStr) {
   if (!settings.showEval || !currentGameState) return;
@@ -895,7 +898,9 @@ function renderEngineLines() {
     // steps sit in fixed columns, so a cursor at rest always means the same line and step
     lineDiv.innerHTML = `
       <span class="engine-eval-square ${squareClass}">${evalStr}</span>
-      <span class="engine-move">${item.names.map((name, step) => `<span class="engine-step" data-line="${line}" data-step="${step}">${name}</span>`).join('')}${
+      <span class="engine-move">${item.names.map((name, step) => copiedStep?.line === line && copiedStep.step === step
+        ? `<span class="engine-step copied" data-line="${line}" data-step="${step}">copied</span>`
+        : `<span class="engine-step" data-line="${line}" data-step="${step}">${name}</span>`).join('')}${
         item.discards.length ? `<span class="engine-step engine-discard" data-line="${line}" data-step="${item.moves.length - 1}">${item.discards.map(side => dieIcon(side)).join('')}</span>` : ''}</span>
       <span class="engine-visits">(${item.visits}v)</span>
     `;
@@ -912,6 +917,12 @@ function dieIcon(side) {
     pips.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.9" fill="#fff"/>`).join('')}</svg>`;
 }
 
+function lineState(step) {
+  let state = engineLines.state;
+  for (const move of engineLines.lines[step.line].moves.slice(0, step.step + 1)) state = TDEngine.getNextState(state, move);
+  return state;
+}
+
 // Draws the position after a line step without touching the live game
 function previewStep(step) {
   hoveredStep = step;
@@ -920,9 +931,7 @@ function previewStep(step) {
     showLive();
     return;
   }
-  let state = engineLines.state;
-  for (const move of item.moves.slice(0, step.step + 1)) state = TDEngine.getNextState(state, move);
-  const data = TDEngine.generateGameData(state);
+  const data = TDEngine.generateGameData(lineState(step));
   window.renderNodes(boardNodes(data.ui_state));
   renderCardDeck('mysore', data.ui_state.mysore_cards);
   renderCardDeck('british', data.ui_state.british_cards);
@@ -960,6 +969,20 @@ engineLinesBox.addEventListener('mouseover', e => {
   else endPreview();
 });
 engineLinesBox.addEventListener('mouseleave', endPreview);
+// a clicked step copies its position, to load later like a saved game
+engineLinesBox.addEventListener('click', e => {
+  const el = e.target.closest('.engine-step');
+  if (!el) return;
+  const step = { line: +el.dataset.line, step: +el.dataset.step };
+  navigator.clipboard.writeText(TDEngine.generateGameData(lineState(step)).state_str);
+  copiedStep = step;
+  renderEngineLines();
+  setTimeout(() => {
+    if (copiedStep !== step) return;
+    copiedStep = null;
+    renderEngineLines();
+  }, COPIED_MS);
+});
 
 function endPreview() {
   hoveredStep = null;
