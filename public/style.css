@@ -776,7 +776,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: var(--font-heading);
-    font-size: 0.76rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #fff;
     text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 2px #000;
@@ -793,10 +793,10 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 1px 3px;
+    padding: 1px 0;
     border-radius: 2px;
     cursor: default;
-    font-size: 0.72rem;
+    font-size: 0.8rem;
 }
 
 .engine-line:hover {
@@ -805,7 +805,7 @@ body {
 
 .engine-eval-square {
     font-family: var(--font-heading);
-    font-size: 0.64rem;
+    font-size: 0.8rem;
     font-weight: 700;
     padding: 1px 5px;
     border-radius: 2px;
