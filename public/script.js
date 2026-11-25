@@ -106,7 +106,7 @@ const BRITISH_CARD_DATA = [
 const MYSORE_CARD_DATA = [
   { name: 'Iron Rockets',     strength: 3, desc: 'Powerful' },
   { name: 'Sepoy Mutiny',     strength: 2, desc: 'Remove an Army not in a Key' },
-  { name: 'French Alliance',  strength: 2, desc: 'Deploy a Fort adjacent to another Fort' },
+  { name: 'French Alliance',  strength: 2, desc: 'Deploy a Fort next to a Fort' },
   { name: 'Monsoon',          strength: 1, desc: 'Flip a Fresh Army to Tired' },
   { name: 'Cavalry Raid',     strength: 1, desc: 'British discard' },
   { name: 'Sea Trade',        strength: 1, desc: 'Move a Fort from Coast to any' },

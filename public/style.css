@@ -236,7 +236,7 @@ body {
     align-items: center;
     gap: 4px 8px;
     margin-top: 12px;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -337,7 +337,7 @@ body {
 .learn-header { border-bottom: 1px solid var(--chrome-hover); }
 .learn-header nav { display: flex; align-items: center; gap: 8px; }
 #learn-progress { margin-left: 10px; color: #fff; }
-.learn-eyebrow { color: var(--text-muted); font-size: 0.7rem; letter-spacing: 0.14em; }
+.learn-eyebrow { color: var(--text-muted); font-size: 0.8rem; letter-spacing: 0.14em; }
 .learn-body { overflow-y: auto; min-height: 0; padding: 18px; }
 .learn-body [hidden] { display: none; }
 .learn-body h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 400; line-height: 1.15; margin-bottom: 16px; }
@@ -382,9 +382,9 @@ body {
 .watch-board { display: block; flex: 1; min-width: 0; height: clamp(130px, 25dvh, 210px); }
 .watch-hand { display: flex; gap: 8px; padding: 10px; }
 .watch-opponent { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 0 10px 10px; }
-.watch-hand-label { grid-column: 1 / -1; color: var(--text-muted); font-size: 0.75rem; padding-top: 8px; }
+.watch-hand-label { grid-column: 1 / -1; color: var(--text-muted); font-size: 0.8rem; padding-top: 8px; }
 .watch-opponent .player-card { min-width: 0; min-height: 48px; padding: 25px 4px 5px 38px; }
-.watch-opponent .card-name { font-size: 0.75rem; }
+.watch-opponent .card-name { font-size: 0.8rem; }
 .watch-opponent .card-strength-seal { width: 26px; height: 26px; font-size: 1.2rem; left: 5px; }
 .watch-opponent .player-card::before { left: 18px; height: 13px; line-height: 13px; font-size: 0.6rem; }
 .watch-opponent .card-desc { display: none; }
@@ -411,7 +411,7 @@ body {
 @media (max-width: 540px) {
     .learn-header { padding: 6px 12px; }
     .learn-body { padding: 14px; }
-    .learn-header .learn-eyebrow { font-size: 0.6rem; letter-spacing: 0.05em; }
+    .learn-header .learn-eyebrow { font-size: 0.7rem; letter-spacing: 0.05em; }
     .learn-header nav { gap: 4px; }
     .learn-columns { gap: 16px; }
     .learn-columns > div { padding: 12px; }
@@ -496,10 +496,10 @@ body {
 }
 .impulse-track ol { list-style: none; }
 .war-pips { display: flex; justify-content: center; align-items: center; gap: calc(7 * var(--u)); }
-.war-pips li { display: grid; place-items: center; width: calc(28 * var(--u)); height: calc(28 * var(--u)); border: 1px solid var(--border); border-radius: 50%; font-size: calc(13 * var(--u)); color: var(--border); }
+.war-pips li { display: grid; place-items: center; width: calc(28 * var(--u)); height: calc(28 * var(--u)); border: 1px solid var(--border); border-radius: 50%; font-size: calc(15 * var(--u)); color: var(--border); }
 .war-pips .done { background: var(--parchment-dark); }
 .war-pips .now { width: calc(38 * var(--u)); height: calc(38 * var(--u)); background: var(--ink); border-color: var(--ink); color: var(--parchment); font-size: calc(17 * var(--u)); font-weight: 700; }
-.impulse-steps { margin-top: calc(10 * var(--u)); font-size: calc(13 * var(--u)); color: var(--border); }
+.impulse-steps { margin-top: calc(10 * var(--u)); font-size: calc(15 * var(--u)); color: var(--border); }
 .impulse-steps li { padding: calc(2 * var(--u)) 0; }
 .impulse-steps .now { padding: calc(5 * var(--u)) 0; font-size: min(var(--card-title), calc(20 * var(--u))); font-style: italic; color: var(--ink); }
 .impulse-steps .now b { font-style: normal; }
@@ -666,7 +666,7 @@ body {
 
 .card-desc {
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-style: italic;
     color: var(--ink-light);
     line-height: 1.2;
