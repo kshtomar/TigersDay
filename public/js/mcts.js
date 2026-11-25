@@ -23,6 +23,9 @@
     notate
   } = global.TDEngine || require('./engine.js');
 
+  // moves shown in an engine line, and forecast steps
+  const LINE_MOVES = 6;
+
   // =========================================================================
   // 1. MCTS SEARCH TREE NODE
   // =========================================================================
@@ -338,7 +341,7 @@
         let currState = getNextState(rootState, move);
         let currNode = node;
 
-        while (currState && !currState.is_luck && currNode.children.size > 0 && moves.length < 6) {
+        while (currState && !currState.is_luck && currNode.children.size > 0 && moves.length < LINE_MOVES) {
           let bestChildMove = null;
           let bestChildNode = null;
           let maxVisits = -1;
@@ -371,6 +374,29 @@
       }
 
       return topLines;
+    }
+
+    // The board at the root, then after each move the search reached, random discards resolved,
+    // as the nearest earlier entry, moves ahead, sims through it, and each node's
+    // piece: 0 fresh army, 1 tired army, 2 fort, 3 empty
+    getMoveTree() {
+      const tree = [];
+      const board = state => {
+        const fresh = state.fresh_armies, tired = state.tired_armies, forts = state.forts;
+        return Array.from(fresh, (_, i) => fresh[i] ? 0 : tired[i] ? 1 : forts[i] ? 2 : 3);
+      };
+      const walk = (node, parent, step) => {
+        const ended = getStateWinner(node.state) !== 0;
+        if (ended || !node.state.is_luck) {
+          if (step > LINE_MOVES) return;
+          tree.push({ parent, step, visits: node.visit_count, ended, board: board(node.state) });
+          parent = tree.length - 1;
+          step++;
+        }
+        for (const child of node._nodes) if (child?.visit_count) walk(child, parent, step);
+      };
+      walk(this.root, -1, 0);
+      return tree;
     }
   }
 

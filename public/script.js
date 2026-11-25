@@ -307,7 +307,7 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
     // Labels
     const makeLabel = (isHalo) => {
       const t = document.createElementNS(SVG_NS, 'text');
-      t.setAttribute('dy', key ? '-24' : '-16');
+      t.setAttribute('dy', key ? '-24' : '-20');
       t.setAttribute('text-anchor', 'middle');
       t.setAttribute('font-family', 'var(--font-map)');
       t.setAttribute('font-size', '19');
@@ -835,6 +835,7 @@ function handleEvalToggle(enabled) {
   } else {
     panel.classList.add('hidden');
   }
+  renderForecast();
 }
 
 function setEvalBar(score) {
@@ -859,12 +860,17 @@ async function startProgressiveEval(stateStr) {
   if (!settings.showEval || !currentGameState) return;
   currentEvalLoopState = stateStr;
   const state = currentGameState;
+  forecast.tree = [];
+  forecast.given = {};
+  renderForecast();
 
   try {
     const stale = () => stateStr !== currentBitString || !settings.showEval;
     // stream like Stockfish, redrawing as the search deepens
-    const render = ({ score, lines }) => {
+    const render = ({ score, lines, moves }) => {
       setEvalBar(score);
+      forecast.tree = moves;
+      renderForecast();
       if (lines.length === 0) return;
       engineLines = { state, lines };
       renderEngineLines();
@@ -958,6 +964,189 @@ engineLinesBox.addEventListener('mouseleave', endPreview);
 function endPreview() {
   hoveredStep = null;
   showLive();
+}
+
+// ==========================================================================
+// 8b. FORECAST PIES: WHAT EACH NODE HOLDS AFTER EACH MOVE OF THE ENGINE LINES
+// ==========================================================================
+const PIECES = ['Fresh army', 'Tired army', 'Fort', 'Empty'];
+const PIECE_FILLS = ['var(--british-red)', 'var(--british-red-light)', 'var(--mysore-green)', 'var(--forecast-empty)'];
+const PIE_RADIUS = 18;
+// shares of the circle: near the cursor a slice widens to at least LENS_WIDTH, fading out LENS_REACH away
+const LENS_WIDTH = 0.1;
+const LENS_REACH = 0.08;
+// Search tree boards from the latest eval, moves ahead on show, and the slice clicked at each step to filter by
+let forecast = { tree: [], step: 0, hover: null, given: {} };
+
+// a game that ended still counts for every later step
+const reaches = (entry, step) => entry.step === step || (entry.ended && entry.step < step);
+
+// Sims through each entry, or with slices clicked, only those whose future passes through every one
+function forecastWeights() {
+  const { tree, given } = forecast;
+  const steps = Object.keys(given).map(Number);
+  if (!steps.length) return tree.map(e => e.visits);
+  const last = Math.max(...steps);
+  const weights = tree.map(() => 0);
+  const ok = [];
+  // entries follow their parents, so the checks pass down the tree in one pass
+  tree.forEach((e, i) => {
+    ok[i] = (e.parent === -1 || ok[e.parent]) &&
+      steps.every(s => !reaches(e, s) || e.board[given[s].node] === given[s].piece);
+    if (!ok[i] || !reaches(e, last) && e.step < last) return;
+    weights[i] = e.visits;
+    // sims that made it through the last filter count for the moves before it
+    if (e.step <= last) for (let a = e.parent; a !== -1; a = tree[a].parent) weights[a] += e.visits;
+  });
+  return weights;
+}
+
+// Each node's shares at a step, over the sims that reached it through the filters
+function forecastPies(step, weights) {
+  const pies = Array.from({ length: TDConstants.NODES }, () => [0, 0, 0, 0]);
+  let sims = 0;
+  forecast.tree.forEach((e, i) => {
+    if (!reaches(e, step) || !weights[i]) return;
+    e.board.forEach((piece, node) => pies[node][piece] += weights[i]);
+    sims += weights[i];
+  });
+  return { sims, pies: pies.map(pie => pie.map(w => w / sims)) };
+}
+
+function slicePath(r, a0, a1) {
+  if (a1 - a0 > 0.9999) return `M ${-r},0 A ${r},${r} 0 1 1 ${r},0 A ${r},${r} 0 1 1 ${-r},0 Z`;
+  const point = a => `${r * Math.sin(2 * Math.PI * a)},${-r * Math.cos(2 * Math.PI * a)}`;
+  return `M 0,0 L ${point(a0)} A ${r},${r} 0 ${a1 - a0 > 0.5 ? 1 : 0} 1 ${point(a1)} Z`;
+}
+
+// Slice spans for shares with the cursor at a point of the circle, measured against the spans on show:
+// slices near it widen clockwise from where they start, and the biggest slice gives up the room,
+// so no edge jumps across the cursor
+function lensSpans(shares, cursor, shown) {
+  const starts = shares.map((_, i) => shares.slice(0, i).reduce((a, b) => a + b, 0));
+  const distance = a => {
+    const d = ((cursor - a) % 1 + 1) % 1;
+    return Math.min(d, 1 - d);
+  };
+  const gap = i => {
+    const [a, b] = shown[i];
+    return ((cursor - a) % 1 + 1) % 1 < b - a ? 0 : Math.min(distance(a), distance(b));
+  };
+  const growth = shares.map((share, i) => Math.max(0, LENS_WIDTH * Math.max(0, 1 - gap(i) / LENS_REACH) - share));
+  const biggest = shares.indexOf(Math.max(...shares));
+  const spans = [];
+  let shift = 0;
+  // from the slice after the biggest round to it, each slice moves on by the growth before it
+  for (let k = 1; k <= shares.length; k++) {
+    const i = (biggest + k) % shares.length;
+    const start = starts[i] + shift;
+    shift += growth[i];
+    spans[i] = [start, i === biggest ? starts[i] + shares[i] : starts[i] + shares[i] + shift];
+  }
+  return spans;
+}
+
+const forecastBar = document.getElementById('forecast-bar');
+forecastBar.addEventListener('click', e => {
+  const el = e.target.closest('[data-step]');
+  if (!el) return;
+  // clicking the step on show again goes back to the live board
+  forecast.step = +el.dataset.step === forecast.step ? 0 : +el.dataset.step;
+  renderForecast();
+});
+forecastBar.addEventListener('mouseover', e => {
+  const el = e.target.closest('[data-step]');
+  const hover = el ? +el.dataset.step : null;
+  // the bar is rebuilt under the cursor, so only a new step renders
+  if (hover === forecast.hover) return;
+  forecast.hover = hover;
+  renderForecast();
+});
+forecastBar.addEventListener('mouseleave', () => {
+  forecast.hover = null;
+  renderForecast();
+});
+
+function renderForecast() {
+  const { tree, given } = forecast;
+  const weights = forecastWeights();
+  const deepest = Math.max(0, ...tree.map(e => e.step));
+  // only moves some sim reached through the filters, where an ended game reaches every later move
+  const steps = settings.showEval ? Math.max(0, ...tree.map((e, i) => weights[i] ? (e.ended ? deepest : e.step) : 0)) : 0;
+  // a hovered step previews its pies, as hovering a line step previews its board
+  const step = Math.min(forecast.hover ?? forecast.step, steps);
+  document.body.classList.toggle('forecast', step > 0);
+  const { sims, pies } = forecastPies(step, weights);
+
+  // a row like an engine line, each step under the move column it follows
+  forecastBar.innerHTML = `<div class="engine-line">
+    <button class="engine-eval-square ${step ? '' : 'forecast-shown'}" data-step="0" aria-pressed="${!forecast.step}" title="Live board">Now</button>
+    <span class="engine-move">${Array.from({ length: steps }, (_, s) => given[s + 1]
+      // a filtered step names its node as the lines do, in the colour of the piece it holds
+      ? `<button class="engine-step forecast-given piece-${given[s + 1].piece} ${s + 1 === step ? 'forecast-shown' : ''}" style="--piece: ${PIECE_FILLS[given[s + 1].piece]}" data-step="${s + 1}" aria-pressed="${s + 1 === forecast.step}" title="Only futures where ${TDConstants.INDEX_MAP[given[s + 1].node]} holds ${PIECES[given[s + 1].piece].toLowerCase()}, click the slice again to clear">${TDConstants.NODES_ABBREV[given[s + 1].node]}</button>`
+      : `<button class="engine-step ${s + 1 === step ? 'forecast-shown' : ''}" data-step="${s + 1}" aria-pressed="${s + 1 === forecast.step}" title="Board after move ${s + 1}">${s + 1}</button>`).join('')}</span>
+    ${step ? `<span class="engine-visits" title="Sims that reached this move through the filters">(${sims}v)</span>` : ''}
+  </div>`;
+
+  const layer = document.getElementById('forecast-layer');
+  layer.innerHTML = '';
+  if (!step) return;
+  pies.forEach((pie, node) => {
+    const name = TDConstants.INDEX_MAP[node];
+    const { x, y } = NODES[name];
+    const place = document.createElementNS(SVG_NS, 'g');
+    place.setAttribute('transform', `translate(${x},${y})`);
+    const g = document.createElementNS(SVG_NS, 'g');
+    g.setAttribute('class', 'forecast-pie');
+    place.appendChild(g);
+    const shown = PIECES.map((_, piece) => piece).filter(piece => pie[piece] > 0);
+    const shares = shown.map(piece => pie[piece]);
+    const paths = shown.map(piece => {
+      const path = document.createElementNS(SVG_NS, 'path');
+      path.setAttribute('fill', PIECE_FILLS[piece]);
+      path.setAttribute('class', 'forecast-slice');
+      path.innerHTML = `<title>${name}: ${pie.map((s, i) => `${PIECES[i]} ${Math.round(100 * s)}%`).join(' · ')}</title>`;
+      path.onclick = () => {
+        if (given[step]?.node === node && given[step].piece === piece) delete given[step];
+        else given[step] = { node, piece };
+        renderForecast();
+      };
+      g.appendChild(path);
+      return path;
+    });
+    const draw = spans => paths.forEach((path, i) => path.setAttribute('d', slicePath(PIE_RADIUS, ...spans[i])));
+    const trueSpans = shares.map((share, i) => {
+      const start = shares.slice(0, i).reduce((a, b) => a + b, 0);
+      return [start, start + share];
+    });
+    let spans = trueSpans;
+    draw(spans);
+    // svg stacks in document order, so the pies after a hovered one move before it, letting it grow
+    // over its neighbours without leaving the page, which would drop the hover
+    place.onmouseenter = () => {
+      while (place.nextSibling) layer.insertBefore(place.nextSibling, place);
+      place.classList.add('zoomed');
+    };
+    // the cursor's angle from the centre, clockwise from the top as the slices run
+    place.onmousemove = e => {
+      const centre = g.getScreenCTM();
+      spans = lensSpans(shares, (Math.atan2(e.clientX - centre.e, centre.f - e.clientY) / (2 * Math.PI) + 1) % 1, spans);
+      draw(spans);
+    };
+    place.onmouseleave = () => {
+      place.classList.remove('zoomed');
+      spans = trueSpans;
+      draw(spans);
+    };
+    if (given[step]?.node === node) {
+      const lock = document.createElementNS(SVG_NS, 'g');
+      lock.setAttribute('class', 'forecast-lock');
+      lock.setAttribute('transform', 'scale(1.5)');
+      lock.innerHTML = '<path class="shackle" d="M -3,-1 V -4 A 3,3 0 0 1 3,-4 V -1"/><rect x="-5" y="-1" width="10" height="8" rx="1.5"/>';
+      g.appendChild(lock);
+    }
+    layer.appendChild(place);
+  });
 }
 
 // ==========================================================================

@@ -43,6 +43,7 @@
     --british-red-dark: #7a1810;
     --british-red-deep: #3a100d;
     --british-red-light: #ff6655;
+    --forecast-empty: #d8c89c;
 
     --mysore-green: #2e7a2e;
     --mysore-green-dark: #1b4f1b;
@@ -808,7 +809,10 @@ body {
     font-weight: 700;
     padding: 1px 5px;
     border-radius: 2px;
-    min-width: 34px;
+    /* fixed, so the forecast steps line up under the move columns */
+    box-sizing: border-box;
+    width: 46px;
+    flex-shrink: 0;
     text-align: center;
 }
 
@@ -894,6 +898,88 @@ body {
 /* The board shows a hovered line step, not the live game */
 .previewing .board-frame {
     border-color: var(--parchment);
+}
+
+/* Forecast pies stand in for the pieces, but a hovered line step shows its own board */
+.forecast:not(.previewing) #node-layer [filter],
+.forecast:not(.previewing) #node-layer line,
+.previewing #forecast-layer {
+    display: none;
+}
+
+.forecast-bar {
+    /* rows pad their boxes, so this matches the eval bar's visible gap above the first line */
+    margin-top: -2px;
+    font-size: 0.8rem;
+    color: var(--parchment);
+}
+
+.forecast-bar button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.forecast-bar .engine-eval-square {
+    text-align: center;
+    background: var(--chrome-hover);
+}
+
+/* the step on show is underlined, like a hovered line step */
+.forecast-bar .forecast-shown {
+    text-decoration: underline;
+}
+
+.forecast-bar .engine-step {
+    white-space: nowrap;
+}
+
+/* filled like the eval squares, so every piece colour reads on the dark panel */
+.forecast-bar .forecast-given {
+    background: var(--piece);
+    color: var(--ink);
+}
+
+/* fresh armies and forts are dark */
+.forecast-bar .forecast-given:is(.piece-0, .piece-2) {
+    color: #fff;
+}
+
+.forecast-slice {
+    stroke: var(--chrome);
+    stroke-width: 1;
+    /* borders keep their width while a pie zooms */
+    vector-effect: non-scaling-stroke;
+    cursor: pointer;
+}
+
+.forecast-pie {
+    transition: transform 0.12s ease;
+}
+
+/* a hovered pie grows over its label, so thin slices are easy to hit */
+.zoomed > .forecast-pie {
+    transform: scale(3);
+}
+
+.forecast-slice:hover {
+    filter: brightness(1.25);
+}
+
+/* marks the node a step is filtered on */
+.forecast-lock {
+    fill: var(--mysore-gold);
+    stroke: var(--ink);
+    stroke-width: 1.2;
+    pointer-events: none;
+}
+
+.forecast-lock .shackle {
+    fill: none;
+    stroke-width: 2.4;
 }
 
 /* ==========================================================================

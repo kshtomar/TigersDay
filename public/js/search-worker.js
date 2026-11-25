@@ -16,7 +16,8 @@ const report = (done, bestMove) => postMessage({
   bestMove,
   score: mcts.root.eval,
   visits: mcts.root.visit_count,
-  lines: mcts.getTopCandidateLines(3)
+  lines: mcts.getTopCandidateLines(3),
+  moves: mcts.getMoveTree()
 });
 
 onmessage = async ({ data }) => {

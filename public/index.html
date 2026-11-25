@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261105-40">
+    <link rel="stylesheet" href="style.css?v=20261125-55">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -196,6 +196,9 @@
 
             <!-- Top 3 Engine Candidate Lines -->
             <div id="engine-lines-container" class="engine-lines-container"></div>
+
+            <!-- Forecast steps: pies after each move of the engine lines -->
+            <div id="forecast-bar" class="forecast-bar"></div>
         </div>
 
         <!-- MAIN INTERACTIVE SVG BOARD -->
@@ -242,6 +245,9 @@
 
                 <!-- Territories & Units Layer -->
                 <g id="node-layer"></g>
+
+                <!-- Forecast Pies Layer -->
+                <g id="forecast-layer"></g>
             </svg>
             <nav id="impulse-track" class="impulse-track" aria-label="Turn">
                 <div class="track-actions">
@@ -291,14 +297,14 @@
 
 <!-- Client-Side Game Engine & MCTS Modules -->
 <!-- js/ files share one version, which the search worker reuses for its imports -->
-<script src="js/state.js?v=20261125-2"></script>
-<script src="js/engine.js?v=20261125-2"></script>
-<script src="js/mcts.js?v=20261125-2"></script>
-<script src="js/multiplayer.js?v=20261125-2"></script>
+<script src="js/state.js?v=20261125-4"></script>
+<script src="js/engine.js?v=20261125-4"></script>
+<script src="js/mcts.js?v=20261125-4"></script>
+<script src="js/multiplayer.js?v=20261125-4"></script>
 
 <!-- Frontend Client & UI Controller -->
 <script src="model-info.js"></script>
-<script src="script.js?v=20261105-25"></script>
+<script src="script.js?v=20261125-44"></script>
 
 </body>
 </html>
