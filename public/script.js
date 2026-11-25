@@ -829,11 +829,9 @@ function handleEvalToggle(enabled) {
   }
 }
 
-function setEvalBar(score, totalSims) {
+function setEvalBar(score) {
   const bar = document.getElementById('eval-bar-mysore');
   const scoreLabel = document.getElementById('eval-bar-score');
-  const simsLabel = document.getElementById('eval-sims-label');
-  const winrateLabel = document.getElementById('eval-winrate-label');
 
   if (!bar || !scoreLabel) return;
 
@@ -842,13 +840,6 @@ function setEvalBar(score, totalSims) {
 
   const sign = score > 0 ? '+' : '';
   scoreLabel.textContent = `${sign}${score.toFixed(2)}`;
-  if (simsLabel) simsLabel.textContent = `Engine: ${totalSims} sims (Wasm)`;
-
-  if (winrateLabel) {
-    if (score > 0.05) winrateLabel.textContent = `British Win (${(100 - mysorePercentage).toFixed(0)}%)`;
-    else if (score < -0.05) winrateLabel.textContent = `Mysore Win (${mysorePercentage.toFixed(0)}%)`;
-    else winrateLabel.textContent = `Even Position`;
-  }
 }
 
 async function startProgressiveEval(stateStr) {
@@ -860,8 +851,8 @@ async function startProgressiveEval(stateStr) {
   try {
     const stale = () => stateStr !== currentBitString || !settings.showEval;
     // stream like Stockfish, redrawing as the search deepens
-    const render = ({ score, visits, lines: topLines }) => {
-      setEvalBar(score, visits);
+    const render = ({ score, lines: topLines }) => {
+      setEvalBar(score);
       if (!linesContainer || topLines.length === 0) return;
       linesContainer.innerHTML = '';
       topLines.forEach(item => {
