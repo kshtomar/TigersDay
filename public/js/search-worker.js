@@ -1,12 +1,13 @@
 // Runs MCTS off the main thread so the page never freezes while searching
 // ONNX Runtime Web (WebAssembly CPU Inference)
 const ORT = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
-importScripts(ORT + 'ort.min.js', 'state.js', 'engine.js', 'mcts.js');
+const params = new URLSearchParams(location.search);
+importScripts(ORT + 'ort.min.js', ...['state.js', 'engine.js', 'mcts.js'].map(file => `${file}?v=${params.get('v')}`));
 // workers have no script tag for ort to find its wasm from
 ort.env.wasm.wasmPaths = ORT;
 
 const PROGRESS_MS = 100;
-const model = new TDMCTS.ONNXModelWrapper(new URLSearchParams(location.search).get('model'));
+const model = new TDMCTS.ONNXModelWrapper(params.get('model'));
 const mcts = new TDMCTS.MCTS(model);
 model.init();
 

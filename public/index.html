@@ -7,7 +7,7 @@
     
 
 
-    <link rel="stylesheet" href="style.css?v=20261105-38">
+    <link rel="stylesheet" href="style.css?v=20261105-39">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐅</text></svg>">
 </head>
 
@@ -290,14 +290,15 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <!-- Client-Side Game Engine & MCTS Modules -->
-<script src="js/state.js"></script>
-<script src="js/engine.js"></script>
-<script src="js/mcts.js"></script>
-<script src="js/multiplayer.js"></script>
+<!-- js/ files share one version, which the search worker reuses for its imports -->
+<script src="js/state.js?v=20261125-1"></script>
+<script src="js/engine.js?v=20261125-1"></script>
+<script src="js/mcts.js?v=20261125-1"></script>
+<script src="js/multiplayer.js?v=20261125-1"></script>
 
 <!-- Frontend Client & UI Controller -->
 <script src="model-info.js"></script>
-<script src="script.js?v=20261105-23"></script>
+<script src="script.js?v=20261105-24"></script>
 
 </body>
 </html>

@@ -332,12 +332,13 @@
 
       for (let i = 0; i < Math.min(limit, sortedChildren.length); i++) {
         const [move, node] = sortedChildren[i];
-        const pvLine = [notate(rootState, move)];
+        const moves = [move];
+        const names = [notate(rootState, move)];
 
         let currState = getNextState(rootState, move);
         let currNode = node;
 
-        while (currState && !currState.is_luck && currNode.children.size > 0 && pvLine.length < 6) {
+        while (currState && !currState.is_luck && currNode.children.size > 0 && moves.length < 6) {
           let bestChildMove = null;
           let bestChildNode = null;
           let maxVisits = -1;
@@ -351,14 +352,15 @@
           }
 
           if (bestChildMove === null) break;
-          pvLine.push(notate(currState, bestChildMove));
+          moves.push(bestChildMove);
+          names.push(notate(currState, bestChildMove));
           currState = getNextState(currState, bestChildMove);
           currNode = bestChildNode;
         }
 
         topLines.push({
-          moveIdx: move,
-          moveName: pvLine.join(' '),
+          moves,
+          names,
           eval: Number(node.eval.toFixed(2)),
           visits: node.visit_count
         });
@@ -373,7 +375,8 @@
   // =========================================================================
   class SearchWorker {
     constructor(modelPath) {
-      this.url = `js/search-worker.js?model=${encodeURIComponent(new URL(modelPath, location.href))}`;
+      const version = new URL(document.querySelector('script[src*="mcts.js"]').src).searchParams.get('v');
+      this.url = `js/search-worker.js?v=${version}&model=${encodeURIComponent(new URL(modelPath, location.href))}`;
       this.spawn();
     }
 

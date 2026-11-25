@@ -339,6 +339,14 @@ window.renderNodes = function renderNodes(nodes = window.NODES, layer = document
   if (layer.id === 'node-layer') refreshMapHighlights();
 };
 
+// Pieces of any position, leaving the live NODES untouched
+function boardNodes(uiState) {
+  return Object.fromEntries(uiState.nodes.map(node => [node.name, {
+    ...NODES[node.name], armyType: node.armyType === 'fresh' ? 'active' : node.armyType,
+    owner: node.armyType === 'fort' ? 'mysore' : node.armyType === 'empty' ? 'empty' : 'british'
+  }]));
+}
+
 // ==========================================================================
 // 4. MAP HIGHLIGHTS & PULSE MANAGEMENT
 // ==========================================================================
@@ -842,38 +850,96 @@ function setEvalBar(score) {
   scoreLabel.textContent = `${sign}${score.toFixed(2)}`;
 }
 
+// Lines from the latest search, and the position they start from
+let engineLines = { state: null, lines: [] };
+// Line and step under the cursor, drawn on the board in place of the live game
+let hoveredStep = null;
+
 async function startProgressiveEval(stateStr) {
   if (!settings.showEval || !currentGameState) return;
   currentEvalLoopState = stateStr;
-
-  const linesContainer = document.getElementById('engine-lines-container');
+  const state = currentGameState;
 
   try {
     const stale = () => stateStr !== currentBitString || !settings.showEval;
     // stream like Stockfish, redrawing as the search deepens
-    const render = ({ score, lines: topLines }) => {
+    const render = ({ score, lines }) => {
       setEvalBar(score);
-      if (!linesContainer || topLines.length === 0) return;
-      linesContainer.innerHTML = '';
-      topLines.forEach(item => {
-        const evalVal = item.eval;
-        let evalStr = evalVal.toFixed(2);
-        if (evalVal > 0) evalStr = '+' + evalStr;
-        const squareClass = evalVal > 0.05 ? 'british-favored' : (evalVal < -0.05 ? 'mysore-favored' : 'neutral');
-
-        const lineDiv = document.createElement('div');
-        lineDiv.className = 'engine-line';
-        lineDiv.innerHTML = `
-          <span class="engine-eval-square ${squareClass}">${evalStr}</span>
-          <span class="engine-move">${item.moveName} (${item.visits}v)</span>
-        `;
-        linesContainer.appendChild(lineDiv);
-      });
+      if (lines.length === 0) return;
+      engineLines = { state, lines };
+      renderEngineLines();
     };
     render(await evalSearch.search(currentGameState, mctsSims, stale, render));
   } catch (err) {
     console.warn("Client eval error:", err);
   }
+}
+
+function renderEngineLines() {
+  const container = document.getElementById('engine-lines-container');
+  container.innerHTML = '';
+  engineLines.lines.forEach((item, line) => {
+    const evalVal = item.eval;
+    let evalStr = evalVal.toFixed(2);
+    if (evalVal > 0) evalStr = '+' + evalStr;
+    const squareClass = evalVal > 0.05 ? 'british-favored' : (evalVal < -0.05 ? 'mysore-favored' : 'neutral');
+
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'engine-line';
+    // steps sit in fixed columns, so a cursor at rest always means the same line and step
+    lineDiv.innerHTML = `
+      <span class="engine-eval-square ${squareClass}">${evalStr}</span>
+      <span class="engine-move">${item.names.map((name, step) => `<span class="engine-step" data-line="${line}" data-step="${step}">${name}</span>`).join('')}</span>
+      <span class="engine-visits">(${item.visits}v)</span>
+    `;
+    container.appendChild(lineDiv);
+  });
+  // lines move under a resting cursor as the search deepens
+  if (hoveredStep) previewStep(hoveredStep);
+}
+
+// Draws the position after a line step without touching the live game
+function previewStep(step) {
+  hoveredStep = step;
+  const moves = engineLines.lines[step.line]?.moves;
+  if (!moves || step.step >= moves.length) {
+    showLive();
+    return;
+  }
+  let state = engineLines.state;
+  for (const move of moves.slice(0, step.step + 1)) state = TDEngine.getNextState(state, move);
+  const data = TDEngine.generateGameData(state);
+  window.renderNodes(boardNodes(data.ui_state));
+  renderCardDeck('mysore', data.ui_state.mysore_cards);
+  renderCardDeck('british', data.ui_state.british_cards);
+  updateTurnHeader(data.ui_state, data.winner);
+  document.body.classList.add('previewing');
+  document.querySelectorAll('.engine-step').forEach(el => {
+    const sameLine = +el.dataset.line === step.line;
+    el.classList.toggle('previewed', sameLine && +el.dataset.step === step.step);
+    el.classList.toggle('ahead', sameLine && +el.dataset.step > step.step);
+  });
+}
+
+function showLive() {
+  if (!document.body.classList.contains('previewing')) return;
+  document.body.classList.remove('previewing');
+  document.querySelectorAll('.engine-step').forEach(el => el.classList.remove('previewed', 'ahead'));
+  renderGame();
+  refreshMapHighlights();
+}
+
+const engineLinesBox = document.getElementById('engine-lines-container');
+engineLinesBox.addEventListener('mouseover', e => {
+  const el = e.target.closest('.engine-step');
+  if (el) previewStep({ line: +el.dataset.line, step: +el.dataset.step });
+  else endPreview();
+});
+engineLinesBox.addEventListener('mouseleave', endPreview);
+
+function endPreview() {
+  hoveredStep = null;
+  showLive();
 }
 
 // ==========================================================================
@@ -1083,12 +1149,8 @@ function tutorialScenario(side, index) {
 function tutorialBoard(state, names) {
   const board = document.getElementById('board').cloneNode(true);
   const layer = board.querySelector('#node-layer');
-  const nodes = Object.fromEntries(TDEngine.generateGameData(state).ui_state.nodes.map(node => [node.name, {
-    ...NODES[node.name], armyType: node.armyType === 'fresh' ? 'active' : node.armyType,
-    owner: node.armyType === 'fort' ? 'mysore' : node.armyType === 'empty' ? 'empty' : 'british'
-  }]));
   layer.removeAttribute('id');
-  window.renderNodes(nodes, layer);
+  window.renderNodes(boardNodes(TDEngine.generateGameData(state).ui_state), layer);
   renderBattleMarker(TDEngine.generateGameData(state).ui_state, board.querySelector('#battle-layer'));
   board.querySelector('defs').remove();
   board.removeAttribute('id');
@@ -1287,9 +1349,7 @@ function handleLocalGameUpdate(data, announceWar = true) {
     });
   }
 
-  window.renderNodes();
-  renderAllCards();
-  updateTurnHeader(data.ui_state, data.winner);
+  renderGame();
   renderDebugMoveList();
 
   if (data.winner !== 0 && data.winner !== previousWinner) {
@@ -1306,6 +1366,12 @@ function handleLocalGameUpdate(data, announceWar = true) {
 
   // Handle AI turn execution locally
   scheduleAiMove();
+}
+
+function renderGame() {
+  window.renderNodes();
+  renderAllCards();
+  updateTurnHeader(lastUiState, lastWinner);
 }
 
 async function triggerAiMove() {

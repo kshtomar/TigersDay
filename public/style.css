@@ -836,6 +836,32 @@ body {
     text-overflow: ellipsis;
 }
 
+.engine-visits {
+    margin-left: auto;
+    font-family: monospace;
+    color: var(--parchment);
+}
+
+/* Fixed columns: the longest step, such as RN:hyd>rmd, plus a space */
+.engine-step {
+    display: inline-block;
+    width: 11ch;
+    cursor: default;
+}
+
+.engine-step.previewed {
+    text-decoration: underline;
+}
+
+.engine-step.ahead {
+    opacity: 0.4;
+}
+
+/* The board shows a hovered line step, not the live game */
+.previewing .board-frame {
+    border-color: var(--parchment);
+}
+
 /* ==========================================================================
    7. BOARD CARD & SVG MAP (RESPONSIVE VIEWPORT SCALING)
    ========================================================================== */
@@ -996,7 +1022,7 @@ svg#board {
 /* Discord-style drawers: side columns slide over the map, opened from edge tabs */
 .drawer-tab { display: none; }
 
-@media (max-width: 1000px), (max-height: 520px) {
+@media (max-width: 1260px), (max-height: 520px) {
     body {
         height: 100dvh;
         max-height: 100dvh;
