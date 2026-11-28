@@ -1,0 +1,25 @@
+{
+  "models": [
+    "alphatigerv8",
+    "alphatigerv10beta",
+    "alphatigerv10",
+    "alphatigerv11beta",
+    "alphatigerv11",
+    "alphatigerv12beta",
+    "alphatigerv12",
+    "alphatigerv13beta",
+    "alphatigerv13",
+    "alphatigerv14beta",
+    "alphatigerv14",
+    "alphatigerv15",
+    "alphatigerv16beta",
+    "alphatigerv16"
+  ],
+  "simulations": 400,
+  "backend": "onnx",
+  "anchor": "alphatigerv8",
+  "anchor_elo": 1000,
+  "target": 25,
+  "confidence": 0.95,
+  "shards": 5
+}

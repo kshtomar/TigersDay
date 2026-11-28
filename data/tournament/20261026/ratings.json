@@ -1,0 +1,84 @@
+{
+  "games": 26016,
+  "look": 1,
+  "confidence": 0.95,
+  "target_met": false,
+  "max_half_width": 26.7,
+  "mysore_advantage": 34.9,
+  "mysore_ci95": [
+    28.7,
+    41.0
+  ],
+  "ratings": [
+    {
+      "model": "alphatigerv16",
+      "elo": 1564.8,
+      "stopping_half_width": 23.9
+    },
+    {
+      "model": "alphatigerv15",
+      "elo": 1503.6,
+      "stopping_half_width": 24.1
+    },
+    {
+      "model": "alphatigerv16beta",
+      "elo": 1461.8,
+      "stopping_half_width": 23.6
+    },
+    {
+      "model": "alphatigerv14",
+      "elo": 1455.0,
+      "stopping_half_width": 23.6
+    },
+    {
+      "model": "alphatigerv13",
+      "elo": 1411.5,
+      "stopping_half_width": 24.7
+    },
+    {
+      "model": "alphatigerv13beta",
+      "elo": 1394.7,
+      "stopping_half_width": 23.1
+    },
+    {
+      "model": "alphatigerv12",
+      "elo": 1371.7,
+      "stopping_half_width": 23.9
+    },
+    {
+      "model": "alphatigerv12beta",
+      "elo": 1349.7,
+      "stopping_half_width": 24.5
+    },
+    {
+      "model": "alphatigerv14beta",
+      "elo": 1236.0,
+      "stopping_half_width": 23.7
+    },
+    {
+      "model": "alphatigerv11beta",
+      "elo": 1233.0,
+      "stopping_half_width": 24.3
+    },
+    {
+      "model": "alphatigerv11",
+      "elo": 1207.7,
+      "stopping_half_width": 24.0
+    },
+    {
+      "model": "alphatigerv8",
+      "elo": 1000.0,
+      "stopping_half_width": 0.0
+    },
+    {
+      "model": "alphatigerv10beta",
+      "elo": 731.5,
+      "stopping_half_width": 25.4
+    },
+    {
+      "model": "alphatigerv10",
+      "elo": 317.6,
+      "stopping_half_width": 26.7
+    }
+  ]
+}
